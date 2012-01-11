@@ -1,0 +1,100 @@
+############
+Introduction
+############
+
+The latest Documentation was generated on: |today|
+
+
+*******************
+General information
+*******************
+
+Module to parse mzML data in Python based on cElementTree
+
+Copyright 2010-2011 by:
+
+    | T. Bald,
+    | J. Barth,
+    | A. Niehues,
+    | M. Specht,
+    | M. Hippler,
+    | C. Fufezan
+
+
+===================
+Contact information
+===================
+
+Please refer to:
+
+    | Dr. Christian Fufezan
+    | Institute of Plant Biology and Biotechnology
+    | Schlossplatz 7 , R 372
+    | University of Muenster
+    | Germany
+    | eMail: christian@fufezan.net
+    | Tel: +049 251 83 24861
+
+
+*******
+Summary
+*******
+
+pymzML is an extension to Python that offers
+    * a) easy access to mass spectrometry (MS) data that allows the rapid development of tools,
+    * b) a very fast parser for mzML data, the standard in mass spectrometry data format and
+    * c) a set of functions to compare or handle spectra.
+
+**************
+Implementation
+**************
+
+pymzML requires Python2.6.5+ and is fully compatible with Python3.
+The module is freely available on pymzml.github.com or pypi,
+published under LGPL and requires no additional modules to be installed.
+
+
+********
+Download
+********
+
+Get the latest version via github
+https://github.com/pymzml/pymzML
+
+************
+Installation
+************
+
+sudo python setup.py install
+
+
+************
+Introduction
+************
+
+Mass spectrometry has evolved into a very diverse field that relies heavily on
+high throughput bioinformatic tools. Due to the increasing complexity of the
+questions asked and biological problems addressed, standard tools might not
+be sufficient and tailored tools still
+have to be developed. However, the development of such tools has been hindered by
+proprietary data formats and the lack of an unified mass spectrometric data
+file standard.
+The latter has been overcome by the publication of the mzML standard
+by the HUPO Proteomics Standards Initiative (Deutsch, 2008) (http://www.psidev.info/)
+and soon all manufactures will hopefully offer a way to convert
+their format into this standardized one in order to stay comparable and competitive.
+Therefore in order to rapidly develop bioinformatic tools that can explore
+mass spectrometry data one needs a portable, robust, yet quick and
+easy interface to mzML files.
+The Python scripting language (http://python.org) is predestined for such a task.
+
+Scripting languages carry several advantages compared to compiled programs and
+although compiled programs tend to be faster, scripting languages can already
+compete successfully in some tasks.
+For example, XML parsing is extremely optimized in Python due to the
+cElementTree module (http://effbot.org/zone/element-index.htm),
+which allows XML parsing in a fraction of classical C/C++ libraries,
+such as libxml2 or sgmlop.
+Therefore it seems natural that a well designed python mzML parser
+can successfully compete with C/C++ libraries currently available
+while offering the advantages of a scripting language.

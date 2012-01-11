@@ -1,0 +1,92 @@
+.. obo:
+    
+.. default-domain:: py
+
+################
+OBO parser Class
+################
+
+.. automodule:: obo
+
+
+******************************
+Accessing specific OBO MS tags
+******************************
+
+This section describes how to access some common MS tags by their names as they
+are defined in the OBO file.
+
+First pymzML is imported and the run is defined.
+    
+    >>> example_file = get_example_file.open_example('dta_example.mzML')
+    >>> import pymzml
+    >>> msrun = pymzml.run.Reader(example_file)
+   
+Now, we can fetch specific imformations from the spectrum object.
+
+MS level:
+    
+    >>> for spectrum in msrun:
+    ...     print(spectrum['ms level'])
+
+Total Ion current:
+    
+    >>> for spectrum in msrun:
+    ...     print(spectrum['total ion current'])
+    
+
+Furthermore we can also check for presence of parameters, therefore the 
+proprties of the spectrum.
+
+Differentiation of e.g. HCD and CID fractionation:
+    
+    >>> for spectrum in msrun:
+    ...     if spctrum['ms level'] == 2:
+    ...         if 'collision-induced dissociation' in spectrum.keys():
+    ...             print('Spectrum {0} is a CID spectrum'.format(spectrum['id']))
+    ...         elif 'high-energy collision-induced dissociation' in spectrum.keys():
+    ...             print('Spectrum {0} is a HCD spectrum'.format(spectrum['id']))
+
+
+
+*********************
+Minimal accession set
+*********************
+
+
+The following dictionary shows the minimal accession necessary to run pymzML.
+
+::
+    
+    MIN_REQ = [
+    #
+    #!NOTE!   exact names will be extracted of current OBO File, comments are just an orientation
+    #         pymzml comes with a little script (queryOBO.py) to query the obo file
+    #
+    #         $ ./example_scripts/queryOBO.py "scan time"
+    #         MS:1000016
+    #         scan time
+    #         "The time taken for an acquisition by scanning analyzers." [PSI:MS]
+    #         Is a: MS:1000503 ! scan attribute
+    #
+    ('MS:1000016',['value']             ), #"scan time" 
+    # -> Could also be ['value','unitName'] to retrieve a 
+    # tuple of time and unit by calling spectrum['scan time']                          
+    ('MS:1000040',['value']             ), #"m/z"                                       
+    ('MS:1000041',['value']             ), #"charge state"                              
+    ('MS:1000127',['name']              ), #"centroid spectrum"                         
+    ('MS:1000128',['name']              ), #"profile spectrum"                          
+    ('MS:1000133',['name']              ), #"collision-induced dissociation"            
+    ('MS:1000285',['value']             ), #"total ion current"                         
+    ('MS:1000422',['name']              ), #"high-energy collision-induced dissociation"
+    ('MS:1000511',['value']             ), #"ms level"                                  
+    ('MS:1000512',['value']             ), #"filter string"                             
+    ('MS:1000514',['name']              ), #"m/z array"                                 
+    ('MS:1000515',['name']              ), #"intensity array"                           
+    ('MS:1000521',['name']              ), #"32-bit float"                              
+    ('MS:1000523',['name']              ), #"64-bit float"                              
+    ('MS:1000744',['value']             ), # legacy precursor mz value ...
+    ]
+
+    
+    
