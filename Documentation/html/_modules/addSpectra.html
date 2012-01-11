@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>addSpectra &mdash; pymzML v0.7.4 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pymzML v0.7.4 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML v0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for addSpectra</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python3.2</span>
+<span class="c"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">addSpecExample.py</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+
+<span class="n">MAX_NO_OF_SPECS_TO_COLLECT</span> <span class="o">=</span> <span class="mi">600</span>
+<span class="n">STEP_SIZE</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">def</span> <span class="nf">difference2Target</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
+    <span class="n">maxI</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">template</span><span class="o">.</span><span class="n">centroidedPeaks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="mf">434.2</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="mf">434.3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">maxI</span><span class="p">:</span>
+                <span class="n">moPeak</span> <span class="o">=</span> <span class="n">mz</span>
+                <span class="n">maxI</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="n">diff2TargetInPPM</span> <span class="o">=</span> <span class="mf">1e6</span><span class="o">*</span><span class="p">(</span> <span class="n">moPeak</span> <span class="o">-</span> <span class="mf">434.237793</span><span class="p">)</span><span class="o">/</span> <span class="mf">434.237793</span>
+    <span class="k">return</span> <span class="n">diff2TargetInPPM</span>
+
+<div class="viewcode-block" id="meanstddev"><a class="viewcode-back" href="../examples.html#addSpectra.meanstddev">[docs]</a><span class="k">def</span> <span class="nf">meanstddev</span><span class="p">(</span><span class="n">item_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates average and standard deviation of a list and returns tuple&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">([]),</span> <span class="s">&quot;I need a list!&quot;</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">item_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">item_list</span><span class="p">))</span>
+    <span class="n">sq_dif_to_mean</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">item_list</span><span class="p">:</span>
+        <span class="n">sq_dif_to_mean</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span><span class="o">-</span><span class="n">average</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">stddev</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">sq_dif_to_mean</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sq_dif_to_mean</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">average</span><span class="p">,</span> <span class="n">stddev</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; old stuff below :) &quot;&quot;&quot;</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="s">&quot;../mzML_example_files/100729_t300_100729172744.mzML.gz&quot;</span><span class="p">)</span>
+    <span class="n">number_of_ms1_specs</span><span class="o">=</span> <span class="mi">0</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">counter</span> <span class="p">,</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">run</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Processing spectrum #{0} , lvl = {1} , current counter {2}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span><span class="n">spectrum</span><span class="p">[</span><span class="s">&#39;ms level&#39;</span><span class="p">],</span><span class="n">number_of_ms1_specs</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;</span><span class="se">\r</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="s">&#39;ms level&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c"># i.e. is profile ...</span>
+            <span class="n">number_of_ms1_specs</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">spectrum</span>
+    
+    <span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    number_of_ms1_specs= 0</span>
+<span class="sd">    #print(tmp_specs)</span>
+<span class="sd">    #exit(1) </span>
+<span class="sd">    </span>
+<span class="sd">    deltappms = ddict(list)</span>
+<span class="sd">    counters = ddict(int)</span>
+<span class="sd">    </span>
+<span class="sd">    ladder = [ x for x in range(STEP_SIZE,MAX_NO_OF_SPECS_TO_COLLECT+1,STEP_SIZE) if x * 2 &lt;= MAX_NO_OF_SPECS_TO_COLLECT or x == MAX_NO_OF_SPECS_TO_COLLECT]</span>
+<span class="sd">    tmp_specs = dict( [ (x , pymzml.spec.Spectrum()) for x in ladder ] )</span>
+
+<span class="sd">    for counter , spectrum in enumerate(run):</span>
+<span class="sd">        print(&quot;Processing spectrum #{0} , lvl = {1} , current counter {2}&quot;.format(spectrum[&#39;id&#39;],spectrum[&#39;ms level&#39;],number_of_ms1_specs), end=&quot;\r&quot;, file=sys.stderr )</span>
+<span class="sd">        if int(spectrum[&#39;ms level&#39;]) == 1: # i.e. is profile ...</span>
+<span class="sd">            number_of_ms1_specs += 1</span>
+<span class="sd">            deltappms[0].append(difference2Target(spectrum))</span>
+<span class="sd">            for x in ladder:</span>
+<span class="sd">                tmp_specs[x] += spectrum</span>
+<span class="sd">            if number_of_ms1_specs % STEP_SIZE == 0 and number_of_ms1_specs != 0:</span>
+<span class="sd">                # then in ladder</span>
+<span class="sd">                print()</span>
+<span class="sd">                for x in ladder:</span>
+<span class="sd">                    if number_of_ms1_specs % x == 0:</span>
+<span class="sd">                        &#39;&#39;&#39; we need to reset spec for average of x when reached position counter&#39;&#39;&#39;</span>
+<span class="sd">                        deltappms[x].append(difference2Target(tmp_specs[x]))</span>
+<span class="sd">                        tmp_specs[x] = pymzml.spec.Spectrum()</span>
+<span class="sd">                        print(&quot;appended and initialised tmp_spec[{0}] at position {1}&quot;.format(x,number_of_ms1_specs))</span>
+<span class="sd">            if number_of_ms1_specs &gt;= MAX_NO_OF_SPECS_TO_COLLECT:</span>
+<span class="sd">                break</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">numberOfAveraged</span><span class="p">,</span> <span class="n">deltappmList</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">deltappms</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">mean</span><span class="p">,</span><span class="n">std</span> <span class="o">=</span> <span class="n">meanstddev</span><span class="p">(</span><span class="n">deltappmList</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;{0}</span><span class="se">\t</span><span class="s">{1}</span><span class="se">\t</span><span class="s">{2}</span><span class="se">\t</span><span class="s">{3}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numberOfAveraged</span><span class="p">,</span><span class="n">mean</span><span class="p">,</span><span class="n">std</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">deltappmList</span><span class="p">)))</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Output</span>
+<span class="sd">    0.00000	0.23808	1.03404	600.00000</span>
+<span class="sd">    10.00000	0.24115	0.97628	60.00000</span>
+<span class="sd">    20.00000	0.24233	0.97365	30.00000</span>
+<span class="sd">    30.00000	0.24781	0.94565	20.00000</span>
+<span class="sd">    40.00000	0.24922	0.93815	15.00000</span>
+<span class="sd">    50.00000	0.23665	0.96938	12.00000</span>
+<span class="sd">    60.00000	0.25528	0.93528	10.00000</span>
+<span class="sd">    70.00000	0.21742	0.86074	8.00000</span>
+<span class="sd">    80.00000	0.21520	0.89473	7.00000</span>
+<span class="sd">    90.00000	0.25264	0.95044	6.00000</span>
+<span class="sd">    100.00000	0.23498	0.96657	6.00000</span>
+<span class="sd">    110.00000	0.28098	1.00064	5.00000</span>
+<span class="sd">    120.00000	0.25986	0.93806	5.00000</span>
+<span class="sd">    130.00000	0.30775	0.92920	4.00000</span>
+<span class="sd">    140.00000	0.25418	0.83113	4.00000</span>
+<span class="sd">    150.00000	0.19996	0.72677	4.00000</span>
+<span class="sd">    160.00000	0.26021	0.69985	3.00000</span>
+<span class="sd">    170.00000	0.20350	0.61973	3.00000</span>
+<span class="sd">    180.00000	0.16090	0.55061	3.00000</span>
+<span class="sd">    190.00000	0.12704	0.49451	3.00000</span>
+<span class="sd">    200.00000	0.09899	0.44681	3.00000</span>
+<span class="sd">    210.00000	0.19422	0.44823	2.00000</span>
+<span class="sd">    220.00000	0.16285	0.40724	2.00000</span>
+<span class="sd">    230.00000	0.13732	0.36602	2.00000</span>
+<span class="sd">    240.00000	0.11295	0.33093	2.00000</span>
+<span class="sd">    250.00000	0.09243	0.31804	2.00000</span>
+<span class="sd">    260.00000	0.07536	0.29510	2.00000</span>
+<span class="sd">    270.00000	0.06042	0.27102	2.00000</span>
+<span class="sd">    280.00000	0.04610	0.25906	2.00000</span>
+<span class="sd">    290.00000	0.03692	0.24661	2.00000</span>
+<span class="sd">    300.00000	0.02842	0.22687	2.00000</span>
+<span class="sd">    600.00000	5.40548e-3	0.00000	1.00000</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    0 is actually all specs ....</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">True</span><span class="p">:</span>
+
+                
+            <span class="n">template</span> <span class="o">+=</span> <span class="n">spectrum</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c">#print(&quot;added&quot;,count)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="k">pass</span> <span class="c">#break</span>
+    <span class="c">#print(&quot;Spec has :&quot;,template.accessionSet)</span>
+    <span class="c">#print(&quot;____y7 (+2)____:   434.237793&quot;)</span>
+    <span class="n">moPeak</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">maxI</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">template</span><span class="o">.</span><span class="n">centroidedPeaks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="mf">434.2</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="mf">434.3</span><span class="p">:</span>
+            <span class="c">#print(mz,&#39;\t&#39;,i/count)</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">/</span><span class="n">count</span> <span class="o">&gt;=</span> <span class="n">maxI</span><span class="p">:</span>
+                <span class="n">moPeak</span> <span class="o">=</span> <span class="n">mz</span>
+                <span class="n">maxI</span> <span class="o">=</span> <span class="n">i</span><span class="o">/</span><span class="n">count</span>
+    <span class="n">diff2Target</span> <span class="o">=</span> <span class="p">(</span> <span class="n">moPeak</span> <span class="o">-</span> <span class="mf">434.237793</span><span class="p">)</span><span class="o">/</span> <span class="mf">434.237793</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Addition of {2} Specs: max Peak {0} difference to target, i.e. {1} ppm&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">diff2Target</span><span class="p">,</span><span class="n">diff2Target</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span><span class="n">count</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML v0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

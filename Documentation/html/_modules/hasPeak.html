@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hasPeak &mdash; pymzML v0.7.4 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pymzML v0.7.4 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML v0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for hasPeak</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">calculate monoisoptic peaks</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span> <span class="nn">get_example_file</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../examples.html#hasPeak.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    example for retrieving monoisotopic peaks</span>
+<span class="sd">    python-matplotlib has to be installed for plotting</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">get_example_file</span><span class="o">.</span><span class="n">open_example</span><span class="p">(</span><span class="s">&#39;deconvolution.mzML.gz&#39;</span><span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">example_file</span><span class="p">,</span> <span class="n">precisionMS1</span> <span class="o">=</span> <span class="mf">5e-6</span><span class="p">,</span> <span class="n">precisionMSn</span> <span class="o">=</span> <span class="mf">20e-6</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Processing spectrum #{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]),</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;</span><span class="se">\r</span><span class="s">&quot;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">spectrum</span><span class="p">[</span><span class="s">&#39;ms level&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;2&#39;</span><span class="p">:</span>
+            <span class="n">test1</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasDeconvolutedPeak</span><span class="p">(</span><span class="mf">1044.559675129575</span><span class="p">)</span>
+            <span class="n">test2</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasDeconvolutedPeak</span><span class="p">(</span><span class="mf">1044.5804</span><span class="p">)</span>
+            <span class="n">test3</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasDeconvolutedPeak</span><span class="p">(</span><span class="mf">1044.5807</span><span class="p">)</span>
+            <span class="n">test4</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasDeconvolutedPeak</span><span class="p">(</span><span class="mf">1044.5800</span><span class="p">)</span>
+            <span class="n">test5</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasDeconvolutedPeak</span><span class="p">(</span><span class="mi">6000</span><span class="p">)</span>
+            <span class="n">test6</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasPeak</span><span class="p">(</span><span class="mf">1016.5402567492666</span><span class="p">)</span>
+            <span class="n">test7</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">hasPeak</span><span class="p">(</span><span class="mi">6000</span><span class="p">)</span>
+            
+            <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">test1</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1044.5596</span><span class="p">,</span> <span class="mf">3809.4356300564586</span><span class="p">):</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">test2</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1044.5596</span><span class="p">,</span> <span class="mf">3809.4356300564586</span><span class="p">):</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">test3</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">test4</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1044.5596</span><span class="p">,</span> <span class="mf">3809.4356300564586</span><span class="p">):</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">test5</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">test6</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1016.5404</span><span class="p">,</span> <span class="mf">19141.735187697403</span><span class="p">):</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">test7</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">tests</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            
+            <span class="nb">all</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">tests</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="nb">all</span> <span class="o">=</span> <span class="bp">False</span>
+            
+            <span class="k">if</span> <span class="nb">all</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;All tests were successful.&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+                
+                
+                
+                
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;deconvoluted peaks list:&#39;</span><span class="p">)</span>
+                <span class="c">#print(spectrum.get_deconvolutedPeaks())</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;centroided peaks list:&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">centroidedPeaks</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;transformed centroided peaks list:&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">transformedPeaks</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;1044.559675129575 in deconvoluted spectrum? (should be)&quot;</span><span class="p">,</span> <span class="n">test1</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;1044.559675129575 + 20 ppm = 1044.5804 in deconvoluted spectrum? (should be)&quot;</span><span class="p">,</span> <span class="n">test2</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;1044.559675129575 + &gt;20 ppm = 1044.5807 in deconvoluted spectrum? (shouldn&#39;t)&quot;</span><span class="p">,</span> <span class="n">test3</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;1044.5800 in deconvoluted spectrum? (should be)&quot;</span><span class="p">,</span> <span class="n">test4</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;6000 in deconvoluted spectrum (shouldn&#39;t)?&quot;</span><span class="p">,</span> <span class="n">test5</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;1016.5402567492666 in centroided peaks (True)&quot;</span><span class="p">,</span> <span class="n">test6</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;6000 in centroided peaks (None)&quot;</span><span class="p">,</span> <span class="n">test7</span><span class="p">)</span>
+                
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-v&#39;</span><span class="p">:</span>
+            <span class="n">main</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML v0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. Plotting functions &mdash; pymzML 0.7.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pymzML 0.7.4 documentation" href="index.html" />
+    <link rel="next" title="7. Example scripts" href="examples.html" />
+    <link rel="prev" title="5. OBO parser Class" href="obo.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="7. Example scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="obo.html" title="5. OBO parser Class"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pymzML 0.7.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-plot">
+<span id="plotting-functions"></span><h1>6. Plotting functions<a class="headerlink" href="#module-plot" title="Permalink to this headline">¶</a></h1>
+<p>Plotting functions for pymzML</p>
+<dl class="class">
+<dt id="plot.Factory">
+<em class="property">class </em><tt class="descclassname">plot.</tt><tt class="descname">Factory</tt><big>(</big><em>filename=None</em><big>)</big><a class="reference internal" href="_modules/plot.html#Factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plot.Factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to plot pymzml.spec.Spectrum as svg/xhtml.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; Name for the output file. Default = &#8220;spectra.xhtml&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pymzml</span><span class="o">,</span> <span class="nn">get_example_file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mzMLFile</span> <span class="o">=</span> <span class="s">&#39;profile-mass-spectrum.mzml&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">example_file</span> <span class="o">=</span> <span class="n">get_example_file</span><span class="o">.</span><span class="n">open_example</span><span class="p">(</span><span class="n">mzMLFile</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="s">&quot;../mzML_example_files/&quot;</span><span class="o">+</span><span class="n">mzMLFile</span><span class="p">,</span> <span class="n">precisionMSn</span> <span class="o">=</span> <span class="mf">250e-6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">Factory</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">p</span><span class="o">.</span><span class="n">newPlot</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">peaks</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;circles&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">centroidedPeaks</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;sticks&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">reprofiledPeaks</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mo">00</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;circles&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">p</span><span class="o">.</span><span class="n">save</span><span class="p">(</span> <span class="n">filename</span><span class="o">=</span><span class="s">&quot;output/plotAspect.xhtml&quot;</span> <span class="p">,</span> <span class="n">mzRange</span> <span class="o">=</span> <span class="p">[</span><span class="mf">745.2</span><span class="p">,</span><span class="mf">745.6</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="plot.Factory.add">
+<tt class="descname">add</tt><big>(</big><em>data, color=(0, 0, 0), style='sticks', mzRange=[None, None]</em><big>)</big><a class="reference internal" href="_modules/plot.html#Factory.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plot.Factory.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add data to the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>list of tuples (mz,i)</em>) &#8211; The data added to the graph</li>
+<li><strong>color</strong> (<em>tuple (R,G,B)</em>) &#8211; color encoded in RGB. Default = (0,0,0)</li>
+<li><strong>style</strong> (<em>string</em>) &#8211; plotting style. Default = &#8220;circles&#8221;.</li>
+<li><strong>mzRange</strong> (<em>tuple of minMZ,maxMZ</em>) &#8211; Boundaries that should be added to the current plot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Currently supported styles are:</dt>
+<dd><ul class="first last simple">
+<li>&#8216;emptycircles&#8217;</li>
+<li>&#8216;circles&#8217;</li>
+<li>&#8216;sticks&#8217;</li>
+<li>&#8216;squares&#8217;</li>
+<li>&#8216;area&#8217;</li>
+<li>&#8216;triangle&#8217;</li>
+<li>&#8216;label&#8217;</li>
+</ul>
+</dd>
+</dl>
+<p>NOTE: The data format for label style is [( mz1, &#8216;label1&#8217; ), ( mz2, &#8216;label2&#8217; ), ( mz3, &#8216;label3&#8217; ) ].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plot.Factory.info">
+<tt class="descname">info</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/plot.html#Factory.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plot.Factory.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns summary about the plotting factory, i.e.how many plots and how many datasets per plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plot.Factory.newPlot">
+<tt class="descname">newPlot</tt><big>(</big><em>header=None, mzRange=[None, None], normalize=False</em><big>)</big><a class="reference internal" href="_modules/plot.html#Factory.newPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plot.Factory.newPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new plot to the plotFactory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>header</strong> (<em>string</em>) &#8211; an optional title that will be printed above the plot</li>
+<li><strong>mzRange</strong> (<em>tuple of minMZ,maxMZ</em>) &#8211; Boundaries of the new plot</li>
+<li><strong>normalize</strong> &#8211; whether or not the individal data sets are normalized in the plot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plot.Factory.save">
+<tt class="descname">save</tt><big>(</big><em>filename=None, mzRange=[None, None]</em><big>)</big><a class="reference internal" href="_modules/plot.html#Factory.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plot.Factory.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves all plots and their data points that have been added to the plotFactory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; Name for the output file. Default = &#8220;spectra.xhtml&#8221;</li>
+<li><strong>mzRange</strong> (<em>list</em>) &#8211; m/z range which should be considered [start, end]. Default = [ <tt class="docutils literal"><span class="pre">None</span></tt> , <tt class="docutils literal"><span class="pre">None</span></tt> ]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="obo.html"
+                        title="previous chapter">5. OBO parser Class</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">7. Example scripts</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/plot.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="7. Example scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="obo.html" title="5. OBO parser Class"
+             >previous</a> |</li>
+        <li><a href="index.html">pymzML 0.7.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

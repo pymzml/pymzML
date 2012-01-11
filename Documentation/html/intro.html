@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Introduction &mdash; pymzML 0.7.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pymzML 0.7.4 documentation" href="index.html" />
+    <link rel="next" title="2. Usage" href="usage.html" />
+    <link rel="prev" title="Welcome to pymzml’s documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="2. Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pymzml’s documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pymzML 0.7.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The latest Documentation was generated on: January 11, 2012</p>
+<div class="section" id="general-information">
+<h2>1.1. General information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<p>Module to parse mzML data in Python based on cElementTree</p>
+<p>Copyright 2010-2011 by:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">T. Bald,</div>
+<div class="line">J. Barth,</div>
+<div class="line">A. Niehues,</div>
+<div class="line">M. Specht,</div>
+<div class="line">M. Hippler,</div>
+<div class="line">C. Fufezan</div>
+</div>
+</div></blockquote>
+<div class="section" id="contact-information">
+<h3>1.1.1. Contact information<a class="headerlink" href="#contact-information" title="Permalink to this headline">¶</a></h3>
+<p>Please refer to:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Dr. Christian Fufezan</div>
+<div class="line">Institute of Plant Biology and Biotechnology</div>
+<div class="line">Schlossplatz 7 , R 372</div>
+<div class="line">University of Muenster</div>
+<div class="line">Germany</div>
+<div class="line">eMail: <a class="reference external" href="mailto:christian&#37;&#52;&#48;fufezan&#46;net">christian<span>&#64;</span>fufezan<span>&#46;</span>net</a></div>
+<div class="line">Tel: +049 251 83 24861</div>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>1.2. Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>pymzML is an extension to Python that offers</dt>
+<dd><ul class="first last simple">
+<li><ol class="first loweralpha">
+<li>easy access to mass spectrometry (MS) data that allows the rapid development of tools,</li>
+</ol>
+</li>
+<li><ol class="first loweralpha" start="2">
+<li>a very fast parser for mzML data, the standard in mass spectrometry data format and</li>
+</ol>
+</li>
+<li><ol class="first loweralpha" start="3">
+<li>a set of functions to compare or handle spectra.</li>
+</ol>
+</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="implementation">
+<h2>1.3. Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>pymzML requires Python2.6.5+ and is fully compatible with Python3.
+The module is freely available on pymzml.github.com or pypi,
+published under LGPL and requires no additional modules to be installed.</p>
+</div>
+<div class="section" id="download">
+<h2>1.4. Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<p>Get the latest version via github
+<a class="reference external" href="https://github.com/pymzml/pymzML">https://github.com/pymzml/pymzML</a></p>
+</div>
+<div class="section" id="installation">
+<h2>1.5. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>sudo python setup.py install</p>
+</div>
+<div class="section" id="id1">
+<h2>1.6. Introduction<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Mass spectrometry has evolved into a very diverse field that relies heavily on
+high throughput bioinformatic tools. Due to the increasing complexity of the
+questions asked and biological problems addressed, standard tools might not
+be sufficient and tailored tools still
+have to be developed. However, the development of such tools has been hindered by
+proprietary data formats and the lack of an unified mass spectrometric data
+file standard.
+The latter has been overcome by the publication of the mzML standard
+by the HUPO Proteomics Standards Initiative (Deutsch, 2008) (<a class="reference external" href="http://www.psidev.info/">http://www.psidev.info/</a>)
+and soon all manufactures will hopefully offer a way to convert
+their format into this standardized one in order to stay comparable and competitive.
+Therefore in order to rapidly develop bioinformatic tools that can explore
+mass spectrometry data one needs a portable, robust, yet quick and
+easy interface to mzML files.
+The Python scripting language (<a class="reference external" href="http://python.org">http://python.org</a>) is predestined for such a task.</p>
+<p>Scripting languages carry several advantages compared to compiled programs and
+although compiled programs tend to be faster, scripting languages can already
+compete successfully in some tasks.
+For example, XML parsing is extremely optimized in Python due to the
+cElementTree module (<a class="reference external" href="http://effbot.org/zone/element-index.htm">http://effbot.org/zone/element-index.htm</a>),
+which allows XML parsing in a fraction of classical C/C++ libraries,
+such as libxml2 or sgmlop.
+Therefore it seems natural that a well designed python mzML parser
+can successfully compete with C/C++ libraries currently available
+while offering the advantages of a scripting language.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Introduction</a><ul>
+<li><a class="reference internal" href="#general-information">1.1. General information</a><ul>
+<li><a class="reference internal" href="#contact-information">1.1.1. Contact information</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">1.2. Summary</a></li>
+<li><a class="reference internal" href="#implementation">1.3. Implementation</a></li>
+<li><a class="reference internal" href="#download">1.4. Download</a></li>
+<li><a class="reference internal" href="#installation">1.5. Installation</a></li>
+<li><a class="reference internal" href="#id1">1.6. Introduction</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to pymzml&#8217;s documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">2. Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="2. Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pymzml’s documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">pymzML 0.7.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
