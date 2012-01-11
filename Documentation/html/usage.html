@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Usage &mdash; pymzML 0.7.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pymzML 0.7.4 documentation" href="index.html" />
+    <link rel="next" title="3. Module Run" href="run.html" />
+    <link rel="prev" title="1. Introduction" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="run.html" title="3. Module Run"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="1. Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pymzML 0.7.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="usage">
+<h1>2. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>This Chapter deals with some features of pymzml and explains the basic usage.</p>
+<div class="section" id="basic-usage">
+<h2>2.1. Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>The Python scripting language is extended by pymzML to enable rapid evaluation,
+prototyping and even complex evaluation of large mass spectrometry datasets.
+The following examples are executed within the Python console
+(indicated by &#8220;&gt;&gt;&gt;&#8221; ) but can equally be incorporated in standalone scripts.</p>
+<p>The pymzML file object is declared as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msrun</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="s">&quot;big-1.0.0.mzML&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input files can be plain or compressed mzML files.
+Initialization of the Run class accepts additional keywords, i.e.
+precision of MS1 or MSn runs and extra accessions (see: <a class="reference internal" href="obo.html#module-obo" title="obo"><tt class="xref py py-class docutils literal"><span class="pre">obo</span></tt></a>).
+The run object returns an iterator, hence one can loop over all spectra
+and/or chromatograms using classic Python syntax.
+Additionally, one can retrieve a specific spectrum by its nativeID via
+random access using msrun[1], msrun[&#8216;TIC&#8217;] to access the chromatogram
+or in case of MRM experiments as e.g. msrun[&#8216;transition_445-672&#8217;].
+Note that random access requires the mzML file not to be
+compressed or truncated by a conversion program.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">msrun</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>  <span class="k">if</span> <span class="n">spectrum</span><span class="p">[</span><span class="s">&#39;ms level&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">spectrum_with_nativeID_100</span> <span class="o">=</span> <span class="n">msrun</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Each iteration returns a spectrum object (<a class="reference internal" href="spec.html#spec.Spectrum" title="spec.Spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum</span></tt></a>)  which offers basic
+information on the spectrum.
+The information can be accessed like a Python dictionary.
+The keys in this dictionary are the accession numbers (e.g. MS:1000511)
+or the name of the accession (e.g. &#8220;ms level&#8221;), as they are defined by the
+HUPO Proteomics Standards Initiative in the mzML vocabulary, i.e. in the OBO files.
+Both keys of the spectrum dictionary point to the value that has been extracted from
+the mzML file (see: <a class="reference internal" href="obo.html#module-obo" title="obo"><tt class="xref py py-class docutils literal"><span class="pre">obo</span></tt></a>).
+Association of MS tag to name is done on the basis of the OBO
+files which are supplied in the pymzML package.
+The pymzML package offers a simple script (see: <a class="reference internal" href="examples.html#module-queryOBO" title="queryOBO"><tt class="xref py py-obj docutils literal"><span class="pre">queryOBO</span></tt></a>) that can be used to
+translate between MS tags and names. Examples for accessing MS tags by their names can be found here: <a class="reference internal" href="obo.html"><em>OBO parser Class</em></a>.
+It is worth noting that the definition of MS tags and their attribute that the user wants to be associated with the tag and the trivial name is a feature.
+For example, the scan time is associated with two values, the actual time and its unit.
+From a programming point of view, access to the time as float by calling spectrum[&#8216;scan time&#8217;] is desirable. Defining those attributes and their value one is interested in, facilitates live ;)</p>
+<p>Data that is associated with the current spectrum,
+i.e. mass over charge (m/z) or intensity values can be accessed by the .mz (<a class="reference internal" href="spec.html#spec.Spectrum.mz" title="spec.Spectrum.mz"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum.mz</span></tt></a>)
+or .intensity (<a class="reference internal" href="spec.html#spec.Spectrum.i" title="spec.Spectrum.i"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum.i</span></tt></a>) properties, respectively, which are iterators themselves.
+The .peaks (<a class="reference internal" href="spec.html#spec.Spectrum.peaks" title="spec.Spectrum.peaks"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum.peaks</span></tt></a>) property also offers an iterator which returns mz and
+intensity as a tuple for each peak:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span>    <span class="k">for</span> <span class="n">mz</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>      <span class="k">print</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since mass spectrometry data can be measured in profile mode, the
+.centroidedPeak (<a class="reference internal" href="spec.html#spec.Spectrum.centroidedPeaks" title="spec.Spectrum.centroidedPeaks"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum.centroidedPeaks</span></tt></a>) property offers an iterator which performs a
+simple Gauss fit on the profiled data, thereby returning the
+fitted m/z and maximum intensity of the bell shape curve as tuple.
+Basic visualization of spectra using XHTML and SVG can be done using
+the <a class="reference internal" href="plot.html#module-plot" title="plot"><tt class="xref py py-mod docutils literal"><span class="pre">plot</span></tt></a> submodule.</p>
+</div>
+<div class="section" id="advanced-usage">
+<h2>2.2. Advanced usage<a class="headerlink" href="#advanced-usage" title="Permalink to this headline">¶</a></h2>
+<p>The spectrum class also offers other functions, such as deconvolution,
+estimation of similarity of spectra, simple noise reduction, addition of spectra
+and simple arithmetics on the intensity values by multiplication or division.
+An averaged spectrum can be created during parsing as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">msrun</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>  <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;ms level&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">t</span> <span class="o">+=</span> <span class="n">s</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;total ion current&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The addition of spectra is done by creating Gaussian distributions around the
+centroided peak. This reprofiling is done internally as part of the addition
+and its values can be accessed by the .reprofiledPeaks (<a class="reference internal" href="spec.html#spec.Spectrum.reprofiledPeaks" title="spec.Spectrum.reprofiledPeaks"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum.reprofiledPeaks</span></tt></a>) property of the spectrum.
+To reduce the computational overhead one can remove noise by calling
+the .removeNoise() (<a class="reference internal" href="spec.html#spec.Spectrum.removeNoise" title="spec.Spectrum.removeNoise"><tt class="xref py py-func docutils literal"><span class="pre">spec.Spectrum.removeNoise()</span></tt></a>)  method of the spectrum class.
+This method accepts different modes of noise reduction.
+Deconvoluted peaks can be accessed for high precision spectra by calling the
+.deconvolutedPeaks (<a class="reference internal" href="spec.html#spec.Spectrum.deconvolutedPeaks" title="spec.Spectrum.deconvolutedPeaks"><tt class="xref py py-obj docutils literal"><span class="pre">spec.Spectrum.deconvolutedPeaks</span></tt></a>)  property.
+The pymzML package contains detailed example scripts for all these methods. ( <a class="reference internal" href="examples.html"><em>Example scripts</em></a> )</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Usage</a><ul>
+<li><a class="reference internal" href="#basic-usage">2.1. Basic usage</a></li>
+<li><a class="reference internal" href="#advanced-usage">2.2. Advanced usage</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">1. Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="run.html"
+                        title="next chapter">3. Module Run</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="run.html" title="3. Module Run"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="1. Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">pymzML 0.7.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

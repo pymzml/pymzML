@@ -1,0 +1,68 @@
+.. spec:
+
+.. default-domain:: py
+
+##############
+Class Spectrum
+##############
+
+.. automodule:: spec
+
+.. autoclass:: Spectrum()
+    
+   .. autoattribute:: xmlTree
+   
+   .. autoattribute:: mz
+   
+   .. autoattribute:: i
+    
+   .. autoattribute:: peaks
+    
+   .. autoattribute:: centroidedPeaks
+   
+   .. autoattribute:: reprofiledPeaks
+
+   .. autoattribute:: reprofiledPeaks
+    
+   .. autoattribute:: measuredPrecision
+
+   .. automethod:: __add__     
+    
+   .. automethod:: __mul__     
+                
+   .. automethod:: __truediv__     
+   
+   .. automethod:: strip
+   
+   .. automethod:: extremeValues
+   
+   .. automethod:: reduce
+   
+   .. automethod:: deRef
+   
+   .. automethod:: removeNoise
+    
+   .. automethod:: highestPeaks 
+    
+   .. automethod:: estimatedNoiseLevel
+    
+   .. automethod:: hasOverlappingPeak
+
+   .. automethod:: hasPeak
+    
+   .. automethod:: hasDeconvolutedPeak
+
+   .. automethod:: similarityTo
+   
+   .. autoattribute:: tmzSet
+   
+   .. autoattribute:: tmassSet
+       
+   .. autoattribute:: transformedPeaks
+        
+   .. autoattribute:: transformed_deconvolutedPeaks
+    
+   .. automethod:: deconvolute_peaks
+   
+   .. autoattribute:: deconvolutedPeaks
+   

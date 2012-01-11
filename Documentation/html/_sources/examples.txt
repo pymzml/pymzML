@@ -1,0 +1,91 @@
+.. examples:
+
+.. default-domain:: py
+
+################
+Example scripts
+################
+
+In this section, example scripts for the usage of pymzML can be found.
+
+**************
+Finding a peak
+**************
+
+**hasPeak.py**
+
+.. automodule:: hasPeak
+
+
+*******************
+Plotting a spectrum
+*******************
+
+**plotAspec.py**
+
+.. automodule:: plotAspec
+
+.. figure:: images/plot.png
+   :align: center
+
+   output as xhtml :)
+
+******************
+Abundant precursor
+******************
+
+**find_abundant_precursors.py**
+
+.. automodule:: find_abundant_precursors
+
+***************
+Compare Spectra
+***************
+
+**compareSpectra.py**
+
+.. automodule:: compareSpectra
+
+***************
+Query Obo files
+***************
+
+**queryOBO.py**
+
+.. automodule:: queryOBO
+
+*************
+Highest peaks
+*************
+
+**highestPeaks.py**
+
+.. automodule:: highestPeaks
+
+**********************************************
+extract a specific Ion Chromatogram (EIC, XIC)
+**********************************************
+
+**extractIonChromatogram.py**
+
+.. automodule:: extractIonChromatogram
+
+*********************************************
+Accessing the original XML Tree of a spectrum
+*********************************************
+
+**accessAllData.py**
+
+.. automodule:: accessAllData
+
+**********
+Write mzML
+**********
+
+**writeExample.py**
+
+This is part is still in development.
+
+.. automodule:: writeExample
+
+

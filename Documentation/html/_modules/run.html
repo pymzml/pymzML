@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>run &mdash; pymzML 0.7.4 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pymzML 0.7.4 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML 0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for run</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python3.2</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The class :py:class:`Reader` has been designed to selectivly extract data</span>
+<span class="sd">from a mzML file and to expose the data as a python object.</span>
+<span class="sd">Necessary information are read in and stored in a fast</span>
+<span class="sd">accesible format.</span>
+<span class="sd">The reader itself is an iterator, thus looping over all spectra</span>
+<span class="sd">follows the classical pythonian syntax.</span>
+<span class="sd">Additionally one can random access spectra by their nativeID</span>
+<span class="sd">if the file if not compressed or truncated by a conversion Program.</span>
+
+<span class="sd">The class :py:class:`Writer` is still in development.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># pymzml</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, C. Fufezan</span>
+<span class="c">#</span>
+<span class="c">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c">#    (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">#    GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c">#    You should have received a copy of the GNU General Public License</span>
+<span class="c">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">bisect</span>
+
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">cElementTree</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+
+<span class="kn">import</span> <span class="nn">pymzml.spec</span>
+
+<span class="kn">import</span> <span class="nn">pymzml.obo</span>
+<span class="kn">import</span> <span class="nn">pymzml.minimum</span>
+
+
+
+<div class="viewcode-block" id="Reader"><a class="viewcode-back" href="../run.html#run.Reader">[docs]</a><span class="k">class</span> <span class="nc">Reader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    .. function:: __init__(path*  [,noiseThreshold = 0.0, extraAccessions = None, MS1_Precision = 5e-6, MSn_Precision = 20e-6])</span>
+
+<span class="sd">    Initializes an mzML run and returns an iterator.</span>
+
+<span class="sd">    :param path: path to mzML file. File can be gzipped.</span>
+<span class="sd">    :type path: string</span>
+
+<span class="sd">    :param extraAccessions: list of additional (accession,fieldName) tuples.</span>
+
+
+<span class="sd">        For example, (&#39;MS:1000285&#39;,[&#39;value&#39;]) will extract the &quot;total ion</span>
+<span class="sd">        current&quot; and store it under two keys in the spectrum, i.e.</span>
+<span class="sd">        spectrum[&quot;total ion current&quot;] or spectrum[&#39;MS:1000285&#39;].</span>
+
+<span class="sd">        The translated name is extracted from the current OBO file,</span>
+<span class="sd">        hence the name that is defined by the HUPO-PSI consortium is used. (http://www.psidev.info/).</span>
+
+<span class="sd">        pymzML comes with an example script queryOBO.py which can be used to lookup</span>
+<span class="sd">        the names or MS tags (see: :py:obj:`queryOBO`).</span>
+
+<span class="sd">        The value, i.e. which xml property has to be extraced has to be provided by the user.</span>
+<span class="sd">        Multiple values can be used as input, i.e. ( &#39;MS:1000016&#39; , [&#39;value&#39;,&#39;unitName&#39;] ) will extract scan time and its unit.</span>
+
+<span class="sd">    :type extraAccessions: list of tuples</span>
+<span class="sd">    :param MS1_Precision: measured precision of MS1 spectra</span>
+<span class="sd">    :type MS1_Precision: float</span>
+<span class="sd">    :param MSn_Precision: measured precision of MSn spectra</span>
+<span class="sd">    :type MSn_Precision: float</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; run = pymzml.run.Reader(&quot;../mzML_example_files/100729_t300_100729172744.mzML.gz&quot; ,</span>
+<span class="sd">                            MS1_Precision = 20e-6 )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Reader.__init__"><a class="viewcode-back" href="../run.html#run.Reader.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+                     <span class="bp">self</span><span class="p">,</span>
+                     <span class="n">path</span><span class="p">,</span>
+                     <span class="n">noiseThreshold</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                     <span class="n">extraAccessions</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                     <span class="n">MS1_Precision</span> <span class="o">=</span> <span class="mf">5e-6</span><span class="p">,</span>
+                     <span class="n">MSn_Precision</span> <span class="o">=</span> <span class="mf">20e-6</span>
+        <span class="p">):</span>
+
+
+        <span class="c"># self.param contains user-specified parsing parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;noiseThreshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noiseThreshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;MS1_Precision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MS1_Precision</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;MSn_Precision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MSn_Precision</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;accessions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="p">}</span>
+
+        <span class="c"># self.info contains information extracted from the mzML file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsetList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">MS1_Precision</span> <span class="o">=</span> <span class="n">MS1_Precision</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">elementList</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Default stuff</span>
+        <span class="c">#self.spectrum = pymzml.spec.Spectrum(measuredPrecision = MS1_Precision)</span>
+        <span class="c">#self.spectrum.clear()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span>       <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">(</span><span class="n">measuredPrecision</span> <span class="o">=</span> <span class="n">MS1_Precision</span> <span class="p">,</span> <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c">#</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.gz&#39;</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">codecs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;fileObject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">getreader</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">)(</span><span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;seekable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;fileObject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">],</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;seekable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c">### declare the seeker</span>
+            <span class="c"># read encoding ... maybe not really needed ...</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">],</span><span class="s">&#39;rb&#39;</span><span class="p">)</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">encodingPattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span> <span class="n">b</span><span class="s">&#39;encoding=&quot;(?P&lt;encoding&gt;[A-Za-z0-9-]*)&quot;&#39;</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">encodingPattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;encoding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;encoding&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;encoding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="c">#reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos</span>
+            <span class="n">indexListOffsetPattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span> <span class="n">b</span><span class="s">&#39;&lt;indexListOffset&gt;(?P&lt;indexListOffset&gt;[0-9]*)&lt;/indexListOffset&gt;&#39;</span> <span class="p">)</span>
+            <span class="n">chromatogramOffsetPattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span> <span class="n">b</span><span class="s">&#39;(?P&lt;WTF&gt;[nativeID|idRef])=&quot;TIC&quot;&gt;(?P&lt;offset&gt;[0-9]*)&lt;/offset&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;indexList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;TIC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span> <span class="c"># max 10kbyte</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span> <span class="o">-</span><span class="mi">1024</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="p">:</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="n">chromatogramOffsetPattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="c">#print(_, line)</span>
+                    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;TIC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;offset&#39;</span><span class="p">)))</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="n">indexListOffsetPattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;indexList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;indexListOffset&#39;</span><span class="p">)))</span>
+                        <span class="c">#break</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;indexList&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;TIC&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;indexList&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># fall back to non-seekable</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;seekable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="c"># print(&#39;Could not find indexList. Falling back to non seekable.&#39;, file = sys.stderr)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;TIC&#39;</span><span class="p">]</span>  <span class="o">&gt;</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;seekable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="c">#print(&#39;mzML file was truncated, but offsets were not recalculated. Falling back to non seekable.&#39;, file = sys.stderr)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Jumping to index list and slurpin all specOffsets</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="s">&#39;indexList&#39;</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">spectrumIndexPattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span> <span class="n">b</span><span class="s">&#39;(?P&lt;type&gt;[scan=|nativeID=&quot;])(?P&lt;nativeID&gt;[0-9]*)&quot;&gt;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;&#39;</span> <span class="p">)</span>
+                <span class="n">simIndexPattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span> <span class="n">b</span><span class="s">&#39;(?P&lt;type&gt;idRef=&quot;)(?P&lt;nativeID&gt;.*)&quot;&gt;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;&#39;</span> <span class="p">)</span>
+                <span class="c">## NOTE: this might be again different in another mzML versions!!</span>
+                <span class="c">## 1.1 &gt;&gt; small_zlib.pwiz.1.1.mzML:     &lt;offset idRef=&quot;controllerType=0 controllerNumber=1 scan=1&quot;&gt;4363&lt;/offset&gt;</span>
+                <span class="c">## 1.0 &gt;&gt;                               &lt;offset idRef=&quot;S16004&quot; nativeID=&quot;16004&quot;&gt;236442042&lt;/offset&gt;</span>
+                <span class="c">##  &lt;offset idRef=&quot;SIM SIC 651.5&quot;&gt;330223452&lt;/offset&gt;\n&#39;</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="p">:</span>
+                    <span class="n">match_spec</span> <span class="o">=</span> <span class="n">spectrumIndexPattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="n">match_sim</span>  <span class="o">=</span> <span class="n">simIndexPattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">match_spec</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match_spec</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;nativeID&#39;</span><span class="p">)))</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match_spec</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;offset&#39;</span><span class="p">)))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsetList&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match_spec</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;offset&#39;</span><span class="p">))))</span>
+                    <span class="k">elif</span> <span class="n">match_sim</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match_sim</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;nativeID&#39;</span><span class="p">))</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match_sim</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;offset&#39;</span><span class="p">)))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsetList&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">match_sim</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;offset&#39;</span><span class="p">))))</span>
+                <span class="c"># opening seeker in normal mode again</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">],</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+        <span class="c">### declare the iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cElementTree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;fileObject&#39;</span><span class="p">],</span> <span class="n">events</span> <span class="o">=</span> <span class="p">(</span> <span class="n">b</span><span class="s">&#39;start&#39;</span><span class="p">,</span><span class="n">b</span><span class="s">&#39;end&#39;</span><span class="p">)))</span> <span class="c"># NOTE: end might be sufficient</span>
+
+        <span class="c"># Move iter to spectrumList / chromatogramList</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">event</span><span class="p">,</span> <span class="n">element</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}mzML&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s">&#39;version&#39;</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;mzmlVersion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;{http://www.w3.org/2001/XMLSchema-instance}schemaLocation&#39;</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;mzmlVersion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span> <span class="s">r&#39;[0-9]*\.[0-9]*\.[0-9]*&#39;</span><span class="p">,</span>   <span class="n">s</span>  <span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}spectrumList&#39;</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}chromatogramList&#39;</span><span class="p">):</span>
+                <span class="c">## SRM only ?</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="c">## parse obo, check MS tags and if they are ok in minimum.py (minimum required) ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OT</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">obo</span><span class="o">.</span><span class="n">oboTranslator</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">minimumMS</span><span class="p">,</span> <span class="n">ListOfvaluesToExtract</span> <span class="ow">in</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">minimum</span><span class="o">.</span><span class="n">MIN_REQ</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;accessions&#39;</span><span class="p">][</span><span class="n">minimumMS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                                                    <span class="s">&#39;valuesToExtract&#39;</span>   <span class="p">:</span> <span class="n">ListOfvaluesToExtract</span> <span class="p">,</span>
+                                                    <span class="s">&#39;name&#39;</span>              <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">OT</span><span class="p">[</span><span class="n">minimumMS</span><span class="p">]</span> <span class="p">,</span>
+                                                    <span class="s">&#39;values&#39;</span>            <span class="p">:</span> <span class="p">[]</span>
+            <span class="p">}</span>
+
+        <span class="c"># parse extra accessions ...</span>
+        <span class="k">if</span> <span class="n">extraAccessions</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">accession</span><span class="p">,</span> <span class="n">fieldIdentifiers</span> <span class="ow">in</span> <span class="n">extraAccessions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">accession</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;accessions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;accessions&#39;</span><span class="p">][</span><span class="n">accession</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                                                        <span class="s">&#39;valuesToExtract&#39;</span>   <span class="p">:</span> <span class="p">[]</span> <span class="p">,</span>
+                                                        <span class="s">&#39;name&#39;</span>              <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">OT</span><span class="p">[</span><span class="n">accession</span><span class="p">],</span>
+                                                        <span class="s">&#39;values&#39;</span>            <span class="p">:</span> <span class="p">[]</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="n">valueToExtract</span> <span class="ow">in</span> <span class="n">fieldIdentifiers</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">valueToExtract</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;accessions&#39;</span><span class="p">][</span><span class="n">accession</span><span class="p">][</span><span class="s">&#39;valuesToExtract&#39;</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&#39;accessions&#39;</span><span class="p">][</span><span class="n">accession</span><span class="p">][</span><span class="s">&#39;valuesToExtract&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">valueToExtract</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The python 2.6+ iterator &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Reader.next"><a class="viewcode-back" href="../run.html#run.Reader.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterator in class :py:class:`Run`:</span>
+
+<span class="sd">        will return an instance of :py:class:`spec.Spectrum`, stored in run.spectrum.</span>
+
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; for spectrum in run:</span>
+<span class="sd">        ...     print(spectrum[&#39;id&#39;], end=&#39;\\r&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">event</span><span class="p">,</span> <span class="n">element</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c">#self.root.clear() #NOTE can be implemented and probably has to be implemented ...</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}spectrum&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}chromatogram&#39;</span><span class="p">)</span> <span class="p">)</span> <span class="ow">and</span> <span class="n">event</span> <span class="o">==</span> <span class="n">b</span><span class="s">&#39;end&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">initFromTreeObject</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">elementList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">elementList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Random access to spectra if mzML fill is indexed,</span>
+<span class="sd">        not compressed and not truncted.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; spectrum_with_nativeID_100 = msrun[100]</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;seekable&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;File does support random access, unfortunately indexlist missing, i.e. type not implemented yet ...&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">]:</span>
+                <span class="n">startPos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+                <span class="n">endPos_index</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsetList&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="n">value</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">endPos_index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsetList&#39;</span><span class="p">]):</span>
+                    <span class="n">endPos</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">endPos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsetList&#39;</span><span class="p">][</span><span class="n">endPos_index</span><span class="p">]</span>
+
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">startPos</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seeker</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">endPos</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;offsets&#39;</span><span class="p">][</span><span class="n">value</span><span class="p">])</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">initFromTreeObject</span><span class="p">(</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span> <span class="n">data</span> <span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="c">## have closing &lt;/mzml&gt; &amp; &lt;/run&gt; &amp;or &lt;/spectrumList&gt;</span>
+                    <span class="n">startingTag</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">stopIndex</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">(</span> <span class="s">&#39;&lt;/&#39;</span><span class="o">+</span><span class="n">startingTag</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="s">&#39;&gt;&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">initFromTreeObject</span><span class="p">(</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span> <span class="n">data</span><span class="p">[:</span><span class="n">stopIndex</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">startingTag</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">))</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;Run does not contain spec with native ID {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="c">#print(self.info[&#39;offsets&#39;].keys())</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cElementTree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">],</span> <span class="n">events</span> <span class="o">=</span> <span class="p">(</span> <span class="n">b</span><span class="s">&#39;start&#39;</span><span class="p">,</span><span class="n">b</span><span class="s">&#39;end&#39;</span><span class="p">)))</span> <span class="c"># NOTE: end might be sufficient</span>
+
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">_</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">answer</span> <span class="o">=</span> <span class="n">_</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">answer</span>
+</div>
+<div class="viewcode-block" id="Writer"><a class="viewcode-back" href="../run.html#run.Writer">[docs]</a><span class="k">class</span> <span class="nc">Writer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    .. function:: __init__(filename* ,run* [, overwrite = boolean])</span>
+
+<span class="sd">    Initializes an mzML writer (beta stage).</span>
+
+<span class="sd">    :param path: filename for the new mzML file.</span>
+<span class="sd">    :type path: string</span>
+<span class="sd">    :param run: Currently a pymzml.run.Reader object is required since we do not write the header by ourselves, yet.</span>
+<span class="sd">    :type run: pymzml.run.Reader</span>
+<span class="sd">    :param overwrite: force the re-initialization of mzML file, even if file exists.</span>
+<span class="sd">    :type overwrite: boolean</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; run = pymzml.run.Reader(&#39;../mzML_example_files/100729_t300_100729172744.mzML&#39;, MS1_Precision = 5e-6)</span>
+<span class="sd">    &gt;&gt;&gt; run2 = pymzml.run.Writer(filename = &#39;write_test.mzML&#39;, run= run , overwrite = True)</span>
+<span class="sd">    &gt;&gt;&gt; spec = run[1000]</span>
+<span class="sd">    &gt;&gt;&gt; run2.addSpec(spec)</span>
+<span class="sd">    &gt;&gt;&gt; run2.save()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Writer.__init__"><a class="viewcode-back" href="../run.html#run.Writer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">run</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">cElementTree</span><span class="o">.</span><span class="n">register_namespace</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="s">&quot;http://psi.hupo.org/schema_revision/mzML_1.0.0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span> <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">run</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;counters&#39;</span><span class="p">:</span> <span class="n">ddict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.gz&#39;</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">codecs</span>
+            <span class="n">io</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">getreader</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">)(</span><span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">io</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;filename&#39;</span><span class="p">],</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">event</span><span class="p">,</span><span class="n">element</span> <span class="ow">in</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="n">io</span><span class="p">,</span> <span class="n">events</span> <span class="o">=</span> <span class="p">(</span> <span class="n">b</span><span class="s">&#39;start&#39;</span><span class="p">,</span><span class="n">b</span><span class="s">&#39;end&#39;</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span> <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span><span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">b</span><span class="s">&#39;start&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}run&#39;</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span><span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}spectrumList&#39;</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;spectrumList&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span><span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;spectrumIndeces&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#39;index&#39;</span><span class="p">,{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;spectrum&#39;</span><span class="p">}),</span>
+                        <span class="k">break</span>
+                    <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}chromatogramList&#39;</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;}softwareList&#39;</span><span class="p">):</span>
+                        <span class="c">### Insert pymzML software tag</span>
+                        <span class="c">## Example :software id=&quot;pwiz_Reader_Thermo&quot;&gt;&lt;softwareParam accession=&quot;MS:1000615&quot; cvRef=&quot;MS&quot; name=&quot;ProteoWizard&quot; version=&quot;1.0&quot; /&gt;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="s">&#39;software&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span><span class="s">&#39;pymzML 0.7.1&#39;</span><span class="p">})</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="s">&#39;softwareParam&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;accession&#39;</span><span class="p">:</span><span class="s">&#39;MS:0000000&#39;</span><span class="p">,</span> <span class="s">&#39;cvRef&#39;</span><span class="p">:</span><span class="s">&#39;MS&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;pymzML writer&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span><span class="p">:</span><span class="s">&#39;0.7.1&#39;</span><span class="p">})</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="s">&#39;softwareParam&#39;</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="s">&#39;software&#39;</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TreeBuilder</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
+        <span class="k">return</span>
+</div>
+    <span class="k">def</span> <span class="nf">addSpec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spec</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addTree</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span><span class="n">typeOfSpec</span><span class="o">=</span><span class="s">&#39;spectrum&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">addChromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spec</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addTree</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span><span class="n">typeOfSpec</span><span class="o">=</span><span class="s">&#39;chromatogram&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">_addTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spec</span><span class="p">,</span><span class="n">typeOfSpec</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">typeOfSpec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;{0}List&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeOfSpec</span><span class="p">)]</span>     <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#39;{0}List&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeOfSpec</span><span class="p">)</span> <span class="p">,</span> <span class="p">{</span><span class="s">&#39;count&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;{0}Indeces&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeOfSpec</span><span class="p">)]</span>  <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#39;index&#39;</span><span class="p">,{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="n">typeOfSpec</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="n">typeOfSpec</span><span class="o">+</span><span class="s">&#39;List&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">spec</span><span class="o">.</span><span class="n">_xmlTree</span> <span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#39;offset&#39;</span><span class="p">)</span>
+        <span class="n">offset</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;Not implemented yet&#39;</span>
+        <span class="n">offset</span><span class="o">.</span><span class="n">attrib</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;idRef&#39;</span><span class="p">:</span> <span class="s">&#39;NaN&#39;</span><span class="p">,</span> <span class="s">&#39;nativeID&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="n">typeOfSpec</span><span class="o">+</span><span class="s">&#39;Indeces&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;counters&#39;</span><span class="p">][</span><span class="n">typeOfSpec</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">typeOfSpec</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;spectrum&#39;</span><span class="p">,</span><span class="s">&#39;chromatogram&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">typeOfSpec</span><span class="o">+</span><span class="s">&#39;List&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;{0}List&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeOfSpec</span><span class="p">)]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;counters&#39;</span><span class="p">][</span><span class="n">typeOfSpec</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;run&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="n">typeOfSpec</span><span class="o">+</span><span class="s">&#39;List&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;run&#39;</span><span class="p">])</span>
+
+        <span class="n">IndexList</span> <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#39;IndexList&#39;</span> <span class="p">,</span> <span class="p">{</span><span class="s">&#39;count&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;counters&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))})</span>
+
+        <span class="k">for</span> <span class="n">typeOfSpec</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;spectrum&#39;</span><span class="p">,</span><span class="s">&#39;chromatogram&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">typeOfSpec</span><span class="o">+</span><span class="s">&#39;Indeces&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">IndexList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="s">&#39;{0}Indeces&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeOfSpec</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndexList</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prettyXMLformater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmlTree</span> <span class="o">=</span> <span class="n">cElementTree</span><span class="o">.</span><span class="n">ElementTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">newTree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmlTree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;ISO-8859-1&quot;</span><span class="p">,</span> <span class="n">xml_declaration</span><span class="o">=</span><span class="bp">True</span> <span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">prettyXMLformater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c"># Modified version from</span>
+        <span class="c"># http://infix.se/2007/02/06/gentlemen-indent-your-xml</span>
+        <span class="c"># which is a modified version of</span>
+        <span class="c"># http://effbot.org/zone/element-lib.htm#prettyprint</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">{0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="o">*</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="s">&#39;  &#39;</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">element</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prettyXMLformater</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">tail</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="s">&#39;  &#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">tail</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">level</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">tail</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">return</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">__doc__</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML 0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

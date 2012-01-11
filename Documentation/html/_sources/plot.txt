@@ -1,0 +1,16 @@
+.. plot:
+    
+.. default-domain:: py
+
+##################
+Plotting functions
+##################
+
+
+.. automodule:: plot
+
+.. autoclass:: Factory
+   :members:
+       
+       
+   

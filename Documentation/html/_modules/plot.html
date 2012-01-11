@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>plot &mdash; pymzML 0.7.4 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pymzML 0.7.4 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML 0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for plot</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python3.2</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting functions for pymzML</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># pymzml</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, C. Fufezan</span>
+<span class="c">#</span>
+<span class="c">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c">#    (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">#    GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c">#    You should have received a copy of the GNU General Public License</span>
+<span class="c">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+
+<div class="viewcode-block" id="Factory"><a class="viewcode-back" href="../plot.html#plot.Factory">[docs]</a><span class="k">class</span> <span class="nc">Factory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to plot pymzml.spec.Spectrum as svg/xhtml.</span>
+
+<span class="sd">    :param filename: Name for the output file. Default = &quot;spectra.xhtml&quot;</span>
+<span class="sd">    :type filename: string</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; import pymzml, get_example_file</span>
+<span class="sd">    &gt;&gt;&gt; mzMLFile = &#39;profile-mass-spectrum.mzml&#39;</span>
+<span class="sd">    &gt;&gt;&gt; example_file = get_example_file.open_example(mzMLFile)</span>
+<span class="sd">    &gt;&gt;&gt; run = pymzml.run.Run(&quot;../mzML_example_files/&quot;+mzMLFile, precisionMSn = 250e-6)</span>
+<span class="sd">    &gt;&gt;&gt; p = pymzml.plot.Factory()</span>
+<span class="sd">    &gt;&gt;&gt; for spec in run:</span>
+<span class="sd">    &gt;&gt;&gt;     p.newPlot()</span>
+<span class="sd">    &gt;&gt;&gt;     p.add(spec.peaks, color=(200,00,00), style=&#39;circles&#39;)</span>
+<span class="sd">    &gt;&gt;&gt;     p.add(spec.centroidedPeaks, color=(00,00,00), style=&#39;sticks&#39;)</span>
+<span class="sd">    &gt;&gt;&gt;     p.add(spec.reprofiledPeaks, color=(00,255,00), style=&#39;circles&#39;)</span>
+<span class="sd">    &gt;&gt;&gt;     p.save( filename=&quot;output/plotAspect.xhtml&quot; , mzRange = [745.2,745.6] )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="bp">None</span> <span class="k">else</span> <span class="s">&quot;spectra.xhtml&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">]</span>     <span class="c"># list of plots, where each plot hold a list of mz-i lists that should be plotted in the same plot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">styles</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelPos</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="Factory.newPlot"><a class="viewcode-back" href="../plot.html#plot.Factory.newPlot">[docs]</a>    <span class="k">def</span> <span class="nf">newPlot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span> <span class="n">mzRange</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]</span> <span class="p">,</span> <span class="n">normalize</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add new plot to the plotFactory.</span>
+
+<span class="sd">        :param header: an optional title that will be printed above the plot</span>
+<span class="sd">        :type header: string</span>
+<span class="sd">        :param mzRange: Boundaries of the new plot</span>
+<span class="sd">        :type mzRange: tuple of minMZ,maxMZ</span>
+<span class="sd">        :param normalize: whether or not the individal data sets are normalized in the plot</span>
+<span class="sd">        :type boolean:</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">[]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">[]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">[]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelPos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">set</span><span class="p">()</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">mzRange</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">normalize</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">header</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="s">&#39;&#39;</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">header</span> <span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Factory.add"><a class="viewcode-back" href="../plot.html#plot.Factory.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">)</span> <span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="s">&#39;sticks&#39;</span><span class="p">,</span> <span class="n">mzRange</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add data to the graph.</span>
+
+<span class="sd">        :param data: The data added to the graph</span>
+<span class="sd">        :type data: list of tuples (mz,i)</span>
+<span class="sd">        :param color: color encoded in RGB. Default = (0,0,0)</span>
+<span class="sd">        :type color: tuple (R,G,B)</span>
+<span class="sd">        :param style: plotting style. Default = &quot;circles&quot;.</span>
+<span class="sd">        :type style: string</span>
+<span class="sd">        :param mzRange: Boundaries that should be added to the current plot</span>
+<span class="sd">        :type mzRange: tuple of minMZ,maxMZ</span>
+
+<span class="sd">        Currently supported styles are:</span>
+<span class="sd">            *   &#39;emptycircles&#39;</span>
+<span class="sd">            *   &#39;circles&#39;</span>
+<span class="sd">            *   &#39;sticks&#39;</span>
+<span class="sd">            *   &#39;squares&#39;</span>
+<span class="sd">            *   &#39;area&#39;</span>
+<span class="sd">            *   &#39;triangle&#39;</span>
+<span class="sd">            *   &#39;label&#39;</span>
+
+<span class="sd">        NOTE: The data format for label style is [( mz1, &#39;label1&#39; ), ( mz2, &#39;label2&#39; ), ( mz3, &#39;label3&#39; ) ].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">newPlot</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">styles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">selective</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="n">mzRange</span> <span class="o">==</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]:</span>
+                <span class="n">selective</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mzRange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mzRange</span>
+            <span class="c"># NOTE this allows us to define the mzRange in the call of the add function, otherwise it has to be in the call of the new function</span>
+            <span class="c"># NOTE Problem can be: mzRanges[-1] can be overwritten ... don&#39;t know what is best here</span>
+        <span class="k">if</span> <span class="n">selective</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([(</span><span class="n">mz</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="n">mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span><span class="n">mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="c">#print(&quot;Added {0} data points&quot;.format(len(self.plots[-1][-1])))</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Factory.info"><a class="viewcode-back" href="../plot.html#plot.Factory.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns summary about the plotting factory, i.e.how many plots and how many datasets per plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        Factory holds {0} unique plots&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">plot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;                Plot {0} holds {1} unique datasets&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">plot</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;                  Dataset {0} holds {1} datapoints&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
+
+        <span class="k">print</span><span class="p">()</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Factory.save"><a class="viewcode-back" href="../plot.html#plot.Factory.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">mzRange</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves all plots and their data points that have been added to the plotFactory.</span>
+
+<span class="sd">        :param filename: Name for the output file. Default = &quot;spectra.xhtml&quot;</span>
+<span class="sd">        :type filename: string</span>
+<span class="sd">        :param mzRange: m/z range which should be considered [start, end]. Default = [ ``None`` , ``None`` ]</span>
+<span class="sd">        :type mzRange: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+
+        <span class="n">io</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s">&#39;w&#39;</span> <span class="p">)</span>
+        <span class="c"># NOTE: we need to check if file exists and/or if file can be written ...</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span>
+<span class="s">        &lt;head&gt;</span>
+<span class="s">        &lt;title&gt;pymzml spectrum visualisation&lt;/title&gt;</span>
+<span class="s">        &lt;style&gt;</span>
+<span class="s">        &lt;/style&gt;</span>
+<span class="s">        &lt;/head&gt;</span>
+<span class="s">        &lt;body style=&quot;position:relative; z-index:0; width:100%; height:100%;&quot;&gt;</span>
+
+<span class="s">        &quot;&quot;&quot;</span><span class="p">,</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plotNumber</span><span class="p">,</span><span class="n">plot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="mi">1000</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="mi">700</span>
+            <span class="n">heada</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span>
+            <span class="n">resolved_mzRange</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span> <span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">mzRange</span> <span class="o">!=</span> <span class="p">[</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span> <span class="p">]:</span>
+                <span class="n">resolved_mzRange</span> <span class="o">=</span> <span class="n">mzRange</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]:</span>
+                    <span class="c"># we have to determine ranges ...</span>
+                    <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">plot</span><span class="p">:</span>
+                        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Determing mzRanges ...&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                        <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                                <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                                <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># Ranges have been defined by newPlot()</span>
+                    <span class="c"># i.e we want to plot no matter what ...</span>
+                    <span class="n">resolved_mzRange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mzRanges</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">resolved_mzRange</span> <span class="o">==</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;Skipping empty plot, plotNumber {0} , header :{1} ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plotNumber</span><span class="p">,</span><span class="n">heada</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="n">i_max</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i_min</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">plot</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">i</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">i_max</span><span class="p">:</span>
+                            <span class="n">i_max</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="n">i_max</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">i_max</span> <span class="o">=</span> <span class="mf">0.1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">resolved_i_max</span> <span class="o">=</span> <span class="mf">1.05</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resolved_i_max</span> <span class="o">=</span> <span class="n">i_max</span> <span class="o">*</span> <span class="mf">1.05</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">            &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot;</span>
+<span class="s">            width=&quot;{w}&quot; height=&quot;{h}&quot;</span>
+<span class="s">            style=&quot;position:relative; top:0; left:0; z-index:-1;&quot;&gt;</span>
+<span class="s">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+            <span class="n">PADDING</span> <span class="o">=</span> <span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span> <span class="c"># css style convention</span>
+            <span class="n">baseline</span> <span class="o">=</span> <span class="n">h</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="c"># Drawing Frame ...</span>
+            <span class="k">for</span> <span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span> <span class="ow">in</span> <span class="p">[</span>    <span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">w</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                    <span class="p">(</span><span class="n">w</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">w</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">h</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                    <span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">h</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">w</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">h</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                    <span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">h</span><span class="o">-</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="p">]:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;line x1=&quot;{0}&quot; y1=&quot;{1}&quot; x2=&quot;{2}&quot; y2=&quot;{3}&quot;</span>
+<span class="s">                style=&quot;stroke:rgb(00,00,00);stroke-width:1&quot;/&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">heada</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">heada_y</span> <span class="o">=</span> <span class="mi">30</span>
+                <span class="k">for</span> <span class="n">subheada</span> <span class="ow">in</span> <span class="n">heada</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">):</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;text x=&quot;{x}&quot; y=&quot;{y}&quot; font-family=&quot;Courier&quot; text-anchor=&quot;start&quot; font-size=&quot;{fontsize}&quot; fill=&quot;black&quot; &gt;{0}&lt;/text&gt;</span>
+<span class="s">                        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subheada</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">heada_y</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+                    <span class="n">heada_y</span> <span class="o">+=</span> <span class="mi">30</span>
+            <span class="n">pixelpermz</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">w</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c"># NOTE this returns ZeroDivisionError if the range to plot contains only one peak</span>
+            <span class="n">pixelper_i</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">h</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">resolved_i_max</span><span class="o">-</span><span class="n">i_min</span><span class="p">)</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">sep</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+            <span class="c"># grid</span>
+            <span class="c"># Drawing ticks and x labels</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">factor</span><span class="p">)),</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">factor</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span> <span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="mi">77</span> <span class="c">#if _ % 10 == 0 else 125</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;line x1=&quot;{0}&quot; y1=&quot;{1}&quot; x2=&quot;{0}&quot; y2=&quot;{2}&quot;</span>
+<span class="s">                style=&quot;stroke-dasharray: 9, 5;stroke:rgb({3},{3},{3});stroke-width:0.5&quot;/&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">baseline</span><span class="p">,</span><span class="n">color</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;line x1=&quot;{0}&quot; y1=&quot;{1}&quot; x2=&quot;{0}&quot; y2=&quot;{2}&quot;</span>
+<span class="s">                style=&quot;stroke:rgb(00,00,00);stroke-width:0.5;&quot;/&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">baseline</span><span class="p">,</span><span class="n">baseline</span><span class="o">+</span><span class="mi">10</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;text x=&quot;{x}&quot; y=&quot;{y}&quot; transform=&quot;rotate(90 {x},{y})&quot; font-family=&quot;Courier&quot; text-anchor=&quot;start&quot; font-size=&quot;{fontsize}&quot; fill=&quot;black&quot; &gt;{0:7.3f}&lt;/text&gt;</span>
+<span class="s">                    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">factor</span><span class="p">),</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">30</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+
+            <span class="c"># Drawing data points .. labels first</span>
+            <span class="k">for</span> <span class="n">datasetnumber</span><span class="p">,</span><span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+                <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">][</span><span class="n">datasetnumber</span><span class="p">]</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styles</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">][</span><span class="n">datasetnumber</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">style</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;label&#39;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">pos</span><span class="p">,(</span><span class="n">mz</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                            <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span>
+                            <span class="n">y2</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">(</span><span class="n">resolved_i_max</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+
+                            <span class="n">x3</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">style</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;X1&#39;</span><span class="p">):</span>
+                                <span class="n">y3</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="mi">10</span><span class="p">)</span>
+                                <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+                                <span class="n">stroke_width</span> <span class="o">=</span> <span class="mf">0.50</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">y3</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span>
+                                <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                                <span class="n">stroke_width</span> <span class="o">=</span> <span class="mf">0.40</span>
+                            <span class="n">layers</span> <span class="o">=</span> <span class="mi">15</span>
+                            <span class="k">while</span> <span class="p">(</span><span class="n">x3</span><span class="p">,</span><span class="n">y3</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelPos</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]:</span>
+                                <span class="n">y3</span> <span class="o">=</span> <span class="n">y3</span> <span class="o">+</span> <span class="n">sign</span> <span class="o">*</span> <span class="mi">15</span>
+                                <span class="n">layers</span> <span class="o">-=</span> <span class="mi">1</span>
+                                <span class="k">if</span> <span class="n">layers</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="k">break</span>
+
+                            <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;line x1=&quot;{0}&quot; y1=&quot;{1}&quot; x2=&quot;{0}&quot; y2=&quot;{2}&quot;</span>
+<span class="s">                            style=&quot;stroke-opacity: 0.6;stroke:rgb({r},{g},{b});stroke-width:{o};&quot; /&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">o</span><span class="o">=</span><span class="n">stroke_width</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">labelPos</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">x3</span><span class="p">,</span><span class="n">y3</span><span class="p">))</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">labelPos</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">x3</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span><span class="n">y3</span> <span class="o">+</span> <span class="n">sign</span> <span class="o">*</span> <span class="mi">15</span><span class="p">))</span>
+
+                            <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;text x=&quot;{x}&quot; y=&quot;{y}&quot; transform=&quot;rotate({angle} {x},{y})&quot; font-family=&quot;Courier&quot; text-anchor=&quot;start&quot; font-size=&quot;{fontsize}&quot; style=&quot;fill:rgb({r},{g},{b});&quot; &gt;{0}&lt;/text&gt;</span>
+<span class="s">                                &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y3</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="mi">45</span> <span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">style</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;area&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                        <span class="n">maxI</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span> <span class="n">i</span> <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">dataset</span> <span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">maxI</span> <span class="o">=</span> <span class="bp">None</span>
+
+                    <span class="n">first</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">for</span> <span class="n">pos</span><span class="p">,(</span><span class="n">mz</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">maxI</span><span class="p">))</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+
+                            <span class="k">if</span> <span class="n">first</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&#39;&lt;path d=&quot;M{0} {2} L{0} {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">baseline</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+                                <span class="n">first</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&#39;L{0} {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">first</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+                        <span class="c"># aka we have seen some points ;)</span>
+                        <span class="k">print</span><span class="p">(</span><span class="s">&#39; L{0} {1} Z&quot; style=&quot;fill:rgb({r},{g},{b}); fill-opacity:0.2; stroke:rgb({r},{g},{b}); stroke-width:1&quot; /&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">baseline</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">style</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;triangle&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                        <span class="n">maxI</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span> <span class="n">i</span> <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">dataset</span> <span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">maxI</span> <span class="o">=</span> <span class="bp">None</span>
+
+                    <span class="c">#first = True</span>
+                    <span class="k">for</span> <span class="n">pos</span><span class="p">,(</span><span class="n">mz</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                            <span class="n">xl</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="n">mz</span><span class="o">-</span><span class="mf">0.15</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                            <span class="n">xr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="n">mz</span><span class="o">+</span><span class="mf">0.15</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">maxI</span><span class="p">))</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+
+                            <span class="k">print</span><span class="p">(</span><span class="s">&#39;&lt;path d=&quot;M{0} {4} L{2} {3} L{1} {4} Z&quot; style=&quot;fill:rgb({r},{g},{b}); fill-opacity:0.4&quot;/&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xl</span><span class="p">,</span><span class="n">xr</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">baseline</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+                            <span class="c">#print(&#39;&lt;line x1=&quot;{0}&quot; y1=&quot;{1}&quot; x2=&quot;{0}&quot; y2=&quot;{2}&quot; style=&quot;stroke:rgb({r},{g},{b});stroke-width:1&quot;/&gt;&#39;.format(x,y,baseline,r=r,g=g,b=b), file = io)</span>
+
+            <span class="c"># Drawing data ...</span>
+            <span class="k">for</span> <span class="n">datasetnumber</span><span class="p">,</span><span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+                <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">][</span><span class="n">datasetnumber</span><span class="p">]</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styles</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">][</span><span class="n">datasetnumber</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">style</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;label&#39;</span><span class="p">,</span> <span class="s">&#39;area&#39;</span><span class="p">,</span> <span class="s">&#39;trian&#39;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                        <span class="n">maxI</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span> <span class="n">i</span> <span class="k">for</span> <span class="n">mz</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">dataset</span> <span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">maxI</span> <span class="o">=</span> <span class="bp">None</span>
+
+                    <span class="k">for</span> <span class="n">pos</span><span class="p">,(</span><span class="n">mz</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">PADDING</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="o">+</span>   <span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">resolved_mzRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pixelpermz</span>   <span class="p">))</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalizations</span><span class="p">[</span><span class="n">plotNumber</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">maxI</span><span class="p">))</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">y</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">pixelper_i</span><span class="p">)</span>
+
+                            <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;circles&#39;</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;circle cx=&quot;{x}&quot; cy=&quot;{y}&quot; r=&quot;2&quot; style=&quot;fill:rgb({r},{g},{b});&quot; /&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+
+                            <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;emptycircles&#39;</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;circle cx=&quot;{x}&quot; cy=&quot;{y}&quot; r=&quot;4&quot; style=&quot;stroke:rgb({r},{g},{b}); stroke-width:2; fill:none&quot; /&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+
+                            <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;sticks&#39;</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;line x1=&quot;{0}&quot; y1=&quot;{1}&quot; x2=&quot;{0}&quot; y2=&quot;{2}&quot;</span>
+<span class="s">                                style=&quot;stroke:rgb({r},{g},{b});stroke-width:0.5&quot;/&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">baseline</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+
+                            <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;squares&#39;</span><span class="p">:</span>
+                                <span class="c"># this is experimental, the squares are not centred</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;&lt;rect x=&quot;{0}&quot; y=&quot;{1}&quot; width=&quot;4&quot; height=&quot;4&quot; style=&quot;fill:rgb({r},{g},{b});</span>
+<span class="s">                                fill-opacity:0.8;&quot; /&gt;</span>
+<span class="s">                                &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">io</span><span class="p">)</span>
+
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s">&quot;Style {0} not support yet ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">style</span><span class="p">),</span><span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                                <span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;&lt;/svg&gt;&quot;</span><span class="p">,</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        &lt;/body&gt;</span>
+<span class="s">        &lt;/html&gt;</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">,</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">io</span><span class="p">)</span>
+        <span class="k">return</span>
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">__doc__</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pymzML 0.7.4 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Till Bald, Johannes Barth, Anna Niehues, Michael Specht, Michael Hippler, Christian Fufezan.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
