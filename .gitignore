@@ -1,0 +1,8 @@
+*.pyc
+Documentation/build
+*~
+.DS_Store
+example_scripts/output/FInal_adding_22092011
+__pycache__
+
+
