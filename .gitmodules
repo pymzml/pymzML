@@ -1,0 +1,3 @@
+[submodule "Documentation/html"]
+	path = Documentation/html
+	url = git@github.com:pymzml/pymzml.github.com.git
