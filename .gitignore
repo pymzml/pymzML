@@ -1,5 +1,6 @@
 *.pyc
 Documentation/build
+Website
 *~
 .DS_Store
 example_scripts/output/FInal_adding_22092011
