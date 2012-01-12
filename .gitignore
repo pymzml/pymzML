@@ -1,9 +1,12 @@
 *.pyc
-Documentation/build
+Documentation_src/build
+Documentation_src
+Documentation/
 Website
 *~
 .DS_Store
 example_scripts/output/FInal_adding_22092011
 __pycache__
+MANIFEST
 
 

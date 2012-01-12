@@ -3,7 +3,12 @@ AUTHORS.txt
 README.txt
 setup.py
 Documentation/pymzml.pdf
+<<<<<<< HEAD
 Documentation/html/.buildinfo
+=======
+Documentation/html/.nojekyll
+Documentation/html/README
+>>>>>>> cc1529f32bbda1c5947849abd51841f69b58db28
 Documentation/html/examples.html
 Documentation/html/genindex.html
 Documentation/html/index.html
@@ -18,7 +23,21 @@ Documentation/html/searchindex.js
 Documentation/html/spec.html
 Documentation/html/usage.html
 Documentation/html/_images/plot.png
+<<<<<<< HEAD
 Documentation/html/_modules/index.html
+=======
+Documentation/html/_images/plot1.png
+Documentation/html/_images/plot2.png
+Documentation/html/_images/plot3.png
+Documentation/html/_images/plot4.png
+Documentation/html/_images/plot5.png
+Documentation/html/_images/plot6.png
+Documentation/html/_images/plot7.png
+Documentation/html/_modules/addSpectra.html
+Documentation/html/_modules/hasPeak.html
+Documentation/html/_modules/index.html
+Documentation/html/_modules/monoisotopic_peaks.html
+>>>>>>> cc1529f32bbda1c5947849abd51841f69b58db28
 Documentation/html/_modules/plot.html
 Documentation/html/_modules/run.html
 Documentation/html/_modules/spec.html
@@ -50,6 +69,12 @@ Documentation/html/_static/underscore.js
 Documentation/html/_static/up-pressed.png
 Documentation/html/_static/up.png
 Documentation/html/_static/websupport.js
+<<<<<<< HEAD
+=======
+Documentation/html/dist/pymzml.pdf
+Documentation/html/dist/pymzml.tar.bz2
+Documentation/html/dist/pymzml.zip
+>>>>>>> cc1529f32bbda1c5947849abd51841f69b58db28
 example_scripts/accessAllData.py
 example_scripts/compareSpectra.py
 example_scripts/deconvolution.py
