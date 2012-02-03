@@ -18,7 +18,8 @@ Mass spectrometry has evolved to a very diverse field that relies heavily on hig
 CITATION
 
 Please cite us when using pymzml for your publications.
-Bald, Barth et al. Bioinformatics 2012 <in minor revision>
+Bald, T., Barth, J., Niehues, A., Specht, M., Hippler, M., & Fufezan, C. (2012). pymzML - Python module for high throughput bioinformatics on mass spectrometry data. Bioinformatics, 1-2.
+doi: 10.1093/bioinformatics/bts066
 
 
 INSTALLATION
