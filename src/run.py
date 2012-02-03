@@ -17,7 +17,7 @@ The class :py:class:`Writer` is still in development.
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Specht, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -178,6 +178,8 @@ class Reader(object):
                 ##  <offset idRef="SIM SIC 651.5">330223452</offset>\n'
                 for line in self.seeker:
                     match_spec = spectrumIndexPattern.search(line)
+                    if match_spec and match_spec.group('nativeID') == b'':
+                        match_spec = None
                     match_sim  = simIndexPattern.search(line)
                     if match_spec:
                         self.info['offsets'][ int(bytes.decode( match_spec.group('nativeID'))) ] = int(bytes.decode( match_spec.group('offset')))
@@ -255,10 +257,10 @@ class Reader(object):
 
         """
         while True:
-            try:
-                event, element = next(self.iter)
-            except:
-                #self.root.clear() #NOTE can be implemented and probably has to be implemented ...
+            event, element = next(self.iter, ('END','END'))
+            # error? check cElementTree; conversion of data to 32bit-float mzml files might help
+            # stop iteration when parsing is done
+            if event == 'END':
                 raise StopIteration
             if (element.tag.endswith('}spectrum') or element.tag.endswith('}chromatogram') ) and event == b'end':
                 self.spectrum.initFromTreeObject(element)
