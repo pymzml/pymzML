@@ -29,6 +29,7 @@ setup(name='pymzml',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
             'Topic :: Scientific/Engineering :: Chemistry',
             'Topic :: Scientific/Engineering :: Medical Science Apps.',
+            'Topic :: Scientific/Engineering :: Education',
             'Topic :: Software Development :: Libraries :: Python Modules'
             ],
       )
