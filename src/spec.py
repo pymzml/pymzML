@@ -110,14 +110,14 @@ class Spectrum(dict):
     def __sub__(self,otherSpec):
         """
         Subtracts two pymzml spectra.
-        
+
         :param otherSpec: Spectrum object
         :type otherSpec: object
-        
+
         """
         assert isinstance(otherSpec,Spectrum) , "can only subtract two pymzML spectra ..."
         tmp = self.deRef()
-        
+
         if tmp._reprofiledPeaks == None:
             tmp._reprofiledPeaks = tmp._reprofile_Peaks()
 
@@ -219,7 +219,9 @@ class Spectrum(dict):
         "all" will remove the raw and profiled data and some internal lookup
         tables as well.
         """
+
         if scope == 'all':
+            
             if self._peaks == None:
                 # decode, just in case ...
                 self.peaks
@@ -232,6 +234,7 @@ class Spectrum(dict):
             if 'encodedData' in self.keys():
                 del self['encodedData']
                 del self['PY:0000000'] # this is the ID tag corresponding to 'encodedData'
+            
         else:
             print("Dont understand strip request ", file = sys.stderr)
 
@@ -325,36 +328,49 @@ class Spectrum(dict):
         self._i = intensityList
         return
 
+
+    # ndeklein 27/04/2012: changed peaks to return the m/z and intensity list seperatly instead of returning them as zipped tuples
     @property
     def peaks(self):
         """
         Returns the list of peaks of the spectrum as tuples (m/z, intensity).
 
-        :rtype: list of tuples
-        :return: Returns list of tuples (m/z, intensity)
+        :param noZip: Bool if the peak list should be zipped, or the two tuples returned as two seperate tuples
+        :type noZip: bool
+        :rtype: Two lists
+        :return: Returns a list with m/z values and a list with intensities
 
         Example:
 
         >>> import pymzml
         >>> run = pymzml.run.Reader(spectra.mzMl.gz, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
         >>> for spectrum in run:
-        ...     for mz, i in spectrum.peaks:
-        ...         print(mz, i)
-
+        ...     mzList, intensityList = spectrum.peaks
+        ...     for index, mz in enumerate(mzList):
+        ...         print(mz, intensityList[index])
+        
         .. note::
 
            The peaks property can also be setted, e.g. for theoretical data.
            It requires a list of mz/intensity tuples.
 
         """
-        if 'reprofiled' in self.keys():
+        if 'reprofiled' in self.keys(): 
             self.peaks = self._centroid_peaks()
+        
         elif self._peaks == None:
             if self._mz == None and 'encodedData' not in self.keys():
                 self._peaks = []
             else:
-                self._peaks = list(zip(self.mz , self.i))
+                # ndeklein 27/04/2012: Return self.mz, self.i instead of list(zip(self.mz , self.i)) because zipping large tuples takes a long time
+                #                      For a function where I had to call spec.peaks 32000 times this got the runtime down from roughly 90000 to roughly 300 seconds.
+                #                      Because 2 lists are returned instead of a zipped tuple, the syntax to loop through them changes a bit. Instead of
+                #                      for spectrum in run: for mz, i in inspectrum.peaks: print(mz, i) you can do
+                #                      for spectrum in run: mzList, iList = spectrum.peaks \n for index, mz in enumerate(mzList): print(mz, iList[index])                 
+                return self.mz, self.i
+                
         return self._peaks
+
 
     @property
     def profile(self):
@@ -391,6 +407,7 @@ class Spectrum(dict):
         self._peaks = mz_i_tuple_list
         return self
 
+    # ndeklein 27/04/2012: changed centroidedPeaks to return the m/z and intensity list seperatly so that the return value is consistent with the changed peaks() return value
     @property
     def centroidedPeaks(self):
         """
@@ -408,8 +425,9 @@ class Spectrum(dict):
         >>> import pymzml
         >>> run = pymzml.run.Reader(spectra.mzMl.gz, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
         >>> for spectrum in run:
-        ...     for mz, i in spectrum.centroidedPeaks:
-        ...         print(mz, i)
+        ...     mzList, intensityList = spectrum.centroidedPeaks
+        ...     for index, mz in enumerate(mzList):
+        ...         print(mz, intensityList[index])
 
         """
         if 'reprofiled' in self.keys():
@@ -418,7 +436,14 @@ class Spectrum(dict):
 
         if self._centroidedPeaks == None: #or self._reprofiledPeaks != None:
             self._centroidedPeaks = self._centroid_peaks()
-        return self._centroidedPeaks
+        # ndeklein 27/04/2012: self._centroid_peaks() now returns two values, a list of m/z values and a list of intensities. Because it is saved in one variable
+        #                      in the line 'self._centroidedPeaks = self._centroid_peaks()' above, self._centroidedPeaks is now a tuple with as first value the
+        #                      m/z list and second value the intensity list. To return them in the same way peaks() returns, reutrn self._centroidedPeaks[0] (the m/z list)
+        #                      and self._centroidedPeaks[1] (the intensityList).
+        #                      Because 2 lists are returned instead of a zipped tuple, the syntax to loop through them changes a bit. Instead of
+        #                      for spectrum in run: for mz, i in inspectrum.centroidedPeaks: print(mz, i) you can do
+        #                      for spectrum in run: mzList, iList = spectrum.centroidedPeaks \n for index, mz in enumerate(mzList): print(mz, iList[index]) 
+        return self._centroidedPeaks[0], self._centroidedPeaks[1]
 
     @centroidedPeaks.setter
     def centroidedPeaks(self,mz_i_tuple_list):
@@ -426,6 +451,8 @@ class Spectrum(dict):
         self._centroidedPeaks = mz_i_tuple_list
         return
 
+
+    # ndeklein 27/04/2012: changed _centroid_peaks to return the m/z and intensity list seperatly so that the return value is consistent with the changed peaks() return value
     def _centroid_peaks(self):
         """
         Perform a Gauss fit to centroid the peaks for the property
@@ -441,6 +468,10 @@ class Spectrum(dict):
                 print(self.keys(), file = sys.stderr)
                 exit(1)
         if isProfile:
+            # ndeklein: need two separate lists, one for mz and one for intensity
+            mzList = []
+            intensityList = []
+                
             tmp = []
             if 'reprofiled' in self.keys():
                 intensity_array = [ i for mz,i in self.reprofiledPeaks ]
@@ -462,7 +493,7 @@ class Spectrum(dict):
                     y2  = intensity_array[pos]
                     x3  = mz_array[pos+1]
                     y3  = intensity_array[pos+1]
-                    
+
                     if x2-x1 > (x3-x2)*10 or (x2-x1)*10 < x3-x2:
                         # no gauss fit if distance between mz values is too large
                         continue
@@ -478,7 +509,7 @@ class Spectrum(dict):
                         mue = (doubleLog*( x1*x1 - x3*x3 ) - x1*x1 + x2*x2 ) / (2 * (x2-x1) - 2*doubleLog*(x3-x1))
                         cSquarred = ( x2*x2 - x1*x1 - 2*x2*mue + 2*x1*mue )/ ( 2* math.log(y1/y2 ))
                         A = y1 * math.exp( (x1-mue)*(x1-mue) / ( 2*cSquarred) )
-                        
+
                         #if A > 1e20:
                             #print(mue, A, doubleLog, cSquarred)
                             #print(x1, "\t", y1)
@@ -487,10 +518,16 @@ class Spectrum(dict):
                             #print()
                     except:
                         continue
-                    tmp.append((mue,A))
+                    
+                    # ndeklein: instead of adding a tuple to tmp, add the values to separate lists
+                    mzList.append(mue)
+                    intensityList.append(A)
+                    
+
             #for mue, A in tmp:
                 #print(mue, "\t", A)
-            return tmp
+            # ndeklein: return a list of mz values and a list of intensity values instead of a list of tuples
+            return mzList, intensityList
         else:
             return self.peaks
 
@@ -540,7 +577,7 @@ class Spectrum(dict):
             self._tmassSet = set(self._transformed_mass_with_error.keys())
         return self._tmassSet
 
-    def deRef( self ):
+    def deRef( self):
         """
         Strip some heavy data and return deepcopy of spectrum.
 
@@ -1298,6 +1335,7 @@ class Spectrum(dict):
         """
         self.clear()
         self._xmlTree = treeObject
+
         #
         if treeObject.tag.endswith('}chromatogram'):
             self['id'] = treeObject.get('id')
@@ -1397,7 +1435,7 @@ class Spectrum(dict):
                     pass
                 else:
                     pass
-
+            
         try:
             if self['ms level'] == 1:
                 self.measuredPrecision = self.param['MS1_Precision']
