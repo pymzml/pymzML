@@ -643,7 +643,13 @@ class Spectrum(dict):
             self.peaks  = [ (mz,i) for mz,i in self.peaks  if i >= noiseLevel]
 
         if self._centroidedPeaks != None:
-            self.centroidedPeaks = [ (mz,i) for mz,i in self.centroidedPeaks  if i >= noiseLevel]
+            tmpCentroidedPeaks = [ [], [] ]
+            for pos, intensity in enumerate(self.centroidedPeaks[1]):
+                if intensity >= noiseLevel:
+                    tmpCentroidedPeaks[0].append( self.centroidedPeaks[0][ pos ])
+                    tmpCentroidedPeaks[1].append( self.centroidedPeaks[1][ pos ]) # could use intensity directly ...
+
+            self.centroidedPeaks = tmpCentroidedPeaks
 
         self._reprofiledPeaks = None
         return self
@@ -668,7 +674,7 @@ class Spectrum(dict):
 
         """
         if self._centroidedPeaksSortedByI == None:
-            self._centroidedPeaksSortedByI = sorted(self.centroidedPeaks, key = itemgetter(1))
+            self._centroidedPeaksSortedByI = sorted(zip(self.centroidedPeaks[0],self.centroidedPeaks[1]), key = itemgetter(1))
         return self._centroidedPeaksSortedByI[-n:]
 
     def estimatedNoiseLevel(self, mode = 'median'):
@@ -682,7 +688,8 @@ class Spectrum(dict):
             self['noiseLevelEstimate'] = {}
         if mode not in self['noiseLevelEstimate'].keys():
             if mode == 'median':
-                self['noiseLevelEstimate']['median'] = self._median([ i for mz, i in self.centroidedPeaks])
+                # print(self.centroidedPeaks[0])
+                self['noiseLevelEstimate']['median'] = self._median( self.centroidedPeaks[1] )
             elif mode == 'mad':
                 median = self.estimatedNoiseLevel(mode='median')
                 self['noiseLevelEstimate']['mad'] = self._median(sorted([ abs(i - median) for mz,i in self.centroidedPeaks]))
@@ -697,6 +704,9 @@ class Spectrum(dict):
     def _median(self, data):
         if len(data) == 0:
             return None
+        if type(data) == type(()):
+            # ugly hack ... centroided returns tuple, should maybe be list of two lists after all 
+            data = list(data)
         data.sort()
         l = len(data)
         if not l % 2:
@@ -915,10 +925,11 @@ class Spectrum(dict):
         """
         if self._transformedMzWithError == None:
             self._transformedMzWithError = ddict(list)
-            for mz, i in self.centroidedPeaks:
+            for pos, mz in enumerate(self.centroidedPeaks[0]):
+                i = self.centroidedPeaks[1][ pos ]
                 for t_mz_with_error in range(int(round((mz - (mz * self.measuredPrecision)) * self.internalPrecision)),
                                              int(round((mz + (mz * self.measuredPrecision)) * self.internalPrecision)) + 1):
-                    self._transformedMzWithError[t_mz_with_error].append((mz, i))
+                    self._transformedMzWithError[t_mz_with_error].append((mz, i ))
         return self._transformedMzWithError
 
     @property
