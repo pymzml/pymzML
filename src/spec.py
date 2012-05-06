@@ -333,10 +333,8 @@ class Spectrum(dict):
     @property
     def peaks(self):
         """
-        Returns the list of peaks of the spectrum as tuples (m/z, intensity).
+        Returns a list of peaks of the spectrum as two lists, i.e. list of m/z and list of intensity values.
 
-        :param noZip: Bool if the peak list should be zipped, or the two tuples returned as two seperate tuples
-        :type noZip: bool
         :rtype: Two lists
         :return: Returns a list with m/z values and a list with intensities
 
@@ -357,7 +355,7 @@ class Spectrum(dict):
         """
         if 'reprofiled' in self.keys(): 
             self.peaks = self._centroid_peaks()
-        
+         
         elif self._peaks == None:
             if self._mz == None and 'encodedData' not in self.keys():
                 self._peaks = []
@@ -367,26 +365,27 @@ class Spectrum(dict):
                 #                      Because 2 lists are returned instead of a zipped tuple, the syntax to loop through them changes a bit. Instead of
                 #                      for spectrum in run: for mz, i in inspectrum.peaks: print(mz, i) you can do
                 #                      for spectrum in run: mzList, iList = spectrum.peaks \n for index, mz in enumerate(mzList): print(mz, iList[index])                 
-                return self.mz, self.i
-                
+                self._peaks = self.mz, self.i
+                # return self.mz, self.i
         return self._peaks
 
 
     @property
     def profile(self):
         """
-        Returns the list of peaks of the chromatogram as tuples (time, intensity).
+        Returns the list of peaks of the chromatogram as two lists (time list & intensity list).
 
-        :rtype: list of tuples
-        :return: Returns list of tuples (time, intensity)
+        :rtype: list of two lists (time & intensity list)
+        :return: Returns list of lists (time & intensity list)
 
         Example:
 
         >>> import pymzml
         >>> run = pymzml.run.Reader(spectra.mzMl.gz, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
         >>> for spectrum in run:
-        ...     for time, i in spectrum.profile:
-        ...         print(time, i)
+        ...     for pos, time in enumerate(spectrum.profile):
+        ...         print( time, spectrum.profile[1][pos] )
+
         """
         if 'reprofiled' in self.keys():
             self.peaks = self._centroid_peaks()
@@ -394,17 +393,19 @@ class Spectrum(dict):
             if self._mz == None and 'encodedData' not in self.keys():
                 self._peaks = []
             else:
-                self._peaks = list(zip(self.mz , self.i))
+                self._peaks =  self.mz , self.i
         return self._peaks
 
 
     @peaks.setter
-    def peaks(self,mz_i_tuple_list):
-        assert type(mz_i_tuple_list) == type([]), "require list of tuples (mz,intensity) ..."
-        if len(mz_i_tuple_list) == 0:
+    def peaks(self,mz_i_list):
+        assert type(mz_i_list) == type([]), "require list of mz list and intensity list ..."
+        if len(mz_i_list) == 0:
             return
-        self._mz, self._i = map(list,zip(*mz_i_tuple_list))
-        self._peaks = mz_i_tuple_list
+        # self._mz, self._i = map(list,zip(*mz_i_tuple_list))
+        self._mz = mz_i_list[0]
+        self._i  = mz_i_list[1]
+        self._peaks = mz_i_list
         return self
 
     # ndeklein 27/04/2012: changed centroidedPeaks to return the m/z and intensity list seperatly so that the return value is consistent with the changed peaks() return value
@@ -640,7 +641,12 @@ class Spectrum(dict):
             noiseLevel = self.estimatedNoiseLevel(mode = mode)
 
         if self._peaks != None:
-            self.peaks  = [ (mz,i) for mz,i in self.peaks  if i >= noiseLevel]
+            tmpPeaks = [ [], [] ]
+            for pos, intensity in enumerate(self.centroidedPeaks[1]):
+                if intensity >= noiseLevel:
+                    tmpPeaks[0].append( self.centroidedPeaks[0][ pos ])
+                    tmpPeaks[1].append( self.centroidedPeaks[1][ pos ]) # could use intensity directly ...
+            self.peaks  = tmpPeaks
 
         if self._centroidedPeaks != None:
             tmpCentroidedPeaks = [ [], [] ]
