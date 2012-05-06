@@ -1403,11 +1403,20 @@ class Spectrum(dict):
                     if subElement.tag.endswith('cvParam'):
                         accession = subElement.get('accession')
                         if accession == 'MS:1000040':
-                            self['precursors'][-1]['mz'] = subElement.get('value')
+                            try:
+                                self['precursors'][-1]['mz'] = float(subElement.get('value'))
+                            except ValueError:
+                                self['precursors'][-1]['mz'] = subElement.get('value')
                         elif accession == 'MS:1000041':
-                            self['precursors'][-1]['charge'] = subElement.get('value')
+                            try:
+                                self['precursors'][-1]['charge'] = int(subElement.get('value'))
+                            except ValueError:
+                                self['precursors'][-1]['charge'] = subElement.get('value')
                         elif accession == 'MS:1000744':
-                            self['precursors'][-1]['mz'] = subElement.get('value')
+                            try:
+                                self['precursors'][-1]['mz'] = float(subElement.get('value'))
+                            except ValueError:
+                                self['precursors'][-1]['mz'] = subElement.get('value')
                         else:
                             pass
 
@@ -1416,6 +1425,7 @@ class Spectrum(dict):
                                 value = element.text,
                                 name  = 'encodedData'
                     )
+
 
             elif element.tag.endswith('selectedIon'):
                 if 'MS:1000040' in self.keys():
