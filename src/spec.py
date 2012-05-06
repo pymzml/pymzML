@@ -144,12 +144,15 @@ class Spectrum(dict):
         assert isinstance(value, (int, float)), "require float or int of intensity values ..."
         tmp = self.deRef()
         if tmp._peaks != None:
-            tmp.peaks  = [(mz, i * float(value)) for mz, i in tmp.peaks]
+            tmp.peaks  = [ mz for mz in self.peaks[0]], [ i * float(value) for i in self.peaks[1] ]
+            #]  [(mz, i * float(value)) for mz, i in tmp.peaks]
         if tmp._centroidedPeaks != None:
-            tmp.centroidedPeaks = [(mz, i * float(value)) for mz, i in tmp.centroidedPeaks]
+            tmp.centroidedPeaks = [ mz for mz in self.centroidedPeaks[0]], [ i * float(value) for i in self.centroidedPeaks[1] ]
+
         if tmp._reprofiledPeaks != None:
-            for mz in tmp._reprofiledPeaks.keys():
-                tmp._reprofiledPeaks[mz] *= float(value)
+            tmp._reprofiledPeaks = [ mz for mz in self._reprofiledPeaks[0]], [ i * float(value) for i in self._reprofiledPeaks[1] ]
+            # for mz in tmp._reprofiledPeaks.keys():
+            #     tmp._reprofiledPeaks[mz] *= float(value)
         return tmp
 
     def __truediv__(self,value):
@@ -295,9 +298,9 @@ class Spectrum(dict):
             self._extremeValues = {}
         try:
             if key == 'mz':
-                self._extremeValues['mz'] = ( min([mz for mz, i in self.peaks]) , max([mz for mz, i in self.peaks]) )
+                self._extremeValues['mz'] = ( min(self.peaks[0]) , max(self.peaks[0]) )
             else:
-                self._extremeValues['i']  = ( min([i for mz, i in self.peaks]) , max([i for mz, i in self.peaks]) )
+                self._extremeValues['i']  = ( min(self.peaks[1]) , max(self.peaks[1]) )
         except ValueError:
             # emtpy spectrum
             self._extremeValues[key] = ()
@@ -558,7 +561,7 @@ class Spectrum(dict):
         """
         if self._tmzSet == None:
             self._tmzSet = set()
-            for mz, i in self.centroidedPeaks:
+            for mz in self.centroidedPeaks[0]:
                 self._tmzSet |= set(
                                     range(
                                             int(round((mz - (mz * self.measuredPrecision)) * self.internalPrecision)),
@@ -606,7 +609,13 @@ class Spectrum(dict):
         #NOTE Total ion current should be adjusted as well, I guess ;)
         assert type(mzRange) == type(()), "require tuple of (min,max) mz range to reduce spectrum"
         if mzRange != (None, None):
-            tmp_peaks = [ (mz,i) for mz, i in self.peaks if mzRange[0] <= mz <= mzRange[1] ]
+            tmp_peaks = [ [], [] ]
+            for pos, mz in enumerate( self.peaks[0] ):
+                if mzRange[0] <= mz <= mzRange[1]:
+                    i = self.peaks[1][ pos ]
+                    tmp_peaks[0].append( mz )
+                    tmp_peaks[1].append( i  )
+            # [ (mz,i) for mz, i in self.peaks if mzRange[0] <= mz <= mzRange[1] ]
             self.clear(scope = 'not_all')
             self.peaks = tmp_peaks
         return self
@@ -633,7 +642,9 @@ class Spectrum(dict):
         >>> import pymzml
         >>> run = pymzml.run.Reader(spectra.mzML.gz, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
         >>> for spectrum in run:
-        ...     for mz, i in spectrum.removeNoise( mode = 'mean'):
+        ...     spectrum.removeNoise( mode = 'mean'):
+        ...     for pos, mz in enumerate( spectrum.centroidedPeaks[0] )  
+        ...         i = spectrum.centroidedPeaks[1][ pos ]     
         ...         print(mz, i)
 
         """
@@ -667,7 +678,7 @@ class Spectrum(dict):
         :param n: Number of n-highest peaks
         :type n: int
         :rtype: list
-        :return: list of centroided peaks (mz, intensity tuples)
+        :return: list of centroided peaks (mz, intensity lists)
 
         Example:
 
@@ -698,11 +709,11 @@ class Spectrum(dict):
                 self['noiseLevelEstimate']['median'] = self._median( self.centroidedPeaks[1] )
             elif mode == 'mad':
                 median = self.estimatedNoiseLevel(mode='median')
-                self['noiseLevelEstimate']['mad'] = self._median(sorted([ abs(i - median) for mz,i in self.centroidedPeaks]))
+                self['noiseLevelEstimate']['mad'] = self._median(sorted([ abs(i - median) for i in self.centroidedPeaks[1]]))
             elif mode == 'mean':
-                mean = sum([i for mz, i in self.centroidedPeaks]) / float(len(self.centroidedPeaks))
+                mean = sum(self.centroidedPeaks[1]) / float(len(self.centroidedPeaks))
                 self['noiseLevelEstimate']['mean'] = mean
-                self['noiseLevelEstimate']['variance'] = sum([(i - mean) * (i - mean) for mz, i in self.centroidedPeaks]) / float(len(self.centroidedPeaks))
+                self['noiseLevelEstimate']['variance'] = sum([(i - mean) * (i - mean) for i in self.centroidedPeaks[1]]) / float(len(self.centroidedPeaks))
             else:
                 print("dont understand noise level estimation method call", mode, file = sys.stderr)
         return self['noiseLevelEstimate'][mode]
@@ -726,32 +737,36 @@ class Spectrum(dict):
         """
         Returns the reprofiled version of a centroided spectrum.
 
-        :rtype: list of reprofiled mz,i tuples
-        :return: Reprofiled peaks as tuple list
+        :rtype: list of reprofiled mz,i lists
+        :return: Reprofiled peaks as two lists of mz and intensity values
 
         Example:
 
         >>> import pymzml
         >>> run = pymzml.run.Reader(spectra.mzMl.gz, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
         >>> for spectrum in run:
-        ...     for mz, i in spectrum.reprofiledPeaks:
+        ...     for pos, mz in enumerate(spectrum.reprofiledPeaks[0]):
+        ...         i = spectrum.reprofiledPeaks[1][ pos ]
         ...         print(mz, i)
 
+
         """
-        #NOTE self._reprofiledPeaks is a defaultdict(int) with k:mz, v:i
+        #
         if self._reprofiledPeaks == None:
             if self.mz != []:
                 self._reprofiledPeaks = self._reprofile_Peaks()
             else:
-                self._reprofiledPeaks = ddict(int)
-        return sorted(self._reprofiledPeaks.items())
+                self._reprofiledPeaks = [ [], [] ]
+        # return sorted(self._reprofiledPeaks.items())
+        return self._reprofiledPeaks
 
     def _reprofile_Peaks(self):
         """
         Performs reprofiling for property :py:func:`reprofiledPeaks`
         """
         tmp = ddict(int)
-        for mz,i in self.centroidedPeaks:
+        for pos, mz in enumerate(self.centroidedPeaks[0]):
+            i  = self.centroidedPeaks[1][ pos ]
             # Let's say the measured precision is 1 sigma of the signal width, i.e. 68.4%
             s = mz*self.measuredPrecision
             s2 = s*s
@@ -765,7 +780,7 @@ class Spectrum(dict):
                     tmp[ a ] += y
                     #print("a", a)
         self['reprofiled'] = True
-        return tmp
+        return sorted(zip(*tmp.items()))
 
     @property
     def measuredPrecision(self):
@@ -967,7 +982,12 @@ class Spectrum(dict):
 
         """
         if self._transformedPeaks == None:
-            self._transformedPeaks = [(self.transformMZ(mz), i) for mz, i in self.centroidedPeaks]
+            self._transformedPeaks = [ [], [] ]
+            for pos, mz in enumerate(self.centroidedPeaks[0]):
+                i = self.centroidedPeaks[1][ pos ]
+                self._transformedPeaks[0].append( self.transformMZ(mz) )
+                self._transformedPeaks[1].append( i )
+            # self._transformedPeaks = [(self.transformMZ(mz), i) for mz, i in self.centroidedPeaks]
         return self._transformedPeaks
 
     @property
@@ -1290,10 +1310,12 @@ class Spectrum(dict):
         vector1 = ddict(int)
         vector2 = ddict(int)
         mzs = set()
-        for mz, i in self.peaks:
+        for pos, mz in enumerate(self.peaks[0]):
+            i = self.peaks[1][ pos ]
             vector1[round(mz,1)] += i
             mzs.add(round(mz,1))
-        for mz, i in spec2.peaks:
+        for pos, mz in enumerate(spec2.peaks[0]):
+            i = self.peaks[1][ pos ]
             vector2[round(mz,1)] += i
             mzs.add(round(mz,1))
 
