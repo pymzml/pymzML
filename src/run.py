@@ -148,11 +148,7 @@ class Reader(object):
             self.info['offsets']['TIC'] = None
             self.seeker.seek(0,2)
             for _ in range(10): # max 10kbyte
-                try:
-                    self.seeker.seek( -1024*_, 1 )
-                except:
-                    # File smaller than 10kb ...
-                    break
+                self.seeker.seek( -1024*_, 1 )
                 for line in self.seeker:
                     match = chromatogramOffsetPattern.search(line)
                     #print(_, line)
