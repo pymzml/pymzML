@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Simple parser ... of cf playground :)
@@ -20,8 +20,9 @@ def main(verbose = False):
         n = 1
         if verbose:
             print("{0}\t{1}\t{2}".format(file_n, n, example_file),file = sys.stderr)
-        try:
-            for spec in pymzml.run.Reader(get_example_file.open_example(example_file)):
+        if True:
+            msRun = get_example_file.open_example(example_file)
+            for spec in pymzml.run.Reader( msRun ):
                 n += 1
                 spec.peaks
                 spec.centroidedPeaks
@@ -31,11 +32,11 @@ def main(verbose = False):
                 spec.extremeValues('mz')
                 spec.extremeValues('i')
                 successful[example_file] = True
-        except:
-            if verbose:
-                raise
-            successful[example_file] = False
-            return False
+        # except:
+        #     if verbose:
+        #         raise
+        #     successful[example_file] = False
+        #     return False
 
     if verbose:
         for file in successful:
