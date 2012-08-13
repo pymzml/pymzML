@@ -13,7 +13,7 @@ import find_abundant_precursors
 import compareSpectra
 import chromatogram
 import accessAllData
-import searchScan
+# import searchScan
 
 def main():
     
@@ -24,7 +24,7 @@ def main():
     print(find_abundant_precursors.main(), 'find_abundant_precursors.py')
     print(compareSpectra.main(), 'compareSpectra.py')
     print(chromatogram.main(), 'chromatogram.py')
-    print(searchScan.main(), 'searchScan.py')
+    # print(searchScan.main(), 'searchScan.py')
     
     
 
