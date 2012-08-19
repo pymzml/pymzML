@@ -8,5 +8,5 @@ Website
 example_scripts/output/FInal_adding_22092011
 __pycache__
 MANIFEST
-
-
+example_scripts/mzML_example_files/
+build/
