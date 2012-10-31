@@ -7,7 +7,7 @@ Plotting functions for pymzML
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -258,8 +258,9 @@ class Factory(object):
                 x = int(round(PADDING[3]  +   (float(_)/float(factor) - resolved_mzRange[0] ) * pixelpermz   ))
                 y = baseline
                 color = 77 #if _ % 10 == 0 else 125
-                print("""<line x1="{0}" y1="{1}" x2="{0}" y2="{2}"
-                style="stroke-dasharray: 9, 5;stroke:rgb({3},{3},{3});stroke-width:0.5"/>""".format(x,PADDING[0],baseline,color),file=io)
+                # Dashed lines
+                # print("""<line x1="{0}" y1="{1}" x2="{0}" y2="{2}"
+                # style="stroke-dasharray: 9, 5;stroke:rgb({3},{3},{3});stroke-width:0.5"/>""".format(x,PADDING[0],baseline,color),file=io)
                 print("""<line x1="{0}" y1="{1}" x2="{0}" y2="{2}"
                 style="stroke:rgb(00,00,00);stroke-width:0.5;"/>""".format(x,baseline,baseline+10),file=io)
                 print("""<text x="{x}" y="{y}" transform="rotate(90 {x},{y})" font-family="Courier" text-anchor="start" font-size="{fontsize}" fill="black" >{0:7.3f}</text>
@@ -335,8 +336,8 @@ class Factory(object):
                     for pos,(mz,i) in enumerate(sorted(dataset)):
                         if resolved_mzRange[0] <= mz <= resolved_mzRange[1]:
                             x = int(round(PADDING[3]  +   (mz - resolved_mzRange[0] ) * pixelpermz   ))
-                            xl = int(round(PADDING[3]  +   (mz-0.15 - resolved_mzRange[0] ) * pixelpermz   ))
-                            xr = int(round(PADDING[3]  +   (mz+0.15 - resolved_mzRange[0] ) * pixelpermz   ))
+                            xl = int(round(PADDING[3]  +   (mz-0.075 - resolved_mzRange[0] ) * pixelpermz   ))
+                            xr = int(round(PADDING[3]  +   (mz+0.075 - resolved_mzRange[0] ) * pixelpermz   ))
                             if self.normalizations[plotNumber] == True:
                                 y = baseline - ((float(i)/float(maxI)) * pixelper_i)
                             else:

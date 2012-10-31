@@ -702,15 +702,14 @@ class Spectrum(dict):
             # Let's say the measured precision is 1 sigma of the signal width, i.e. 68.4%
             s = mz*self.measuredPrecision
             s2 = s*s
-            floor  = mz - 3.0*s   # Gauss curve +- 3 sigma
-            ceil = mz + 3.0*s
+            floor  = mz - 5.0*s   # Gauss curve +- 3 sigma
+            ceil = mz + 5.0*s
             ip = self.internalPrecision
             for _ in range( int(round(floor*ip)) , int(round(ceil*ip))+1 ):
                 if _ % int(5) == 0 :
                     a = float(_)/float(ip)
                     y = i * math.exp( -1 * ((mz - a) * (mz - a))  / (2 * s2) )
                     tmp[ a ] += y
-                    #print("a", a)
         self['reprofiled'] = True
         return tmp
 

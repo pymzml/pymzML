@@ -1,0 +1,97 @@
+############
+Usage
+############
+
+This Chapter deals with some features of pymzml and explains the basic usage.
+
+************
+Basic usage
+************
+
+The Python scripting language is extended by pymzML to enable rapid evaluation, 
+prototyping and even complex evaluation of large mass spectrometry datasets. 
+The following examples are executed within the Python console 
+(indicated by ">>>" ) but can equally be incorporated in standalone scripts. 
+
+
+The pymzML file object is declared as follows:
+
+    >>> import pymzml
+    >>> msrun = pymzml.run.Reader("big-1.0.0.mzML")
+
+
+The input files can be plain or compressed mzML files. 
+Initialization of the Run class accepts additional keywords, i.e.
+precision of MS1 or MSn runs and extra accessions (see: :py:class:`obo`).
+The run object returns an iterator, hence one can loop over all spectra 
+and/or chromatograms using classic Python syntax.
+Additionally, one can retrieve a specific spectrum by its nativeID via
+random access using msrun[1], msrun['TIC'] to access the chromatogram 
+or in case of MRM experiments as e.g. msrun['transition_445-672'].
+Note that random access requires the mzML file not to be
+compressed or truncated by a conversion program.
+
+    >>> for spectrum in msrun:
+    >>>   if spectrum['ms level'] == 2:
+
+    >>> spectrum_with_nativeID_100 = msrun[100]
+
+Each iteration returns a spectrum object (:py:obj:`spec.Spectrum`)  which offers basic 
+information on the spectrum. 
+The information can be accessed like a Python dictionary. 
+The keys in this dictionary are the accession numbers (e.g. MS:1000511) 
+or the name of the accession (e.g. "ms level"), as they are defined by the
+HUPO Proteomics Standards Initiative in the mzML vocabulary, i.e. in the OBO files. 
+Both keys of the spectrum dictionary point to the value that has been extracted from 
+the mzML file (see: :py:class:`obo`).
+Association of MS tag to name is done on the basis of the OBO
+files which are supplied in the pymzML package.
+The pymzML package offers a simple script (see: :py:obj:`queryOBO`) that can be used to
+translate between MS tags and names. Examples for accessing MS tags by their names can be found here: :doc:`obo`.
+It is worth noting that the definition of MS tags and their attribute that the user wants to be associated with the tag and the trivial name is a feature. 
+For example, the scan time is associated with two values, the actual time and its unit. 
+From a programming point of view, access to the time as float by calling spectrum['scan time'] is desirable. Defining those attributes and their value one is interested in, facilitates live ;)
+
+Data that is associated with the current spectrum, 
+i.e. mass over charge (m/z) or intensity values can be accessed by the .mz (:py:obj:`spec.Spectrum.mz`)
+or .intensity (:py:obj:`spec.Spectrum.i`) properties, respectively, which are iterators themselves. 
+The .peaks (:py:obj:`spec.Spectrum.peaks`) property also offers an iterator which returns mz and 
+intensity as a tuple for each peak:
+
+
+    >>>     for mz, i in spectrum.peaks:
+    >>>       print(mz, i)
+
+
+Since mass spectrometry data can be measured in profile mode, the 
+.centroidedPeak (:py:obj:`spec.Spectrum.centroidedPeaks`) property offers an iterator which performs a 
+simple Gauss fit on the profiled data, thereby returning the 
+fitted m/z and maximum intensity of the bell shape curve as tuple.
+Basic visualization of spectra using XHTML and SVG can be done using 
+the :py:mod:`plot` submodule. 
+
+***************
+Advanced usage
+***************
+
+The spectrum class also offers other functions, such as deconvolution, 
+estimation of similarity of spectra, simple noise reduction, addition of spectra
+and simple arithmetics on the intensity values by multiplication or division.
+An averaged spectrum can be created during parsing as follows:
+
+
+    >>> t = pymzml.spec.Spectrum()
+    >>> for s in msrun:
+    >>>   if s['ms level'] == 1:
+    >>>     t += s / s['total ion current']
+
+
+The addition of spectra is done by creating Gaussian distributions around the 
+centroided peak. This reprofiling is done internally as part of the addition
+and its values can be accessed by the .reprofiledPeaks (:py:obj:`spec.Spectrum.reprofiledPeaks`) property of the spectrum.
+To reduce the computational overhead one can remove noise by calling
+the .removeNoise() (:py:func:`spec.Spectrum.removeNoise`)  method of the spectrum class. 
+This method accepts different modes of noise reduction.
+Deconvoluted peaks can be accessed for high precision spectra by calling the
+.deconvolutedPeaks (:py:obj:`spec.Spectrum.deconvolutedPeaks`)  property.
+The pymzML package contains detailed example scripts for all these methods. ( :doc:`examples` )

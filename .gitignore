@@ -1,6 +1,5 @@
 *.pyc
 Documentation_src/build
-Documentation_src
 Documentation/
 Website
 *~
