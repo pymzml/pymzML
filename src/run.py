@@ -345,7 +345,7 @@ class Writer(object):
 
     """
     def __init__(self,filename = None, run = None, overwrite = False):
-        cElementTree.register_namespace("","http://psi.hupo.org/schema_revision/mzML_1.0.0")
+        cElementTree.register_namespace("","http://psi.hupo.org/ms/mzml")
         self.filename = filename
         self.lookup = {
         }
