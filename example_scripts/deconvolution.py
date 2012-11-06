@@ -2,7 +2,7 @@
 
 """
 
-Example for retrieving monoisotopic peaks from the processed spectrm.
+Example for retrieving monoisotopic peaks from the processed spectrum.
 The python-matplotlib has to be installed for plotting. Otherwise a list of
 monoisotopic peaks will be returned.
 
