@@ -115,12 +115,7 @@ class Reader(object):
 
         self.elementList = []
 
-        # Default stuff
-        #self.spectrum = pymzml.spec.Spectrum(measuredPrecision = MS1_Precision)
-        #self.spectrum.clear()
-        self.spectrum       = pymzml.spec.Spectrum(measuredPrecision = MS1_Precision , param = self.param)
-        self.spectrum.clear()
-        #
+        self.initializeSpectrum()
 
         if self.info['filename'].endswith('.gz'):
             import gzip, codecs
@@ -240,6 +235,10 @@ class Reader(object):
 
         return
 
+    def initializeSpectrum(self):
+        self.spectrum = pymzml.spec.Spectrum(measuredPrecision = self.param['MS1_Precision'] , param = self.param)
+        self.spectrum.clear()
+
     def __iter__(self):
         return self
 
@@ -267,6 +266,7 @@ class Reader(object):
             if event == 'END':
                 raise StopIteration
             if (element.tag.endswith('}spectrum') or element.tag.endswith('}chromatogram') ) and event == b'end':
+                self.initializeSpectrum()
                 self.spectrum.initFromTreeObject(element)
                 try:
                     self.elementList[-1].clear()
@@ -301,6 +301,7 @@ class Reader(object):
 
                 self.seeker.seek(startPos,0)
                 data = self.seeker.read(endPos-self.info['offsets'][value])
+                self.initializeSpectrum()
                 try:
                     self.spectrum.initFromTreeObject( cElementTree.fromstring( data ))
                 except:
