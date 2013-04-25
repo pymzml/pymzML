@@ -363,6 +363,8 @@ class Writer(object):
         for event,element in cElementTree.iterparse(io, events = ( b'start',b'end')):
             if self.newTree == None:
                 self.newTree = cElementTree.Element(element.tag,element.attrib)
+                if event == b'start' and element.tag.endswith("}mzML"):
+                    self.TreeBuilder.start(element.tag, element.attrib)
             else:
                 if event == b'start':
                     self.TreeBuilder.start(element.tag, element.attrib)
