@@ -287,7 +287,7 @@ class Reader(object):
         '''
         answer = None
         if self.info['seekable'] == True:
-            if len(self.info['offsets'].keys()) == 0:
+            if len(self.info['offsets']) == 0:
                 print("File does support random access, unfortunately indexlist missing, i.e. type not implemented yet ...", file=sys.stderr)
 
             if value in self.info['offsets']:
