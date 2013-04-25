@@ -1356,9 +1356,12 @@ class Spectrum(dict):
                         self['BinaryArrayOrder'].append(('compression', 'no'))
 
             elif element.tag.endswith('precursorList'):
+                # TODO remove this completely?
                 self['precursors'] = []
 
             elif element.tag.endswith('selectedIon'):
+                if not self.has_key("precursors"):
+                    self['precursors'] = []
                 self['precursors'].append({'mz': None, 'charge': None})
                 for subElement in element.getiterator():
                     if subElement.tag.endswith('cvParam'):
