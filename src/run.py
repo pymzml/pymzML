@@ -244,6 +244,7 @@ class Reader(object):
         return
 
     def _build_index_from_scratch(self, seeker):
+        """Build an index of spectra/chromatogram data with offsets by parsing the file."""
 
         def get_data_indices(fh, chunksize=8192, lookback_size=100):
             """ Get a dictionary with binary file indices of spectra and chromatograms in an mzML file.

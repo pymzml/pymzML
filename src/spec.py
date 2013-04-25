@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # encoding: utf-8
 """
-Spectrum class offers a python object for mass spectrometry data.
+The spectrum class offers a python object for mass spectrometry data.
 The spectrum object holds the basic information on the spectrum and offers
 methods to interrogate properties of the spectrum.
 Data, i.e. mass over charge (m/z) and intensity decoding is performed on demand
 and can be accessed via their properties, e.g. :py:attr:`spec.Spectrum.peaks`.
 
 The Spectrum class is used in the :py:class:`run.Run` class.
-There each spectrum is accessible as a Spectrum object.
+There each spectrum is accessible as a spectrum object.
 
 Theoretical spectra can also be created using the setter functions.
 For example, m/z values, intensities, and peaks can be set by the
@@ -263,10 +263,11 @@ class Spectrum(dict):
     @property
     def time(self):
         """
-        Returns the list of m/z values. If the m/z values are encoded, the
-        function :py:func:`_decode()` is used to decode the encoded data.\n
-        The mz property can also be setted, e.g. for theoretical data.
-        However, it is recommended to use the peaks property to set mz and
+        Returns the list of time values (retention time for chromatograms). If
+        the time values are encoded, the function :py:func:`_decode()` is used
+        to decode the encoded data.\n
+        The time property can also be setted, e.g. for theoretical data.
+        However, it is recommended to use the peaks property to set time and
         intesity tuples at same time.
 
         :rtype: list
@@ -276,6 +277,12 @@ class Spectrum(dict):
         if self._mz == None:
             self._decode()
         return self._mz
+
+    @time.setter
+    def time(self,timeList):
+        assert type(timeList) == type([]), "require list of time (RT) values ..."
+        self._mz = timeList
+        return
 
     def extremeValues(self,key):
         """
