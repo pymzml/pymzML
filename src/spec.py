@@ -71,6 +71,7 @@ class Spectrum(dict):
         #self._time = self._mz
         self.param = param
         self.ms = {}
+        self.dataType = "?"
         return
 
     def __add__(self,otherSpec):
@@ -1301,6 +1302,7 @@ class Spectrum(dict):
         if treeObject.tag.endswith('}chromatogram'):
             self['id'] = treeObject.get('id')
             self['ms level'] = None
+            self.dataType = "chromatogram"
         else:
             try:
                 '''
@@ -1313,6 +1315,7 @@ class Spectrum(dict):
                 self['id'] = int(re.search( r'[0-9]*$',   treeObject.get('id')  ).group())
             except:
                 self['id'] = None
+            self.dataType = "spectrum"
 
         self['defaultArrayLength'] = int(treeObject.get('defaultArrayLength'))
         for element in treeObject.getiterator():
