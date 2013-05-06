@@ -17,7 +17,7 @@ The class :py:class:`Writer` is still in development.
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Specht, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Specht, H. Roest, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ class Reader(object):
                    self.seeker.seek( -1024*_, 1 )
                 except:
                     break
-                    # File is smaller than 10kbytes ...  
+                    # File is smaller than 10kbytes ...
                 for line in self.seeker:
                     match = chromatogramOffsetPattern.search(line)
                     #print(_, line)
@@ -195,8 +195,8 @@ class Reader(object):
                         self.info['offsets'][ bytes.decode( match_sim.group('nativeID')) ] = int(bytes.decode( match_sim.group('offset')))
                         self.info['offsetList'].append(int(bytes.decode( match_sim.group('offset'))))
                 # opening seeker in normal mode again
-                self.seeker.close()
-                self.seeker = open(self.info['filename'],'r')
+            self.seeker.close()
+            self.seeker = open(self.info['filename'],'r')
 
         ### declare the iter
         self.iter = iter(cElementTree.iterparse(self.info['fileObject'], events = ( b'start',b'end'))) # NOTE: end might be sufficient
@@ -249,7 +249,7 @@ class Reader(object):
         def get_data_indices(fh, chunksize=8192, lookback_size=100):
             """ Get a dictionary with binary file indices of spectra and chromatograms in an mzML file.
 
-            Will parse quickly through the file and find all occurences of 
+            Will parse quickly through the file and find all occurences of
             <chromatogram ... id="..." and <spectrum ... id="..." using a
             regex.
             We dont use an XML parser here because we need to know the
@@ -261,12 +261,11 @@ class Reader(object):
             chromcnt = 0
             speccnt = 0
             # regexes to be used
-            import re 
-            chromexp = re.compile("<\s*chromatogram[^>]*id=\"([^\"]*)\"")
-            chromcntexp = re.compile("<\s*chromatogramList\s*count=\"([^\"]*)\"")
-            specexp = re.compile("<\s*spectrum[^>]*id=\"([^\"]*)\"")
-            speccntexp = re.compile("<\s*spectrumList\s*count=\"([^\"]*)\"")
-            # go to start of file 
+            chromexp    = re.compile(b"<\s*chromatogram[^>]*id=\"([^\"]*)\"")
+            chromcntexp = re.compile(b"<\s*chromatogramList\s*count=\"([^\"]*)\"")
+            specexp     = re.compile(b"<\s*spectrum[^>]*id=\"([^\"]*)\"")
+            speccntexp  = re.compile(b"<\s*spectrumList\s*count=\"([^\"]*)\"")
+            # go to start of file
             fh.seek(0)
             prev_chunk = ""
             while True:
@@ -285,12 +284,12 @@ class Reader(object):
 
                 # find all occurences of the expressions and add to the dictionary
                 for m in chromexp.finditer(chunk):
-                    chrom_positions[m.group(1)] = offset + m.start()
+                    chrom_positions[m.group(1).decode('utf-8')] = offset + m.start()
                 for m in specexp.finditer(chunk):
-                    spec_positions[m.group(1)] = offset + m.start()
+                    spec_positions[m.group(1).decode('utf-8')] = offset + m.start()
                 m = chromcntexp.search(chunk)
 
-                # also look for the total count of chromatograms and spectra 
+                # also look for the total count of chromatograms and spectra
                 # -> must be the same as the content of our dict!
                 if m is not None:
                     chromcnt = int(m.group(1))
@@ -305,18 +304,21 @@ class Reader(object):
                 positions = {}
                 positions.update(chrom_positions)
                 positions.update(spec_positions)
-                return positions
-            else: return None
+                # return positions # return only once in function leaves my brain sane :)
+
+            else:
+                positions = None
+            return positions
 
         indices = get_data_indices(seeker)
-        if indices is None: return
+        if indices != None:
+            self.info['offsets'].update(indices)
+            self.info['offsetList'].extend(indices.values())
 
-        self.info['offsets'].update(indices) 
-        self.info['offsetList'].extend(indices.values())
-
-        # make sure the list is sorted (for bisect)
-        self.info['offsetList'] = sorted( self.info['offsetList'] )
-        self.info['seekable'] = True
+            # make sure the list is sorted (for bisect)
+            self.info['offsetList'] = sorted( self.info['offsetList'] )
+            self.info['seekable'] = True
+        return
 
     def __iter__(self):
         return self

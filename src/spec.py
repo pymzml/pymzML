@@ -19,7 +19,7 @@ corresponding properties: :py:attr:`spec.Spectrum.mz`,
 #
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, H. Roest, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -111,14 +111,14 @@ class Spectrum(dict):
     def __sub__(self,otherSpec):
         """
         Subtracts two pymzml spectra.
-        
+
         :param otherSpec: Spectrum object
         :type otherSpec: object
-        
+
         """
         assert isinstance(otherSpec,Spectrum) , "can only subtract two pymzML spectra ..."
         tmp = self.deRef()
-        
+
         if tmp._reprofiledPeaks == None:
             tmp._reprofiledPeaks = tmp._reprofile_Peaks()
 
@@ -470,7 +470,7 @@ class Spectrum(dict):
                     y2  = intensity_array[pos]
                     x3  = mz_array[pos+1]
                     y3  = intensity_array[pos+1]
-                    
+
                     if x2-x1 > (x3-x2)*10 or (x2-x1)*10 < x3-x2:
                         # no gauss fit if distance between mz values is too large
                         continue
@@ -486,7 +486,7 @@ class Spectrum(dict):
                         mue = (doubleLog*( x1*x1 - x3*x3 ) - x1*x1 + x2*x2 ) / (2 * (x2-x1) - 2*doubleLog*(x3-x1))
                         cSquarred = ( x2*x2 - x1*x1 - 2*x2*mue + 2*x1*mue )/ ( 2* math.log(y1/y2 ))
                         A = y1 * math.exp( (x1-mue)*(x1-mue) / ( 2*cSquarred) )
-                        
+
                         #if A > 1e20:
                             #print(mue, A, doubleLog, cSquarred)
                             #print(x1, "\t", y1)
@@ -1370,7 +1370,7 @@ class Spectrum(dict):
                 self['precursors'] = []
 
             elif element.tag.endswith('selectedIon'):
-                if not self.has_key("precursors"):
+                if 'precursors' not in self.keys():
                     self['precursors'] = []
                 self['precursors'].append({'mz': None, 'charge': None})
                 for subElement in element.getiterator():
