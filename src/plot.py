@@ -59,7 +59,8 @@ class Factory(object):
         self.header = [  ]
         self.labelPos = [  ]
         self.mzRanges = [  ]
-        self.normalizations = []
+        self.normalizations = [ ]
+        self.additionalLegend = None
         pass
 
     def newPlot(self, header = None , mzRange = [None,None] , normalize = False):
@@ -86,6 +87,11 @@ class Factory(object):
         else:
             self.header.append( header )
         return
+
+    def setAdditionalLegend( self, listOfStrings = None):
+        self.additionalLegend = listOfStrings
+        return
+
 
     def add(self,data, color=(00,00,00) , style = 'sticks', mzRange = [None,None] ):
         """
@@ -170,8 +176,8 @@ class Factory(object):
 
         """, file = io)
         for plotNumber,plot in enumerate(self.plots):
-            w = 1000
-            h = 700
+            w = 1200
+            h = 2100
             heada = self.header[plotNumber]
             resolved_mzRange = [ None, None ]
 
@@ -182,7 +188,7 @@ class Factory(object):
                 if self.mzRanges[plotNumber] == [None,None]:
                     # we have to determine ranges ...
                     for dataset in plot:
-                        print("Determing mzRanges ...")
+                        # print("Determing mzRanges ...")
                         if len(dataset) == 0:
                             continue
 
@@ -227,8 +233,8 @@ class Factory(object):
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
             width="{w}" height="{h}"
             style="position:relative; top:0; left:0; z-index:-1;">
-            """.format(w = w, h = h), file = io)
-            PADDING = (300,50,100,50) # css style convention
+            """.format(w = w + 300, h = h ), file = io)
+            PADDING = (300,250,1400,50) # css style convention
             baseline = h-PADDING[2]
 
             # Drawing Frame ...
@@ -267,6 +273,7 @@ class Factory(object):
                     """.format(float(_)/float(factor), x = x, y = y + 30, fontsize = 12), file = io)
 
             # Drawing data points .. labels first
+            LabelsNotToBePlottedTwice = set()
             for datasetnumber,dataset in enumerate(plot):
                 r,g,b = self.colors[plotNumber][datasetnumber]
                 style = self.styles[plotNumber][datasetnumber]
@@ -285,7 +292,7 @@ class Factory(object):
                             else:
                                 y3 = round(y2)
                                 sign = -1
-                                stroke_width = 0.40
+                                stroke_width = 0.30
                             layers = 15
                             while (x3,y3) in self.labelPos[plotNumber]:
                                 y3 = y3 + sign * 15
@@ -293,6 +300,14 @@ class Factory(object):
                                 if layers <= 0:
                                     break
 
+                            if (mz, i) in LabelsNotToBePlottedTwice:
+                                continue
+
+                            print('''
+                                    <g id="Label{0}">
+                                        <title>{1} {2}</title>
+                            '''.format( pos, mz, i ), file = io)
+                            LabelsNotToBePlottedTwice.add( (mz,i) )
                             print("""<line x1="{0}" y1="{1}" x2="{0}" y2="{2}"
                             style="stroke-opacity: 0.6;stroke:rgb({r},{g},{b});stroke-width:{o};" />""".format(x, y, y2, o=stroke_width, r=r,g=g,b=b),file=io)
 
@@ -301,7 +316,8 @@ class Factory(object):
 
                             print("""<text x="{x}" y="{y}" transform="rotate({angle} {x},{y})" font-family="Courier" text-anchor="start" font-size="{fontsize}" style="fill:rgb({r},{g},{b});" >{0}</text>
                                 """.format(i, x = x, y = y3, fontsize = 10, angle = sign * 45 , r = r, g = g, b = b), file = io)
-
+                            print('</g>', file = io)
+                    # print( LabelsNotToBePlottedTwice )
                 elif style[:5] == 'area':
                     if self.normalizations[plotNumber] == True:
                         maxI = max([ i for mz,i in dataset ])
@@ -365,6 +381,10 @@ class Factory(object):
                                 y = baseline - ((float(i)/float(maxI)) * pixelper_i)
                             else:
                                 y = baseline - (i * pixelper_i)
+                            print('''
+                                    <g id="Label{0}{1}{2}">
+                                        <title>{1} {2}</title>
+                            '''.format( pos, mz, i ), file = io)
 
                             if style == 'circles':
                                 print("""<circle cx="{x}" cy="{y}" r="2" style="fill:rgb({r},{g},{b});" />""".format( x = x, y = y , r = r, g = g, b = b),file=io)
@@ -374,19 +394,25 @@ class Factory(object):
 
                             elif style == 'sticks':
                                 print("""<line x1="{0}" y1="{1}" x2="{0}" y2="{2}"
-                                style="stroke:rgb({r},{g},{b});stroke-width:0.5"/>""".format(x,y,baseline,r=r,g=g,b=b),file=io)
+                                style="stroke:rgb({r},{g},{b});stroke-width:1."/>""".format(x,y,baseline,r=r,g=g,b=b),file=io)
 
                             elif style == 'squares':
                                 # this is experimental, the squares are not centred
                                 print("""<rect x="{0}" y="{1}" width="4" height="4" style="fill:rgb({r},{g},{b});
                                 fill-opacity:0.8;" />
                                 """.format(x-2,y-2,r=r,g=g,b=b),file=io)
-
                             else:
                                 print("Style {0} not support yet ...".format(style),file=sys.stderr)
                                 exit(1)
+                            print('</g>', file = io)
 
+            if self.additionalLegend != None:
+                for pos, text in enumerate( self.additionalLegend ):
+                    print("""<text x="{x}" y="{y}" font-family="Courier" text-anchor="start" font-size="{fontsize}" fill="black" >{0}</text>
+                                """.format( text, x = w-PADDING[1]+30, y = PADDING[0] + pos * 9 , fontsize = 8), file = io)
             print("</svg>", file = io)
+
+
         print("""
         </body>
         </html>
