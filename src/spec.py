@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # encoding: utf-8
 """
-Spectrum class offers a python object for mass spectrometry data.
+The spectrum class offers a python object for mass spectrometry data.
 The spectrum object holds the basic information on the spectrum and offers
 methods to interrogate properties of the spectrum.
 Data, i.e. mass over charge (m/z) and intensity decoding is performed on demand
 and can be accessed via their properties, e.g. :py:attr:`spec.Spectrum.peaks`.
 
 The Spectrum class is used in the :py:class:`run.Run` class.
-There each spectrum is accessible as a Spectrum object.
+There each spectrum is accessible as a spectrum object.
 
 Theoretical spectra can also be created using the setter functions.
 For example, m/z values, intensities, and peaks can be set by the
@@ -19,7 +19,7 @@ corresponding properties: :py:attr:`spec.Spectrum.mz`,
 #
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Specht, H. Roest, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ class Spectrum(dict):
         #self._time = self._mz
         self.param = param
         self.ms = {}
+        self.dataType = "?"
         return
 
     def __add__(self,otherSpec):
@@ -110,14 +111,14 @@ class Spectrum(dict):
     def __sub__(self,otherSpec):
         """
         Subtracts two pymzml spectra.
-        
+
         :param otherSpec: Spectrum object
         :type otherSpec: object
-        
+
         """
         assert isinstance(otherSpec,Spectrum) , "can only subtract two pymzML spectra ..."
         tmp = self.deRef()
-        
+
         if tmp._reprofiledPeaks == None:
             tmp._reprofiledPeaks = tmp._reprofile_Peaks()
 
@@ -262,10 +263,11 @@ class Spectrum(dict):
     @property
     def time(self):
         """
-        Returns the list of m/z values. If the m/z values are encoded, the
-        function :py:func:`_decode()` is used to decode the encoded data.\n
-        The mz property can also be setted, e.g. for theoretical data.
-        However, it is recommended to use the peaks property to set mz and
+        Returns the list of time values (retention time for chromatograms). If
+        the time values are encoded, the function :py:func:`_decode()` is used
+        to decode the encoded data.\n
+        The time property can also be setted, e.g. for theoretical data.
+        However, it is recommended to use the peaks property to set time and
         intesity tuples at same time.
 
         :rtype: list
@@ -275,6 +277,12 @@ class Spectrum(dict):
         if self._mz == None:
             self._decode()
         return self._mz
+
+    @time.setter
+    def time(self,timeList):
+        assert type(timeList) == type([]), "require list of time (RT) values ..."
+        self._mz = timeList
+        return
 
     def extremeValues(self,key):
         """
@@ -462,7 +470,7 @@ class Spectrum(dict):
                     y2  = intensity_array[pos]
                     x3  = mz_array[pos+1]
                     y3  = intensity_array[pos+1]
-                    
+
                     if x2-x1 > (x3-x2)*10 or (x2-x1)*10 < x3-x2:
                         # no gauss fit if distance between mz values is too large
                         continue
@@ -478,7 +486,7 @@ class Spectrum(dict):
                         mue = (doubleLog*( x1*x1 - x3*x3 ) - x1*x1 + x2*x2 ) / (2 * (x2-x1) - 2*doubleLog*(x3-x1))
                         cSquarred = ( x2*x2 - x1*x1 - 2*x2*mue + 2*x1*mue )/ ( 2* math.log(y1/y2 ))
                         A = y1 * math.exp( (x1-mue)*(x1-mue) / ( 2*cSquarred) )
-                        
+
                         #if A > 1e20:
                             #print(mue, A, doubleLog, cSquarred)
                             #print(x1, "\t", y1)
@@ -1301,6 +1309,7 @@ class Spectrum(dict):
         if treeObject.tag.endswith('}chromatogram'):
             self['id'] = treeObject.get('id')
             self['ms level'] = None
+            self.dataType = "chromatogram"
         else:
             try:
                 '''
@@ -1313,6 +1322,7 @@ class Spectrum(dict):
                 self['id'] = int(re.search( r'[0-9]*$',   treeObject.get('id')  ).group())
             except:
                 self['id'] = None
+            self.dataType = "spectrum"
 
         self['defaultArrayLength'] = int(treeObject.get('defaultArrayLength'))
         for element in treeObject.getiterator():
@@ -1356,9 +1366,12 @@ class Spectrum(dict):
                         self['BinaryArrayOrder'].append(('compression', 'no'))
 
             elif element.tag.endswith('precursorList'):
+                # TODO remove this completely?
                 self['precursors'] = []
 
             elif element.tag.endswith('selectedIon'):
+                if 'precursors' not in self.keys():
+                    self['precursors'] = []
                 self['precursors'].append({'mz': None, 'charge': None})
                 for subElement in element.getiterator():
                     if subElement.tag.endswith('cvParam'):

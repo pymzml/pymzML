@@ -1,0 +1,66 @@
+#!/usr/bin/env python3.2
+# -*- coding: utf-8 -*-
+# encoding: utf-8
+#
+# pymzml
+#
+# Copyright (C) 2010-2013 T. Bald, J. Barth, M. Specht, C. Fufezan, H. Roest
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import unittest
+import subprocess as sub
+import os
+
+try:
+    import src as pymzml
+except ImportError:
+    import pymzml
+
+class TestReadChromatogram(unittest.TestCase):
+
+    def setUp(self):
+        self.dirname = os.path.dirname(os.path.abspath(__file__))
+        self.datadir = os.path.join(self.dirname, "data")
+        self.mini_chrom_file = os.path.join(self.datadir, "mini.chrom.mzML")
+        self.chromatogram_id = "4092_IEVLDYQAGDEAGIK/2_y7"
+
+    def check_file(self, run):
+        all_chromatograms = list(run)
+        self.assertEqual(len(all_chromatograms), 3)
+
+        chrom = run[self.chromatogram_id]
+
+        self.assertEqual(len(chrom.peaks), 176)
+        self.assertAlmostEqual(sum(chrom.i), 13374.0)
+
+        self.assertAlmostEqual(chrom.i[0], 30.0)
+        self.assertAlmostEqual(chrom.i[-1], 140.0)
+        self.assertAlmostEqual(chrom.time[0], 3357.62)
+        self.assertAlmostEqual(chrom.time[-1], 3955.05)
+
+    def test_readfile(self):
+        run = pymzml.run.Reader(self.mini_chrom_file)
+        self.assertFalse(run.info['seekable'])
+
+        self.check_file(run)
+
+    def test_readfile_with_index(self):
+        run = pymzml.run.Reader(self.mini_chrom_file, build_index_from_scratch=True)
+        self.assertTrue(run.info['seekable'])
+
+        self.check_file(run)
+
+if __name__ == '__main__':
+    unittest.main()

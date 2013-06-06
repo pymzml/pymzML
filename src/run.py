@@ -17,7 +17,7 @@ The class :py:class:`Writer` is still in development.
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Specht, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Specht, H. Roest, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -93,7 +93,8 @@ class Reader(object):
                      noiseThreshold = 0.0,
                      extraAccessions = None,
                      MS1_Precision = 5e-6,
-                     MSn_Precision = 20e-6
+                     MSn_Precision = 20e-6,
+                     build_index_from_scratch=False
         ):
 
 
@@ -152,7 +153,7 @@ class Reader(object):
                    self.seeker.seek( -1024*_, 1 )
                 except:
                     break
-                    # File is smaller than 10kbytes ...  
+                    # File is smaller than 10kbytes ...
                 for line in self.seeker:
                     match = chromatogramOffsetPattern.search(line)
                     #print(_, line)
@@ -167,6 +168,8 @@ class Reader(object):
             if self.info['offsets']['indexList'] == None:
                 # fall back to non-seekable
                 self.info['seekable'] = False
+                if build_index_from_scratch:
+                    self._build_index_from_scratch(self.seeker)
                 # print('Could not find indexList. Falling back to non seekable.', file = sys.stderr)
             elif self.info['offsets']['TIC']  > os.path.getsize(self.info['filename']):
                 self.info['seekable'] = False
@@ -192,8 +195,8 @@ class Reader(object):
                         self.info['offsets'][ bytes.decode( match_sim.group('nativeID')) ] = int(bytes.decode( match_sim.group('offset')))
                         self.info['offsetList'].append(int(bytes.decode( match_sim.group('offset'))))
                 # opening seeker in normal mode again
-                self.seeker.close()
-                self.seeker = open(self.info['filename'],'r')
+            self.seeker.close()
+            self.seeker = open(self.info['filename'],'r')
 
         ### declare the iter
         self.iter = iter(cElementTree.iterparse(self.info['fileObject'], events = ( b'start',b'end'))) # NOTE: end might be sufficient
@@ -238,6 +241,83 @@ class Reader(object):
                     if valueToExtract not in self.param['accessions'][accession]['valuesToExtract']:
                         self.param['accessions'][accession]['valuesToExtract'].append(valueToExtract)
 
+        return
+
+    def _build_index_from_scratch(self, seeker):
+        """Build an index of spectra/chromatogram data with offsets by parsing the file."""
+
+        def get_data_indices(fh, chunksize=8192, lookback_size=100):
+            """ Get a dictionary with binary file indices of spectra and chromatograms in an mzML file.
+
+            Will parse quickly through the file and find all occurences of
+            <chromatogram ... id="..." and <spectrum ... id="..." using a
+            regex.
+            We dont use an XML parser here because we need to know the
+            exact location of the filepointer which is usually not possible
+            with common xml parsers.
+            """
+            chrom_positions = {}
+            spec_positions = {}
+            chromcnt = 0
+            speccnt = 0
+            # regexes to be used
+            chromexp    = re.compile(b"<\s*chromatogram[^>]*id=\"([^\"]*)\"")
+            chromcntexp = re.compile(b"<\s*chromatogramList\s*count=\"([^\"]*)\"")
+            specexp     = re.compile(b"<\s*spectrum[^>]*id=\"([^\"]*)\"")
+            speccntexp  = re.compile(b"<\s*spectrumList\s*count=\"([^\"]*)\"")
+            # go to start of file
+            fh.seek(0)
+            prev_chunk = ""
+            while True:
+                 # read a chunk of data
+                offset = fh.tell()
+                chunk = fh.read(chunksize)
+                if not chunk: break
+
+                 # append a part of the previous chunk since we have cut in the middle
+                 # of the text (to make sure we dont miss anything, prev_chunk
+                 # is analyzed twice).
+                if len(prev_chunk) > 0:
+                    chunk = prev_chunk[-lookback_size:] + chunk
+                    offset -= lookback_size
+                prev_chunk = chunk
+
+                # find all occurences of the expressions and add to the dictionary
+                for m in chromexp.finditer(chunk):
+                    chrom_positions[m.group(1).decode('utf-8')] = offset + m.start()
+                for m in specexp.finditer(chunk):
+                    spec_positions[m.group(1).decode('utf-8')] = offset + m.start()
+                m = chromcntexp.search(chunk)
+
+                # also look for the total count of chromatograms and spectra
+                # -> must be the same as the content of our dict!
+                if m is not None:
+                    chromcnt = int(m.group(1))
+                m = speccntexp.search(chunk)
+                if m is not None:
+                    speccnt = int(m.group(1))
+
+            # Check if everything is ok (e.g. we found the right number of
+            # chromatograms and spectra) and then return the dictionary.
+            if (chromcnt == len(chrom_positions) and
+                speccnt == len(spec_positions)  ):
+                positions = {}
+                positions.update(chrom_positions)
+                positions.update(spec_positions)
+                # return positions # return only once in function leaves my brain sane :)
+
+            else:
+                positions = None
+            return positions
+
+        indices = get_data_indices(seeker)
+        if indices != None:
+            self.info['offsets'].update(indices)
+            self.info['offsetList'].extend(indices.values())
+
+            # make sure the list is sorted (for bisect)
+            self.info['offsetList'] = sorted( self.info['offsetList'] )
+            self.info['seekable'] = True
         return
 
     def __iter__(self):
@@ -287,7 +367,7 @@ class Reader(object):
         '''
         answer = None
         if self.info['seekable'] == True:
-            if len(self.info['offsets'].keys()) == 0:
+            if len(self.info['offsets']) == 0:
                 print("File does support random access, unfortunately indexlist missing, i.e. type not implemented yet ...", file=sys.stderr)
 
             if value in self.info['offsets']:
@@ -363,6 +443,8 @@ class Writer(object):
         for event,element in cElementTree.iterparse(io, events = ( b'start',b'end')):
             if self.newTree == None:
                 self.newTree = cElementTree.Element(element.tag,element.attrib)
+                if event == b'start' and element.tag.endswith("}mzML"):
+                    self.TreeBuilder.start(element.tag, element.attrib)
             else:
                 if event == b'start':
                     self.TreeBuilder.start(element.tag, element.attrib)
