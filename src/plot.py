@@ -89,6 +89,13 @@ class Factory(object):
         return
 
     def setAdditionalLegend( self, listOfStrings = None):
+        """
+        Add Legend to the plot.
+
+        :param listOfStrings: Extra Legend to the plot
+        :type listOfStrings: list of string
+
+        """
         self.additionalLegend = listOfStrings
         return
 
