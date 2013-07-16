@@ -109,9 +109,13 @@ class oboTranslator(object):
                 collections = {}
                 collect = False
                 for line in obo:
-                    if line.strip() == '[Term]':
-                        self.add(collections)
+                    if line.strip() in ('[Term]', ''):
                         collect = True
+                        
+                        if not collections:
+                            continue
+                        
+                        self.add(collections)
                         collections = {}
                     else:
                         if line.strip() != '' and collect == True:
