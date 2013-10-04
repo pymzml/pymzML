@@ -1306,7 +1306,7 @@ class Spectrum(dict):
         self.clear()
         self._xmlTree = treeObject
         #
-        if treeObject.tag.endswith('}chromatogram'):
+        if treeObject.tag.endswith('chromatogram'):
             self['id'] = treeObject.get('id')
             self['ms level'] = None
             self.dataType = "chromatogram"
