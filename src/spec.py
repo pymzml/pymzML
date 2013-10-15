@@ -39,7 +39,7 @@ from __future__ import print_function
 import sys
 import math
 import copy
-import random
+# import random
 import re
 
 from base64 import b64decode as b64dec
@@ -707,12 +707,12 @@ class Spectrum(dict):
         """
         tmp = ddict(int)
         for mz,i in self.centroidedPeaks:
-            # Let's say the measured precision is 1 sigma of the signal width, i.e. 68.4%
-            s = mz*self.measuredPrecision
+            # Let the measured precision be 2 sigma of the signal width
+            s = mz * self.measuredPrecision * 2
             s2 = s*s
             floor  = mz - 5.0*s   # Gauss curve +- 3 sigma
             ceil = mz + 5.0*s
-            ip = self.internalPrecision
+            ip = self.internalPrecision / 4  # more spacing, i.e. less points describing the gauss curve -> faster adding
             for _ in range( int(round(floor*ip)) , int(round(ceil*ip))+1 ):
                 if _ % int(5) == 0 :
                     a = float(_)/float(ip)
