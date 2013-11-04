@@ -1117,7 +1117,7 @@ class Spectrum(dict):
             self._deconvolutedPeaks = self.deconvolute_peaks(ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100)
         return self._deconvolutedPeaks
 
-    def deconvolute_peaks(self, ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100):
+    def deconvolute_peaks(self, ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100, returnCharge = False ):
         """
         Calculating uncharged masses and returning deconvoluted peaks.
 
@@ -1169,20 +1169,37 @@ class Spectrum(dict):
 
         # charge deconvolution
         result = []
-        for mz, intensity, charge, n in interestingPeaks:
-            mass = self._mz2mass(mz, charge)
-            result.append(tuple([mass, intensity]))
+        if returnCharge == True:
+            for mz, intensity, charge, n in interestingPeaks:
+                mass = self._mz2mass(mz, charge)
+                result.append(tuple([mass, intensity, charge]))
 
-        # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
-        result = sorted(result)
+            # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
+            result = sorted(result)
 
-        # check on empty result list
-        if len(result) == 0:
-            # no peaks could be identified for charge deconvolution.
-            return []
+            # check on empty result list
+            if len(result) == 0:
+                # no peaks could be identified for charge deconvolution.
+                return []
 
-        # group peaks
-        return self._group(result)
+            # group peaks
+            return result
+
+        else:
+            for mz, intensity, charge, n in interestingPeaks:
+                mass = self._mz2mass(mz, charge)
+                result.append(tuple([mass, intensity]))
+
+            # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
+            result = sorted(result)
+
+            # check on empty result list
+            if len(result) == 0:
+                # no peaks could be identified for charge deconvolution.
+                return []
+
+            # group peaks
+            return self._group(result)
 
     def ppm2abs(self, value, ppmValue, direction = 1, factor = 1):
         '''
