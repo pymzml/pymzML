@@ -179,7 +179,7 @@ class Reader(object):
             else:
                 # Jumping to index list and slurpin all specOffsets
                 self.seeker.seek(self.info['offsets']['indexList'],0)
-                spectrumIndexPattern = re.compile( b'(?P<type>[scan=|nativeID="])(?P<nativeID>[0-9]*)">(?P<offset>[0-9]*)</offset>' )
+                spectrumIndexPattern = re.compile( b'(?P<type>(scan=|nativeID="))(?P<nativeID>[0-9]*)">(?P<offset>[0-9]*)</offset>' )
                 simIndexPattern = re.compile( b'(?P<type>idRef=")(?P<nativeID>.*)">(?P<offset>[0-9]*)</offset>' )
                 ## NOTE: this might be again different in another mzML versions!!
                 ## 1.1 >> small_zlib.pwiz.1.1.mzML:     <offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>
