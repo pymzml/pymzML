@@ -4624,3 +4624,28 @@ id: part_of
 name: part_of
 is_transitive: true
 
+[Term]
+id: MS:1002312
+name: MS-Numpress linear prediction compression
+def: "Compression using MS-Numpress linear prediction compression." 
+[https://github.com/fickludd/ms-numpress]
+is_a: MS:1000572 ! binary data compression type
+
+[Term]
+id: MS:1002313
+name: MS-Numpress positive integer compression
+def: "Compression using MS-Numpress positive integer compression." 
+[https://github.com/fickludd/ms-numpress]
+is_a: MS:1000572 ! binary data compression type
+
+[Term]
+id: MS:1002314
+name: MS-Numpress short logged float compression
+def: "Compression using MS-Numpress short logged float compression." 
+[https://github.com/fickludd/ms-numpress]
+is_a: MS:1000572 ! binary data compression type
+
+
+
+
+

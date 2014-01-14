@@ -751,6 +751,36 @@ class Spectrum(dict):
         self[name] = self[idTag]
         return
 
+    def _decodeNumpress(self, inData, compression):
+        """
+        Decodes numpress encoded base 64 data.
+
+        :param inData: Input string, base64 encoded and numpress compressed
+        :type mz2find: string
+        :param compression: De-Compression algorithm to be used  (valid are 'ms-np-linear', 'ms-np-pic', 'ms-np-slof')
+        :type mz2find: string
+        :rtype: array
+        :return: Returns the unpacked data as an array of floats.
+        """
+        try:
+            import pyopenms
+        except ImportError, e:
+            print("Could not import pyOpenMS to decode numpress-encoded data -- please install the module to enable this functionality.")
+            exit(1)
+
+        result = []
+        coder = pyopenms.MSNumpressCoder()
+        np_config = pyopenms.NumpressConfig()
+        np_config.estimate_fixed_point = True
+        if compression == 'ms-np-linear':
+            np_config.np_compression = pyopenms.MSNumpressCoder.NumpressCompression.LINEAR
+        elif compression == 'ms-np-pic':
+            np_config.np_compression = pyopenms.MSNumpressCoder.NumpressCompression.PIC
+        elif compression == 'ms-np-slof':
+            np_config.np_compression = pyopenms.MSNumpressCoder.NumpressCompression.SLOF
+        coder.decodeNP(inData, result, False, np_config)
+        return result
+
     def _decode(self):
         """
         Decodes the base 64 encoded and packed strings from the data.
@@ -790,9 +820,12 @@ class Spectrum(dict):
                 elif len(self['encodedData'][int(pos*0.5)]) == 0:
                     pass
                 elif len(self['encodedData'][int(pos*0.5)]) != 0:
-                    decodedData  = b64dec(self['encodedData'][int(pos*0.5)].encode("utf-8"))
+                    base64Data = self['encodedData'][int(pos*0.5)].encode("utf-8")
+                    decodedData  = b64dec(base64Data)
                     if compression == 'zlib':
                         decodedData = zlib.decompress(decodedData)
+                    elif compression in ['ms-np-linear', 'ms-np-pic', 'ms-np-slof']:
+                        unpackedData = self._decodeNumpress(base64Data, compression)
                     elif compression == 'no':
                         pass
                     else:
@@ -800,7 +833,8 @@ class Spectrum(dict):
                         exit(1)
                     fmt = "{endian}{arraylength}{floattype}".format( endian = "<" , arraylength = self['defaultArrayLength'] , floattype = floattype )
                     try:
-                        unpackedData = unpack( fmt , decodedData)
+                        if compression in ["no", "zlib"]:
+                            unpackedData = unpack(fmt, decodedData)
                     except: # NOTE raises struct.error, but cannot be checked for here
                         print("Couldn't extract data {0} fmt: {1}".format(arrayType, fmt), file = sys.stderr)
                         print(len(self['encodedData'][int(pos * 0.5)]), file = sys.stderr)
@@ -1381,6 +1415,15 @@ class Spectrum(dict):
 
                     elif self.param['accessions'][accession]['name'] == 'no compression':
                         self['BinaryArrayOrder'].append(('compression', 'no'))
+
+                    elif self.param['accessions'][accession]['name'] == 'MS-Numpress linear prediction compression':
+                        self['BinaryArrayOrder'].append(('compression', 'ms-np-linear'))
+
+                    elif self.param['accessions'][accession]['name'] == 'MS-Numpress positive integer compression':
+                        self['BinaryArrayOrder'].append(('compression', 'ms-np-pic'))
+
+                    elif self.param['accessions'][accession]['name'] == 'MS-Numpress short logged float compression':
+                        self['BinaryArrayOrder'].append(('compression', 'ms-np-slof'))
 
             elif element.tag.endswith('precursorList'):
                 # TODO remove this completely?

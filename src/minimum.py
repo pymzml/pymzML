@@ -43,6 +43,9 @@ MIN_REQ = [
 ('MS:1000523',['name']              ), #"64-bit float"
 ('MS:1000574',['name']              ), #"zlib compression"
 ('MS:1000576',['name']              ), #"no compression"
+('MS:1002312',['name']              ), # MS-Numpress linear
+('MS:1002313',['name']              ), # MS-Numpress pic
+('MS:1002314',['name']              ), # MS-Numpress slof
 ('MS:1000744',['value']             ), # legacy precursor mz value ...
 ('MS:1000235',['name']              ), # total ion current chromatogram
 ]
