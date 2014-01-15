@@ -539,31 +539,5 @@ class Writer(object):
                 element.tail = i
         return
 
-def run_test():
-  print ("Running tests") 
-  spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
-  simIndexPattern = RegexPatterns.simIndexPattern
-  line1 = '<offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>'
-  line2 = '<offset idRef="S16004" nativeID="16004">236442042</offset>'
-  line3 = '<offset idRef="SIM SIC 651.5">330223452</offset>\n'
-
-  match_spec = spectrumIndexPattern.search(line1)
-  assert match_spec
-  assert match_spec.group('nativeID') == "1"
-  assert match_spec.group('type') == "scan="
-  assert match_spec.group('offset') == "4363"
-
-  match_spec = spectrumIndexPattern.search(line2)
-  assert match_spec
-  assert match_spec.group('nativeID') == "16004"
-  assert match_spec.group('type') == 'nativeID="'
-  assert match_spec.group('offset') == "236442042"
-
-  match_sim  = simIndexPattern.search(line3)
-  assert match_sim.group('nativeID') == "SIM SIC 651.5"
-  assert match_sim.group('offset') == "330223452"
-  print ("All tests executed successfully")
-
 if __name__ == '__main__':
     print(__doc__)
-    run_test()
