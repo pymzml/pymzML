@@ -22,11 +22,10 @@
 import unittest
 import subprocess as sub
 import os
+from nose.tools import nottest
+from nose.plugins.attrib import attr
 
-try:
-    import src as pymzml
-except ImportError:
-    import pymzml
+import pymzml
 
 class TestReadChromatogram(unittest.TestCase):
 
@@ -65,6 +64,7 @@ class TestReadChromatogram(unittest.TestCase):
 
         self.check_file(run)
 
+    @attr('numpress') 
     def test_read_numpress(self):
         run = pymzml.run.Reader(self.mini_numpress_file)
         self.assertFalse(run.info['seekable'])
