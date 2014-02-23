@@ -174,8 +174,6 @@ class Reader(object):
                 if build_index_from_scratch:
                     self._build_index_from_scratch(self.seeker)
                 # print('Could not find indexList. Falling back to non seekable.', file = sys.stderr)
-            elif self.info['offsets']['TIC'] == None:
-                self.info['seekable'] = False
             elif self.info['offsets']['TIC']  > os.path.getsize(self.info['filename']):
                 self.info['seekable'] = False
                 #print('mzML file was truncated, but offsets were not recalculated. Falling back to non seekable.', file = sys.stderr)
