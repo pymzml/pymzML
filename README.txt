@@ -26,7 +26,9 @@ INSTALLATION
 
 python setup.py install
 
-(you might need admin privileges to write in the python site-package folder)
+(you might need admin privileges to write in the python site-package folder).
+If you want to also have support for ms-numpress compression, you might need to
+install additional packages (currently the development version of pyOpenMS).
 
 
 PARTICIPATE
@@ -40,4 +42,12 @@ DOCUMENTATION
 For more in depth documentation of the modules and examples, please refer to
 the documentation folder or http://github.com/pymzml
 
+TEST
+
+To run the tests, you need to create a symbolic link called "pymzml" to point
+to src (or rename the src folder to pymzl). Then you can run
+
+$ nosetests -a '!numpress'  test/
+
+which will run all tests (except the numpress tests).
 
