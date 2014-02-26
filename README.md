@@ -50,10 +50,10 @@ the documentation folder or http://github.com/pymzml
 
 ### TEST
 
-To run the tests, you need to create a symbolic link called "pymzml" to point
-to src (or rename the src folder to pymzl). Then you can run
+Please make sure to run tests for Python 2 and Python 3
 
     nosetests -a '!numpress'  test/
+    nosetests3 -a '!numpress'  test/
 
 which will run all tests (except the numpress tests).
 
