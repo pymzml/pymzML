@@ -24,15 +24,15 @@ doi: 10.1093/bioinformatics/bts066
 
 INSTALLATION
 
-``python setup.py install``
+    python setup.py install
 
 (you might need admin privileges to write in the python site-package folder,
-for example use ``sudo python setup.py install`` or write into a user folder
-by using this command ``python setup.py install --user``). 
+for example use ```sudo python setup.py install``` or write into a user folder
+by using this command ```python setup.py install --user```). 
 If you want to also have support for ms-numpress compression, you might need to
 install additional packages (currently the development version of pyOpenMS).
-If you want to install pymzML for Python 3, just exchange ``python`` with
-``python3`` in the above command.
+If you want to install pymzML for Python 3, just exchange ```python`` with
+```python3``` in the above command.
 
 
 PARTICIPATE
@@ -51,7 +51,7 @@ TEST
 To run the tests, you need to create a symbolic link called "pymzml" to point
 to src (or rename the src folder to pymzl). Then you can run
 
-``nosetests -a '!numpress'  test/``
+    nosetests -a '!numpress'  test/
 
 which will run all tests (except the numpress tests).
 
