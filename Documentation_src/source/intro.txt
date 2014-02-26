@@ -11,7 +11,7 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2011 by:
+Copyright 2010-2014 by:
 
     | T. Bald,
     | J. Barth,
@@ -29,9 +29,7 @@ Please refer to:
 
     | Dr. Christian Fufezan
     | Institute of Plant Biology and Biotechnology
-    | Schlossplatz 7 , R 372
-    | or
-    | Hindenburgplatz 55        (mail)
+    | Schlossplatz 8 , R 105
     | University of Muenster
     | Germany
     | eMail: christian@fufezan.net
