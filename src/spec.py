@@ -764,7 +764,7 @@ class Spectrum(dict):
         """
         try:
             import pyopenms
-        except ImportError, e:
+        except ImportError:
             print("Could not import pyOpenMS to decode numpress-encoded data -- please install the module to enable this functionality.")
             exit(1)
 
