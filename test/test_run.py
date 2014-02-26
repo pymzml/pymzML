@@ -34,25 +34,25 @@ class TestRun(unittest.TestCase):
       print ("Running tests") 
       spectrumIndexPattern = pymzml.run.RegexPatterns.spectrumIndexPattern
       simIndexPattern = pymzml.run.RegexPatterns.simIndexPattern
-      line1 = '<offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>'
-      line2 = '<offset idRef="S16004" nativeID="16004">236442042</offset>'
-      line3 = '<offset idRef="SIM SIC 651.5">330223452</offset>\n'
+      line1 = b'<offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>'
+      line2 = b'<offset idRef="S16004" nativeID="16004">236442042</offset>'
+      line3 = b'<offset idRef="SIM SIC 651.5">330223452</offset>\n'
 
       match_spec = spectrumIndexPattern.search(line1)
       self.assertTrue(match_spec)
-      self.assertEqual(match_spec.group('nativeID'), "1")
-      self.assertEqual(match_spec.group('type'), "scan=" )
-      self.assertEqual(match_spec.group('offset'), "4363" )
+      self.assertEqual(match_spec.group('nativeID'), b"1")
+      self.assertEqual(match_spec.group('type'), b"scan=" )
+      self.assertEqual(match_spec.group('offset'), b"4363" )
 
       match_spec = spectrumIndexPattern.search(line2)
       self.assertTrue(match_spec)
-      self.assertEqual(match_spec.group('nativeID'), "16004")
-      self.assertEqual(match_spec.group('type'), 'nativeID="')
-      self.assertEqual(match_spec.group('offset'), "236442042")
+      self.assertEqual(match_spec.group('nativeID'), b"16004")
+      self.assertEqual(match_spec.group('type'), b'nativeID="')
+      self.assertEqual(match_spec.group('offset'), b"236442042")
 
       match_sim  = simIndexPattern.search(line3)
-      self.assertEqual(match_sim.group('nativeID'), "SIM SIC 651.5")
-      self.assertEqual(match_sim.group('offset'), "330223452")
+      self.assertEqual(match_sim.group('nativeID'), b"SIM SIC 651.5")
+      self.assertEqual(match_sim.group('offset'), b"330223452")
 
 
 if __name__ == '__main__':
