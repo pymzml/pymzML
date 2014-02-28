@@ -1063,7 +1063,7 @@ class Spectrum(dict):
 
         """
         try:
-            mz, intensities = zip(*self.centroidedPeaks)
+            mz_list, intensities_list = zip(*self.centroidedPeaks)
         except ValueError:
             #empty spectrum
             exit()
@@ -1071,23 +1071,23 @@ class Spectrum(dict):
             intensities = []
 
         monoisotopicPeaks = []
-        length = len(mz)
+        length = len(mz_list)
         override = False
         for i in range(length):
             for charge in range(maxCharge, minCharge - 1, -1):
                 # check absence of isotope envelope peaks before the current peak
-                #print("Analyzing mz, charge:", mz[i], charge)
+                #print("Analyzing mz_list, charge:", mz_list[i], charge)
                 found = False
                 if i == 0:
                     # the current peak is the first peak, no preceding peak is available, so this is a monoisotopic candidate
                     pass
                 else:
                     j = i - 1
-                    target = mz[i] - ISOTOPE_AVERAGE_DIFFERENCE / charge
+                    target = mz_list[i] - ISOTOPE_AVERAGE_DIFFERENCE / charge
                     target_min = self.ppm2abs(target, self.measuredPrecision, -1, ppmFactor) # min and max should be calculated in one step (so that self.ppm() is not called twice)
                     target_max = self.ppm2abs(target, self.measuredPrecision, 1, ppmFactor)
-                    while j >= 0 and mz[j] >= target_min:
-                        if mz[j] <= target_max:
+                    while j >= 0 and mz_list[j] >= target_min:
+                        if mz_list[j] <= target_max:
                             found = True
                             # Found preceeding peak, break goes to the next peak
                             break
@@ -1098,38 +1098,38 @@ class Spectrum(dict):
                     break
                 ''' check presence of isotope envelope after the current peak'''
                 found = 1
-                intensity_sum = intensities[i]
+                intensity_sum = intensities_list[i]
+                last_intensity = intensities_list[i]
+                #last_mz = mz_list[i]
                 local_max = False
                 for i_envelope in range(1, maxNextPeaks + 1):
-                    k = i + 1
-                    if (i + i_envelope) >= len(mz):
+                    if (i + i_envelope) >= len(mz_list):
                         break
-                    target = mz[i] + (ISOTOPE_AVERAGE_DIFFERENCE * i_envelope)/ charge
-                    target_min = self.ppm2abs(target, self.measuredPrecision, -1, 1)
-                    target_max = self.ppm2abs(target, self.measuredPrecision, 1, 1)
-                    while k < length and mz[k] <= target_max:
-                        if mz[k] >= target_min:
-                            if intensities[k] < intensities[k-1]:
-                                local_max = True
-                            elif local_max and intensities[k] > intensities[k-1]:
-                                # this would be a second local max, so this is no longer considered in the isotope envelope
-                                break
-                            found += 1
-                            intensity_sum += intensities[k]
-                            # go to next k and reset the target
-                            k += 1
-                            if not k >= length:
-                                target = mz[k] + ISOTOPE_AVERAGE_DIFFERENCE / charge
-                                target_min = self.ppm2abs(target, self.measuredPrecision, -1, 1)
-                                target_max = self.ppm2abs(target, self.measuredPrecision, 1, 1)
-                        else:
-                            k += 1
-                    if found <= i_envelope:
+                    target = mz_list[i] + (ISOTOPE_AVERAGE_DIFFERENCE * i_envelope)/ charge
+                    #target = last_mz + ISOTOPE_AVERAGE_DIFFERENCE / charge
+                    hasPeak_result = self.hasPeak(target)
+
+                    if len(hasPeak_result) > 1:
+                        print("Found more than one peak. This is not expected")
+                        sys.exit(1)
+                    elif len(hasPeak_result) == 0:
                         break
                         # an isotope envelope is not supposed to have missing peaks
+                    else:
+                        mz, intensity = hasPeak_result[0]
+                        if intensity < last_intensity:
+                            # the peak before was the local maximum
+                            local_max = True
+                        elif local_max == True and intensity > last_intensity:
+                            # this would be a second local max, so stop searching the isotope envelope
+                            break
+                        found += 1
+                        intensity_sum += intensity
+                        #last_mz = mz
+
 
                 if found > 1:
-                    monoisotopicPeaks.append(tuple([mz[i], intensity_sum, charge, found]))
+                    monoisotopicPeaks.append(tuple([mz_list[i], intensity_sum, charge, found]))
                     break
                     # as the first peak of the isotope envelope is added here, this is a monoisotopic peak.
                     # the charge derived from the isotope envelope is the highest charge which is possible.
