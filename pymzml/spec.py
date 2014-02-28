@@ -1115,7 +1115,6 @@ class Spectrum(dict):
                                 # this would be a second local max, so this is no longer considered in the isotope envelope
                                 break
                             found += 1
-                            #print(mz[k])
                             intensity_sum += intensities[k]
                             # go to next k and reset the target
                             k += 1
@@ -1151,7 +1150,7 @@ class Spectrum(dict):
             self._deconvolutedPeaks = self.deconvolute_peaks(ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100)
         return self._deconvolutedPeaks
 
-    def deconvolute_peaks(self, ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100, returnCharge = False ):
+    def deconvolute_peaks(self, ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100, returnCharge = False, debug = False):
         """
         Calculating uncharged masses and returning deconvoluted peaks.
 
@@ -1198,6 +1197,9 @@ class Spectrum(dict):
             print("{0} ppm is too high for deconvolution. Please make sure to use spectra with < 50 ppm.".format(self.measuredPrecision * 1e6), file = sys.stderr)
             exit(1)
 
+        if debug == True:
+            masses2mz = ddict(list)
+
         # calculate monoisotopic m/z and charge
         interestingPeaks = self._get_deisotopedMZ_for_chargeDeconvolution(ppmFactor, minCharge, maxCharge, maxNextPeaks)
 
@@ -1223,6 +1225,8 @@ class Spectrum(dict):
             for mz, intensity, charge, n in interestingPeaks:
                 mass = self._mz2mass(mz, charge)
                 result.append(tuple([mass, intensity]))
+                if debug == True:
+                    masses2mz[mass].append((mz, intensity, charge, n))
 
             # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
             result = sorted(result)
@@ -1231,6 +1235,9 @@ class Spectrum(dict):
             if len(result) == 0:
                 # no peaks could be identified for charge deconvolution.
                 return []
+
+            if debug == True:
+                return self._group(result), masses2mz
 
             # group peaks
             return self._group(result)
