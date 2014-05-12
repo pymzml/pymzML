@@ -22,11 +22,10 @@
 import unittest
 import subprocess as sub
 import os
+from nose.tools import nottest
+from nose.plugins.attrib import attr
 
-try:
-    import src as pymzml
-except ImportError:
-    import pymzml
+import pymzml
 
 class TestReadChromatogram(unittest.TestCase):
 
@@ -35,6 +34,9 @@ class TestReadChromatogram(unittest.TestCase):
         self.datadir = os.path.join(self.dirname, "data")
         self.mini_chrom_file = os.path.join(self.datadir, "mini.chrom.mzML")
         self.chromatogram_id = "4092_IEVLDYQAGDEAGIK/2_y7"
+        # Second file
+        self.mini_numpress_file = os.path.join(self.datadir, "mini_numpress.chrom.mzML")
+        self.numpress_chrom_id = "some_test_id"
 
     def check_file(self, run):
         all_chromatograms = list(run)
@@ -61,6 +63,24 @@ class TestReadChromatogram(unittest.TestCase):
         self.assertTrue(run.info['seekable'])
 
         self.check_file(run)
+
+    @attr('numpress') 
+    def test_read_numpress(self):
+        run = pymzml.run.Reader(self.mini_numpress_file)
+        self.assertFalse(run.info['seekable'])
+
+        all_chromatograms = list(run)
+        self.assertEqual(len(all_chromatograms), 1)
+
+        chrom = run[self.numpress_chrom_id]
+
+        self.assertEqual(len(chrom.peaks), 176)
+        self.assertAlmostEqual(sum(chrom.i), 3657.0 )
+
+        self.assertAlmostEqual(chrom.i[0], 0.0)
+        self.assertAlmostEqual(chrom.i[-1], 28.0)
+        self.assertAlmostEqual(chrom.time[0], 2302.530)
+        self.assertAlmostEqual(chrom.time[-1], 2899.960000343)
 
 if __name__ == '__main__':
     unittest.main()

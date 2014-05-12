@@ -1,14 +1,14 @@
 #!/usr/bin/env python3.2
 
 """
-Testscript to demonstrate functionality of function :py:func:`spec.Spectrum.hasPeak` 
+Testscript to demonstrate functionality of function :py:func:`spec.Spectrum.hasPeak`
 or :py:func:`spec.Spectrum.hasDeconvolutedPeak`
 
 Example:
 
 >>> import pymzml, get_example_file
 >>> example_file = get_example_file.open_example('deconvolution.mzml.gz')
->>> run = pymzml.run.run(example_file, precisionms1 = 5e-6, precisionmsn = 20e-6)
+>>> run = pymzml.run.Reader(example_file, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
 >>> for spectrum in run:
 ...     if spectrum["ms level"] == 2:
 ...             peak_to_find = spectrum.haspeak(1016.5404)
@@ -53,21 +53,21 @@ def main(verbose = False):
                 tests[5] = True
             if test7 == []:
                 tests[6] = True
-            
+
             all = True
             for i in range(len(tests)):
                 if not tests[i]:
                     all = False
-            
+
             if all:
                 if verbose:
                     print('All tests were successful.')
             else:
                 print(tests)
-                
-                
-                
-                
+
+
+
+
             if verbose:
                 print('deconvoluted peaks list:')
                 print('')
@@ -84,7 +84,7 @@ def main(verbose = False):
                 print("6000 in deconvoluted spectrum (shouldn't)?", test5)
                 print("1016.5402567492666 in centroided peaks (True)", test6)
                 print("6000 in centroided peaks (None)", test7)
-                
+
             if all:
                 return True
 

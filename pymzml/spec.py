@@ -39,7 +39,7 @@ from __future__ import print_function
 import sys
 import math
 import copy
-import random
+# import random
 import re
 
 from base64 import b64decode as b64dec
@@ -707,12 +707,12 @@ class Spectrum(dict):
         """
         tmp = ddict(int)
         for mz,i in self.centroidedPeaks:
-            # Let's say the measured precision is 1 sigma of the signal width, i.e. 68.4%
-            s = mz*self.measuredPrecision
+            # Let the measured precision be 2 sigma of the signal width
+            s = mz * self.measuredPrecision * 2
             s2 = s*s
             floor  = mz - 5.0*s   # Gauss curve +- 3 sigma
             ceil = mz + 5.0*s
-            ip = self.internalPrecision
+            ip = self.internalPrecision / 4  # more spacing, i.e. less points describing the gauss curve -> faster adding
             for _ in range( int(round(floor*ip)) , int(round(ceil*ip))+1 ):
                 if _ % int(5) == 0 :
                     a = float(_)/float(ip)
@@ -750,6 +750,36 @@ class Spectrum(dict):
             self[idTag].append(v)
         self[name] = self[idTag]
         return
+
+    def _decodeNumpress(self, inData, compression):
+        """
+        Decodes numpress encoded base 64 data.
+
+        :param inData: Input string, base64 encoded and numpress compressed
+        :type mz2find: string
+        :param compression: De-Compression algorithm to be used  (valid are 'ms-np-linear', 'ms-np-pic', 'ms-np-slof')
+        :type mz2find: string
+        :rtype: array
+        :return: Returns the unpacked data as an array of floats.
+        """
+        try:
+            import pyopenms
+        except ImportError:
+            print("Could not import pyOpenMS to decode numpress-encoded data -- please install the module to enable this functionality.")
+            exit(1)
+
+        result = []
+        coder = pyopenms.MSNumpressCoder()
+        np_config = pyopenms.NumpressConfig()
+        np_config.estimate_fixed_point = True
+        if compression == 'ms-np-linear':
+            np_config.np_compression = pyopenms.MSNumpressCoder.NumpressCompression.LINEAR
+        elif compression == 'ms-np-pic':
+            np_config.np_compression = pyopenms.MSNumpressCoder.NumpressCompression.PIC
+        elif compression == 'ms-np-slof':
+            np_config.np_compression = pyopenms.MSNumpressCoder.NumpressCompression.SLOF
+        coder.decodeNP(inData, result, False, np_config)
+        return result
 
     def _decode(self):
         """
@@ -790,9 +820,12 @@ class Spectrum(dict):
                 elif len(self['encodedData'][int(pos*0.5)]) == 0:
                     pass
                 elif len(self['encodedData'][int(pos*0.5)]) != 0:
-                    decodedData  = b64dec(self['encodedData'][int(pos*0.5)].encode("utf-8"))
+                    base64Data = self['encodedData'][int(pos*0.5)].encode("utf-8")
+                    decodedData  = b64dec(base64Data)
                     if compression == 'zlib':
                         decodedData = zlib.decompress(decodedData)
+                    elif compression in ['ms-np-linear', 'ms-np-pic', 'ms-np-slof']:
+                        unpackedData = self._decodeNumpress(base64Data, compression)
                     elif compression == 'no':
                         pass
                     else:
@@ -800,7 +833,8 @@ class Spectrum(dict):
                         exit(1)
                     fmt = "{endian}{arraylength}{floattype}".format( endian = "<" , arraylength = self['defaultArrayLength'] , floattype = floattype )
                     try:
-                        unpackedData = unpack( fmt , decodedData)
+                        if compression in ["no", "zlib"]:
+                            unpackedData = unpack(fmt, decodedData)
                     except: # NOTE raises struct.error, but cannot be checked for here
                         print("Couldn't extract data {0} fmt: {1}".format(arrayType, fmt), file = sys.stderr)
                         print(len(self['encodedData'][int(pos * 0.5)]), file = sys.stderr)
@@ -1029,7 +1063,7 @@ class Spectrum(dict):
 
         """
         try:
-            mz, intensities = zip(*self.centroidedPeaks)
+            mz_list, intensities_list = zip(*self.centroidedPeaks)
         except ValueError:
             #empty spectrum
             exit()
@@ -1037,23 +1071,23 @@ class Spectrum(dict):
             intensities = []
 
         monoisotopicPeaks = []
-        length = len(mz)
+        length = len(mz_list)
         override = False
         for i in range(length):
             for charge in range(maxCharge, minCharge - 1, -1):
                 # check absence of isotope envelope peaks before the current peak
-                #print("Analyzing mz, charge:", mz[i], charge)
+                #print("Analyzing mz_list, charge:", mz_list[i], charge)
                 found = False
                 if i == 0:
                     # the current peak is the first peak, no preceding peak is available, so this is a monoisotopic candidate
                     pass
                 else:
                     j = i - 1
-                    target = mz[i] - ISOTOPE_AVERAGE_DIFFERENCE / charge
+                    target = mz_list[i] - ISOTOPE_AVERAGE_DIFFERENCE / charge
                     target_min = self.ppm2abs(target, self.measuredPrecision, -1, ppmFactor) # min and max should be calculated in one step (so that self.ppm() is not called twice)
                     target_max = self.ppm2abs(target, self.measuredPrecision, 1, ppmFactor)
-                    while j >= 0 and mz[j] >= target_min:
-                        if mz[j] <= target_max:
+                    while j >= 0 and mz_list[j] >= target_min:
+                        if mz_list[j] <= target_max:
                             found = True
                             # Found preceeding peak, break goes to the next peak
                             break
@@ -1064,39 +1098,38 @@ class Spectrum(dict):
                     break
                 ''' check presence of isotope envelope after the current peak'''
                 found = 1
-                intensity_sum = intensities[i]
+                intensity_sum = intensities_list[i]
+                last_intensity = intensities_list[i]
+                #last_mz = mz_list[i]
                 local_max = False
                 for i_envelope in range(1, maxNextPeaks + 1):
-                    k = i + 1
-                    if (i + i_envelope) >= len(mz):
+                    if (i + i_envelope) >= len(mz_list):
                         break
-                    target = mz[i] + (ISOTOPE_AVERAGE_DIFFERENCE * i_envelope)/ charge
-                    target_min = self.ppm2abs(target, self.measuredPrecision, -1, 1)
-                    target_max = self.ppm2abs(target, self.measuredPrecision, 1, 1)
-                    while k < length and mz[k] <= target_max:
-                        if mz[k] >= target_min:
-                            if intensities[k] < intensities[k-1]:
-                                local_max = True
-                            elif local_max and intensities[k] > intensities[k-1]:
-                                # this would be a second local max, so this is no longer considered in the isotope envelope
-                                break
-                            found += 1
-                            #print(mz[k])
-                            intensity_sum += intensities[k]
-                            # go to next k and reset the target
-                            k += 1
-                            if not k >= length:
-                                target = mz[k] + ISOTOPE_AVERAGE_DIFFERENCE / charge
-                                target_min = self.ppm2abs(target, self.measuredPrecision, -1, 1)
-                                target_max = self.ppm2abs(target, self.measuredPrecision, 1, 1)
-                        else:
-                            k += 1
-                    if found <= i_envelope:
+                    target = mz_list[i] + (ISOTOPE_AVERAGE_DIFFERENCE * i_envelope)/ charge
+                    #target = last_mz + ISOTOPE_AVERAGE_DIFFERENCE / charge
+                    hasPeak_result = self.hasPeak(target)
+
+                    if len(hasPeak_result) > 1:
+                        print("Found more than one peak. This is not expected")
+                        sys.exit(1)
+                    elif len(hasPeak_result) == 0:
                         break
                         # an isotope envelope is not supposed to have missing peaks
+                    else:
+                        mz, intensity = hasPeak_result[0]
+                        if intensity < last_intensity:
+                            # the peak before was the local maximum
+                            local_max = True
+                        elif local_max == True and intensity > last_intensity:
+                            # this would be a second local max, so stop searching the isotope envelope
+                            break
+                        found += 1
+                        intensity_sum += intensity
+                        #last_mz = mz
+
 
                 if found > 1:
-                    monoisotopicPeaks.append(tuple([mz[i], intensity_sum, charge, found]))
+                    monoisotopicPeaks.append(tuple([mz_list[i], intensity_sum, charge, found]))
                     break
                     # as the first peak of the isotope envelope is added here, this is a monoisotopic peak.
                     # the charge derived from the isotope envelope is the highest charge which is possible.
@@ -1117,7 +1150,7 @@ class Spectrum(dict):
             self._deconvolutedPeaks = self.deconvolute_peaks(ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100)
         return self._deconvolutedPeaks
 
-    def deconvolute_peaks(self, ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100):
+    def deconvolute_peaks(self, ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100, returnCharge = False, debug = False):
         """
         Calculating uncharged masses and returning deconvoluted peaks.
 
@@ -1164,25 +1197,50 @@ class Spectrum(dict):
             print("{0} ppm is too high for deconvolution. Please make sure to use spectra with < 50 ppm.".format(self.measuredPrecision * 1e6), file = sys.stderr)
             exit(1)
 
+        if debug == True:
+            masses2mz = ddict(list)
+
         # calculate monoisotopic m/z and charge
         interestingPeaks = self._get_deisotopedMZ_for_chargeDeconvolution(ppmFactor, minCharge, maxCharge, maxNextPeaks)
 
         # charge deconvolution
         result = []
-        for mz, intensity, charge, n in interestingPeaks:
-            mass = self._mz2mass(mz, charge)
-            result.append(tuple([mass, intensity]))
+        if returnCharge == True:
+            for mz, intensity, charge, n in interestingPeaks:
+                mass = self._mz2mass(mz, charge)
+                result.append(tuple([mass, intensity, charge]))
 
-        # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
-        result = sorted(result)
+            # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
+            result = sorted(result)
 
-        # check on empty result list
-        if len(result) == 0:
-            # no peaks could be identified for charge deconvolution.
-            return []
+            # check on empty result list
+            if len(result) == 0:
+                # no peaks could be identified for charge deconvolution.
+                return []
 
-        # group peaks
-        return self._group(result)
+            # group peaks
+            return result
+
+        else:
+            for mz, intensity, charge, n in interestingPeaks:
+                mass = self._mz2mass(mz, charge)
+                result.append(tuple([mass, intensity]))
+                if debug == True:
+                    masses2mz[mass].append((mz, intensity, charge, n))
+
+            # sort the result corresponding to the mass (due to the mz to mass conversion, the values are no longer sorted)
+            result = sorted(result)
+
+            # check on empty result list
+            if len(result) == 0:
+                # no peaks could be identified for charge deconvolution.
+                return []
+
+            if debug == True:
+                return self._group(result), masses2mz
+
+            # group peaks
+            return self._group(result)
 
     def ppm2abs(self, value, ppmValue, direction = 1, factor = 1):
         '''
@@ -1306,7 +1364,7 @@ class Spectrum(dict):
         self.clear()
         self._xmlTree = treeObject
         #
-        if treeObject.tag.endswith('}chromatogram'):
+        if treeObject.tag.endswith('chromatogram'):
             self['id'] = treeObject.get('id')
             self['ms level'] = None
             self.dataType = "chromatogram"
@@ -1364,6 +1422,15 @@ class Spectrum(dict):
 
                     elif self.param['accessions'][accession]['name'] == 'no compression':
                         self['BinaryArrayOrder'].append(('compression', 'no'))
+
+                    elif self.param['accessions'][accession]['name'] == 'MS-Numpress linear prediction compression':
+                        self['BinaryArrayOrder'].append(('compression', 'ms-np-linear'))
+
+                    elif self.param['accessions'][accession]['name'] == 'MS-Numpress positive integer compression':
+                        self['BinaryArrayOrder'].append(('compression', 'ms-np-pic'))
+
+                    elif self.param['accessions'][accession]['name'] == 'MS-Numpress short logged float compression':
+                        self['BinaryArrayOrder'].append(('compression', 'ms-np-slof'))
 
             elif element.tag.endswith('precursorList'):
                 # TODO remove this completely?

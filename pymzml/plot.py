@@ -62,6 +62,7 @@ class Factory(object):
         self.mzRanges = [  ]
         self.normalizations = [ ]
         self.additionalLegend = None
+        self.imax = None
         pass
 
     def newPlot(self, header = None , mzRange = [None,None] , normalize = False):
@@ -161,7 +162,7 @@ class Factory(object):
         print()
         return
 
-    def save(self, filename = None, mzRange = [None,None]):
+    def save(self, filename = None, mzRange = [None,None], pureSvg = False):
         """
         Saves all plots and their data points that have been added to the plotFactory.
 
@@ -175,16 +176,16 @@ class Factory(object):
 
         io = open("{0}".format(filename), 'w' )
         # NOTE: we need to check if file exists and/or if file can be written ...
+        if pureSvg == False:
+            print("""<html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+            <title>pymzml spectrum visualisation</title>
+            <style>
+            </style>
+            </head>
+            <body style="position:relative; z-index:0; width:100%; height:100%;">
 
-        print("""<html xmlns="http://www.w3.org/1999/xhtml">
-        <head>
-        <title>pymzml spectrum visualisation</title>
-        <style>
-        </style>
-        </head>
-        <body style="position:relative; z-index:0; width:100%; height:100%;">
-
-        """, file = io)
+            """, file = io)
         for plotNumber,plot in enumerate(self.plots):
             w = 1200
             h = 2100
@@ -235,6 +236,9 @@ class Factory(object):
                             i_max = i
             if i_max == 0:
                 i_max = 0.1
+            if self.imax != None:
+                i_max = self.imax
+
             if self.normalizations[plotNumber] == True:
                 resolved_i_max = 1.05
             else:
@@ -365,8 +369,8 @@ class Factory(object):
                     for pos,(mz,i) in enumerate(sorted(dataset)):
                         if resolved_mzRange[0] <= mz <= resolved_mzRange[1]:
                             x = int(round(PADDING[3]  +   (mz - resolved_mzRange[0] ) * pixelpermz   ))
-                            xl = int(round(PADDING[3]  +   (mz-0.075 - resolved_mzRange[0] ) * pixelpermz   ))
-                            xr = int(round(PADDING[3]  +   (mz+0.075 - resolved_mzRange[0] ) * pixelpermz   ))
+                            xl = int(round(PADDING[3]  +   (mz-0.175 - resolved_mzRange[0] ) * pixelpermz   ))
+                            xr = int(round(PADDING[3]  +   (mz+0.175 - resolved_mzRange[0] ) * pixelpermz   ))
                             if self.normalizations[plotNumber] == True:
                                 y = baseline - ((float(i)/float(maxI)) * pixelper_i)
                             else:
@@ -425,11 +429,11 @@ class Factory(object):
                                 """.format( text, x = w-PADDING[1]+30, y = PADDING[0] + pos * 9 , fontsize = 8), file = io)
             print("</svg>", file = io)
 
-
-        print("""
-        </body>
-        </html>
-        """, file = io)
+        if pureSvg == False:
+            print("""
+            </body>
+            </html>
+            """, file = io)
         return
 
 if __name__ == '__main__':
