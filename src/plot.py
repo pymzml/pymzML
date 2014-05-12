@@ -56,6 +56,7 @@ class Factory(object):
         self.plots = [  ]     # list of plots, where each plot hold a list of mz-i lists that should be plotted in the same plot
         self.styles = [  ]
         self.colors = [  ]
+        self.opacities = [  ]
         self.header = [  ]
         self.labelPos = [  ]
         self.mzRanges = [  ]
@@ -79,6 +80,7 @@ class Factory(object):
         self.plots.append( [] )
         self.styles.append( [] )
         self.colors.append( [] )
+        self.opacities.append([])
         self.labelPos.append( set() )
         self.mzRanges.append( mzRange )
         self.normalizations.append( normalize )
@@ -100,7 +102,7 @@ class Factory(object):
         return
 
 
-    def add(self,data, color=(00,00,00) , style = 'sticks', mzRange = [None,None] ):
+    def add(self,data, color=(00,00,00) , style = 'sticks', mzRange = [None,None], opacity = 0.4 ):
         """
         Add data to the graph.
 
@@ -128,6 +130,7 @@ class Factory(object):
             self.newPlot()
         self.styles[-1].append(style)
         self.colors[-1].append(color)
+        self.opacities[-1].append(opacity)
         selective = True
         if mzRange == [None,None]:
             if self.mzRanges[-1] == [None,None]:
@@ -284,6 +287,8 @@ class Factory(object):
             for datasetnumber,dataset in enumerate(plot):
                 r,g,b = self.colors[plotNumber][datasetnumber]
                 style = self.styles[plotNumber][datasetnumber]
+                opacity = self.opacities[plotNumber][datasetnumber]
+   
                 if style[:5] == 'label':
                     for pos,(mz,i) in enumerate(dataset):
                         if resolved_mzRange[0] <= mz <= resolved_mzRange[1]:
@@ -347,9 +352,10 @@ class Factory(object):
                                 print('L{0} {1}'.format(x,y ), end=" ", file = io)
                     if first == False:
                         # aka we have seen some points ;)
-                        print(' L{0} {1} Z" style="fill:rgb({r},{g},{b}); fill-opacity:0.2; stroke:rgb({r},{g},{b}); stroke-width:1" />'.format(x,baseline,r=r,g=g,b=b), file = io)
+                        print(' L{0} {1} Z" style="fill:rgb({r},{g},{b}); fill-opacity:{opacity}; stroke:rgb({r},{g},{b}); stroke-width:1" />'.format(x,baseline,r=r,g=g,b=b, opacity=opacity), file = io)
 
                 elif style[:8] == 'triangle':
+
                     if self.normalizations[plotNumber] == True:
                         maxI = max([ i for mz,i in dataset ])
                     else:
@@ -366,7 +372,7 @@ class Factory(object):
                             else:
                                 y = baseline - (i * pixelper_i)
 
-                            print('<path d="M{0} {4} L{2} {3} L{1} {4} Z" style="fill:rgb({r},{g},{b}); fill-opacity:0.4"/>'.format(xl,xr,x,y,baseline,r=r,g=g,b=b), file = io)
+                            print('<path d="M{0} {4} L{2} {3} L{1} {4} Z" style="fill:rgb({r},{g},{b}); fill-opacity:{opacity}"/>'.format(xl,xr,x,y,baseline,r=r,g=g,b=b, opacity=opacity), file = io)
                             #print('<line x1="{0}" y1="{1}" x2="{0}" y2="{2}" style="stroke:rgb({r},{g},{b});stroke-width:1"/>'.format(x,y,baseline,r=r,g=g,b=b), file = io)
 
             # Drawing data ...
