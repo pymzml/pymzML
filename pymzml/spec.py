@@ -477,10 +477,18 @@ class Spectrum(dict):
                     #print(x1,y1,x2,y2,x3,y3)
                     if y3 == y1:
                         # i.e. a reprofiledSpec
-                        x1  = mz_array[pos-5]
-                        y1  = intensity_array[pos-5]
-                        x3  = mz_array[pos+7]
-                        y3  = intensity_array[pos+7]
+                        if pos-5 < 0:
+                            low_pos = 0
+                        else:
+                            lower_pos = pos-5
+                        if pos+7 > len(mz_array):
+                            upper_pos = len(mz_array)-1
+                        else:
+                            upper_pos = pos+7
+                        x1  = mz_array[ lower_pos ]
+                        y1  = intensity_array[ lower_pos ]
+                        x3  = mz_array[ upper_pos ]
+                        y3  = intensity_array[ upper_pos ]
                     try:
                         doubleLog = math.log(y2/y1) / math.log(y3/y1)
                         mue = (doubleLog*( x1*x1 - x3*x3 ) - x1*x1 + x2*x2 ) / (2 * (x2-x1) - 2*doubleLog*(x3-x1))
