@@ -83,7 +83,10 @@ class Reader(object):
     :type MS1_Precision: float
     :param MSn_Precision: measured precision of MSn spectra
     :type MSn_Precision: float
-
+    :param build_index_from_scratch: build index from scratch
+    :type build_index_from_scratch: boolean
+    :param file_object: file object or any other iterable stream, this will make path obsolete, seeking is disabled
+    :type file_object: File_object like
     Example:
 
     >>> run = pymzml.run.Reader("../mzML_example_files/100729_t300_100729172744.mzML.gz" ,
@@ -97,7 +100,8 @@ class Reader(object):
                      extraAccessions = None,
                      MS1_Precision = 5e-6,
                      MSn_Precision = 20e-6,
-                     build_index_from_scratch=False
+                     build_index_from_scratch=False,
+                     file_object = None
         ):
 
 
@@ -125,81 +129,84 @@ class Reader(object):
         self.spectrum       = pymzml.spec.Spectrum(measuredPrecision = MS1_Precision , param = self.param)
         self.spectrum.clear()
         #
-
-        if self.info['filename'].endswith('.gz'):
-            import gzip, codecs
-            self.info['fileObject'] = codecs.getreader("utf-8")(gzip.open(self.info['filename']))
+        if file_object != None:
+            self.info['fileObject'] = file_object
             self.info['seekable'] = False
         else:
-            self.info['fileObject'] = open(self.info['filename'],'r')
-            self.info['seekable'] = True
-
-            ### declare the seeker
-            # read encoding ... maybe not really needed ...
-            self.seeker = open(self.info['filename'],'rb')
-            header = self.seeker.readline()
-            encodingPattern = re.compile( b'encoding="(?P<encoding>[A-Za-z0-9-]*)"')
-            match = encodingPattern.search(header)
-            if match:
-                self.info['encoding'] = bytes.decode( match.group('encoding'))
-            else:
-                self.info['encoding'] = None
-
-            #reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
-            indexListOffsetPattern = re.compile( b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>' )
-            chromatogramOffsetPattern = re.compile( b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset' )
-            self.info['offsets']['indexList'] = None
-            self.info['offsets']['TIC'] = None
-            self.seeker.seek(0,2)
-            for _ in range(10): # max 10kbyte
-                try:
-                   self.seeker.seek( -1024*_, 1 )
-                except:
-                    break
-                    # File is smaller than 10kbytes ...
-                for line in self.seeker:
-                    match = chromatogramOffsetPattern.search(line)
-                    #print(_, line)
-                    if match:
-                        self.info['offsets']['TIC'] = int(bytes.decode( match.group('offset')))
-                    match = indexListOffsetPattern.search(line)
-                    if match:
-                        self.info['offsets']['indexList'] = int(bytes.decode( match.group('indexListOffset')))
-                        #break
-                if self.info['offsets']['indexList'] != None and self.info['offsets']['TIC'] != None:
-                    break
-            if self.info['offsets']['indexList'] == None:
-                # fall back to non-seekable
+            if self.info['filename'].endswith('.gz'):
+                import gzip, codecs
+                self.info['fileObject'] = codecs.getreader("utf-8")(gzip.open(self.info['filename']))
                 self.info['seekable'] = False
-                if build_index_from_scratch:
-                    self._build_index_from_scratch(self.seeker)
-                # print('Could not find indexList. Falling back to non seekable.', file = sys.stderr)
-            elif self.info['offsets']['TIC'] != None and self.info['offsets']['TIC'] > os.path.getsize(self.info['filename']):
-                self.info['seekable'] = False
-                #print('mzML file was truncated, but offsets were not recalculated. Falling back to non seekable.', file = sys.stderr)
             else:
-                # Jumping to index list and slurpin all specOffsets
-                self.seeker.seek(self.info['offsets']['indexList'],0)
-                spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
-                simIndexPattern = RegexPatterns.simIndexPattern
-                ## NOTE: this might be again different in another mzML versions!!
-                ## 1.1 >> small_zlib.pwiz.1.1.mzML:     <offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>
-                ## 1.0 >>                               <offset idRef="S16004" nativeID="16004">236442042</offset>
-                ##  <offset idRef="SIM SIC 651.5">330223452</offset>\n'
-                for line in self.seeker:
-                    match_spec = spectrumIndexPattern.search(line)
-                    if match_spec and match_spec.group('nativeID') == b'':
-                        match_spec = None
-                    match_sim  = simIndexPattern.search(line)
-                    if match_spec:
-                        self.info['offsets'][ int(bytes.decode( match_spec.group('nativeID'))) ] = int(bytes.decode( match_spec.group('offset')))
-                        self.info['offsetList'].append(int(bytes.decode( match_spec.group('offset'))))
-                    elif match_sim:
-                        self.info['offsets'][ bytes.decode( match_sim.group('nativeID')) ] = int(bytes.decode( match_sim.group('offset')))
-                        self.info['offsetList'].append(int(bytes.decode( match_sim.group('offset'))))
-                # opening seeker in normal mode again
-            self.seeker.close()
-            self.seeker = open(self.info['filename'],'r')
+                self.info['fileObject'] = open(self.info['filename'],'r')
+                self.info['seekable'] = True
+
+                ### declare the seeker
+                # read encoding ... maybe not really needed ...
+                self.seeker = open(self.info['filename'],'rb')
+                header = self.seeker.readline()
+                encodingPattern = re.compile( b'encoding="(?P<encoding>[A-Za-z0-9-]*)"')
+                match = encodingPattern.search(header)
+                if match:
+                    self.info['encoding'] = bytes.decode( match.group('encoding'))
+                else:
+                    self.info['encoding'] = None
+
+                #reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
+                indexListOffsetPattern = re.compile( b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>' )
+                chromatogramOffsetPattern = re.compile( b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset' )
+                self.info['offsets']['indexList'] = None
+                self.info['offsets']['TIC'] = None
+                self.seeker.seek(0,2)
+                for _ in range(10): # max 10kbyte
+                    try:
+                       self.seeker.seek( -1024*_, 1 )
+                    except:
+                        break
+                        # File is smaller than 10kbytes ...
+                    for line in self.seeker:
+                        match = chromatogramOffsetPattern.search(line)
+                        #print(_, line)
+                        if match:
+                            self.info['offsets']['TIC'] = int(bytes.decode( match.group('offset')))
+                        match = indexListOffsetPattern.search(line)
+                        if match:
+                            self.info['offsets']['indexList'] = int(bytes.decode( match.group('indexListOffset')))
+                            #break
+                    if self.info['offsets']['indexList'] != None and self.info['offsets']['TIC'] != None:
+                        break
+                if self.info['offsets']['indexList'] == None:
+                    # fall back to non-seekable
+                    self.info['seekable'] = False
+                    if build_index_from_scratch:
+                        self._build_index_from_scratch(self.seeker)
+                    # print('Could not find indexList. Falling back to non seekable.', file = sys.stderr)
+                elif self.info['offsets']['TIC'] != None and self.info['offsets']['TIC'] > os.path.getsize(self.info['filename']):
+                    self.info['seekable'] = False
+                    #print('mzML file was truncated, but offsets were not recalculated. Falling back to non seekable.', file = sys.stderr)
+                else:
+                    # Jumping to index list and slurpin all specOffsets
+                    self.seeker.seek(self.info['offsets']['indexList'],0)
+                    spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
+                    simIndexPattern = RegexPatterns.simIndexPattern
+                    ## NOTE: this might be again different in another mzML versions!!
+                    ## 1.1 >> small_zlib.pwiz.1.1.mzML:     <offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>
+                    ## 1.0 >>                               <offset idRef="S16004" nativeID="16004">236442042</offset>
+                    ##  <offset idRef="SIM SIC 651.5">330223452</offset>\n'
+                    for line in self.seeker:
+                        match_spec = spectrumIndexPattern.search(line)
+                        if match_spec and match_spec.group('nativeID') == b'':
+                            match_spec = None
+                        match_sim  = simIndexPattern.search(line)
+                        if match_spec:
+                            self.info['offsets'][ int(bytes.decode( match_spec.group('nativeID'))) ] = int(bytes.decode( match_spec.group('offset')))
+                            self.info['offsetList'].append(int(bytes.decode( match_spec.group('offset'))))
+                        elif match_sim:
+                            self.info['offsets'][ bytes.decode( match_sim.group('nativeID')) ] = int(bytes.decode( match_sim.group('offset')))
+                            self.info['offsetList'].append(int(bytes.decode( match_sim.group('offset'))))
+                    # opening seeker in normal mode again
+                self.seeker.close()
+                self.seeker = open(self.info['filename'],'r')
 
         ### declare the iter
         self.iter = iter(cElementTree.iterparse(self.info['fileObject'], events = ( b'start',b'end'))) # NOTE: end might be sufficient
