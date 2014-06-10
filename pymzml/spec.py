@@ -478,10 +478,10 @@ class Spectrum(dict):
                     if y3 == y1:
                         # i.e. a reprofiledSpec
                         if pos-5 < 0:
-                            low_pos = 0
+                            lower_pos = 0
                         else:
                             lower_pos = pos-5
-                        if pos+7 > len(mz_array):
+                        if pos+7 >= len(mz_array):
                             upper_pos = len(mz_array)-1
                         else:
                             upper_pos = pos+7
