@@ -527,6 +527,12 @@ class Spectrum(dict):
         """
         return self._xmlTree.getiterator()
 
+    def determine_swath_IDs(self):
+        ID_tagline=self._xmlTree.get('id')    
+        for header in re.findall( r'([a-zA-Z]*)=',  ID_tagline  ):
+            self[ header ] = re.findall( r'{0}=([0-9]*)'.format( header ),   ID_tagline )[0]
+        
+        
     @property
     def tmzSet(self):
         """
