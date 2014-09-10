@@ -1366,38 +1366,28 @@ class Spectrum(dict):
 
         """
         return int(round(value * self.internalPrecision))
-
-    def initFromTreeObject(self,treeObject):
+    def initFromTreeObjectWithRef(self,treeObject,refObject):
         """
-        treeObject.get('nativeID')
-        print(treeObject)
-        print(treeObject.items())
-        for _ in treeObject.getiterator():
-            print(_.tag,_.items())
+        initializes first from the treeObject and then goes
+        through the refObject and assigns any other parameters from there...
         """
-        self.clear()
-        self._xmlTree = treeObject
-        #
-        if treeObject.tag.endswith('chromatogram'):
-            self['id'] = treeObject.get('id')
-            self['ms level'] = None
-            self.dataType = "chromatogram"
-        else:
-            try:
-                '''
-                1.1.0  >> <spectrum id="spectrum=1019" index="8" defaultArrayLength="431">
-                1.1.0  >> <spectrum id="scan=3" index="0" sourceFileRef="SF1" defaultArrayLength="92">
-                1.0.0  >> <spectrum index="317" id="S318" nativeID="318" defaultArrayLength="34">
-                0.99.1 >> <spectrum id="S20" scanNumber="20" msLevel="2">
-                so far regex hold for this ...
-                '''
-                self['id'] = int(re.search( r'[0-9]*$',   treeObject.get('id')  ).group())
-            except:
-                self['id'] = None
-            self.dataType = "spectrum"
-
-        self['defaultArrayLength'] = int(treeObject.get('defaultArrayLength'))
+        self.initFromTreeObject(treeObject)
+        reference = ""
         for element in treeObject.getiterator():
+            if element.tag.endswith('}referenceableParamGroupRef'):
+                reference=element.get('ref')
+                break
+
+        for element in refObject:
+            if element.tag.endswith('}referenceableParamGroup'):
+                refid=element.get('id')
+                if refid == reference:
+                    self.readAccession(element)
+
+        return
+
+    def readAccession(self,parElement):
+        for element in parElement.getiterator():
             accession = element.get('accession')
             self.ms[accession] = element
             if element.tag.endswith('cvParam'):
@@ -1476,10 +1466,47 @@ class Spectrum(dict):
                             pass
 
             elif element.tag.endswith('binary'):
-                 self._link(    idTag = 'PY:0000000',
+                self._link(    idTag = 'PY:0000000',
                                 value = element.text,
                                 name  = 'encodedData'
-                    )
+                )
+
+
+
+        return
+
+    
+    def initFromTreeObject(self,treeObject):
+        """
+        treeObject.get('nativeID')
+        print(treeObject)
+        print(treeObject.items())
+        for _ in treeObject.getiterator():
+            print(_.tag,_.items())
+        """
+        self.clear()
+        self._xmlTree = treeObject
+        #
+        if treeObject.tag.endswith('chromatogram'):
+            self['id'] = treeObject.get('id')
+            self['ms level'] = None
+            self.dataType = "chromatogram"
+        else:
+            try:
+                '''
+                1.1.0  >> <spectrum id="spectrum=1019" index="8" defaultArrayLength="431">
+                1.1.0  >> <spectrum id="scan=3" index="0" sourceFileRef="SF1" defaultArrayLength="92">
+                1.0.0  >> <spectrum index="317" id="S318" nativeID="318" defaultArrayLength="34">
+                0.99.1 >> <spectrum id="S20" scanNumber="20" msLevel="2">
+                so far regex hold for this ...
+                '''
+                self['id'] = int(re.search( r'[0-9]*$',   treeObject.get('id')  ).group())
+            except:
+                self['id'] = None
+            self.dataType = "spectrum"
+
+        self['defaultArrayLength'] = int(treeObject.get('defaultArrayLength'))
+        self.readAccession(treeObject)
 
         try:
             if self['ms level'] == 1:
