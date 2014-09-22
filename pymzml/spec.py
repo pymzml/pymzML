@@ -479,7 +479,7 @@ class Spectrum(dict):
                         #we start a bit closer to the mid point.
                         before = 3
                         after = 4
-                        while ((not (0 < y1 < y2 > y3 > 0)) and y1==y3) and after < 10: #we dont want to go too far
+                        while (not 0 < y1 < y2 > y3 > 0) and y1==y3 and after < 10: #we dont want to go too far
                             if pos-before < 0:
                                 lower_pos = 0
                             else:
@@ -496,7 +496,7 @@ class Spectrum(dict):
                                 after += 1
                             else:
                                 before += 1
-                    if not (0 < y1 < y2 > y3 > 0):
+                    if not (0 < y1 < y2 > y3 > 0) or y1==y3:
                         #If we dont check this, there is a chance to apply gauss fit to a section
                         #where there is no peak.
                         continue
