@@ -123,7 +123,7 @@ class oboTranslator(object):
                             collections[line[:k]] = line[k+1:].strip()
         else:
             print("No obo file version {0} (psi-ms-{0}.obo) found.".format(self.version), file=sys.stderr)
-            exit(1)
+            raise Exception("Could not find obo file.")
         return
 
     def add(self,collection_dict):
