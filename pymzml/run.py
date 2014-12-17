@@ -1,11 +1,11 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 # encoding: utf-8
 """
-The class :py:class:`Reader` has been designed to selectivly extract data
+The class :py:class:`Reader` has been designed to selectively extract data
 from a mzML file and to expose the data as a python object.
 Necessary information are read in and stored in a fast
-accesible format.
+accessible format.
 The reader itself is an iterator, thus looping over all spectra
 follows the classical pythonian syntax.
 Additionally one can random access spectra by their nativeID
@@ -17,7 +17,7 @@ The class :py:class:`Writer` is still in development.
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Specht, H. Roest, C. Fufezan
+# Copyright (C) 2010-2014 T. Bald, J. Barth, A. Niehues, M. Specht, H. Roest, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -94,15 +94,15 @@ class Reader(object):
     """
 
     def __init__(
-                     self,
-                     path,
-                     noiseThreshold = 0.0,
-                     extraAccessions = None,
-                     MS1_Precision = 5e-6,
-                     MSn_Precision = 20e-6,
-                     build_index_from_scratch=False,
-                     file_object = None
-        ):
+         self,
+         path,
+         noiseThreshold = 0.0,
+         extraAccessions = None,
+         MS1_Precision = 5e-6,
+         MSn_Precision = 20e-6,
+         build_index_from_scratch=False,
+         file_object = None
+            ):
 
 
         # self.param contains user-specified parsing parameters
@@ -114,80 +114,101 @@ class Reader(object):
         self.param['accessions'] = { }
 
         # self.info contains information extracted from the mzML file
-        self.info = dict()
-        self.info['offsets'] = ddict()
-        self.info['filename'] = path
-        self.info['offsetList'] = []
-        self.info['referenceableParamGroupList']=False
+        self.info                                = dict()
+        self.info['offsets']                     = ddict()
+        self.info['filename']                    = path
+        self.info['offsetList']                  = []
+        self.info['referenceableParamGroupList'] = False
 
         self.MS1_Precision = MS1_Precision
 
         self.elementList = []
 
         # Default stuff
-        #self.spectrum = pymzml.spec.Spectrum(measuredPrecision = MS1_Precision)
-        #self.spectrum.clear()
-        self.spectrum       = pymzml.spec.Spectrum(measuredPrecision = MS1_Precision , param = self.param)
+        self.spectrum = pymzml.spec.Spectrum(
+            measuredPrecision = MS1_Precision ,
+            param = self.param
+        )
         self.spectrum.clear()
         #
-        if file_object != None:
+        if file_object is not None:
             self.info['fileObject'] = file_object
             self.info['seekable'] = False
         else:
             if self.info['filename'].endswith('.gz'):
-                import gzip, codecs
-                self.info['fileObject'] = codecs.getreader("utf-8")(gzip.open(self.info['filename']))
+                import gzip
+                import codecs
+                self.info['fileObject'] = codecs.getreader("utf-8")(
+                    gzip.open(self.info['filename'])
+                )
                 self.info['seekable'] = False
             else:
-                self.info['fileObject'] = open(self.info['filename'],'r')
+                self.info['fileObject'] = open(self.info['filename'], 'r')
                 self.info['seekable'] = True
 
-                ### declare the seeker
+                # declare the seeker
                 # read encoding ... maybe not really needed ...
-                self.seeker = open(self.info['filename'],'rb')
+                self.seeker = open(self.info['filename'], 'rb')
                 header = self.seeker.readline()
-                encodingPattern = re.compile( b'encoding="(?P<encoding>[A-Za-z0-9-]*)"')
+                encodingPattern = re.compile(
+                    b'encoding="(?P<encoding>[A-Za-z0-9-]*)"'
+                )
                 match = encodingPattern.search(header)
                 if match:
-                    self.info['encoding'] = bytes.decode( match.group('encoding'))
+                    self.info['encoding'] = bytes.decode(
+                        match.group('encoding')
+                    )
                 else:
                     self.info['encoding'] = None
 
-                #reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
-                indexListOffsetPattern = re.compile( b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>' )
-                chromatogramOffsetPattern = re.compile( b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset' )
+                # reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
+                indexListOffsetPattern = re.compile(
+                    b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>'
+                )
+                chromatogramOffsetPattern = re.compile(
+                    b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset'
+                )
                 self.info['offsets']['indexList'] = None
                 self.info['offsets']['TIC'] = None
-                self.seeker.seek(0,2)
-                for _ in range(10): # max 10kbyte
+                self.seeker.seek(0, 2)
+                for _ in range(10):  # max 10kbyte
                     try:
-                       self.seeker.seek( -1024*_, 1 )
+                       self.seeker.seek( -1024 * _, 1 )
                     except:
                         break
                         # File is smaller than 10kbytes ...
                     for line in self.seeker:
                         match = chromatogramOffsetPattern.search(line)
-                        #print(_, line)
                         if match:
-                            self.info['offsets']['TIC'] = int(bytes.decode( match.group('offset')))
+                            self.info['offsets']['TIC'] = int(
+                                bytes.decode(
+                                    match.group('offset')
+                                )
+                            )
                         match = indexListOffsetPattern.search(line)
                         if match:
-                            self.info['offsets']['indexList'] = int(bytes.decode( match.group('indexListOffset')))
-                            #break
-                    if self.info['offsets']['indexList'] != None and self.info['offsets']['TIC'] != None:
+                            self.info['offsets']['indexList'] = int(
+                                bytes.decode(
+                                    match.group('indexListOffset')
+                                )
+                            )
+                            #  break
+                    if self.info['offsets']['indexList'] is not None and \
+                            self.info['offsets']['TIC'] is not None:
                         break
-                if self.info['offsets']['indexList'] == None:
+                if self.info['offsets']['indexList'] is None:
                     # fall back to non-seekable
                     self.info['seekable'] = False
                     if build_index_from_scratch:
                         self._build_index_from_scratch(self.seeker)
                     # print('Could not find indexList. Falling back to non seekable.', file = sys.stderr)
-                elif self.info['offsets']['TIC'] != None and self.info['offsets']['TIC'] > os.path.getsize(self.info['filename']):
+                elif self.info['offsets']['TIC'] is not None and \
+                        self.info['offsets']['TIC'] > os.path.getsize(self.info['filename']):
                     self.info['seekable'] = False
                     #print('mzML file was truncated, but offsets were not recalculated. Falling back to non seekable.', file = sys.stderr)
                 else:
                     # Jumping to index list and slurpin all specOffsets
-                    self.seeker.seek(self.info['offsets']['indexList'],0)
+                    self.seeker.seek(self.info['offsets']['indexList'], 0)
                     spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
                     simIndexPattern = RegexPatterns.simIndexPattern
                     ## NOTE: this might be again different in another mzML versions!!
@@ -207,7 +228,7 @@ class Reader(object):
                             self.info['offsetList'].append(int(bytes.decode( match_sim.group('offset'))))
                     # opening seeker in normal mode again
                 self.seeker.close()
-                self.seeker = open(self.info['filename'],'r')
+                self.seeker = open(self.info['filename'], 'r')
 
         ### declare the iter
         self.iter = iter(cElementTree.iterparse(self.info['fileObject'], events = ( b'start',b'end'))) # NOTE: end might be sufficient
@@ -220,40 +241,44 @@ class Reader(object):
                     self.info['mzmlVersion'] = element.attrib['version']
                 else:
                     s = element.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation']
-                    self.info['mzmlVersion'] = re.search( r'[0-9]*\.[0-9]*\.[0-9]*',   s  ).group()
+                    self.info['mzmlVersion'] = re.search(
+                        r'[0-9]*\.[0-9]*\.[0-9]*',   s
+                    ).group()
             elif element.tag.endswith('}referenceableParamGroupList'):
-                self.info['referenceableParamGroupList']=True
-                self.info['referenceableParamGroupListElement']=element
+                self.info['referenceableParamGroupList'] = True
+                self.info['referenceableParamGroupListElement'] = element
             elif element.tag.endswith('}spectrumList'):
                 break
             elif element.tag.endswith('}chromatogramList'):
-                ## SRM only ?
+                # SRM only ?
                 break
             else:
                 pass
 
-        ## parse obo, check MS tags and if they are ok in minimum.py (minimum required) ...
+        # parse obo, check MS tags and if they are ok in minimum.py (minimum required) ...
         self.OT = pymzml.obo.oboTranslator()
 
         for minimumMS, ListOfvaluesToExtract in pymzml.minimum.MIN_REQ:
             self.param['accessions'][minimumMS] = {
-                                                    'valuesToExtract'   : ListOfvaluesToExtract ,
-                                                    'name'              : self.OT[minimumMS] ,
-                                                    'values'            : []
+                'valuesToExtract'   : ListOfvaluesToExtract ,
+                'name'              : self.OT[minimumMS] ,
+                'values'            : []
             }
 
         # parse extra accessions ...
-        if extraAccessions != None:
+        if extraAccessions is not None:
             for accession, fieldIdentifiers in extraAccessions:
                 if accession not in self.param['accessions'].keys():
                     self.param['accessions'][accession] = {
-                                                        'valuesToExtract'   : [] ,
-                                                        'name'              : self.OT[accession],
-                                                        'values'            : []
-                }
+                        'valuesToExtract'   : [] ,
+                        'name'              : self.OT[accession],
+                        'values'            : []
+                    }
                 for valueToExtract in fieldIdentifiers:
                     if valueToExtract not in self.param['accessions'][accession]['valuesToExtract']:
-                        self.param['accessions'][accession]['valuesToExtract'].append(valueToExtract)
+                        self.param['accessions'][accession]['valuesToExtract'].append(
+                            valueToExtract
+                        )
 
         return
 
@@ -261,7 +286,8 @@ class Reader(object):
         """Build an index of spectra/chromatogram data with offsets by parsing the file."""
 
         def get_data_indices(fh, chunksize=8192, lookback_size=100):
-            """ Get a dictionary with binary file indices of spectra and chromatograms in an mzML file.
+            """Get a dictionary with binary file indices of spectra and
+            chromatograms in an mzML file.
 
             Will parse quickly through the file and find all occurences of
             <chromatogram ... id="..." and <spectrum ... id="..." using a
@@ -325,7 +351,7 @@ class Reader(object):
             return positions
 
         indices = get_data_indices(seeker)
-        if indices != None:
+        if indices is not None:
             self.info['offsets'].update(indices)
             self.info['offsetList'].extend(indices.values())
 
@@ -355,14 +381,17 @@ class Reader(object):
 
         """
         while True:
-            event, element = next(self.iter, ('END','END'))
+            event, element = next(self.iter, ('END', 'END'))
             # error? check cElementTree; conversion of data to 32bit-float mzml files might help
             # stop iteration when parsing is done
             if event == 'END':
                 raise StopIteration
             if (element.tag.endswith('}spectrum') or element.tag.endswith('}chromatogram') ) and event == b'end':
                 if self.info['referenceableParamGroupList']:
-                    self.spectrum.initFromTreeObjectWithRef(element,self.info['referenceableParamGroupListElement'])
+                    self.spectrum.initFromTreeObjectWithRef(
+                        element,
+                        self.info['referenceableParamGroupListElement']
+                    )
                 else:
                     self.spectrum.initFromTreeObject(element)
 
@@ -373,7 +402,7 @@ class Reader(object):
                 self.elementList.append(element)
                 return self.spectrum
 
-    def __getitem__(self,value):
+    def __getitem__(self, value):
         '''
         Random access to spectra if mzML fill is indexed,
         not compressed and not truncted.
@@ -384,35 +413,47 @@ class Reader(object):
 
         '''
         answer = None
-        if self.info['seekable'] == True:
+        if self.info['seekable'] is True:
             if len(self.info['offsets']) == 0:
                 print("File does support random access, unfortunately indexlist missing, i.e. type not implemented yet ...", file=sys.stderr)
 
             if value in self.info['offsets']:
                 startPos = self.info['offsets'][value]
-                endPos_index = bisect.bisect_right(self.info['offsetList'],self.info['offsets'][value])
+                endPos_index = bisect.bisect_right(
+                    self.info['offsetList'],
+                    self.info['offsets'][value]
+                )
                 if endPos_index == len(self.info['offsetList']):
                     endPos = os.path.getsize(self.info['filename'])
                 else:
                     endPos = self.info['offsetList'][endPos_index]
 
 
-                self.seeker.seek(startPos,0)
-                data = self.seeker.read(endPos-self.info['offsets'][value])
+                self.seeker.seek(startPos, 0)
+                data = self.seeker.read(endPos - self.info['offsets'][value])
                 try:
-                    self.spectrum.initFromTreeObject( cElementTree.fromstring( data ))
+                    self.spectrum.initFromTreeObject(
+                        cElementTree.fromstring( data )
+                    )
                 except:
-                    ## have closing </mzml> & </run> &or </spectrumList>
+                    # have closing </mzml> & </run> &or </spectrumList>
                     startingTag = data.split()[0]
-                    stopIndex = data.index( '</'+startingTag[1:]+'>')
-                    self.spectrum.initFromTreeObject( cElementTree.fromstring( data[:stopIndex+len(startingTag)+2] ))
+                    stopIndex = data.index( '</' + startingTag[1:] + '>')
+                    self.spectrum.initFromTreeObject(
+                        cElementTree.fromstring(
+                            data[:stopIndex + len(startingTag) + 2]
+                        )
+                    )
                 answer = self.spectrum
             else:
-                print("Run does not contain spec with native ID {0}".format(value),file=sys.stderr)
+                print("Run does not contain spec with native ID {0}".format(value), file=sys.stderr)
                 #print(self.info['offsets'].keys())
 
         else:
-            self.iter = iter(cElementTree.iterparse(self.info['filename'], events = ( b'start',b'end'))) # NOTE: end might be sufficient
+            self.iter = iter(cElementTree.iterparse(
+                self.info['filename'],
+                events = ( b'start', b'end')
+            )) # NOTE: end might be sufficient
 
             for _ in self:
                 if _['id'] == value:
@@ -453,12 +494,13 @@ class Writer(object):
         self.run = run
         self.info = {'counters': ddict(int) }
         if self.run.info['filename'].endswith('.gz'):
-            import gzip, codecs
+            import gzip
+            import codecs
             io = codecs.getreader("utf-8")(gzip.open(self.run.info['filename']))
         else:
-            io = open(self.run.info['filename'],'r')
+            io = open(self.run.info['filename'], 'r')
 
-        for event,element in cElementTree.iterparse(io, events = ( b'start',b'end')):
+        for event,element in cElementTree.iterparse(io, events = ( b'start', b'end')):
             if self.newTree == None:
                 self.newTree = cElementTree.Element(element.tag,element.attrib)
                 if event == b'start' and element.tag.endswith("}mzML"):

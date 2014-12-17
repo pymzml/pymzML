@@ -9,6 +9,7 @@ Copyright 2010-2014 by
 * A. Niehues,
 * M. Specht,
 * M. Hippler,
+* H. Roest,
 * C. Fufezan
 
 
@@ -28,7 +29,7 @@ doi: 10.1093/bioinformatics/bts066
 
 (you might need admin privileges to write in the python site-package folder,
 for example use ```sudo python setup.py install``` or write into a user folder
-by using this command ```python setup.py install --user```). 
+by using this command ```python setup.py install --user```).
 
 If you want to also have support for ms-numpress compression, you might need to
 install additional packages (currently the development version of pyOpenMS).

@@ -63,8 +63,10 @@ class Spectrum(dict):
 
 
         """
-        assert isinstance( measuredPrecision , float ), "Require measured precision as input parameter..."
-        self.measuredPrecision = measuredPrecision          # this will also set and update internalPrecision
+        assert isinstance( measuredPrecision , float ), \
+            "Require measured precision as input parameter..."
+        self.measuredPrecision = measuredPrecision
+        # this will also set and update internalPrecision
         self.clear()
         self._mz = []
         self._i = []
@@ -74,7 +76,7 @@ class Spectrum(dict):
         self.dataType = "?"
         return
 
-    def __add__(self,otherSpec):
+    def __add__(self, otherSpec):
         """
         Adds two pymzml spectra together.
 
@@ -91,12 +93,13 @@ class Spectrum(dict):
         ...     s += spec
 
         """
-        assert isinstance(otherSpec,Spectrum) , "can only add two pymzML spectra together ..."
+        assert isinstance(otherSpec, Spectrum), \
+            "can only add two pymzML spectra together ..."
         tmp = self.deRef()
-        if tmp._reprofiledPeaks == None:
+        if tmp._reprofiledPeaks is None:
             tmp._reprofiledPeaks = tmp._reprofile_Peaks()
 
-        for mz,i in otherSpec.reprofiledPeaks:
+        for mz, i in otherSpec.reprofiledPeaks:
             tmp._reprofiledPeaks[mz] += i
 
         # deleting original data since we have now a combination of specs
@@ -119,7 +122,7 @@ class Spectrum(dict):
         assert isinstance(otherSpec,Spectrum) , "can only subtract two pymzML spectra ..."
         tmp = self.deRef()
 
-        if tmp._reprofiledPeaks == None:
+        if tmp._reprofiledPeaks is None:
             tmp._reprofiledPeaks = tmp._reprofile_Peaks()
 
         for mz,i in otherSpec.reprofiledPeaks:
@@ -144,11 +147,11 @@ class Spectrum(dict):
         """
         assert isinstance(value, (int, float)), "require float or int of intensity values ..."
         tmp = self.deRef()
-        if tmp._peaks != None:
+        if tmp._peaks is not None:
             tmp.peaks  = [(mz, i * float(value)) for mz, i in tmp.peaks]
-        if tmp._centroidedPeaks != None:
+        if tmp._centroidedPeaks is not None:
             tmp.centroidedPeaks = [(mz, i * float(value)) for mz, i in tmp.centroidedPeaks]
-        if tmp._reprofiledPeaks != None:
+        if tmp._reprofiledPeaks is not None:
             for mz in tmp._reprofiledPeaks.keys():
                 tmp._reprofiledPeaks[mz] *= float(value)
         return tmp
@@ -163,11 +166,11 @@ class Spectrum(dict):
         """
         assert isinstance( value , ( int , float ) ), "require float or int of intensity values ..."
         tmp = self.deRef()
-        if tmp._peaks != None:
+        if tmp._peaks is not None:
             tmp.peaks  = [ (mz,i/float(value)) for mz,i in tmp.peaks ]
-        if tmp._centroidedPeaks != None:
+        if tmp._centroidedPeaks is not None:
             tmp.centroidedPeaks = [ (mz,i/float(value)) for mz,i in tmp.centroidedPeaks ]
-        if tmp._reprofiledPeaks != None:
+        if tmp._reprofiledPeaks is not None:
             for mz in tmp._reprofiledPeaks.keys():
                 tmp._reprofiledPeaks[mz] /= float(value)
         return tmp
@@ -189,24 +192,24 @@ class Spectrum(dict):
             for k in list(self.keys()):
                 del self[k]
 
-        self._mz = None
-        self._i = None
-        self._peaks = None
-        self._centroidedPeaks = None
-        self._reprofiledPeaks = None
-        self._deconvolutedPeaks = None
-        self._transformedMzWithError = None
-        self._transformedPeaks = None
-        self._transformed_deconvolutedPeaks  = None
-        self._transformedMassWithError = None
-        self._extremeValues = None
-        self._tmzSet = None
-        self._tmassSet = None
-        self._centroidedPeaksSortedByI = None
-        self._xmlTree = None
-        self._iter = None
-        self['BinaryArrayOrder'] = []
-        self.ms = {}
+        self._mz                            = None
+        self._i                             = None
+        self._peaks                         = None
+        self._centroidedPeaks               = None
+        self._reprofiledPeaks               = None
+        self._deconvolutedPeaks             = None
+        self._transformedMzWithError        = None
+        self._transformedPeaks              = None
+        self._transformed_deconvolutedPeaks = None
+        self._transformedMassWithError      = None
+        self._extremeValues                 = None
+        self._tmzSet                        = None
+        self._tmassSet                      = None
+        self._centroidedPeaksSortedByI      = None
+        self._xmlTree                       = None
+        self._iter                          = None
+        self['BinaryArrayOrder']            = []
+        self.ms                             = {}
         return
 
     def strip(self, scope = 'all'):
@@ -221,7 +224,7 @@ class Spectrum(dict):
         tables as well.
         """
         if scope == 'all':
-            if self._peaks == None:
+            if self._peaks is None:
                 # decode, just in case ...
                 self.peaks
             self._tmzSet = None
@@ -232,10 +235,10 @@ class Spectrum(dict):
             self._transformedMassWithError = None
             if 'encodedData' in self.keys():
                 del self['encodedData']
-                del self['PY:0000000'] # this is the ID tag corresponding to 'encodedData'
+                del self['PY:0000000']
+                # this is the ID tag corresponding to 'encodedData'
         else:
             print("Dont understand strip request ", file = sys.stderr)
-
 
     @property
     def mz(self):
@@ -250,13 +253,13 @@ class Spectrum(dict):
         :return: Returns a list of mz from the actual analysed spectrum
 
         """
-        if self._mz == None:
+        if self._mz is None:
             self._decode()
         return self._mz
 
     @mz.setter
-    def mz(self,mzList):
-        assert type(mzList) == type([]), "require list of mz values ..."
+    def mz(self, mzList):
+        assert isinstance( mzList, list ), "require list of mz values ..."
         self._mz = mzList
         return
 
@@ -274,17 +277,17 @@ class Spectrum(dict):
         :return: Returns a list of mz from the actual analysed spectrum
 
         """
-        if self._mz == None:
+        if self._mz is None:
             self._decode()
         return self._mz
 
     @time.setter
-    def time(self,timeList):
-        assert type(timeList) == type([]), "require list of time (RT) values ..."
+    def time(self, timeList):
+        assert isinstance(timeList, list), "require list of time (RT) values ..."
         self._mz = timeList
         return
 
-    def extremeValues(self,key):
+    def extremeValues(self, key):
         """
         Find extreme values, minimal and maximum mz and intensity
 
@@ -294,15 +297,21 @@ class Spectrum(dict):
         :return: tuple of minimal and maximum m/z or intensity
 
         """
-        if key not in ['mz','i']:
+        if key not in ['mz', 'i']:
             print("Dont understand extreme request ", file = sys.stderr)
-        if self._extremeValues == None:
+        if self._extremeValues is None:
             self._extremeValues = {}
         try:
             if key == 'mz':
-                self._extremeValues['mz'] = ( min([mz for mz, i in self.peaks]) , max([mz for mz, i in self.peaks]) )
+                self._extremeValues['mz'] = (
+                    min([mz for mz, i in self.peaks]),
+                    max([mz for mz, i in self.peaks])
+                )
             else:
-                self._extremeValues['i']  = ( min([i for mz, i in self.peaks]) , max([i for mz, i in self.peaks]) )
+                self._extremeValues['i']  = (
+                    min([i for mz, i in self.peaks]),
+                    max([i for mz, i in self.peaks])
+                )
         except ValueError:
             # emtpy spectrum
             self._extremeValues[key] = ()
@@ -323,13 +332,13 @@ class Spectrum(dict):
             spectrum.
 
         """
-        if self._i == None:
+        if self._i is None:
             self._decode()
         return self._i
 
     @i.setter
-    def i(self,intensityList):
-        assert type(intensityList) == type([]), "require list of intensity values ..."
+    def i(self, intensityList):
+        assert isinstance(intensityList, list), "require list of intensity values ..."
         self._i = intensityList
         return
 
@@ -357,8 +366,8 @@ class Spectrum(dict):
         """
         if 'reprofiled' in self.keys():
             self.peaks = self._centroid_peaks()
-        elif self._peaks == None:
-            if self._mz == None and 'encodedData' not in self.keys():
+        elif self._peaks is None:
+            if self._mz is None and 'encodedData' not in self.keys():
                 self._peaks = []
             else:
                 self._peaks = list(zip(self.mz , self.i))
@@ -382,20 +391,19 @@ class Spectrum(dict):
         """
         if 'reprofiled' in self.keys():
             self.peaks = self._centroid_peaks()
-        elif self._peaks == None:
-            if self._mz == None and 'encodedData' not in self.keys():
+        elif self._peaks is None:
+            if self._mz is None and 'encodedData' not in self.keys():
                 self._peaks = []
             else:
                 self._peaks = list(zip(self.mz , self.i))
         return self._peaks
 
-
     @peaks.setter
-    def peaks(self,mz_i_tuple_list):
-        assert type(mz_i_tuple_list) == type([]), "require list of tuples (mz,intensity) ..."
+    def peaks(self, mz_i_tuple_list):
+        assert isinstance(mz_i_tuple_list, list), "require list of tuples (mz,intensity) ..."
         if len(mz_i_tuple_list) == 0:
             return
-        self._mz, self._i = map(list,zip(*mz_i_tuple_list))
+        self._mz, self._i = map(list, zip(*mz_i_tuple_list))
         self._peaks = mz_i_tuple_list
         return self
 
@@ -424,13 +432,13 @@ class Spectrum(dict):
             self.peaks = self._centroid_peaks()
             self._centroidedPeaks = self._peaks
 
-        if self._centroidedPeaks == None: #or self._reprofiledPeaks != None:
+        if self._centroidedPeaks is None:  #or self._reprofiledPeaks is not None:
             self._centroidedPeaks = self._centroid_peaks()
         return self._centroidedPeaks
 
     @centroidedPeaks.setter
-    def centroidedPeaks(self,mz_i_tuple_list):
-        assert type(mz_i_tuple_list) == type([]), "require list of tuples (mz,intensity) ..."
+    def centroidedPeaks(self, mz_i_tuple_list):
+        assert isinstance(mz_i_tuple_list, list), "require list of tuples (mz,intensity) ..."
         self._centroidedPeaks = mz_i_tuple_list
         return
 
@@ -447,64 +455,65 @@ class Spectrum(dict):
                     break
             except:
                 print(self.keys(), file = sys.stderr)
-                exit(1)
+                sys.exit(1)
         if isProfile:
             tmp = []
             if 'reprofiled' in self.keys():
-                intensity_array = [ i for mz,i in self.reprofiledPeaks ]
-                mz_array = [ mz for mz,i in self.reprofiledPeaks ]
+                intensity_array = [ i for mz, i in self.reprofiledPeaks ]
+                mz_array = [ mz for mz, i in self.reprofiledPeaks ]
                 del self['reprofiled']
             else:
                 intensity_array = self.i
                 mz_array = self.mz
             for pos , i in enumerate(intensity_array[:-1]):
-                if pos <= 1: continue
-                if 0 < intensity_array[pos-1] < i > intensity_array[pos+1] > 0:
+                if pos <= 1:
+                    continue
+                if 0 < intensity_array[pos - 1] < i > intensity_array[pos + 1] > 0:
                     # local maximum ...
                     #if 827 <= mz_array[pos] <= 828:
                     #    print("::",i,"@",mz_array[pos])
                     #    print("Found maximum",i,"@",mz_array[pos],intensity_array[pos-1] ,'<' ,i ,"> ",intensity_array[pos+1] )
-                    x1  = mz_array[pos-1]
-                    y1  = intensity_array[pos-1]
+                    x1  = mz_array[pos - 1]
+                    y1  = intensity_array[pos - 1]
                     x2  = mz_array[pos]
                     y2  = intensity_array[pos]
-                    x3  = mz_array[pos+1]
-                    y3  = intensity_array[pos+1]
+                    x3  = mz_array[pos + 1]
+                    y3  = intensity_array[pos + 1]
 
-                    if x2-x1 > (x3-x2)*10 or (x2-x1)*10 < x3-x2:
+                    if x2 - x1 > (x3 - x2) * 10 or (x2 - x1) * 10 < x3 - x2:
                         # no gauss fit if distance between mz values is too large
                         continue
                     if y3 == y1:
                         # i.e. a reprofiledSpec
-                        #we start a bit closer to the mid point.
+                        # we start a bit closer to the mid point.
                         before = 3
                         after = 4
-                        while (not 0 < y1 < y2 > y3 > 0) and y1==y3 and after < 10: #we dont want to go too far
-                            if pos-before < 0:
+                        while (not 0 < y1 < y2 > y3 > 0) and y1 == y3 and after < 10:  #we dont want to go too far
+                            if pos - before < 0:
                                 lower_pos = 0
                             else:
-                                lower_pos = pos-before
+                                lower_pos = pos - before
                             if pos+after >= len(mz_array):
-                                upper_pos = len(mz_array)-1
+                                upper_pos = len(mz_array) - 1
                             else:
-                                upper_pos = pos+after
+                                upper_pos = pos + after
                             x1 = mz_array[ lower_pos ]
                             y1 = intensity_array[ lower_pos ]
                             x3 = mz_array[ upper_pos ]
                             y3 = intensity_array[ upper_pos ]
-                            if before%2==0:
+                            if before % 2 == 0:
                                 after += 1
                             else:
                                 before += 1
-                    if not (0 < y1 < y2 > y3 > 0) or y1==y3:
+                    if not (0 < y1 < y2 > y3 > 0) or y1 == y3:
                         #If we dont check this, there is a chance to apply gauss fit to a section
                         #where there is no peak.
                         continue
                     try:
-                        doubleLog = math.log(y2/y1) / math.log(y3/y1)
-                        mue = (doubleLog*( x1*x1 - x3*x3 ) - x1*x1 + x2*x2 ) / (2 * (x2-x1) - 2*doubleLog*(x3-x1))
+                        doubleLog = math.log(y2 / y1) / math.log(y3 / y1)
+                        mue = (doubleLog * ( x1 * x1 - x3 * x3 ) - x1 * x1 + x2 * x2 ) / (2 * (x2 - x1) - 2 * doubleLog * (x3 - x1))
                         cSquarred = ( x2*x2 - x1*x1 - 2*x2*mue + 2*x1*mue )/ ( 2* math.log(y1/y2 ))
-                        A = y1 * math.exp( (x1-mue)*(x1-mue) / ( 2*cSquarred) )
+                        A = y1 * math.exp( (x1 - mue) * (x1 - mue) / ( 2 * cSquarred ) )
 
                         #if A > 1e20:
                             #print(mue, A, doubleLog, cSquarred)
@@ -514,7 +523,7 @@ class Spectrum(dict):
                             #print()
                     except:
                         continue
-                    tmp.append((mue,A))
+                    tmp.append((mue, A))
             #for mue, A in tmp:
                 #print(mue, "\t", A)
             return tmp
@@ -539,37 +548,38 @@ class Spectrum(dict):
         return self._xmlTree.getiterator()
 
     def determine_swath_IDs(self):
-        ID_tagline=self._xmlTree.get('id')    
-        for header in re.findall( r'([a-zA-Z]*)=',  ID_tagline  ):
-            self[ header ] = re.findall( r'{0}=([0-9]*)'.format( header ),   ID_tagline )[0]
-        
-        
+        ID_tagline=self._xmlTree.get('id')
+        for header in re.findall( r'([a-zA-Z]*)=', ID_tagline ):
+            self[ header ] = re.findall( r'{0}=([0-9]*)'.format( header ), ID_tagline )[0]
+
     @property
     def tmzSet(self):
-        """
-        Creates a set out of transformed m/z values (including all values in the defined imprecision).
+        '''Create set out of transformed m/z values
+        (including all values in the defined imprecision).
 
         :rtype: set
-        """
-        if self._tmzSet == None:
+        '''
+        if self._tmzSet is None:
             self._tmzSet = set()
             for mz, i in self.centroidedPeaks:
                 self._tmzSet |= set(
-                                    range(
-                                            int(round((mz - (mz * self.measuredPrecision)) * self.internalPrecision)),
-                                            int(round((mz + (mz * self.measuredPrecision)) * self.internalPrecision)) + 1)
-
+                    range(
+                        int(round(
+                            (mz - (mz * self.measuredPrecision)) * self.internalPrecision
+                        )),
+                        int(round(
+                            (mz + (mz * self.measuredPrecision)) * self.internalPrecision)) + 1)
                 )
         return self._tmzSet
 
     @property
     def tmassSet(self):
-        '''
-        Creates a set out of transformed mass values (including all values in the defined imprecision).
+        '''create a set out of transformed mass values
+        (including all values in the defined imprecision).
 
         :rtype: set
         '''
-        if self._tmassSet == None:
+        if self._tmassSet is None:
             self._tmassSet = set(self._transformed_mass_with_error.keys())
         return self._tmassSet
 
@@ -598,8 +608,9 @@ class Spectrum(dict):
         ...     spec.reduce( mzRange = (100,200) )
 
         """
-        #NOTE Total ion current should be adjusted as well, I guess ;)
-        assert type(mzRange) == type(()), "require tuple of (min,max) mz range to reduce spectrum"
+        # NOTE Total ion current should be adjusted as well, I guess ;)
+        assert isinstance(mzRange, tuple), \
+            "require tuple of (min,max) mz range to reduce spectrum"
         if mzRange != (None, None):
             tmp_peaks = [ (mz,i) for mz, i in self.peaks if mzRange[0] <= mz <= mzRange[1] ]
             self.clear(scope = 'not_all')
@@ -632,14 +643,14 @@ class Spectrum(dict):
         ...         print(mz, i)
 
         """
-        if noiseLevel == None:
+        if noiseLevel is None:
             noiseLevel = self.estimatedNoiseLevel(mode = mode)
 
-        if self._peaks != None:
-            self.peaks  = [ (mz,i) for mz,i in self.peaks  if i >= noiseLevel]
+        if self._peaks is not None:
+            self.peaks  = [ (mz, i) for mz, i in self.peaks if i >= noiseLevel]
 
-        if self._centroidedPeaks != None:
-            self.centroidedPeaks = [ (mz,i) for mz,i in self.centroidedPeaks  if i >= noiseLevel]
+        if self._centroidedPeaks is not None:
+            self.centroidedPeaks = [ (mz, i) for mz, i in self.centroidedPeaks if i >= noiseLevel]
 
         self._reprofiledPeaks = None
         return self
@@ -663,8 +674,10 @@ class Spectrum(dict):
         ...                print(mz,i)
 
         """
-        if self._centroidedPeaksSortedByI == None:
-            self._centroidedPeaksSortedByI = sorted(self.centroidedPeaks, key = itemgetter(1))
+        if self._centroidedPeaksSortedByI is None:
+            self._centroidedPeaksSortedByI = sorted(
+                self.centroidedPeaks, key = itemgetter(1)
+            )
         return self._centroidedPeaksSortedByI[-n:]
 
     def estimatedNoiseLevel(self, mode = 'median'):
@@ -696,7 +709,7 @@ class Spectrum(dict):
         data.sort()
         l = len(data)
         if not l % 2:
-            median =   (data[int(math.floor(float(l)/float(2)))] + data[int(math.ceil(float(l)/float(2)))] ) / float(2.0)
+            median = (data[int(math.floor(float(l)/float(2)))] + data[int(math.ceil(float(l)/float(2)))] ) / float(2.0)
         else:
             median =  data[int(l/2)]
         return median
@@ -719,7 +732,7 @@ class Spectrum(dict):
 
         """
         #NOTE self._reprofiledPeaks is a defaultdict(int) with k:mz, v:i
-        if self._reprofiledPeaks == None:
+        if self._reprofiledPeaks is None:
             if self.mz != []:
                 self._reprofiledPeaks = self._reprofile_Peaks()
             else:
@@ -731,16 +744,17 @@ class Spectrum(dict):
         Performs reprofiling for property :py:func:`reprofiledPeaks`
         """
         tmp = ddict(int)
-        for mz,i in self.centroidedPeaks:
+        for mz, i in self.centroidedPeaks:
             # Let the measured precision be 2 sigma of the signal width
             s = mz * self.measuredPrecision * 2
-            s2 = s*s
-            floor  = mz - 5.0*s   # Gauss curve +- 3 sigma
-            ceil = mz + 5.0*s
-            ip = self.internalPrecision / 4  # more spacing, i.e. less points describing the gauss curve -> faster adding
-            for _ in range( int(round(floor*ip)) , int(round(ceil*ip))+1 ):
+            s2 = s * s
+            floor  = mz - 5.0 * s   # Gauss curve +- 3 sigma
+            ceil = mz + 5.0 * s
+            ip = self.internalPrecision / 4
+            # more spacing, i.e. less points describing the gauss curve -> faster adding
+            for _ in range( int(round(floor * ip)) , int(round(ceil * ip)) + 1 ):
                 if _ % int(5) == 0 :
-                    a = float(_)/float(ip)
+                    a = float(_) / float(ip)
                     y = i * math.exp( -1 * ((mz - a) * (mz - a))  / (2 * s2) )
                     tmp[ a ] += y
         self['reprofiled'] = True
@@ -823,7 +837,7 @@ class Spectrum(dict):
                 compressionStated = False
 
             #
-            for pos in range(0, n_BinaryArrayOrder, int(n_BinaryArrayOrder/2)):
+            for pos in range(0, n_BinaryArrayOrder, int(n_BinaryArrayOrder / 2)):
                 if compressionStated:
                     arrayType, compression, encodingType  = [value for key, value in sorted([self['BinaryArrayOrder'][pos] , self['BinaryArrayOrder'][pos + 1], self['BinaryArrayOrder'][pos + 2]])]
                 else:
@@ -836,16 +850,18 @@ class Spectrum(dict):
                     floattype = 'd'
                 else:
                     floattype = None
-                    print("New data encoding detected, please adjust parser", file = sys.stderr)
+                    print("New data encoding detected, please adjust parser",
+                        file = sys.stderr
+                    )
 
                 unpackedData = []
 
-                if self['encodedData'][int(pos*0.5)] == None:
+                if self['encodedData'][int(pos*0.5)] is None:
                     pass
                 elif len(self['encodedData'][int(pos*0.5)]) == 0:
                     pass
                 elif len(self['encodedData'][int(pos*0.5)]) != 0:
-                    base64Data = self['encodedData'][int(pos*0.5)].encode("utf-8")
+                    base64Data = self['encodedData'][int(pos * 0.5)].encode("utf-8")
                     decodedData  = b64dec(base64Data)
                     if compression == 'zlib':
                         decodedData = zlib.decompress(decodedData)
@@ -942,7 +958,7 @@ class Spectrum(dict):
             [(m/z,intensity), ...], ...}
 
         """
-        if self._transformedMzWithError == None:
+        if self._transformedMzWithError is None:
             self._transformedMzWithError = ddict(list)
             for mz, i in self.centroidedPeaks:
                 for t_mz_with_error in range(int(round((mz - (mz * self.measuredPrecision)) * self.internalPrecision)),
@@ -960,7 +976,7 @@ class Spectrum(dict):
             (mass,intensity), ...}
 
         """
-        if self._transformedMassWithError == None:
+        if self._transformedMassWithError is None:
             self._transformedMassWithError = ddict(list)
             for mass, i in self.deconvolutedPeaks:
                 for t_mass_with_error in range(int(round((mass - (mass * self.measuredPrecision)) * self.internalPrecision)),
@@ -978,7 +994,7 @@ class Spectrum(dict):
             values are adjusted by the internal precision to integers.
 
         """
-        if self._transformedPeaks == None:
+        if self._transformedPeaks is None:
             self._transformedPeaks = [(self.transformMZ(mz), i) for mz, i in self.centroidedPeaks]
         return self._transformedPeaks
 
@@ -992,7 +1008,7 @@ class Spectrum(dict):
             values are adjusted by the internal precision to integers.
 
         """
-        if self._transformed_deconvolutedPeaks == None:
+        if self._transformed_deconvolutedPeaks is None:
             self._transformed_deconvolutedPeaks = [(self.transformMZ(mass), i) for mass, i in self.deconvolutedPeaks]
         return self._transformed_deconvolutedPeaks
 
@@ -1037,7 +1053,7 @@ class Spectrum(dict):
                 i += 1
             else:
                 # potential overlapping peaks are found.
-                # check wether the mz value of the j index does not overlap with the next j+1 index
+                # check whether the mz value of the j index does not overlap with the next j+1 index
                 k = j + 1
                 group = True
                 if k < len(mz_tuple):
@@ -1052,7 +1068,7 @@ class Spectrum(dict):
                     mz_list_grouped.append(tuple([mean, intensity_sum]))
                     i = j + 1
                 else:
-                    # peaks are ambigious, no grouping is applied --> every peak is stored
+                    # peaks are ambiguous, no grouping is applied --> every peak is stored
                     # this incident is counted.
                     count_ungrouped += j - i
                     # adding each element between i and j
@@ -1061,7 +1077,7 @@ class Spectrum(dict):
                     i = j + 1
 
         if count_ungrouped:
-            # if ungrouped entries occured, this is reported
+            # if ungrouped entries occurred, this is reported
             print('{0} elements could not be grouped due to an overlap.'.format(count_ungrouped), file = sys.stderr)
         return mz_list_grouped
 
@@ -1090,8 +1106,8 @@ class Spectrum(dict):
         try:
             mz_list, intensities_list = zip(*self.centroidedPeaks)
         except ValueError:
-            #empty spectrum
-            exit()
+            # empty spectrum
+            sys.exit()
             mz = []
             intensities = []
 
@@ -1171,7 +1187,7 @@ class Spectrum(dict):
         :return: list of deconvoluted peaks (mass (instead of m/z) / intensity tuples)
 
         """
-        if self._deconvolutedPeaks == None:
+        if self._deconvolutedPeaks is None:
             self._deconvolutedPeaks = self.deconvolute_peaks(ppmFactor = 4, minCharge = 1, maxCharge = 8, maxNextPeaks = 100)
         return self._deconvolutedPeaks
 
@@ -1261,7 +1277,7 @@ class Spectrum(dict):
                 # no peaks could be identified for charge deconvolution.
                 return []
 
-            if debug == True:
+            if debug is True:
                 return self._group(result), masses2mz
 
             # group peaks
@@ -1321,17 +1337,17 @@ class Spectrum(dict):
             The more similar the specs are, the closer the value is to 1.
 
         """
-        assert isinstance(spec2,Spectrum) , "Spectrum2 is not a pymzML spectrum"
+        assert isinstance(spec2, Spectrum), "Spectrum2 is not a pymzML spectrum"
 
         vector1 = ddict(int)
         vector2 = ddict(int)
         mzs = set()
         for mz, i in self.peaks:
-            vector1[round(mz,1)] += i
-            mzs.add(round(mz,1))
+            vector1[round(mz, 1)] += i
+            mzs.add(round(mz, 1))
         for mz, i in spec2.peaks:
-            vector2[round(mz,1)] += i
-            mzs.add(round(mz,1))
+            vector2[round(mz, 1)] += i
+            mzs.add(round(mz, 1))
 
         z = 0
         n_v1 = 0
@@ -1340,15 +1356,14 @@ class Spectrum(dict):
         for mz in mzs:
             int1 = vector1[mz]
             int2 = vector2[mz]
-            z += int1*int2
-            n_v1 += int1*int1
-            n_v2 += int2*int2
+            z += int1 * int2
+            n_v1 += int1 * int1
+            n_v2 += int2 * int2
         try:
             cosine = z / (math.sqrt(n_v1) * math.sqrt(n_v2))
         except:
             cosine = 0.0
         return cosine
-
 
     def transformMZ(self, value):
         """
@@ -1377,7 +1392,8 @@ class Spectrum(dict):
 
         """
         return int(round(value * self.internalPrecision))
-    def initFromTreeObjectWithRef(self,treeObject,refObject):
+
+    def initFromTreeObjectWithRef(self, treeObject, refObject):
         """
         initializes first from the treeObject and then goes
         through the refObject and assigns any other parameters from there...
@@ -1386,18 +1402,18 @@ class Spectrum(dict):
         reference = ""
         for element in treeObject.getiterator():
             if element.tag.endswith('}referenceableParamGroupRef'):
-                reference=element.get('ref')
+                reference = element.get('ref')
                 break
 
         for element in refObject:
             if element.tag.endswith('}referenceableParamGroup'):
-                refid=element.get('id')
+                refid = element.get('id')
                 if refid == reference:
                     self.readAccession(element)
 
         return
 
-    def readAccession(self,parElement):
+    def readAccession(self, parElement):
         for element in parElement.getiterator():
             accession = element.get('accession')
             self.ms[accession] = element
@@ -1406,8 +1422,8 @@ class Spectrum(dict):
                     for mzmlTag in self.param['accessions'][accession]['valuesToExtract']:
                         try:
                             self._link(idTag = accession,
-                                       value = element.get(mzmlTag),
-                                       name  = self.param['accessions'][accession]['name']
+                               value = element.get(mzmlTag),
+                               name  = self.param['accessions'][accession]['name']
                             )
                         except KeyError:
                             if mzmlTag == 'unitName':
@@ -1415,7 +1431,7 @@ class Spectrum(dict):
                                 # this allows parsing of mzML files generated with ProteomeDiscoverer
                             else:
                                 print("kind of 'unitName' issue again ... with {0}".format(mzmlTag))
-                                exit()
+                                sys.exit()
 
                     if  self.param['accessions'][accession]['name'] == 'intensity array':
                         self['BinaryArrayOrder'].append(('arrayType', 'i'))
@@ -1477,17 +1493,15 @@ class Spectrum(dict):
                             pass
 
             elif element.tag.endswith('binary'):
-                self._link(    idTag = 'PY:0000000',
-                                value = element.text,
-                                name  = 'encodedData'
+                self._link(
+                    idTag = 'PY:0000000',
+                    value = element.text,
+                    name  = 'encodedData'
                 )
-
-
-
         return
 
-    
-    def initFromTreeObject(self,treeObject):
+
+    def initFromTreeObject(self, treeObject):
         """
         treeObject.get('nativeID')
         print(treeObject)
@@ -1511,7 +1525,7 @@ class Spectrum(dict):
                 0.99.1 >> <spectrum id="S20" scanNumber="20" msLevel="2">
                 so far regex hold for this ...
                 '''
-                self['id'] = int(re.search( r'[0-9]*$',   treeObject.get('id')  ).group())
+                self['id'] = int(re.search( r'[0-9]*$', treeObject.get('id')  ).group())
             except:
                 self['id'] = None
             self.dataType = "spectrum"

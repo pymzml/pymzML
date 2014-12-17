@@ -51,7 +51,7 @@ class Factory(object):
 
     """
 
-    def __init__(self,filename = None):
+    def __init__(self, filename = None):
         self.filename = filename if filename != None else "spectra.xhtml"
         self.plots = [  ]     # list of plots, where each plot hold a list of mz-i lists that should be plotted in the same plot
         self.styles = [  ]
@@ -292,7 +292,7 @@ class Factory(object):
                 r,g,b = self.colors[plotNumber][datasetnumber]
                 style = self.styles[plotNumber][datasetnumber]
                 opacity = self.opacities[plotNumber][datasetnumber]
-   
+
                 if style[:5] == 'label':
                     for pos,(mz,i) in enumerate(dataset):
                         if resolved_mzRange[0] <= mz <= resolved_mzRange[1]:

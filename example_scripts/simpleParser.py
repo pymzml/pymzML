@@ -1,5 +1,12 @@
-#!/usr/bin/env python3.2
-import pymzml, sys
+#!/usr/bin/env python3.4
+import pymzml
+import sys
 run = pymzml.run.Reader(sys.argv[1])
-for spec in run:
-    pass
+# print( run[10000].keys() )
+for n, spec in enumerate( run ):
+    print('Spectrum {0}, MS level {ms level}'.format(
+        n,
+        **spec ),
+        end = '\r')
+
+print()
