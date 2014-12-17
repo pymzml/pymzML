@@ -474,21 +474,32 @@ class Spectrum(dict):
                     if x2-x1 > (x3-x2)*10 or (x2-x1)*10 < x3-x2:
                         # no gauss fit if distance between mz values is too large
                         continue
-                    #print(x1,y1,x2,y2,x3,y3)
                     if y3 == y1:
                         # i.e. a reprofiledSpec
-                        if pos-5 < 0:
-                            lower_pos = 0
-                        else:
-                            lower_pos = pos-5
-                        if pos+7 >= len(mz_array):
-                            upper_pos = len(mz_array)-1
-                        else:
-                            upper_pos = pos+7
-                        x1  = mz_array[ lower_pos ]
-                        y1  = intensity_array[ lower_pos ]
-                        x3  = mz_array[ upper_pos ]
-                        y3  = intensity_array[ upper_pos ]
+                        #we start a bit closer to the mid point.
+                        before = 3
+                        after = 4
+                        while (not 0 < y1 < y2 > y3 > 0) and y1==y3 and after < 10: #we dont want to go too far
+                            if pos-before < 0:
+                                lower_pos = 0
+                            else:
+                                lower_pos = pos-before
+                            if pos+after >= len(mz_array):
+                                upper_pos = len(mz_array)-1
+                            else:
+                                upper_pos = pos+after
+                            x1 = mz_array[ lower_pos ]
+                            y1 = intensity_array[ lower_pos ]
+                            x3 = mz_array[ upper_pos ]
+                            y3 = intensity_array[ upper_pos ]
+                            if before%2==0:
+                                after += 1
+                            else:
+                                before += 1
+                    if not (0 < y1 < y2 > y3 > 0) or y1==y3:
+                        #If we dont check this, there is a chance to apply gauss fit to a section
+                        #where there is no peak.
+                        continue
                     try:
                         doubleLog = math.log(y2/y1) / math.log(y3/y1)
                         mue = (doubleLog*( x1*x1 - x3*x3 ) - x1*x1 + x2*x2 ) / (2 * (x2-x1) - 2*doubleLog*(x3-x1))
