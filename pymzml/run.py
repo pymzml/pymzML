@@ -118,6 +118,7 @@ class Reader(object):
         self.info['offsets'] = ddict()
         self.info['filename'] = path
         self.info['offsetList'] = []
+        self.info['referenceableParamGroupList']=False
 
         self.MS1_Precision = MS1_Precision
 
@@ -220,6 +221,9 @@ class Reader(object):
                 else:
                     s = element.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation']
                     self.info['mzmlVersion'] = re.search( r'[0-9]*\.[0-9]*\.[0-9]*',   s  ).group()
+            elif element.tag.endswith('}referenceableParamGroupList'):
+                self.info['referenceableParamGroupList']=True
+                self.info['referenceableParamGroupListElement']=element
             elif element.tag.endswith('}spectrumList'):
                 break
             elif element.tag.endswith('}chromatogramList'):
@@ -357,7 +361,11 @@ class Reader(object):
             if event == 'END':
                 raise StopIteration
             if (element.tag.endswith('}spectrum') or element.tag.endswith('}chromatogram') ) and event == b'end':
-                self.spectrum.initFromTreeObject(element)
+                if self.info['referenceableParamGroupList']:
+                    self.spectrum.initFromTreeObjectWithRef(element,self.info['referenceableParamGroupListElement'])
+                else:
+                    self.spectrum.initFromTreeObject(element)
+
                 try:
                     self.elementList[-1].clear()
                 except:
