@@ -171,9 +171,14 @@ class Reader(object):
                 self.info['offsets']['indexList'] = None
                 self.info['offsets']['TIC'] = None
                 self.seeker.seek(0, 2)
+                spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
                 for _ in range(10):  # max 10kbyte
+                    # some converters fail in writing a correct index
+                    # we found
+                    # a) the offset is always the same (silent fail hurray!)
+                    sanity_check_set = set()
                     try:
-                       self.seeker.seek( -1024 * _, 1 )
+                        self.seeker.seek( -1024 * _, 1 )
                     except:
                         break
                         # File is smaller than 10kbytes ...
@@ -185,6 +190,16 @@ class Reader(object):
                                     match.group('offset')
                                 )
                             )
+
+                        match_spec = spectrumIndexPattern.search( line )
+                        if match_spec is not None:
+                            spec_byte_offset = int(
+                                bytes.decode(
+                                    match_spec.group('offset')
+                                )
+                            )
+                            sanity_check_set.add( spec_byte_offset )
+
                         match = indexListOffsetPattern.search(line)
                         if match:
                             self.info['offsets']['indexList'] = int(
@@ -192,10 +207,15 @@ class Reader(object):
                                     match.group('indexListOffset')
                                 )
                             )
-                            #  break
+                            # break
+
                     if self.info['offsets']['indexList'] is not None and \
                             self.info['offsets']['TIC'] is not None:
                         break
+                if len(sanity_check_set) <= 2:
+                    # print( 'Convert error obvious ... ')
+                    self.info['offsets']['indexList'] = None
+
                 if self.info['offsets']['indexList'] is None:
                     # fall back to non-seekable
                     self.info['seekable'] = False
