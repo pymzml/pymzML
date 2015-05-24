@@ -231,7 +231,12 @@ class Reader(object):
                 self.seeker = open(self.info['filename'], 'r')
 
         ### declare the iter
-        self.iter = iter(cElementTree.iterparse(self.info['fileObject'], events = ( b'start',b'end'))) # NOTE: end might be sufficient
+        self.iter = iter(
+            cElementTree.iterparse(
+                self.info['fileObject'],
+                events = ( b'start', b'end')
+            )
+        ) # NOTE: end might be sufficient
 
         # Move iter to spectrumList / chromatogramList
         while True:
@@ -254,6 +259,9 @@ class Reader(object):
                 break
             else:
                 pass
+            # in any case:
+            # build meta tree ...
+            # self.meta.append( <> )
 
         # parse obo, check MS tags and if they are ok in minimum.py (minimum required) ...
         self.OT = pymzml.obo.oboTranslator()
