@@ -119,6 +119,7 @@ class Reader(object):
         self.info['filename']                    = path
         self.info['offsetList']                  = []
         self.info['referenceableParamGroupList'] = False
+        self.info['spectrum_count']              = 0 
 
         self.MS1_Precision = MS1_Precision
 
@@ -273,6 +274,7 @@ class Reader(object):
                 self.info['referenceableParamGroupList'] = True
                 self.info['referenceableParamGroupListElement'] = element
             elif element.tag.endswith('}spectrumList'):
+                self.info['spectrum_count'] = element.tag[ 'count' ]
                 break
             elif element.tag.endswith('}chromatogramList'):
                 # SRM only ?
@@ -489,6 +491,10 @@ class Reader(object):
                     break
         return answer
 
+    def getSpectrumCount(self):
+        return self.info['spectrum_count']
+
+
 class Writer(object):
     """
     .. function:: __init__(filename* ,run* [, overwrite = boolean])
@@ -621,6 +627,9 @@ class Writer(object):
             if level and (not element.tail or not element.tail.strip()):
                 element.tail = i
         return
+
+
+
 
 if __name__ == '__main__':
     print(__doc__)
