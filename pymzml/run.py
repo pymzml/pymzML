@@ -274,7 +274,7 @@ class Reader(object):
                 self.info['referenceableParamGroupList'] = True
                 self.info['referenceableParamGroupListElement'] = element
             elif element.tag.endswith('}spectrumList'):
-                self.info['spectrum_count'] = element.tag.attrib[ 'count' ]
+                self.info['spectrum_count'] = element.attrib[ 'count' ]
                 break
             elif element.tag.endswith('}chromatogramList'):
                 # SRM only ?
