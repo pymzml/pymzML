@@ -71,7 +71,7 @@ import pymzml
 
 
 class oboTranslator(object):
-    def __init__(self, version='1.1.0'):
+    def __init__(self, version='1.2'):
         self.version = version
         self.allDicts = []
         self.id = {}
