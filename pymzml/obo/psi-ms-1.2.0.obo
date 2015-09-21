@@ -1,11 +1,11 @@
 format-version: 1.2
-date: 12:06:2008 13:44
-saved-by: edeutsch
+date: 22:06:2008 07:00
+saved-by: dkessner 
 auto-generated-by: OBO-Edit 1.101
 default-namespace: MS
 remark: namespace: MS
-remark: version: 1.1.0
-remark: release date: 2008-06-12
+remark: version: 1.2.0
+remark: release date: 2008-06-22
 remark: coverage: Mass spectrometer output files
 remark: creator: Eric Deutsch <edeutsch@systemsbiology.org>
 remark: publisher: HUPO Proteomics Standards Initiative Mass Spectrometry Standards Working Group
@@ -38,19 +38,25 @@ relationship: part_of MS:1000479 ! purgatory
 id: MS:1000004
 name: sample mass
 def: "Total mass of sample used." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000548 ! sample attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000005
 name: sample volume
 def: "Total volume of solution used." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000548 ! sample attribute
+relationship: has_units UO:0000095 ! volume unit
 
 [Term]
 id: MS:1000006
 name: sample concentration
 def: "Concentration of sample in picomol/ul, femtomol/ul or attomol/ul solution used." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000548 ! sample attribute
+relationship: has_units UO:0000051 ! concentration unit
 
 [Term]
 id: MS:1000007
@@ -80,7 +86,9 @@ relationship: part_of MS:1000479 ! purgatory
 id: MS:1000011
 name: mass resolution
 def: "The maximum m/z value at which two peaks can be resolved, according to one of the standard measures." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000503 ! scan attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000012
@@ -104,6 +112,7 @@ is_a: MS:1000480 ! mass analyzer attribute
 id: MS:1000015
 name: scan rate
 def: "Rate in (m/z)/sec for scanning analyzers." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000503 ! scan attribute
 
 [Term]
@@ -149,27 +158,34 @@ is_a: MS:1000480 ! mass analyzer attribute
 id: MS:1000022
 name: TOF Total Path Length
 def: "The length of the field free drift space in a time of flight mass spectrometer." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000480 ! mass analyzer attribute
+relationship: has_units UO:0000001 ! length unit
 
 [Term]
 id: MS:1000023
 name: isolation width
 def: "The total width (i.e. not half for plus-or-minus) of the gate applied around a selected precursor ion." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000503 ! scan attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000024
 name: final MS exponent
 def: "Final MS level achieved when performing PFF with the ion trap (e.g. MS E10)." [PSI:MS]
+xref: value-type:xsd\:int "The allowed value-type for this CV term."
 is_a: MS:1000480 ! mass analyzer attribute
 
 [Term]
 id: MS:1000025
 name: magnetic field strength
 def: "A property of space that produces a force on a charged particle equal to qv x B where q is the particle charge and v its velocity." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "B" EXACT []
 synonym: "Magnetic Field" RELATED []
 is_a: MS:1000480 ! mass analyzer attribute
+relationship: has_units UO:0000227 ! magnetic flux density
 
 [Term]
 id: MS:1000026
@@ -187,12 +203,14 @@ relationship: part_of MS:1000453 ! detector
 id: MS:1000028
 name: detector resolution
 def: "The resolving power of the detector to detect the smallest difference between two ions so that the valley between them is a specified fraction of the peak height." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000481 ! detector attribute
 
 [Term]
 id: MS:1000029
 name: sampling frequency
 def: "The rate of signal sampling (measurement) with respect to time." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "ADC Sampling Frequency" NARROW []
 is_a: MS:1000481 ! detector attribute
 
@@ -270,12 +288,14 @@ is_a: MS:1000460 ! unit
 id: MS:1000041
 name: charge state
 def: "The charge state of the ion, single or multiple and positive or negatively charged." [PSI:MS]
+xref: value-type:xsd\:int "The allowed value-type for this CV term."
 is_a: MS:1000455 ! ion selection attribute
 
 [Term]
 id: MS:1000042
 name: intensity
 def: "Intensity of ions as measured by the height or area of a peak in a mass spectrum." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000455 ! ion selection attribute
 
 [Term]
@@ -295,13 +315,16 @@ relationship: part_of MS:1000456 ! precursor activation
 id: MS:1000045
 name: collision energy
 def: "Energy for an ion experiencing collision with a stationary gas particle resulting in dissociation of the ion." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000510 ! precursor activation attribute
+relationship: has_units UO:0000111 ! energy unit
 
 [Term]
 id: MS:1000046
 name: energy unit
-def: "Energy units are represented in either eV or Joules." [PSI:MS]
+def: "Energy units are represented in either eV or Joules. Obsoleted in favor of UO:0000111" [PSI:MS]
 is_a: MS:1000460 ! unit
+is_obsolete: true
 
 [Term]
 id: MS:1000047
@@ -845,6 +868,7 @@ is_a: MS:1000043 ! intensity unit
 id: MS:1000132
 name: percent of base peak
 def: "The magnitude of a peak or measurement element expressed in terms of the percentage of the magnitude of the base peak intensity." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000043 ! intensity unit
 
 [Term]
@@ -886,7 +910,8 @@ is_obsolete: true
 id: MS:1000138
 name: percent collision energy
 def: "Collision energy required to fragment an ion represented as a percent value." [PSI:MS]
-is_a: MS:1000046 ! energy unit
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
+is_a: UO:0000111 ! energy unit
 
 [Term]
 id: MS:1000139
@@ -1306,20 +1331,26 @@ is_a: MS:1000020 ! scanning method
 id: MS:1000207
 name: accurate mass
 def: "An experimentally determined mass that is can be to determine a unique elemental formula. For ions less than 200 u, a measurement with 5 ppm accuracy is sufficient to determine the elemental composition." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000208
 name: average mass
 def: "The mass of an ion or molecule calculated using the average mass of each element weighted for its natural isotopic abundance." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000209
 name: appearance energy
 def: "The minimum energy that must be imparted to an atom or molecule to produce a specified ion. The term appearance potential is not recommended." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "AE" EXACT []
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000111 ! energy unit
 
 [Term]
 id: MS:1000210
@@ -1332,6 +1363,7 @@ is_a: MS:1000231 ! peak
 id: MS:1000211
 name: charge number
 def: "The total charge on an ion divided by the electron charge e." [PSI:MS]
+xref: value-type:xsd\:int "The allowed value-type for this CV term."
 synonym: "z" EXACT []
 is_a: MS:1000507 ! ion attribute
 
@@ -1346,6 +1378,7 @@ is_obsolete: true
 id: MS:1000213
 name: electron affinity
 def: "The electron affinity of M is the minimum energy required for the process M- ? M + e where M- and M are in their ground rotational, vibrational and electronic states and the electron has zero kinetic energy." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "EA" EXACT []
 is_a: MS:1000507 ! ion attribute
 
@@ -1359,7 +1392,9 @@ relationship: part_of MS:1000479 ! purgatory
 id: MS:1000215
 name: exact mass
 def: "The calculated mass of an ion or molecule containing a single isotope of each atom." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000216
@@ -1378,14 +1413,17 @@ is_a: MS:1000437 ! ion reaction
 id: MS:1000218
 name: ioniazation efficiency
 def: "The ratio of the number of ions formed to the number of electrons, molecules or photons used. See Ionization Efficiency." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_obsolete: true
 
 [Term]
 id: MS:1000219
 name: ionization energy
 def: "The minimum energy required to remove an electron from an atom or molecule to produce a positive ion." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "IE" EXACT []
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000111 ! energy unit
 
 [Term]
 id: MS:1000220
@@ -1404,25 +1442,32 @@ is_a: MS:1000597 ! ion optics type
 id: MS:1000222
 name: mass defect
 def: "The difference between the monoisotipic and nominal mass of a molecule or atom." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000223
 name: mass number
 def: "The sum of the protons and neutrons in an atom, molecule or ion." [PSI:MS]
+xref: value-type:xsd\:int "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
 
 [Term]
 id: MS:1000224
 name: molecular mass
 def: "The mass of one mole of a molecular substance (6.022 1415(10) x 10^23 molecules)." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000225
 name: monoisotopic mass
 def: "The mass of an ion or molecule calculated using the mass of the most abundant isotope of each element." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000226
@@ -1448,7 +1493,9 @@ is_a: MS:1000437 ! ion reaction
 id: MS:1000229
 name: nominal mass
 def: "The mass of an ion or molecule calculated using the mass of the most abundant isotope of each element rounded to the nearest integer value." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute
+relationship: has_units UO:0000002 ! mass unit
 
 [Term]
 id: MS:1000230
@@ -1472,6 +1519,7 @@ is_obsolete: true
 id: MS:1000233
 name: proton affinity
 def: "The proton affinity of a species M is defined as the negative of the enthalpy change for the\nreaction M + H+ ->[M+H]+, where all species are in their ground rotational, vibrational and electronic states." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "PA" EXACT [PSI:MS]
 is_a: MS:1000507 ! ion attribute
 
@@ -1479,6 +1527,7 @@ is_a: MS:1000507 ! ion attribute
 id: MS:1000234
 name: mass resolving power
 def: "In a mass spectrum, the observed mass divided by the difference between two masses that can be separated. The method by which delta m was obtained and the mass at which the measurement was made should be reported." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000444 ! m/z Separation Method
 
 [Term]
@@ -1493,6 +1542,7 @@ is_a: MS:1000626 ! chromatogram type
 id: MS:1000236
 name: transmission
 def: "The ratio of the number of ions leaving a region of a mass spectrometer to the number entering that region." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000496 ! instrument attribute
 
 [Term]
@@ -1958,7 +2008,9 @@ is_a: MS:1000293 ! mass spectrometer
 id: MS:1000304
 name: accelerating voltage
 def: "The electrical potential used to impart kinetic energy to ions in a mass spectrometer." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000597 ! ion optics type
+relationship: has_units UO:0000217 ! electric potential difference
 
 [Term]
 id: MS:1000305
@@ -2498,6 +2550,7 @@ is_a: MS:1000437 ! ion reaction
 id: MS:1000392
 name: ionization efficiency
 def: "The ratio of the number of ions formed to the number of electrons, molecules or photons used." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000482 ! source attribute
 
 [Term]
@@ -3064,7 +3117,9 @@ is_a: MS:1000057 ! electrospray inlet
 id: MS:1000486
 name: source potential
 def: "Potential difference at the MS source in volts." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000482 ! source attribute
+relationship: has_units UO:0000217 ! electric potential difference
 
 [Term]
 id: MS:1000487
@@ -3151,22 +3206,28 @@ relationship: part_of MS:1000442 ! spectrum
 id: MS:1000500
 name: scan m/z upper limit
 def: "The limit of m/z over which a mass spectrometer can detect ions." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "mzRangeStop" RELATED []
 is_a: MS:1000549 ! selection window attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000501
 name: scan m/z lower limit
 def: "The limit of m/z over which a mass spectrometer can detect ions." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "mzRangeStart" RELATED []
 is_a: MS:1000549 ! selection window attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000502
 name: dwell time
 def: "The time spent gathering data across a peak." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 synonym: "Scan Duration" RELATED []
 is_a: MS:1000549 ! selection window attribute
+relationship: has_units UO:0000003 ! time unit
 
 [Term]
 id: MS:1000503
@@ -3179,12 +3240,15 @@ relationship: part_of MS:1000441 ! scan
 id: MS:1000504
 name: base peak m/z
 def: "M/z value of the greatest peak in the mass spectrum." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000505
 name: base peak intensity
 def: "The intensity of the greatest peak in the mass spectrum." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
 
 [Term]
@@ -3209,7 +3273,9 @@ relationship: part_of MS:1000365 ! ion
 id: MS:1000509
 name: activation energy
 def: "Activation Energy." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000510 ! precursor activation attribute
+relationship: has_units UO:0000111 ! energy unit
 
 [Term]
 id: MS:1000510
@@ -3221,6 +3287,7 @@ relationship: part_of MS:1000456 ! precursor activation
 id: MS:1000511
 name: ms level
 def: "Stages of ms achieved in a multi stage mass spectrometry experiment." [PSI:MS]
+xref: value-type:xsd\:int"The allowed value-type for this CV term."
 comment: The attribute 'ms level' should be encoded in the homonymous XML attribute of the element 'dx:Spectrum', and not using the CvParam element.
 is_a: MS:1000503 ! scan attribute
 
@@ -3242,6 +3309,7 @@ id: MS:1000514
 name: m/z array
 def: "A data array of mass divided by charge values." [PSI:MS]
 is_a: MS:1000513 ! binary data array
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000515
@@ -3320,13 +3388,17 @@ is_a: MS:1000560 ! source file type
 id: MS:1000527
 name: highest m/z value
 def: "Highest m/z value observed in the mass spectum." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000528
 name: lowest m/z value
 def: "Lowest m/z value observed in the mass spectrum." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
+relationship: has_units MS:1000040 ! m/z
 
 [Term]
 id: MS:1000529
@@ -3742,6 +3814,7 @@ id: MS:1000595
 name: time array
 def: "A data array of relative time offset values from a reference time." [PSI:MS]
 is_a: MS:1000513 ! binary data array
+relationship: has_units UO:0000003 ! time unit
 
 [Term]
 id: MS:1000596
@@ -3958,6 +4031,7 @@ is_a: MS:1000626 ! chromatogram type
 id: MS:1000629
 name: low intensity threshold
 def: "Threshold below which some action is taken." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000630 ! data processing parameter
 
 [Term]
@@ -3970,6 +4044,7 @@ is_a: MS:1000452 ! data transformation
 id: MS:1000631
 name: high intensity threshold
 def: "Threshold above which some action is taken." [PSI:MS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000630 ! data processing parameter
 
 [Term]
@@ -3982,6 +4057,7 @@ is_a: MS:1000126 ! Waters instrument model
 id: MS:1000633
 name: possible charge state
 def: "A possible charge state of the ion in a situation where the charge of an ion is known to be one of several possible values rather than a completely unknown value or determined to be a specific charge with reasonable certainty." [PSI:MS]
+xref: value-type:xsd\:int"The allowed value-type for this CV term."
 is_a: MS:1000455 ! ion selection attribute
 
 [Term]

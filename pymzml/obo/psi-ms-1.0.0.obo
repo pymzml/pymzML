@@ -3,7 +3,12 @@ date: 28:05:2008 22:06
 saved-by: luisa
 auto-generated-by: OBO-Edit 1.101
 default-namespace: PSI-MS
+remark: namespace: MS
 remark: version: 1.0.0
+remark: release date: 2008-06-01
+remark: coverage: Mass spectrometer output files
+remark: creator: Eric Deutsch <edeutsch@systemsbiology.org>
+remark: publisher: HUPO Proteomics Standards Initiative Mass Spectrometry Standards Working Group
 import: unit.obo
 
 [Term]
