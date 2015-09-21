@@ -71,7 +71,7 @@ import pymzml
 
 
 class oboTranslator(object):
-    def __init__(self, version='1.2'):
+    def __init__(self, version=None):
         self.version = version
         self.allDicts = []
         self.id = {}
@@ -102,9 +102,9 @@ class oboTranslator(object):
         (would be great to have all versions. Must convience PSI to add version
         number at the file .. :))
         """
-        oboFile = os.path.normpath('{0}/obo/psi-ms-{1}.obo'.format(
+        oboFile = os.path.normpath('{0}/obo/psi-ms{1}.obo'.format(
             os.path.dirname(pymzml.obo.__file__),
-            self.version
+            '-' + self.version if self.version else ''
         ))
         if os.path.exists(oboFile):
             with open(oboFile) as obo:
