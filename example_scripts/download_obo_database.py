@@ -61,7 +61,7 @@ def get_version_map(cvs):
     revisions = parse_revisions(cvs('-z3', 'log').split('\n'))
 
     version_map = {}
-    for revision in revisions[:30]:
+    for revision in revisions:
         file_at_revision = cvs('-z3', 'co', '-p', '-r', revision, filename)
         version = parse_version(file_at_revision)
 
