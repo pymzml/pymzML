@@ -87,7 +87,7 @@ class oboTranslator(object):
 
     def __getitem__(self, key):
         for lookup in self.lookups:
-            if key in lookup.keys():
+            if key in lookup:
                 if key[:2] == 'MS':
                     try:
                         return lookup[key]['name']
