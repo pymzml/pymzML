@@ -20,39 +20,61 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
-import subprocess as sub
 import os
 
 import pymzml
 
 class TestRun(unittest.TestCase):
-
     def setUp(self):
-        pass
+        example_mzml_filename = os.path.join(
+            os.path.dirname(__file__),
+            'data',
+            'example.mzml',
+        )
+        self.example_mzml = open(example_mzml_filename)
+
+    def tearDown(self):
+        self.example_mzml.close()
+
+    def test_file_object(self):
+        run = pymzml.run.Reader('', file_object=self.example_mzml)
+        self.assertEqual(run.info['fileObject'], self.example_mzml)
+
+    def test_read_obo_version(self):
+        run = pymzml.run.Reader('', file_object=self.example_mzml)
+        self.assertEqual(run.info['obo_version'], '3.25.0')
+
+    def test_provided_obo_version(self):
+        run = pymzml.run.Reader('', file_object=self.example_mzml, obo_version='1.1.0')
+        self.assertEqual(run.info['obo_version'], '1.1.0')
+
+    def test_provided_bad_obo_version(self):
+        with self.assertRaises(Exception):
+            run = pymzml.run.Reader('', file_object=self.example_mzml, obo_version='sad')
 
     def test_regex(self):
-      print ("Running tests") 
-      spectrumIndexPattern = pymzml.run.RegexPatterns.spectrumIndexPattern
-      simIndexPattern = pymzml.run.RegexPatterns.simIndexPattern
-      line1 = b'<offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>'
-      line2 = b'<offset idRef="S16004" nativeID="16004">236442042</offset>'
-      line3 = b'<offset idRef="SIM SIC 651.5">330223452</offset>\n'
+        spectrumIndexPattern = pymzml.run.RegexPatterns.spectrumIndexPattern
+        simIndexPattern = pymzml.run.RegexPatterns.simIndexPattern
+        line1 = b'<offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>'
+        line2 = b'<offset idRef="S16004" nativeID="16004">236442042</offset>'
+        line3 = b'<offset idRef="SIM SIC 651.5">330223452</offset>\n'
 
-      match_spec = spectrumIndexPattern.search(line1)
-      self.assertTrue(match_spec)
-      self.assertEqual(match_spec.group('nativeID'), b"1")
-      self.assertEqual(match_spec.group('type'), b"scan=" )
-      self.assertEqual(match_spec.group('offset'), b"4363" )
+        match_spec = spectrumIndexPattern.search(line1)
+        self.assertTrue(match_spec)
+        self.assertEqual(match_spec.group('nativeID'), b"1")
+        self.assertEqual(match_spec.group('type'), b"scan=" )
+        self.assertEqual(match_spec.group('offset'), b"4363" )
 
-      match_spec = spectrumIndexPattern.search(line2)
-      self.assertTrue(match_spec)
-      self.assertEqual(match_spec.group('nativeID'), b"16004")
-      self.assertEqual(match_spec.group('type'), b'nativeID="')
-      self.assertEqual(match_spec.group('offset'), b"236442042")
+        match_spec = spectrumIndexPattern.search(line2)
+        self.assertTrue(match_spec)
+        self.assertEqual(match_spec.group('nativeID'), b"16004")
+        self.assertEqual(match_spec.group('type'), b'nativeID="')
+        self.assertEqual(match_spec.group('offset'), b"236442042")
 
-      match_sim  = simIndexPattern.search(line3)
-      self.assertEqual(match_sim.group('nativeID'), b"SIM SIC 651.5")
-      self.assertEqual(match_sim.group('offset'), b"330223452")
+        match_sim  = simIndexPattern.search(line3)
+        self.assertEqual(match_sim.group('nativeID'), b"SIM SIC 651.5")
+        self.assertEqual(match_sim.group('offset'), b"330223452")
+
 
 
 if __name__ == '__main__':

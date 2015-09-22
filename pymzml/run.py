@@ -111,7 +111,8 @@ class Reader(object):
         MS1_Precision=5e-6,
         MSn_Precision=20e-6,
         build_index_from_scratch=False,
-        file_object=None
+        file_object=None,
+        obo_version=None,
     ):
         # self.param contains user-specified parsing parameters
         self.param = dict()
@@ -128,6 +129,7 @@ class Reader(object):
         self.info['offsetList'] = []
         self.info['referenceableParamGroupList'] = False
         self.info['spectrum_count'] = 0
+        self.info['obo_version'] = obo_version
 
         self.MS1_Precision = MS1_Precision
 
@@ -281,6 +283,9 @@ class Reader(object):
                 else:
                     s = element.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation']
                     self.info['mzmlVersion'] = re.search(r'[0-9]*\.[0-9]*\.[0-9]*', s).group()
+            elif element.tag.endswith('}cv'):
+                if not self.info['obo_version'] and element.attrib['id'] == 'MS':
+                    self.info['obo_version'] = element.attrib['version']
             elif element.tag.endswith('}referenceableParamGroupList'):
                 self.info['referenceableParamGroupList'] = True
                 self.info['referenceableParamGroupListElement'] = element
@@ -297,7 +302,7 @@ class Reader(object):
             # self.meta.append( <> )
 
         # parse obo, check MS tags and if they are ok in minimum.py (minimum required) ...
-        self.OT = pymzml.obo.oboTranslator()
+        self.OT = pymzml.obo.oboTranslator(version=self.info['obo_version'])
 
         for minimumMS, ListOfvaluesToExtract in pymzml.minimum.MIN_REQ:
             self.param['accessions'][minimumMS] = {
