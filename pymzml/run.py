@@ -499,7 +499,7 @@ class Reader(object):
                 print("Run does not contain spec with native ID {0}".format(value), file=sys.stderr)
         else:
             self.iter = iter(cElementTree.iterparse(
-                self.info['filename'],
+                self.info['fileObject'],
                 events=(b'start', b'end')
             ))  # NOTE: end might be sufficient
 
