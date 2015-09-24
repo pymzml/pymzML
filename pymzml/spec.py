@@ -786,7 +786,7 @@ class Spectrum(dict):
             v = float(value)
         except:
             v = value
-        if idTag not in self.keys():
+        if idTag not in self:
             self[idTag] = v
         else:
             oldValue = self[idTag]
@@ -1423,7 +1423,7 @@ class Spectrum(dict):
             accession = element.get('accession')
             self.ms[accession] = element
             if element.tag.endswith('cvParam'):
-                if accession in self.param['accessions'].keys():
+                if accession in self.param['accessions']:
                     for mzmlTag in self.param['accessions'][accession]['valuesToExtract']:
                         try:
                             self._link(idTag = accession,
