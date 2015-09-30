@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 setup(name='pymzml',
-      version='0.7.5',
+      version='0.7.6',
       packages = ['pymzml'],
       package_dir = {'pymzml': 'pymzml'},
       package_data={'pymzml': ['obo/*.obo']},
