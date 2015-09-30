@@ -1,43 +1,71 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-pymzML comes with the queryOBO.py script that can be used to interogate the OBO 
-file.
+'''%(prog)s [-h] [-v VERSION] query
 
-Usage:
+Use this script to interogate the OBO database files.
 
-::
-
-    $ ./example_scripts/queryOBO.py "scan time"
-    MS:1000016
-    scan time
-    "The time taken for an acquisition by scanning analyzers." [PSI:MS]
-    Is a: MS:1000503 ! scan attribute
-    $ 
-"""
+example:
+  $ %(prog)s 'scan time'
+  MS:1000016
+  scan time
+  'The time taken for an acquisition by scanning analyzers.' [PSI:MS]
+  Is a: MS:1000503 ! scan attribute
+'''
 
 from __future__ import print_function
+
+from collections import defaultdict
+import argparse
+
 import pymzml.obo
-import sys
-    
-if __name__ == '__main__':  
-    if len(sys.argv) == 1:
-        print(__doc__)
-        exit(1)
-    obo = pymzml.obo.oboTranslator()
-    arg = sys.argv[1]
-    if arg.isdigit():
-        print(obo['MS:{0}'.format(arg)])
+
+
+def search_by_name(obo, name):
+    print(name.lower())
+    matches = []
+    for lookup in obo.lookups:
+        for key in lookup.keys():
+            if name.lower() in key.lower():
+                match = defaultdict(str)
+
+                for fieldname in ('id', 'name', 'def', 'is_a'):
+                    if fieldname in lookup[key].keys():
+                        match[fieldname] = lookup[key][fieldname]
+
+                matches.append(match)
+
+    return matches
+
+
+def search_by_id(obo, id):
+    return obo['MS:{0}'.format(id)]
+
+
+if __name__ == '__main__':
+    argparser = argparse.ArgumentParser(
+        usage=__doc__,
+    )
+    argparser.add_argument('query', help='an accession or part of an OBO term name to look for')
+    argparser.add_argument(
+        '-v', '--version', default='1.1.0',
+        help='''
+            the version of the OBO to use; valid options are 1.0.0, 1.1.0, and 1.2,
+            default is 1.1.0
+        ''',
+    )
+
+    args = argparser.parse_args()
+
+    obo = pymzml.obo.oboTranslator(version=args.version)
+
+    if args.query.isdigit():
+        print(search_by_id(obo, args.query))
     else:
-        n = 0
-        for lookup in obo.lookups:
-            for key in lookup.keys():
-                if arg in key:
-                    print("#{0}".format(n))
-                    print(lookup[key]['id'])
-                    print(lookup[key]['name'])
-                    print(lookup[key]['def'])
-                    if 'is_a' in lookup[key].keys():
-                        print("Is a:",lookup[key]['is_a'])
-                    n += 1
-    
+        for ix, match in enumerate(search_by_name(obo, args.query)):
+            print('#{0}'.format(ix))
+
+            for fieldname in ('id', 'name', 'def'):
+                print(match[fieldname])
+
+            if 'is_a' in match:
+                print('Is a:', match['is_a'])

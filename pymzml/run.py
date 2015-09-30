@@ -50,12 +50,18 @@ import pymzml.minimum
 
 
 class RegexPatterns(object):
-    spectrumIndexPattern = re.compile( b'(?P<type>(scan=|nativeID="))(?P<nativeID>[0-9]*)">(?P<offset>[0-9]*)</offset>' )
-    simIndexPattern = re.compile( b'(?P<type>idRef=")(?P<nativeID>.*)">(?P<offset>[0-9]*)</offset>' )
+    spectrumIndexPattern = re.compile(
+        b'(?P<type>(scan=|nativeID="))(?P<nativeID>[0-9]*)">(?P<offset>[0-9]*)</offset>'
+    )
+    simIndexPattern = re.compile(b'(?P<type>idRef=")(?P<nativeID>.*)">(?P<offset>[0-9]*)</offset>')
+
 
 class Reader(object):
     """
-    .. function:: __init__(path*  [,noiseThreshold = 0.0, extraAccessions = None, MS1_Precision = 5e-6, MSn_Precision = 20e-6])
+    .. function:: __init__(
+        path*
+        [,noiseThreshold=0.0, extraAccessions=None, MS1_Precision=5e-6, MSn_Precision=20e-6]
+    )
 
     Initializes an mzML run and returns an iterator.
 
@@ -70,13 +76,15 @@ class Reader(object):
         spectrum["total ion current"] or spectrum['MS:1000285'].
 
         The translated name is extracted from the current OBO file,
-        hence the name that is defined by the HUPO-PSI consortium is used. (http://www.psidev.info/).
+        hence the name that is defined by the HUPO-PSI consortium is used.
+        (http://www.psidev.info/).
 
-        pymzML comes with an example script queryOBO.py which can be used to lookup
-        the names or MS tags (see: :py:obj:`queryOBO`).
+        pymzML comes with an example script queryOBO.py which can be used to
+        lookup the names or MS tags (see: :py:obj:`queryOBO`).
 
-        The value, i.e. which xml property has to be extraced has to be provided by the user.
-        Multiple values can be used as input, i.e. ( 'MS:1000016' , ['value','unitName'] ) will extract scan time and its unit.
+        The value, i.e. which xml property has to be extraced has to be provided
+        by the user. Multiple values can be used as input, i.e. ( 'MS:1000016' ,
+        ['value','unitName'] ) will extract scan time and its unit.
 
     :type extraAccessions: list of tuples
     :param MS1_Precision: measured precision of MS1 spectra
@@ -85,41 +93,43 @@ class Reader(object):
     :type MSn_Precision: float
     :param build_index_from_scratch: build index from scratch
     :type build_index_from_scratch: boolean
-    :param file_object: file object or any other iterable stream, this will make path obsolete, seeking is disabled
+    :param file_object: file object or any other iterable stream, this will make
+                        path obsolete, seeking is disabled
     :type file_object: File_object like
+
     Example:
 
-    >>> run = pymzml.run.Reader("../mzML_example_files/100729_t300_100729172744.mzML.gz" ,
-                            MS1_Precision = 20e-6 )
+    >>> run = pymzml.run.Reader("../mzML_example_files/100729_t300_100729172744.mzML.gz",
+                                MS1_Precision = 20e-6)
     """
 
     def __init__(
-         self,
-         path,
-         noiseThreshold = 0.0,
-         extraAccessions = None,
-         MS1_Precision = 5e-6,
-         MSn_Precision = 20e-6,
-         build_index_from_scratch=False,
-         file_object = None
-            ):
-
-
+        self,
+        path,
+        noiseThreshold=0.0,
+        extraAccessions=None,
+        MS1_Precision=5e-6,
+        MSn_Precision=20e-6,
+        build_index_from_scratch=False,
+        file_object=None,
+        obo_version=None,
+    ):
         # self.param contains user-specified parsing parameters
         self.param = dict()
 
         self.param['noiseThreshold'] = noiseThreshold
         self.param['MS1_Precision'] = MS1_Precision
         self.param['MSn_Precision'] = MSn_Precision
-        self.param['accessions'] = { }
+        self.param['accessions'] = {}
 
         # self.info contains information extracted from the mzML file
-        self.info                                = dict()
-        self.info['offsets']                     = ddict()
-        self.info['filename']                    = path
-        self.info['offsetList']                  = []
+        self.info = dict()
+        self.info['offsets'] = ddict()
+        self.info['filename'] = path
+        self.info['offsetList'] = []
         self.info['referenceableParamGroupList'] = False
-        self.info['spectrum_count']              = 0 
+        self.info['spectrum_count'] = 0
+        self.info['obo_version'] = obo_version
 
         self.MS1_Precision = MS1_Precision
 
@@ -127,11 +137,11 @@ class Reader(object):
 
         # Default stuff
         self.spectrum = pymzml.spec.Spectrum(
-            measuredPrecision = MS1_Precision ,
-            param = self.param
+            measuredPrecision=MS1_Precision,
+            param=self.param,
         )
         self.spectrum.clear()
-        #
+
         if file_object is not None:
             self.info['fileObject'] = file_object
             self.info['seekable'] = False
@@ -179,7 +189,7 @@ class Reader(object):
                     # a) the offset is always the same (silent fail hurray!)
                     sanity_check_set = set()
                     try:
-                        self.seeker.seek( -1024 * _, 1 )
+                        self.seeker.seek(-1024 * _, 1)
                     except:
                         break
                         # File is smaller than 10kbytes ...
@@ -192,14 +202,14 @@ class Reader(object):
                                 )
                             )
 
-                        match_spec = spectrumIndexPattern.search( line )
+                        match_spec = spectrumIndexPattern.search(line)
                         if match_spec is not None:
                             spec_byte_offset = int(
                                 bytes.decode(
                                     match_spec.group('offset')
                                 )
                             )
-                            sanity_check_set.add( spec_byte_offset )
+                            sanity_check_set.add(spec_byte_offset)
 
                         match = indexListOffsetPattern.search(line)
                         if match:
@@ -222,42 +232,47 @@ class Reader(object):
                     self.info['seekable'] = False
                     if build_index_from_scratch:
                         self._build_index_from_scratch(self.seeker)
-                    # print('Could not find indexList. Falling back to non seekable.', file = sys.stderr)
                 elif self.info['offsets']['TIC'] is not None and \
                         self.info['offsets']['TIC'] > os.path.getsize(self.info['filename']):
                     self.info['seekable'] = False
-                    #print('mzML file was truncated, but offsets were not recalculated. Falling back to non seekable.', file = sys.stderr)
                 else:
                     # Jumping to index list and slurpin all specOffsets
                     self.seeker.seek(self.info['offsets']['indexList'], 0)
                     spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
                     simIndexPattern = RegexPatterns.simIndexPattern
-                    ## NOTE: this might be again different in another mzML versions!!
-                    ## 1.1 >> small_zlib.pwiz.1.1.mzML:     <offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>
-                    ## 1.0 >>                               <offset idRef="S16004" nativeID="16004">236442042</offset>
-                    ##  <offset idRef="SIM SIC 651.5">330223452</offset>\n'
+
+                    # NOTE: this might be again different in another mzML versions!!
+                    # 1.1 >> small_zlib.pwiz.1.1.mzML:
+                    #   <offset idRef="controllerType=0 controllerNumber=1 scan=1">4363</offset>
+                    # 1.0 >>
+                    #   <offset idRef="S16004" nativeID="16004">236442042</offset>
+                    #   <offset idRef="SIM SIC 651.5">330223452</offset>\n'
                     for line in self.seeker:
                         match_spec = spectrumIndexPattern.search(line)
                         if match_spec and match_spec.group('nativeID') == b'':
                             match_spec = None
-                        match_sim  = simIndexPattern.search(line)
+                        match_sim = simIndexPattern.search(line)
                         if match_spec:
-                            self.info['offsets'][ int(bytes.decode( match_spec.group('nativeID'))) ] = int(bytes.decode( match_spec.group('offset')))
-                            self.info['offsetList'].append(int(bytes.decode( match_spec.group('offset'))))
+                            offset = int(bytes.decode(match_spec.group('offset')))
+                            nativeID = int(bytes.decode(match_spec.group('nativeID')))
+                            self.info['offsets'][nativeID] = offset
+                            self.info['offsetList'].append(offset)
                         elif match_sim:
-                            self.info['offsets'][ bytes.decode( match_sim.group('nativeID')) ] = int(bytes.decode( match_sim.group('offset')))
-                            self.info['offsetList'].append(int(bytes.decode( match_sim.group('offset'))))
+                            offset = int(bytes.decode(match_sim.group('offset')))
+                            nativeID = int(bytes.decode(match_sim.group('nativeID')))
+                            self.info['offsets'][nativeID] = offset
+                            self.info['offsetList'].append(offset)
                     # opening seeker in normal mode again
                 self.seeker.close()
                 self.seeker = open(self.info['filename'], 'r')
 
-        ### declare the iter
+        # declare the iter
         self.iter = iter(
             cElementTree.iterparse(
                 self.info['fileObject'],
-                events = ( b'start', b'end')
+                events=(b'start', b'end')
             )
-        ) # NOTE: end might be sufficient
+        )  # NOTE: end might be sufficient
 
         # Move iter to spectrumList / chromatogramList
         while True:
@@ -267,14 +282,15 @@ class Reader(object):
                     self.info['mzmlVersion'] = element.attrib['version']
                 else:
                     s = element.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation']
-                    self.info['mzmlVersion'] = re.search(
-                        r'[0-9]*\.[0-9]*\.[0-9]*',   s
-                    ).group()
+                    self.info['mzmlVersion'] = re.search(r'[0-9]*\.[0-9]*\.[0-9]*', s).group()
+            elif element.tag.endswith('}cv'):
+                if not self.info['obo_version'] and element.attrib['id'] == 'MS':
+                    self.info['obo_version'] = element.attrib['version']
             elif element.tag.endswith('}referenceableParamGroupList'):
                 self.info['referenceableParamGroupList'] = True
                 self.info['referenceableParamGroupListElement'] = element
             elif element.tag.endswith('}spectrumList'):
-                self.info['spectrum_count'] = element.attrib[ 'count' ]
+                self.info['spectrum_count'] = element.attrib['count']
                 break
             elif element.tag.endswith('}chromatogramList'):
                 # SRM only ?
@@ -286,13 +302,13 @@ class Reader(object):
             # self.meta.append( <> )
 
         # parse obo, check MS tags and if they are ok in minimum.py (minimum required) ...
-        self.OT = pymzml.obo.oboTranslator()
+        self.OT = pymzml.obo.oboTranslator(version=self.info['obo_version'])
 
         for minimumMS, ListOfvaluesToExtract in pymzml.minimum.MIN_REQ:
             self.param['accessions'][minimumMS] = {
-                'valuesToExtract'   : ListOfvaluesToExtract ,
-                'name'              : self.OT[minimumMS] ,
-                'values'            : []
+                'valuesToExtract': ListOfvaluesToExtract,
+                'name': self.OT[minimumMS],
+                'values': []
             }
 
         # parse extra accessions ...
@@ -300,9 +316,9 @@ class Reader(object):
             for accession, fieldIdentifiers in extraAccessions:
                 if accession not in self.param['accessions'].keys():
                     self.param['accessions'][accession] = {
-                        'valuesToExtract'   : [] ,
-                        'name'              : self.OT[accession],
-                        'values'            : []
+                        'valuesToExtract': [],
+                        'name': self.OT[accession],
+                        'values': []
                     }
                 for valueToExtract in fieldIdentifiers:
                     if valueToExtract not in self.param['accessions'][accession]['valuesToExtract']:
@@ -331,10 +347,10 @@ class Reader(object):
             chromcnt = 0
             speccnt = 0
             # regexes to be used
-            chromexp    = re.compile(b"<\s*chromatogram[^>]*id=\"([^\"]*)\"")
+            chromexp = re.compile(b"<\s*chromatogram[^>]*id=\"([^\"]*)\"")
             chromcntexp = re.compile(b"<\s*chromatogramList\s*count=\"([^\"]*)\"")
-            specexp     = re.compile(b"<\s*spectrum[^>]*id=\"([^\"]*)\"")
-            speccntexp  = re.compile(b"<\s*spectrumList\s*count=\"([^\"]*)\"")
+            specexp = re.compile(b"<\s*spectrum[^>]*id=\"([^\"]*)\"")
+            speccntexp = re.compile(b"<\s*spectrumList\s*count=\"([^\"]*)\"")
             # go to start of file
             fh.seek(0)
             prev_chunk = ""
@@ -342,7 +358,8 @@ class Reader(object):
                  # read a chunk of data
                 offset = fh.tell()
                 chunk = fh.read(chunksize)
-                if not chunk: break
+                if not chunk:
+                    break
 
                  # append a part of the previous chunk since we have cut in the middle
                  # of the text (to make sure we dont miss anything, prev_chunk
@@ -369,8 +386,7 @@ class Reader(object):
 
             # Check if everything is ok (e.g. we found the right number of
             # chromatograms and spectra) and then return the dictionary.
-            if (chromcnt == len(chrom_positions) and
-                speccnt == len(spec_positions)  ):
+            if (chromcnt == len(chrom_positions) and speccnt == len(spec_positions)):
                 positions = {}
                 positions.update(chrom_positions)
                 positions.update(spec_positions)
@@ -386,7 +402,7 @@ class Reader(object):
             self.info['offsetList'].extend(indices.values())
 
             # make sure the list is sorted (for bisect)
-            self.info['offsetList'] = sorted( self.info['offsetList'] )
+            self.info['offsetList'] = sorted(self.info['offsetList'])
             self.info['seekable'] = True
         return
 
@@ -416,7 +432,11 @@ class Reader(object):
             # stop iteration when parsing is done
             if event == 'END':
                 raise StopIteration
-            if (element.tag.endswith('}spectrum') or element.tag.endswith('}chromatogram') ) and event == b'end':
+
+            if (
+                (element.tag.endswith('}spectrum') or element.tag.endswith('}chromatogram'))
+                and event == b'end'
+            ):
                 if self.info['referenceableParamGroupList']:
                     self.spectrum.initFromTreeObjectWithRef(
                         element,
@@ -429,7 +449,9 @@ class Reader(object):
                     self.elementList[-1].clear()
                 except:
                     pass
+
                 self.elementList.append(element)
+
                 return self.spectrum
 
     def __getitem__(self, value):
@@ -445,7 +467,10 @@ class Reader(object):
         answer = None
         if self.info['seekable'] is True:
             if len(self.info['offsets']) == 0:
-                print("File does support random access, unfortunately indexlist missing, i.e. type not implemented yet ...", file=sys.stderr)
+                print(
+                    "File does support random access: index list missing...",
+                    file=sys.stderr
+                )
 
             if value in self.info['offsets']:
                 startPos = self.info['offsets'][value]
@@ -458,32 +483,25 @@ class Reader(object):
                 else:
                     endPos = self.info['offsetList'][endPos_index]
 
-
                 self.seeker.seek(startPos, 0)
                 data = self.seeker.read(endPos - self.info['offsets'][value])
                 try:
-                    self.spectrum.initFromTreeObject(
-                        cElementTree.fromstring( data )
-                    )
+                    self.spectrum.initFromTreeObject(cElementTree.fromstring(data))
                 except:
                     # have closing </mzml> & </run> &or </spectrumList>
                     startingTag = data.split()[0]
-                    stopIndex = data.index( '</' + startingTag[1:] + '>')
+                    stopIndex = data.index('</' + startingTag[1:] + '>')
                     self.spectrum.initFromTreeObject(
-                        cElementTree.fromstring(
-                            data[:stopIndex + len(startingTag) + 2]
-                        )
+                        cElementTree.fromstring(data[:stopIndex + len(startingTag) + 2])
                     )
                 answer = self.spectrum
             else:
                 print("Run does not contain spec with native ID {0}".format(value), file=sys.stderr)
-                #print(self.info['offsets'].keys())
-
         else:
             self.iter = iter(cElementTree.iterparse(
-                self.info['filename'],
-                events = ( b'start', b'end')
-            )) # NOTE: end might be sufficient
+                self.info['fileObject'],
+                events=(b'start', b'end')
+            ))  # NOTE: end might be sufficient
 
             for _ in self:
                 if _['id'] == value:
@@ -503,30 +521,35 @@ class Writer(object):
 
     :param path: filename for the new mzML file.
     :type path: string
-    :param run: Currently a pymzml.run.Reader object is required since we do not write the header by ourselves, yet.
+    :param run: Currently a pymzml.run.Reader object is required since we do
+                not write the header by ourselves yet.
     :type run: pymzml.run.Reader
     :param overwrite: force the re-initialization of mzML file, even if file exists.
     :type overwrite: boolean
 
     Example:
 
-    >>> run = pymzml.run.Reader('../mzML_example_files/100729_t300_100729172744.mzML', MS1_Precision = 5e-6)
-    >>> run2 = pymzml.run.Writer(filename = 'write_test.mzML', run= run , overwrite = True)
+    >>> run = pymzml.run.Reader(
+    ...     '../mzML_example_files/100729_t300_100729172744.mzML',
+    ...     MS1_Precision=5e-6,
+    ... )
+    >>> run2 = pymzml.run.Writer(filename='write_test.mzML', run=run , overwrite=True)
     >>> spec = run[1000]
     >>> run2.addSpec(spec)
     >>> run2.save()
 
     """
-    def __init__(self,filename = None, run = None, overwrite = False):
-        cElementTree.register_namespace("","http://psi.hupo.org/ms/mzml")
+    def __init__(self, filename=None, run=None, overwrite=False):
+
+        cElementTree.register_namespace("", "http://psi.hupo.org/ms/mzml")
         self.filename = filename
-        self.lookup = {
-        }
+        self.lookup = {}
 
         self.newTree = None
         self.TreeBuilder = cElementTree.TreeBuilder()
         self.run = run
-        self.info = {'counters': ddict(int) }
+        self.info = {'counters': ddict(int)}
+
         if self.run.info['filename'].endswith('.gz'):
             import gzip
             import codecs
@@ -534,19 +557,21 @@ class Writer(object):
         else:
             io = open(self.run.info['filename'], 'r')
 
-        for event,element in cElementTree.iterparse(io, events = ( b'start', b'end')):
-            if self.newTree == None:
-                self.newTree = cElementTree.Element(element.tag,element.attrib)
+        for event, element in cElementTree.iterparse(io, events=(b'start', b'end')):
+            if self.newTree is None:
+                self.newTree = cElementTree.Element(element.tag, element.attrib)
                 if event == b'start' and element.tag.endswith("}mzML"):
                     self.TreeBuilder.start(element.tag, element.attrib)
             else:
                 if event == b'start':
                     self.TreeBuilder.start(element.tag, element.attrib)
                     if element.tag.endswith('}run'):
-                        self.lookup['run'] = cElementTree.Element(element.tag,element.attrib)
+                        self.lookup['run'] = cElementTree.Element(element.tag, element.attrib)
                     if element.tag.endswith('}spectrumList'):
-                        self.lookup['spectrumList']     = cElementTree.Element(element.tag,element.attrib)
-                        self.lookup['spectrumIndeces']  = cElementTree.Element('index',{'name':'spectrum'}),
+                        self.lookup['spectrumList'] = \
+                            cElementTree.Element(element.tag, element.attrib)
+                        self.lookup['spectrumIndeces'] = \
+                            cElementTree.Element('index', {'name': 'spectrum'}),
                         break
                     elif element.tag.endswith('}chromatogramList'):
                         break
@@ -554,71 +579,90 @@ class Writer(object):
                         pass
                 else:
                     if element.tag.endswith('}softwareList'):
-                        ### Insert pymzML software tag
-                        ## Example :software id="pwiz_Reader_Thermo"><softwareParam accession="MS:1000615" cvRef="MS" name="ProteoWizard" version="1.0" />
-                        self.TreeBuilder.start('software', {'id':'pymzML 0.7.1'})
-                        self.TreeBuilder.start('softwareParam', {'accession':'MS:0000000', 'cvRef':'MS', 'name':'pymzML writer', 'version':'0.7.1'})
+                        # Insert pymzML software tag
+                        # Example:
+                        #  <software id="pwiz_Reader_Thermo">
+                        #  <softwareParam
+                        #   accession="MS:1000615"
+                        #   cvRef="MS"
+                        #   name="ProteoWizard"
+                        #   version="1.0"
+                        #  />
+
+                        self.TreeBuilder.start('software', {'id': 'pymzML 0.7.1'})
+                        self.TreeBuilder.start('softwareParam', {
+                            'accession': 'MS:0000000',
+                            'cvRef': 'MS',
+                            'name': 'pymzML writer',
+                            'version': '0.7.1',
+                        })
                         self.newTree.append(self.TreeBuilder.end('softwareParam'))
                         self.newTree.append(self.TreeBuilder.end('software'))
                     self.TreeBuilder.data(element.text)
                     self.newTree.append(self.TreeBuilder.end(element.tag))
         return
 
-    def addSpec(self,spec):
-        self._addTree(spec,typeOfSpec='spectrum')
+    def addSpec(self, spec):
+        self._addTree(spec, typeOfSpec='spectrum')
         return
 
-    def addChromatogram(self,spec):
-        self._addTree(spec,typeOfSpec='chromatogram')
+    def addChromatogram(self, spec):
+        self._addTree(spec, typeOfSpec='chromatogram')
         return
 
-    def _addTree(self,spec,typeOfSpec=None):
+    def _addTree(self, spec, typeOfSpec=None):
         if typeOfSpec not in self.lookup.keys():
-            self.lookup['{0}List'.format(typeOfSpec)]     = cElementTree.Element('{0}List'.format(typeOfSpec) , {'count':0})
-            self.lookup['{0}Indeces'.format(typeOfSpec)]  = cElementTree.Element('index',{'name':typeOfSpec})
+            self.lookup['{0}List'.format(typeOfSpec)] = \
+                cElementTree.Element('{0}List'.format(typeOfSpec), {'count': 0})
+            self.lookup['{0}Indeces'.format(typeOfSpec)] = \
+                cElementTree.Element('index', {'name': typeOfSpec})
 
-        self.lookup[typeOfSpec+'List'].append( spec._xmlTree )
+        self.lookup[typeOfSpec + 'List'].append(spec._xmlTree)
         offset = cElementTree.Element('offset')
         offset.text = 'Not implemented yet'
         offset.attrib = {'idRef': 'NaN', 'nativeID': str(spec['id'])}
-        self.lookup[typeOfSpec+'Indeces'].append(offset)
+        self.lookup[typeOfSpec + 'Indeces'].append(offset)
 
         self.info['counters'][typeOfSpec] += 1
 
         return
 
     def save(self):
-        for typeOfSpec in ['spectrum','chromatogram']:
-            if typeOfSpec+'List' in self.lookup.keys():
-                self.lookup['{0}List'.format(typeOfSpec)].set('count', str(self.info['counters'][typeOfSpec]))
-                self.lookup['run'].append(self.lookup[typeOfSpec+'List'])
+        for typeOfSpec in ['spectrum', 'chromatogram']:
+            if typeOfSpec + 'List' in self.lookup.keys():
+                self.lookup['{0}List'.format(typeOfSpec)].set(
+                    'count', str(self.info['counters'][typeOfSpec]),
+                )
+                self.lookup['run'].append(self.lookup[typeOfSpec + 'List'])
         self.newTree.append(self.lookup['run'])
 
-        IndexList = cElementTree.Element('IndexList' , {'count': str(len(self.info['counters'].keys()))})
+        IndexList = cElementTree.Element('IndexList', {
+            'count': str(len(self.info['counters'].keys()))
+        })
 
-        for typeOfSpec in ['spectrum','chromatogram']:
-            if typeOfSpec+'Indeces' in self.lookup.keys():
+        for typeOfSpec in ['spectrum', 'chromatogram']:
+            if typeOfSpec + 'Indeces' in self.lookup.keys():
                 IndexList.append(self.lookup['{0}Indeces'.format(typeOfSpec)])
         self.newTree.append(IndexList)
 
-
         self.prettyXMLformater(self.newTree)
         self.xmlTree = cElementTree.ElementTree(self.newTree)
-        self.xmlTree.write(self.filename, encoding="ISO-8859-1", xml_declaration=True )
+        self.xmlTree.write(self.filename, encoding='ISO-8859-1', xml_declaration=True)
+
         return
 
-    def prettyXMLformater(self, element, level = 0):
+    def prettyXMLformater(self, element, level=0):
         # Modified version from
         # http://infix.se/2007/02/06/gentlemen-indent-your-xml
         # which is a modified version of
         # http://effbot.org/zone/element-lib.htm#prettyprint
 
-        i = '\n{0}'.format(level*' ')
+        i = '\n{0}'.format(level * ' ')
         if len(element):
             if not element.text or not element.text.strip():
                 element.text = i + '  '
             for e in element:
-                self.prettyXMLformater(e, level+1)
+                self.prettyXMLformater(e, level + 1)
                 if not e.tail or not e.tail.strip():
                     e.tail = i + '  '
             if not e.tail or not e.tail.strip():
@@ -627,8 +671,6 @@ class Writer(object):
             if level and (not element.tail or not element.tail.strip()):
                 element.tail = i
         return
-
-
 
 
 if __name__ == '__main__':

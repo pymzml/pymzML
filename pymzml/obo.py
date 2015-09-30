@@ -71,13 +71,13 @@ import pymzml
 
 
 class oboTranslator(object):
-    def __init__(self, version='1.1.0'):
+    def __init__(self, version=None):
         self.version = version
         self.allDicts = []
         self.id = {}
         self.name = {}
         self.definition = {}
-        self.lookups = [ self.id, self.name, self.definition ]
+        self.lookups = [self.id, self.name, self.definition]
         # replace_by could be another one ...
 
         self.parseOBO()
@@ -87,14 +87,14 @@ class oboTranslator(object):
 
     def __getitem__(self, key):
         for lookup in self.lookups:
-            if key in lookup.keys():
+            if key in lookup:
                 if key[:2] == 'MS':
                     try:
                         return lookup[key]['name']
                     except:
                         pass
                 return lookup[key]
-        return 'None'
+        return None
 
     def parseOBO(self):
         """
@@ -102,9 +102,9 @@ class oboTranslator(object):
         (would be great to have all versions. Must convience PSI to add version
         number at the file .. :))
         """
-        oboFile = os.path.normpath('{0}/obo/psi-ms-{1}.obo'.format(
+        oboFile = os.path.normpath('{0}/obo/psi-ms{1}.obo'.format(
             os.path.dirname(pymzml.obo.__file__),
-            self.version
+            '-' + self.version if self.version else ''
         ))
         if os.path.exists(oboFile):
             with open(oboFile) as obo:
@@ -122,9 +122,9 @@ class oboTranslator(object):
                             k = line.find(":")
                             collections[line[:k]] = line[k + 1:].strip()
         else:
-            print("No obo file version {0} (psi-ms-{0}.obo) found.".format(
-                self.version
-                ), file=sys.stderr
+            print(
+                "No obo file version {0} (psi-ms-{0}.obo) found.".format(self.version),
+                file=sys.stderr,
             )
             raise Exception("Could not find obo file.")
         return
@@ -132,13 +132,12 @@ class oboTranslator(object):
     def add(self, collection_dict):
         self.allDicts.append(collection_dict)
         if 'id' in collection_dict.keys():
-            self.id[collection_dict['id']] = self.allDicts[len(self.allDicts) - 1]
+            self.id[collection_dict['id']] = self.allDicts[-1]
         if 'name' in collection_dict.keys():
-            self.name[collection_dict['name']] = self.allDicts[len(self.allDicts) - 1]
+            self.name[collection_dict['name']] = self.allDicts[-1]
         if 'def' in collection_dict.keys():
-            self.definition[collection_dict['def']] = self.allDicts[len(self.allDicts) - 1]
-        else:
-            pass
+            self.definition[collection_dict['def']] = self.allDicts[-1]
+
         return
 
     def checkOBO(self, idTag, name):
