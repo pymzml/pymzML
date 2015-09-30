@@ -79,13 +79,17 @@ class oboTranslator(object):
         self.definition = {}
         self.lookups = [self.id, self.name, self.definition]
         # replace_by could be another one ...
-
-        self.parseOBO()
+        self._obo_parsed = False
+        # self.parseOBO()
 
     def __setitem__(self, key, value):
         return
 
     def __getitem__(self, key):
+        if self._obo_parsed is False:
+            self.parseOBO()
+            self._obo_parsed = True
+
         for lookup in self.lookups:
             if key in lookup:
                 if key[:2] == 'MS':
@@ -101,11 +105,31 @@ class oboTranslator(object):
         Parse the obo file in folder obo/
         (would be great to have all versions. Must convience PSI to add version
         number at the file .. :))
+
+        Note:
+            Is cx_freeze friendly! Place obo folder at the location
+            of sys.executable.
+
         """
-        oboFile = os.path.normpath('{0}/obo/psi-ms{1}.obo'.format(
-            os.path.dirname(pymzml.obo.__file__),
-            '-' + self.version if self.version else ''
-        ))
+        is_frozen = getattr(sys, 'frozen', False)
+        if is_frozen:
+            root_for_obo = os.path.dirname(sys.executable)
+        else:
+            root_for_obo = os.path.dirname(__file__)
+
+        oboFile = os.path.normpath(
+            os.path.join(
+                root_for_obo,
+                'obo',
+                "psi-ms{0}.obo".format(
+                    '-' + self.version if self.version else ''
+                )
+            )
+        )
+        # oboFile = os.path.normpath('{0}/obo/psi-ms{1}.obo'.format(
+        #     os.path.dirname(pymzml.obo.__file__),
+        #     '-' + self.version if self.version else ''
+        # ))
         if os.path.exists(oboFile):
             with open(oboFile) as obo:
                 collections = {}
@@ -123,10 +147,12 @@ class oboTranslator(object):
                             collections[line[:k]] = line[k + 1:].strip()
         else:
             print(
-                "No obo file version {0} (psi-ms-{0}.obo) found.".format(self.version),
+                "No obo file version {0} (psi-ms-{0}.obo) found.".format(
+                    self.version
+                ),
                 file=sys.stderr,
             )
-            raise Exception("Could not find obo file.")
+            raise Exception("Could not find obo file @ {0}".format( oboFile ))
         return
 
     def add(self, collection_dict):

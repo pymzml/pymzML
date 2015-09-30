@@ -43,7 +43,8 @@ class TestObo(unittest.TestCase):
 
     def test_invalid_obo(self):
         with self.assertRaises(Exception):
-            pymzml.obo.oboTranslator('1.1.1')
+            obo = pymzml.obo.oboTranslator('1.1.1')
+            parsing_on_demand = obo['MS:1002569']
 
     def test_getitem(self):
         obo = pymzml.obo.oboTranslator('3.78.0')
