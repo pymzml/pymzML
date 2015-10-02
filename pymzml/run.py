@@ -285,7 +285,9 @@ class Reader(object):
                     self.info['mzmlVersion'] = re.search(r'[0-9]*\.[0-9]*\.[0-9]*', s).group()
             elif element.tag.endswith('}cv'):
                 if not self.info['obo_version'] and element.attrib['id'] == 'MS':
-                    self.info['obo_version'] = element.attrib['version']
+                    self.info['obo_version'] = element.attrib.get('version', '1.1.0')
+                    # Really old convertions dont even have this this attribute
+                    # wOooO?
             elif element.tag.endswith('}referenceableParamGroupList'):
                 self.info['referenceableParamGroupList'] = True
                 self.info['referenceableParamGroupListElement'] = element
