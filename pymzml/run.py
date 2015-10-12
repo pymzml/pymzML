@@ -259,7 +259,11 @@ class Reader(object):
                             self.info['offsetList'].append(offset)
                         elif match_sim:
                             offset = int(bytes.decode(match_sim.group('offset')))
-                            nativeID = int(bytes.decode(match_sim.group('nativeID')))
+                            nativeID = bytes.decode(match_sim.group('nativeID'))
+                            try:
+                                nativeID = int( nativeID )
+                            except:
+                                pass
                             self.info['offsets'][nativeID] = offset
                             self.info['offsetList'].append(offset)
                     # opening seeker in normal mode again
