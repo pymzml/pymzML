@@ -449,13 +449,10 @@ class Spectrum(dict):
         """
         isProfile = False
         for k in self.keys():
-            try:
+            if isinstance(k,str):
                 if 'profile' in k:
                     isProfile = True
                     break
-            except:
-                print(self.keys(), file = sys.stderr)
-                sys.exit(1)
         if isProfile:
             tmp = []
             if 'reprofiled' in self.keys():

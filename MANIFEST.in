@@ -25,4 +25,4 @@ include Documentation/pymzml.pdf
 include AUTHORS.txt
 include README.txt
 
-recursive-include src/obo/ *
+recursive-include pymzml/obo/ *
