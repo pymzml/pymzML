@@ -67,28 +67,26 @@ file.
 from __future__ import print_function
 import sys
 import os
-import pymzml
 
 
 class oboTranslator(object):
     def __init__(self, version=None):
-        self.version = version
+        self.version = self.__normalize_version(version)
         self.allDicts = []
         self.id = {}
         self.name = {}
         self.definition = {}
         self.lookups = [self.id, self.name, self.definition]
-        # replace_by could be another one ...
-        self._obo_parsed = False
-        # self.parseOBO()
+
+        # Only parse the OBO when necessary, not upon object construction
+        self.__obo_parsed = False
 
     def __setitem__(self, key, value):
-        return
+        raise TypeError("OBO translator dictionaries only support assignment via .add")
 
     def __getitem__(self, key):
-        if self._obo_parsed is False:
+        if not self.__obo_parsed:
             self.parseOBO()
-            self._obo_parsed = True
 
         for lookup in self.lookups:
             if key in lookup:
@@ -100,38 +98,59 @@ class oboTranslator(object):
                 return lookup[key]
         return None
 
+    @staticmethod
+    def __normalize_version(version):
+        """
+        .. method:: oboTranslator.__normalize_version(version)
+
+        Ensure that a version has 3 components, defaulting to .0 for the missing
+        components.
+
+        :param version: The original version to modify.
+        :type version: str
+        :returns: The version, normalized to ensure that it has 3 parts.
+        :rtype: str
+        """
+        if version is not None:
+            parts = version.split('.')
+
+            missing_parts = 3 - len(parts)
+            if missing_parts > 0:
+                version = '.'.join(parts + ['0'] * missing_parts)
+
+        return version
+
     def parseOBO(self):
+        self.__obo_parsed = True
         """
-        Parse the obo file in folder obo/
-        (would be great to have all versions. Must convience PSI to add version
-        number at the file .. :))
+        .. method:: oboTranslator.parseOBO()
 
-        Note:
-            Is cx_freeze friendly! Place obo folder at the location
-            of sys.executable.
+        Locate and parse the OBO file in the OBO root directory.
 
+        .. note::
+
+           cx_Freeze friendly. If using cx_Freeze, place the OBO folder at
+           the location of sys.executable.
         """
-        is_frozen = getattr(sys, 'frozen', False)
-        if is_frozen:
-            root_for_obo = os.path.dirname(sys.executable)
+
+        # TODO: Try to get all the versions, even those without well-defined
+        #       version numbers, or get remote hosting of all of the versions
+        #       and only download one at will on demand.
+
+        # Modify the root for cx_freeze
+        if getattr(sys, 'frozen', False):
+            obo_root = os.path.dirname(sys.executable)
         else:
-            root_for_obo = os.path.dirname(__file__)
+            obo_root = os.path.dirname(__file__)
 
-        oboFile = os.path.normpath(
-            os.path.join(
-                root_for_obo,
-                'obo',
-                "psi-ms{0}.obo".format(
-                    '-' + self.version if self.version else ''
-                )
-            )
+        obo_file = os.path.join(
+            obo_root,
+            'obo',
+            "psi-ms{0}.obo".format('-' + self.version if self.version else '')
         )
-        # oboFile = os.path.normpath('{0}/obo/psi-ms{1}.obo'.format(
-        #     os.path.dirname(pymzml.obo.__file__),
-        #     '-' + self.version if self.version else ''
-        # ))
-        if os.path.exists(oboFile):
-            with open(oboFile) as obo:
+
+        if os.path.exists(obo_file):
+            with open(obo_file) as obo:
                 collections = {}
                 collect = False
                 for line in obo:
@@ -146,16 +165,14 @@ class oboTranslator(object):
                             k = line.find(":")
                             collections[line[:k]] = line[k + 1:].strip()
         else:
-            print(
-                "No obo file version {0} (psi-ms-{0}.obo) found.".format(
-                    self.version
-                ),
-                file=sys.stderr,
-            )
-            raise Exception("Could not find obo file @ {0}".format( oboFile ))
+            raise IOError("Could not find obo file {0}".format(obo_file))
+
         return
 
     def add(self, collection_dict):
+        if not self.__obo_parsed:
+            self.parseOBO()
+
         self.allDicts.append(collection_dict)
         if 'id' in collection_dict.keys():
             self.id[collection_dict['id']] = self.allDicts[-1]
@@ -167,6 +184,9 @@ class oboTranslator(object):
         return
 
     def checkOBO(self, idTag, name):
+        if not self.__obo_parsed:
+            self.parseOBO()
+
         if self.id[idTag]['name'] == name:
             return True
         else:
