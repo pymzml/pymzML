@@ -34,7 +34,6 @@ The class :py:class:`Writer` is still in development.
 
 from __future__ import print_function
 
-import sys
 import re
 import os
 import bisect
@@ -130,6 +129,7 @@ class Reader(object):
         self.info['referenceableParamGroupList'] = False
 
         self.info['spectrum_count'] = 0
+        self.info['chromatogram_count'] = 0
 
         self.info['obo_version'] = obo_version
 
@@ -367,6 +367,7 @@ class Reader(object):
                 positions.update(spec_positions)
                 # return positions # return only once in function leaves my brain sane :)
                 self.info['spectrum_count'] = speccnt
+                self.info['chromatogram_count'] = chromcnt
 
             else:
                 positions = None
@@ -416,9 +417,12 @@ class Reader(object):
                 self.info['referenceableParamGroupList'] = True
                 self.info['referenceableParamGroupListElement'] = element
             elif element.tag.endswith('}spectrumList'):
-                self.info['spectrum_count'] = element.attrib.get('count')
+                speccnt = element.attrib.get('count')
+                self.info['spectrum_count'] = int(speccnt) if speccnt else None
                 break
             elif element.tag.endswith('}chromatogramList'):
+                chromcnt = element.attrib.get('count')
+                self.info['chromatogram_count'] = int(chromcnt) if chromcnt else None
                 break
             else:
                 pass
@@ -575,6 +579,10 @@ class Reader(object):
 
     def getSpectrumCount(self):
         return self.info['spectrum_count']
+
+    def getChromatogramCount(self):
+        return self.info['chromatogram_count']
+
 
 class Writer(object):
     """

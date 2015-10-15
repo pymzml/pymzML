@@ -40,8 +40,14 @@ class TestReadChromatogram(unittest.TestCase):
     def check_file(self, run):
         all_chromatograms = list(run)
         self.assertEqual(len(all_chromatograms), 3)
+        self.assertEqual(run.getChromatogramCount(), len(all_chromatograms))
+        self.assertEqual(run.getSpectrumCount(), 0)
 
         chrom = run[self.chromatogram_id]
+
+        # Chromatogram/spectrum counts should not change by random access
+        self.assertEqual(run.getChromatogramCount(), len(all_chromatograms))
+        self.assertEqual(run.getSpectrumCount(), 0)
 
         self.assertEqual(len(chrom.peaks), 176)
         self.assertAlmostEqual(sum(chrom.i), 13374.0)
