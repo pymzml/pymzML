@@ -547,7 +547,7 @@ class Spectrum(dict):
     @property
     def xmlTreeIterFree(self):
         return self._xmlTree
-    
+
 
     def determine_swath_IDs(self):
         ID_tagline=self._xmlTree.get('id')
@@ -645,14 +645,18 @@ class Spectrum(dict):
         ...         print(mz, i)
 
         """
+        need_to_be_called_before_nose_can_be_removed = self.peaks
+        need_to_be_called_before_nose_can_be_removed  =self.centroidedPeaks
+        # Thanks to JD Hogan for pointing it out!
+
         if noiseLevel is None:
             noiseLevel = self.estimatedNoiseLevel(mode = mode)
 
-        if self._peaks is not None:
-            self.peaks  = [ (mz, i) for mz, i in self.peaks if i >= noiseLevel]
-
         if self._centroidedPeaks is not None:
             self.centroidedPeaks = [ (mz, i) for mz, i in self.centroidedPeaks if i >= noiseLevel]
+
+        if self._peaks is not None:
+            self.peaks  = [ (mz, i) for mz, i in self.peaks if i >= noiseLevel]
 
         self._reprofiledPeaks = None
         return self
