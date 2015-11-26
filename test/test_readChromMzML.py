@@ -20,12 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
-import subprocess as sub
 import os
-from nose.tools import nottest
 from nose.plugins.attrib import attr
 
 import pymzml
+
 
 class TestReadChromatogram(unittest.TestCase):
 
@@ -41,8 +40,14 @@ class TestReadChromatogram(unittest.TestCase):
     def check_file(self, run):
         all_chromatograms = list(run)
         self.assertEqual(len(all_chromatograms), 3)
+        self.assertEqual(run.getChromatogramCount(), len(all_chromatograms))
+        self.assertEqual(run.getSpectrumCount(), 0)
 
         chrom = run[self.chromatogram_id]
+
+        # Chromatogram/spectrum counts should not change by random access
+        self.assertEqual(run.getChromatogramCount(), len(all_chromatograms))
+        self.assertEqual(run.getSpectrumCount(), 0)
 
         self.assertEqual(len(chrom.peaks), 176)
         self.assertAlmostEqual(sum(chrom.i), 13374.0)
@@ -64,7 +69,7 @@ class TestReadChromatogram(unittest.TestCase):
 
         self.check_file(run)
 
-    @attr('numpress') 
+    @attr('numpress')
     def test_read_numpress(self):
         run = pymzml.run.Reader(self.mini_numpress_file)
         self.assertFalse(run.info['seekable'])
@@ -75,7 +80,7 @@ class TestReadChromatogram(unittest.TestCase):
         chrom = run[self.numpress_chrom_id]
 
         self.assertEqual(len(chrom.peaks), 176)
-        self.assertAlmostEqual(sum(chrom.i), 3657.0 )
+        self.assertAlmostEqual(sum(chrom.i), 3657.0)
 
         self.assertAlmostEqual(chrom.i[0], 0.0)
         self.assertAlmostEqual(chrom.i[-1], 28.0)

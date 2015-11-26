@@ -1,9 +1,19 @@
 import unittest
-import os
 
 import pymzml.obo
 
+
 class TestObo(unittest.TestCase):
+
+    def test_normalize_version(self):
+        normalize = pymzml.obo.oboTranslator._oboTranslator__normalize_version
+
+        self.assertEqual(normalize(None), None)
+        self.assertEqual(normalize('1.0.0'), '1.0.0')
+        self.assertEqual(normalize('5.69.200-moop'), '5.69.200-moop')
+        self.assertEqual(normalize('2340'), '2340.0.0')
+        self.assertEqual(normalize('234.0'), '234.0.0')
+        self.assertEqual(normalize('2.3.4.0'), '2.3.4.0')
 
     def test_valid_obo(self):
         # Test features of the OBO that differ for each version
