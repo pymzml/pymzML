@@ -1,9 +1,9 @@
 [submodule "Documentation/html"]
 	path = Documentation/html
-	url = git@github.com:pymzml/pymzml.github.com.git
+	url = https://github.com/pymzml/pymzml.github.com.git
 [submodule "Documentation_src/build/html"]
 	path = Documentation_src/build/html
-	url = git@github.com:pymzml/pymzml.github.com.git
+	url = https://github.com/pymzml/pymzml.github.com.git
 [submodule "Website"]
 	path = Website
-	url = git@github.com:pymzml/pymzml.github.com.git
+	url = https://github.com/pymzml/pymzml.github.com.git
