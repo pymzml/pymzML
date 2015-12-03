@@ -2,7 +2,7 @@ prune Documentation/html/.doctrees/
 prune compare
 exclude Documentation/html/.buildinfo
 
-recursive-include Documentation/html/ *
+recursive-include Documentation/html *
 
 include example_scripts/accessAllData.py
 include example_scripts/compareSpectra.py
@@ -20,9 +20,9 @@ include example_scripts/parseAllExampleFiles.py
 incluce example_scripts/chromatogram.py
 include example_scripts/extractIonChromatogram.py
 
-include COPYING.LESSER
+include COPYING.txt
 include Documentation/pymzml.pdf
 include AUTHORS.txt
 include README.txt
 
-recursive-include src/obo/ *
+recursive-include pymzml/obo *

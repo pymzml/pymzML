@@ -4,7 +4,8 @@ Documentation/
 Website
 *~
 .DS_Store
-example_scripts/output/FInal_adding_22092011
+example_scripts/output/
+example_scripts/mzML_example_files/
 __pycache__
 MANIFEST
 

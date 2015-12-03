@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mzML xmlns="http://psi.hupo.org/ms/mzml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd" accession="" version="1.1.0">
+	<cvList count="5">
+		<cv id="MS" fullName="Proteomics Standards Initiative Mass Spectrometry Ontology" URI="http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"/>
+		<cv id="UO" fullName="Unit Ontology" URI="http://obo.cvs.sourceforge.net/obo/obo/ontology/phenotype/unit.obo"/>
+		<cv id="BTO" fullName="BrendaTissue545" version="unknown" URI="http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"/>
+		<cv id="GO" fullName="Gene Ontology - Slim Versions" version="unknown" URI="http://www.geneontology.org/GO_slims/goslim_goa.obo"/>
+		<cv id="PATO" fullName="Quality ontology" version="unknown" URI="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/quality.obo"/>
+	</cvList>
+	<fileDescription>
+		<fileContent>
+			<cvParam cvRef="MS" accession="MS:1000294" name="mass spectrum" />
+		</fileContent>
+		<sourceFileList count="1">
+			<sourceFile id="sf_ru_0" name="file://Z:/html/tripletof_workflow/wiff/napedro_L120422/napedro_L120420_010_SW.wiff" location="">
+				<cvParam cvRef="MS" accession="MS:1000569" name="SHA-1" value="86ac693259824c0c4eb296d45b606898f7b3d96c" />
+				<cvParam cvRef="MS" accession="MS:1000564" name="PSI mzData file" />
+				<cvParam cvRef="MS" accession="MS:1000777" name="spectrum identifier nativeID format" />
+			</sourceFile>
+		</sourceFileList>
+	</fileDescription>
+	<sampleList count="1">
+		<sample id="sa_0" name="">
+			<cvParam cvRef="MS" accession="MS:1000004" name="sample mass" value="0" unitAccession="UO:0000021" unitName="gram" unitCvRef="UO" />
+			<cvParam cvRef="MS" accession="MS:1000005" name="sample volume" value="0" unitAccession="UO:0000098" unitName="milliliter" unitCvRef="UO" />
+			<cvParam cvRef="MS" accession="MS:1000006" name="sample concentration" value="0" unitAccession="UO:0000175" unitName="gram per liter" unitCvRef="UO" />
+		</sample>
+	</sampleList>
+	<softwareList count="9">
+		<software id="so_in_0" version="unknown" >
+			<cvParam cvRef="MS" accession="MS:1000551" name="Analyst" />
+		</software>
+		<software id="so_default" version="" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="" />
+		</software>
+		<software id="so_dp_sp_0_pm_0" version="" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="" />
+		</software>
+		<software id="so_dp_sp_0_pm_1" version="3.0.3316" >
+			<cvParam cvRef="MS" accession="MS:1000615" name="ProteoWizard" />
+		</software>
+		<software id="so_dp_sp_0_pm_2" version="1.9.0" >
+			<cvParam cvRef="MS" accession="MS:1000756" name="FileConverter" />
+		</software>
+		<software id="so_dp_sp_0_pm_3" version="1.9.0" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="" />
+		</software>
+		<software id="so_dp_sp_0_pm_4" version="1.9.0" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="" />
+		</software>
+		<software id="so_dp_sp_0_pm_5" version="1.11.0" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="OpenSwathChromatogramExtractor" />
+		</software>
+		<software id="so_dp_sp_0_pm_6" version="1.12.0" >
+			<cvParam cvRef="MS" accession="MS:1000757" name="FileFilter" />
+		</software>
+	</softwareList>
+	<instrumentConfigurationList count="1">
+		<instrumentConfiguration id="ic_0">
+			<cvParam cvRef="MS" accession="MS:1000031" name="instrument model" />
+			<softwareRef ref="so_in_0" />
+		</instrumentConfiguration>
+	</instrumentConfigurationList>
+	<dataProcessingList count="1">
+		<dataProcessing id="dp_sp_0">
+			<processingMethod order="0" softwareRef="so_default">
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" />
+				<userParam name="warning" type="xsd:string" value="fictional processing method used to fulfill format requirements" />
+			</processingMethod>
+		</dataProcessing>
+		<dataProcessing id="dp_sp_0">
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_0">
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" />
+				<userParam name="warning" type="xsd:string" value="fictional processing method used to fulfill format requirements"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_1">
+				<cvParam cvRef="MS" accession="MS:1000543" name="data processing action" />
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" />
+				<userParam name="#type" type="xsd:string" value="conversion"/>
+				<userParam name="performed_on_spectra" type="xsd:string" value="true"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_2">
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2012-07-24+00:09" />
+				<userParam name="performed_on_spectra" type="xsd:string" value="true"/>
+				<userParam name="parameter: in" type="xsd:string" value="split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.mzXML"/>
+				<userParam name="parameter: out" type="xsd:string" value="split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.mzML"/>
+				<userParam name="parameter: in_type" type="xsd:string" value=""/>
+				<userParam name="parameter: out_type" type="xsd:string" value=""/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="1"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_3">
+				<cvParam cvRef="MS" accession="MS:1000592" name="smoothing" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2012-11-19+14:45" />
+				<userParam name="performed_on_spectra" type="xsd:string" value="true"/>
+				<userParam name="parameter: in" type="xsd:string" value="split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1/split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.mzML.gz"/>
+				<userParam name="parameter: out" type="xsd:string" value="split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.nf.mzML"/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="1"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+				<userParam name="parameter: ini" type="xsd:string" value="gauss_50ppm.ini"/>
+				<userParam name="parameter: algorithm:gaussian_width" type="xsd:double" value="0.2"/>
+				<userParam name="parameter: algorithm:ppm_tolerance" type="xsd:double" value="50"/>
+				<userParam name="parameter: algorithm:use_ppm_tolerance" type="xsd:string" value="true"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_4">
+				<cvParam cvRef="MS" accession="MS:1000035" name="peak picking" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2012-11-19+14:58" />
+				<userParam name="performed_on_spectra" type="xsd:string" value="true"/>
+				<userParam name="parameter: in" type="xsd:string" value="split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.nf.mzML"/>
+				<userParam name="parameter: out" type="xsd:string" value="split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.nf.pp.mzML"/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="1"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+				<userParam name="parameter: algorithm:signal_to_noise" type="xsd:double" value="1"/>
+				<userParam name="parameter: algorithm:ms1_only" type="xsd:string" value="false"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_5">
+				<cvParam cvRef="MS" accession="MS:1000592" name="smoothing" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2013-10-03+15:01" />
+				<userParam name="parameter: in" type="xsd:string" value="[/home/hr/Desktop/tmp/osw_tut/OpenSWATH_Tutorial/data/split_napedro_L120420_010_SW-400AQUA__human_2ul_dilution_1_13.nf.pp.mzML.gz]"/>
+				<userParam name="parameter: out" type="xsd:string" value="extracted_chroms_human_13_tutorial.mzML"/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="1"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+				<userParam name="parameter: tr" type="xsd:string" value="/home/hr/Desktop/tmp/osw_tut/OpenSWATH_Tutorial/assay/OpenSWATH_SGS_AssayLibrary.TraML"/>
+				<userParam name="parameter: rt_norm" type="xsd:string" value="/home/hr/Desktop/tmp/osw_tut/OpenSWATH_Tutorial/split_napedro_L120420_010_SW-400AQUA.rtnorm.trafoXML"/>
+				<userParam name="parameter: min_upper_edge_dist" type="xsd:double" value="1"/>
+				<userParam name="parameter: extraction_window" type="xsd:double" value="0.05"/>
+				<userParam name="parameter: rt_extraction_window" type="xsd:double" value="300"/>
+				<userParam name="parameter: is_swath" type="xsd:string" value="true"/>
+				<userParam name="parameter: ppm" type="xsd:string" value="false"/>
+				<userParam name="parameter: extraction_function" type="xsd:string" value="tophat"/>
+				<userParam name="parameter: model:type" type="xsd:string" value="linear"/>
+				<userParam name="parameter: model:symmetric_regression" type="xsd:string" value="false"/>
+				<userParam name="parameter: model:num_breakpoints" type="xsd:integer" value="5"/>
+				<userParam name="parameter: model:interpolation_type" type="xsd:string" value="cspline"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_6">
+				<cvParam cvRef="MS" accession="MS:1001486" name="data filtering" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2014-01-14+21:27" />
+				<userParam name="parameter: in" type="xsd:string" value="extracted_chroms_human_13_tutorial.mzML"/>
+				<userParam name="parameter: out" type="xsd:string" value="/tmp/test.mzML"/>
+				<userParam name="parameter: in_type" type="xsd:string" value="mzML"/>
+				<userParam name="parameter: out_type" type="xsd:string" value=""/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="1"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+				<userParam name="parameter: rt" type="xsd:string" value=":"/>
+				<userParam name="parameter: mz" type="xsd:string" value=":"/>
+				<userParam name="parameter: pc_mz" type="xsd:string" value=":"/>
+				<userParam name="parameter: int" type="xsd:string" value=":"/>
+				<userParam name="parameter: sort" type="xsd:string" value="false"/>
+				<userParam name="parameter: peak_options:sn" type="xsd:double" value="0"/>
+				<userParam name="parameter: peak_options:rm_pc_charge" type="xsd:string" value="[]"/>
+				<userParam name="parameter: peak_options:level" type="xsd:string" value="[1, 2, 3]"/>
+				<userParam name="parameter: peak_options:sort_peaks" type="xsd:string" value="false"/>
+				<userParam name="parameter: peak_options:no_chromatograms" type="xsd:string" value="false"/>
+				<userParam name="parameter: peak_options:remove_chromatograms" type="xsd:string" value="false"/>
+				<userParam name="parameter: peak_options:mz_precision" type="xsd:string" value="64"/>
+				<userParam name="parameter: peak_options:int_precision" type="xsd:string" value="32"/>
+				<userParam name="parameter: peak_options:indexed_file" type="xsd:string" value="false"/>
+				<userParam name="parameter: peak_options:numpress:masstime" type="xsd:string" value="linear"/>
+				<userParam name="parameter: peak_options:numpress:masstime_error" type="xsd:double" value="0.0001"/>
+				<userParam name="parameter: peak_options:numpress:intensity" type="xsd:string" value="pic"/>
+				<userParam name="parameter: peak_options:numpress:intensity_error" type="xsd:double" value="0.0001"/>
+				<userParam name="parameter: spectra:remove_zoom" type="xsd:string" value="false"/>
+				<userParam name="parameter: spectra:remove_mode" type="xsd:string" value=""/>
+				<userParam name="parameter: spectra:remove_activation" type="xsd:string" value=""/>
+				<userParam name="parameter: spectra:remove_collision_energy" type="xsd:string" value=":"/>
+				<userParam name="parameter: spectra:remove_isolation_window_width" type="xsd:string" value=":"/>
+				<userParam name="parameter: spectra:select_zoom" type="xsd:string" value="false"/>
+				<userParam name="parameter: spectra:select_mode" type="xsd:string" value=""/>
+				<userParam name="parameter: spectra:select_activation" type="xsd:string" value=""/>
+				<userParam name="parameter: spectra:select_collision_energy" type="xsd:string" value=":"/>
+				<userParam name="parameter: spectra:select_isolation_window_width" type="xsd:string" value=":"/>
+				<userParam name="parameter: feature:q" type="xsd:string" value=":"/>
+				<userParam name="parameter: consensus:map" type="xsd:string" value="[]"/>
+				<userParam name="parameter: consensus:map_and" type="xsd:string" value="false"/>
+				<userParam name="parameter: consensus:blackorwhitelist:blacklist" type="xsd:string" value="true"/>
+				<userParam name="parameter: consensus:blackorwhitelist:file" type="xsd:string" value=""/>
+				<userParam name="parameter: consensus:blackorwhitelist:maps" type="xsd:string" value="[]"/>
+				<userParam name="parameter: consensus:blackorwhitelist:rt" type="xsd:double" value="60"/>
+				<userParam name="parameter: consensus:blackorwhitelist:mz" type="xsd:double" value="0.01"/>
+				<userParam name="parameter: consensus:blackorwhitelist:use_ppm_tolerance" type="xsd:string" value="false"/>
+				<userParam name="parameter: f_and_c:charge" type="xsd:string" value=":"/>
+				<userParam name="parameter: f_and_c:size" type="xsd:string" value=":"/>
+				<userParam name="parameter: f_and_c:remove_meta" type="xsd:string" value="[]"/>
+				<userParam name="parameter: id:remove_clashes" type="xsd:string" value="false"/>
+				<userParam name="parameter: id:keep_best_score_id" type="xsd:string" value="false"/>
+				<userParam name="parameter: id:sequences_whitelist" type="xsd:string" value="[]"/>
+				<userParam name="parameter: id:accessions_whitelist" type="xsd:string" value="[]"/>
+				<userParam name="parameter: id:remove_annotated_features" type="xsd:string" value="false"/>
+				<userParam name="parameter: id:remove_unannotated_features" type="xsd:string" value="false"/>
+				<userParam name="parameter: id:remove_unassigned_ids" type="xsd:string" value="false"/>
+				<userParam name="parameter: id:blacklist" type="xsd:string" value=""/>
+				<userParam name="parameter: id:rt" type="xsd:double" value="0.1"/>
+				<userParam name="parameter: id:mz" type="xsd:double" value="0.001"/>
+				<userParam name="parameter: id:blacklist_imperfect" type="xsd:string" value="false"/>
+				<userParam name="parameter: algorithm:SignalToNoise:max_intensity" type="xsd:integer" value="-1"/>
+				<userParam name="parameter: algorithm:SignalToNoise:auto_max_stdev_factor" type="xsd:double" value="3"/>
+				<userParam name="parameter: algorithm:SignalToNoise:auto_max_percentile" type="xsd:integer" value="95"/>
+				<userParam name="parameter: algorithm:SignalToNoise:auto_mode" type="xsd:integer" value="0"/>
+				<userParam name="parameter: algorithm:SignalToNoise:win_len" type="xsd:double" value="200"/>
+				<userParam name="parameter: algorithm:SignalToNoise:bin_count" type="xsd:integer" value="30"/>
+				<userParam name="parameter: algorithm:SignalToNoise:min_required_elements" type="xsd:integer" value="10"/>
+				<userParam name="parameter: algorithm:SignalToNoise:noise_for_empty_window" type="xsd:double" value="1e+20"/>
+			</processingMethod>
+		</dataProcessing>
+	</dataProcessingList>
+	<run id="ru_0" defaultInstrumentConfigurationRef="ic_0" sampleRef="sa_0" defaultSourceFileRef="sf_ru_0">
+		<chromatogramList count="1" defaultDataProcessingRef="dp_sp_0">
+      <chromatogram id="some_test_id" index="0" defaultArrayLength="176">
+						<cvParam cvRef="MS" accession="MS:1001473" name="selected reaction monitoring chromatogram" />
+					<precursor>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="739.361" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="724" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="750" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+						<selectedIonList count="1">
+							<selectedIon>
+								<cvParam cvRef="MS" accession="MS:1000744" name="selected ion m/z" value="739.361" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+								<cvParam cvRef="MS" accession="MS:1000041" name="charge state" value="0" />
+								<cvParam cvRef="MS" accession="MS:1000042" name="peak intensity" value="0" unitAccession="MS:1000132" unitName="percent of base peak" unitCvRef="MS" />
+							</selectedIon>
+						</selectedIonList>
+						<activation>
+							<cvParam cvRef="MS" accession="MS:1000044" name="dissociation method" />
+						<userParam name="peptide_sequence" type="xsd:string" value="YTDLNSNDVTGLR"/>
+						</activation>
+					</precursor>
+					<product>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="456.28" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+					</product>
+				<binaryDataArrayList count="2">
+					<binaryDataArray encodedLength="504">
+						<cvParam cvRef="MS" accession="MS:1000595" name="time array" unitAccession="UO:0000010" unitName="second" unitCvRef="MS" />
+						<cvParam cvRef="MS" accession="MS:1000523" name="64-bit float" />
+						<cvParam cvRef="MS" accession="MS:1002312" name="MS-Numpress linear prediction compression" />
+						<binary>QSxrpgAAAABmh89/Yfz/f0FkLPm9hBZCz5vUFkLPm9hBZCz5vUFkLPm9hAZCwKvUFkLPm9hBZCz5vUFkLPm9hBZCz5vYQWQs+b1BZCz5vYQWQs+b1BZCz5vUFkLPm9hAZCwavf9AZCwKvUFkLPm9hBZCz5vYQWQs+b1BZCz5vUFkLPm9hBZCz5vYQWQs+b2EFkLPm9QWQs+b2EBkLBq9T1QsCr2EFkLPm9QWQs+b2EFkLPm9QWQs+b2EFkLPm9QWQs+b2EFkLPm9hBZCz5vUFkLPm9hAZCwKvUFkLPm9hBZCz5vYQWQs+b1BZCz5vYQWQs+b2EFkLPm9QWQs+b2EFkLPm9QWQs+b2EFkLPm9QGQsCr2EFkLPm9QWQs+b2EFkLPm9QWQs+b2EFkLPm9QWQs+b2EFkLPm9QWQs+b2EFkLPm9QGQsCr1xT1QsCr2EFkLPm9QWQs+b1BZCz5vYQWQs+b2EFkLPm9QWQs+b2IQWQs+b1BZCz5vQ==</binary>
+					</binaryDataArray>
+					<binaryDataArray encodedLength="140">
+						<cvParam cvRef="MS" accession="MS:1000515" name="intensity array" unitAccession="MS:1000131" unitName="number of counts" unitCvRef="MS"/>
+						<cvParam cvRef="MS" accession="MS:1000523" name="64-bit float" />
+						<cvParam cvRef="MS" accession="MS:1002313" name="MS-Numpress linear prediction compression" />
+						<binary>iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIhqRl1d8VjyWFNbQlRhapYTiIiIiIZxiIiIhnGIiIiIiIiIiIiIiIiIiIhpGIiIiIiIiIiIiIiIiIiIiIiIiIiIbBA=</binary>
+					</binaryDataArray>
+				</binaryDataArrayList>
+			</chromatogram>
+		</chromatogramList>
+	</run>
+</mzML>

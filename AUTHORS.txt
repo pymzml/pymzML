@@ -8,5 +8,7 @@ Fufezan, Christian
 
 Contributors:
 -------------
+Wolfson, Misha
+Röst, Hannes
 Specht, Michael
 Hippler, Michael
