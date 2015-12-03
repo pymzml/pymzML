@@ -36,6 +36,7 @@ from __future__ import print_function
 import re
 import os
 import bisect
+import codecs
 
 from xml.etree import cElementTree
 
@@ -162,21 +163,52 @@ class Reader(object):
         self.OT = self.__init_obo_translator(extraAccessions)
         return
 
+    def __determine_file_encoding(self, path):
+        '''
+        Determines mzML XML encoding using the information in the
+        first line of the mzML. Otherwise falls back to utf-8.
+
+        '''
+        mzML_encoding = 'utf-8'
+        if os.path.exists( path ):
+            # we might have been initialized with a file-object
+            # then no questions about the encoding have to be addressed
+            # is not seekable neither ..
+            sniffer = open(path, 'rb')
+            header = sniffer.readline()
+            encodingPattern = re.compile(
+                b'encoding="(?P<encoding>[A-Za-z0-9-]*)"'
+            )
+            match = encodingPattern.search(header)
+            if match:
+                mzML_encoding = bytes.decode(
+                    match.group('encoding')
+                )
+            sniffer.close()
+        return mzML_encoding
+
+    def _open_file(self, path, given_file_object=None):
+        return self.__open_file( path, given_file_object=given_file_object)
+
     def __open_file(self, path, given_file_object=None):
         # Arbitrary supplied file objects are not seekable
         file_object = given_file_object
         seekable = False
-
+        self.info['encoding'] = self.__determine_file_encoding( path )
         if file_object is None:
+            import codecs
             if path.endswith('.gz'):
                 # Gzipped files are not seekable
                 import gzip
-                import codecs
                 file_object = codecs.getreader("utf-8")(
                     gzip.open(path)
                 )
             else:
-                file_object = open(path, 'r')
+                file_object = codecs.open(
+                    path,
+                    mode     = 'r',
+                    encoding = self.info['encoding']
+                )
                 seekable = True
 
         return file_object, seekable
@@ -198,16 +230,8 @@ class Reader(object):
                   seeking to a particular offset for the file.
         """
 
-        # Declare the seeker
-        # Read encoding ... maybe not really needed ...
+        # Declare the pre-seeker
         seeker = open(self.info['filename'], 'rb')
-
-        header = seeker.readline()
-        encodingPattern = re.compile(b'encoding="(?P<encoding>[A-Za-z0-9-]*)"')
-        match = encodingPattern.search(header)
-        if match:
-            self.info['encoding'] = bytes.decode(match.group('encoding'))
-
         # Reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
         indexListOffsetPattern = re.compile(
             b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>'
@@ -219,7 +243,7 @@ class Reader(object):
         self.info['offsets']['TIC'] = None
         seeker.seek(0, 2)
         spectrumIndexPattern = RegexPatterns.spectrumIndexPattern
-        for _ in range(10):  # max 10kbyte
+        for _ in range(1, 10):  # max 10kbyte
             # some converters fail in writing a correct index
             # we found
             # a) the offset is always the same (silent fail hurray!)
@@ -298,7 +322,12 @@ class Reader(object):
                     self.info['offsetList'].append(offset)
             # opening seeker in normal mode again
         seeker.close()
-        seeker = open(self.info['filename'], 'r')
+        seeker = codecs.open(
+            self.info['filename'],
+            mode     = 'r',
+            encoding = self.info['encoding']
+        )
+        # seeker = open(self.info['filename'], 'r')
 
         return seeker
 
@@ -559,17 +588,19 @@ class Reader(object):
                 answer = self.spectrum
         else:
             # Reopen the file from the beginning if possible
-            self.info['fileObject'].close()
+            force_seeking = self.info.get('force_seeking', False)
+            if force_seeking is False:
+                self.info['fileObject'].close()
 
-            assert self.info['filename'], \
-                'Must specify either filename or index for random spectrum access'
-            self.info['fileObject'], _ = self.__open_file(self.info['filename'])
-            self.iter = self.__init_iter()
+                assert self.info['filename'], \
+                    'Must specify either filename or index for random spectrum access'
+                self.info['fileObject'], _ = self.__open_file(self.info['filename'])
+                self.iter = self.__init_iter()
 
-            for _ in self:
-                if _['id'] == value:
-                    answer = _
-                    break
+                for spec in self:
+                    if spec['id'] == value:
+                        answer = spec
+                        break
 
         if answer is None:
             raise KeyError("Run does not contain spec with native ID {0}".format(value))

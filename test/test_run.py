@@ -26,12 +26,12 @@ import pymzml
 
 class TestRun(unittest.TestCase):
     def setUp(self):
-        example_mzml_filename = os.path.join(
+        self.example_mzml_path = os.path.join(
             os.path.dirname(__file__),
             'data',
             'example.mzml',
         )
-        self.example_mzml = open(example_mzml_filename)
+        self.example_mzml = open(self.example_mzml_path)
 
     def tearDown(self):
         self.example_mzml.close()
@@ -75,6 +75,18 @@ class TestRun(unittest.TestCase):
         self.assertEqual(match_sim.group('nativeID'), b"SIM SIC 651.5")
         self.assertEqual(match_sim.group('offset'), b"330223452")
 
+    def test_mzML_encoding(self):
+        run = pymzml.run.Reader(self.example_mzml_path)
+        self.assertEqual(run.info['encoding'], 'ISO-8859-1')
+
+    def test_seeker(self):
+        run = pymzml.run.Reader(self.example_mzml_path)
+        # fo, is_seekable = run._open_file(self.example_mzml_path)
+        # self.assertTrue(is_seekable)
+        self.assertTrue(run.info['seekable'])
+        run.info['force_seeking'] = True
+        spec = run[9]
+        self.assertEqual(spec['defaultArrayLength'], 1069)
 
 
 if __name__ == '__main__':

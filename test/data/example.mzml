@@ -541,9 +541,9 @@
       <offset idRef="controllerType=0 controllerNumber=1 scan=10">132417</offset>
     </index>
     <index name="chromatogram">
-      <offset idRef="TIC">48372822</offset>
+      <offset idRef="TIC" info="just any number since not existend">132417</offset>
     </index>
   </indexList>
-  <indexListOffset>48420141</indexListOffset>
-  <fileChecksum>c4261af4c71774161cc0a3c62d3cde3adfba4ac7</fileChecksum>
+  <indexListOffset>210679</indexListOffset>
+  <fileChecksum>MZMLDemoFile</fileChecksum>
 </indexedmzML>
