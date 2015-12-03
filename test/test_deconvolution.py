@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 # encoding: utf-8
 #
@@ -22,7 +22,7 @@
 import sys
 import unittest
 import pymzml
-sys.path.append('example_scripts')
+sys.path.append('../example_scripts')
 import get_example_file
 
 
@@ -30,7 +30,11 @@ class TestDeconvolution(unittest.TestCase):
 
     def setUp(self):
         example_file = get_example_file.open_example('deconvolution.mzML.gz')
-        run = pymzml.run.Reader(example_file, MS1_Precision=5e-6, MSn_Precision=20e-6)
+        run = pymzml.run.Reader(
+            example_file,
+            MS1_Precision=5e-6,
+            MSn_Precision=20e-6
+        )
         for spec in run:
             # there is only one spectrum, so just read this
             self.spec = spec
@@ -56,7 +60,9 @@ class TestDeconvolution(unittest.TestCase):
         for mass, results in masses2mz.items():
             if mz_range[0] < mass < mz_range[1]:
                 result.append([mass, results])
-        self.assertEqual(result, expected_result)
+        # print(result)
+        # print(expected_result)
+        self.assertEqual( sorted(result), sorted(expected_result))
 
     def check_devonvolution_intensities(self, mz_range, expected_result):
         tmp = self.spec.deRef()

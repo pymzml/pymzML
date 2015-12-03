@@ -13,9 +13,9 @@ Example of plotting a spectrum:
 >>> p = pymzml.plot.Factory()
 >>> for spec in run:
 >>>     p.newPlot()
->>>     p.add(spec.peaks, color=(200,00,00), style='circles')
->>>     p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
->>>     p.add(spec.reprofiledPeaks, color=(00,255,00), style='circles')
+>>>     p.add(spec.peaks, color=(200,0,0), style='circles')
+>>>     p.add(spec.centroidedPeaks, color=(0,0,0), style='sticks')
+>>>     p.add(spec.reprofiledPeaks, color=(0,255,0), style='circles')
 >>>     p.save( filename="output/plotAspect.xhtml" , mzRange = [744.7,747] )
 
 """
@@ -31,9 +31,9 @@ def main( file = None ):
     p = pymzml.plot.Factory()
     for spec in run:
         p.newPlot()
-        p.add(spec.peaks, color=(200,00,00), style='squares')
-        p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
-        p.add(spec.reprofiledPeaks, color=(025,000,200), style='circles')
+        p.add(spec.peaks, color=(200,0,0), style='squares')
+        p.add(spec.centroidedPeaks, color=(0,0,0), style='sticks')
+        p.add(spec.reprofiledPeaks, color=(25,0,200), style='circles')
         p.save( filename="output/plotAspect.xhtml" , mzRange = [744.7,747] )
 
 if __name__ == '__main__':

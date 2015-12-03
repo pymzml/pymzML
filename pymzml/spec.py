@@ -882,6 +882,7 @@ class Spectrum(dict):
                         if compression in ["no", "zlib"]:
                             unpackedData = unpack(fmt, decodedData)
                     except: # NOTE raises struct.error, but cannot be checked for here
+                        # print('>{0}<'.format(compression))
                         print("Couldn't extract data {0} fmt: {1}".format(arrayType, fmt), file = sys.stderr)
                         print(len(self['encodedData'][int(pos * 0.5)]), file = sys.stderr)
                         exit(1)
