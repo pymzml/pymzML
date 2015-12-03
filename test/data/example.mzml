@@ -541,7 +541,7 @@
       <offset idRef="controllerType=0 controllerNumber=1 scan=10">132417</offset>
     </index>
     <index name="chromatogram">
-      <offset idRef="TIC" info="just any number since not existend">132417</offset>
+      <offset idRef="TIC" info="just any number since not existent, ja">132417</offset>
     </index>
   </indexList>
   <indexListOffset>210679</indexListOffset>
