@@ -692,7 +692,7 @@ class Writer(object):
                         'version'   : '0.7.6',
                     }
                 )
-                new_line = cElementTree.tostring(addon, encoding='unicode')
+                new_line = cElementTree.tostring(addon, encoding='utf-8')
                 input_xml_string += new_line
                 pymzml_tag_written = True
         input_xml_string += '</mzML>\n'
