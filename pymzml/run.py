@@ -152,7 +152,10 @@ class Reader(object):
         assert path is not None or file_object is not None, \
             'Must provide either a path or a file object to parse'
 
-        self.info['fileObject'], self.info['seekable'] = self.__open_file(path, file_object)
+        self.info['fileObject'], self.info['seekable'] = self.__open_file(
+            path,
+            file_object
+        )
         self.info['filename'] = path
 
         if self.info['seekable']:
@@ -669,7 +672,7 @@ class Writer(object):
                 # writing of indexed mzML is not possible at the moment
                 continue
             if 'run' in line:
-                # the run is appended from the original parser to avoid messing 
+                # the run is appended from the original parser to avoid messing
                 # with the new xml tree, we break before the run data starts
                 break
 
@@ -683,7 +686,7 @@ class Writer(object):
                     }
                 )
                 cElementTree.SubElement(
-                    addon, 
+                    addon,
                     'cvParam',
                     {
                         'accession' : 'MS:1000531',
