@@ -51,19 +51,19 @@ PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
 
 class Spectrum(dict):
-    def __init__(self, measuredPrecision = None , param=None):
+    def __init__(self, measuredPrecision = 5e-6 , param=None):
         """
         .. function:: __init__( measuredPrecision = value* )
 
             Initializes a pymzml.spec.Spectrum class.
 
-            :param measuredPrecision: in m/z, mandatory
+            :param measuredPrecision: in ppm, i.e. 5e-6 equals to 5 ppm
             :type measuredPrecision: float
 
 
         """
         assert isinstance( measuredPrecision , float ), \
-            "Require measured precision as input parameter..."
+            "Require measured precision as as float"
         self.measuredPrecision = measuredPrecision
         # this will also set and update internalPrecision
         self.clear()
@@ -209,6 +209,7 @@ class Spectrum(dict):
         self._iter                          = None
         self['BinaryArrayOrder']            = []
         self.ms                             = {}
+        self['_id']                         = hex(id(self))
         return
 
     def strip(self, scope = 'all'):
