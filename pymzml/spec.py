@@ -1348,12 +1348,13 @@ class Spectrum(dict):
                 return True
         return False
 
-    def similarityTo(self,spec2):
+    def similarityTo(self, spec2, round_precision=0):
         """
         Compares two spectra and returns cosine
 
         :param spec2: another pymzml spectrum that is compated to the current spectrum.
         :type spec2: pymzml.spec.Spectrum
+        :param round_precision: precision mzs are rounded to, ie round( mz, round_precision )
         :return: value between 0 and 1, i.e. the cosine between the two spectra.
         :rtype: float
 
@@ -1370,11 +1371,11 @@ class Spectrum(dict):
         vector2 = ddict(int)
         mzs = set()
         for mz, i in self.peaks:
-            vector1[round(mz, 1)] += i
-            mzs.add(round(mz, 1))
+            vector1[round(mz, round_precision)] += i
+            mzs.add(round(mz, round_precision))
         for mz, i in spec2.peaks:
-            vector2[round(mz, 1)] += i
-            mzs.add(round(mz, 1))
+            vector2[round(mz, round_precision)] += i
+            mzs.add(round(mz, round_precision))
 
         z = 0
         n_v1 = 0
