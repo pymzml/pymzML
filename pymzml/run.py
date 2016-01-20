@@ -715,15 +715,15 @@ class Writer(object):
         return
 
     def addSpec(self, spec):
-        self._addTree(spec, typeOfSpec='spectrum')
+        self._addTree(spec.deRef(), typeOfSpec='spectrum')
         return
 
     def addChromatogram(self, spec):
-        self._addTree(spec, typeOfSpec='chromatogram')
+        self._addTree(spec.deRef(), typeOfSpec='chromatogram')
         return
 
     def _addTree(self, spec, typeOfSpec=None):
-        if typeOfSpec not in self.lookup.keys():
+        if not self.lookup.has_key('{0}List'.format(typeOfSpec)):
             self.lookup['{0}List'.format(typeOfSpec)] = \
                 cElementTree.Element('{0}List'.format(typeOfSpec), {'count': 0})
             self.lookup['{0}Indeces'.format(typeOfSpec)] = \
@@ -751,6 +751,7 @@ class Writer(object):
                         "pwiz_Reader_Thermo_conversion",
                     )
                 self.lookup['run'].append(self.lookup[typeOfSpec + 'List'])
+                
         self.newTree.append(
             self.lookup['run']
         )
