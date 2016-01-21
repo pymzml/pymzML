@@ -112,6 +112,7 @@ class Reader(object):
         build_index_from_scratch=False,
         file_object=None,
         obo_version=None,
+        use_spectra_sanity_check=True,
     ):
         # self.param contains user-specified parsing parameters
         self.param = dict()
@@ -160,7 +161,7 @@ class Reader(object):
 
         if self.info['seekable']:
             # Seekable files can use the index for random access
-            self.seeker = self._build_index(build_index_from_scratch)
+            self.seeker = self._build_index(build_index_from_scratch, use_spectra_sanity_check)
 
         self.iter = self.__init_iter()
         self.OT = self.__init_obo_translator(extraAccessions)
@@ -216,7 +217,7 @@ class Reader(object):
 
         return file_object, seekable
 
-    def _build_index(self, from_scratch):
+    def _build_index(self, from_scratch, use_spectra_sanity_check):
         """
         .. method:: _build_index(from_scratch)
 
@@ -227,6 +228,13 @@ class Reader(object):
         :param from_scratch: Whether or not to force building the index from
                              scratch, by parsing the file, if no existing
                              index can be found.
+        :type from_scratch: A boolean
+
+        :param use_spectra_sanity_check: Whether or not to assume all data are
+                                         spectra and follow the (scan=|nativeID=") 
+                                         pattern. Disable this if you have
+                                         chromatograms or spectra with
+                                         different ids.
         :type from_scratch: A boolean
 
         :returns: A file-like object used to access the indexed content by
@@ -280,7 +288,8 @@ class Reader(object):
             if self.info['offsets']['indexList'] is not None and \
                     self.info['offsets']['TIC'] is not None:
                 break
-        if len(sanity_check_set) <= 2:
+
+        if use_spectra_sanity_check and len(sanity_check_set) <= 2:
             # print( 'Convert error obvious ... ')
             self.info['offsets']['indexList'] = None
 
