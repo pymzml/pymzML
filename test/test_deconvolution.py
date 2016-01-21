@@ -22,6 +22,7 @@
 import sys
 import unittest
 import pymzml
+sys.path.append('./example_scripts')
 sys.path.append('../example_scripts')
 import get_example_file
 
