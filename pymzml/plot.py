@@ -24,7 +24,7 @@ Plotting functions for pymzML
 from __future__ import print_function
 import math
 import sys
-import collections
+# import collections
 
 
 class Factory(object):
