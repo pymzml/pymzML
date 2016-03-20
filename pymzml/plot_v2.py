@@ -125,39 +125,44 @@ class Factory(object):
         
         if mzRange == None:
             mzRange = [-float('Inf'), float('Inf')]
-        if len(self.plots) == 0:
-            self.newPlot()
+        if not data == None:
+            if len(self.plots) == 0:
+                self.newPlot()
 
-        xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
-        yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
-        if plotType == 'Bar':
-            data = go.Bar({
-                    'x'           : xVals,
-                    'y'           : yVals,
-                    'text'        : name,
-                    'hoverinfo'   : 'x+y',
-                    'name'        : name,
-                    'opacity'     : opacity
-                    })
-        elif plotType == 'Scatter':
-            data = go.Scatter({
-                    'x'           : xVals,
-                    'y'           : yVals,
-                    'text'        : 'annotation',
-                    'hoverinfo'   : 'x+y',
-                    'name'        : name,
-                    'opacity'     : opacity,
-                    'mode'        : 'markers',
-                    'marker'      : {
-                                    'color' : 'rgb'+str(color),
-                                    'symbol': 'circle'
-                                    }
-                    })
+            xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
+            yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
+            if plotType == 'Bar':
+                data = go.Bar({
+                        'x'           : xVals,
+                        'y'           : yVals,
+                        'text'        : name,
+                        'hoverinfo'   : 'x+y',
+                        'name'        : name,
+                        'opacity'     : opacity
+                        })
+            elif plotType == 'Scatter':
+                data = go.Scatter({
+                        'x'           : xVals,
+                        'y'           : yVals,
+                        'text'        : 'annotation',
+                        'hoverinfo'   : 'x+y',
+                        'name'        : name,
+                        'opacity'     : opacity,
+                        'mode'        : 'markers',
+                        'marker'      : {
+                                        'color' : 'rgb'+str(color),
+                                        'symbol': 'circle'
+                                        }
+                        })
+            else:
+                raise Exception("Unsupported plot type.\n Please use 'Scatter' or 'Bar'.")
+
+            yMax = max(yVals)
+            xMax = max(xVals) # what if not data and just anno?
         else:
-            raise Exception("Unsupported plot type.\n Please use 'Scatter' or 'Bar'.")
-
-        yMax = max(yVals)
-        xMax = max(xVals) # what if not data and just anno?
+            yMax = max([x[2] for x in labels])
+            xMax = max([x[0] for x in labels]+[x[1] for x in labels])
+            print (xMax, yMax)
         filling = None
         
         if style == 'sticks':  # stick width dependent on ms_precision!!
@@ -288,7 +293,8 @@ class Factory(object):
                                         'fill'    : filling
 
                                         })
-        self.plots[-1].append(data)
+        if not data == None:
+            self.plots[-1].append(data)
         self.plots[-1].append(annotation_trace)
         return
 
@@ -343,7 +349,9 @@ class Factory(object):
                                                                     'family': 'Helvetica',
                                                                     'size'  : '18'
                                                                   })
-            #myFigure['layout'].update(mylayout)
+            myFigure['layout']['legend'].update(font={ 'size' :10,
+                                                            'color' : '#FF0000'
+                                                            })
             plt.plot(myFigure, filename='test1')
         return
 
