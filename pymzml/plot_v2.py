@@ -96,7 +96,182 @@ class Factory(object):
 
                             } )
         return
+    
+    def addData(self, data, color=(0,0,0), mzRange = None, opacity = 0.8, name=None , plotType='Bar'):
+        """
+        Add data to the graph
+        """
+        if len(self.plots) == 0:
+            self.newPlot()
 
+        xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
+        yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
+        if plotType == 'Bar': # add color option
+            data = go.Bar({
+                    'x'           : xVals,
+                    'y'           : yVals,
+                    'text'        : name,
+                    'hoverinfo'   : 'x+y',
+                    'name'        : name,
+                    'opacity'     : opacity
+                    })
+        elif plotType == 'Scatter':
+            data = go.Scatter({
+                    'x'           : xVals,
+                    'y'           : yVals,
+                    'text'        : 'annotation',
+                    'hoverinfo'   : 'x+y',
+                    'name'        : name,
+                    'opacity'     : opacity,
+                    'mode'        : 'markers',
+                    'marker'      : {
+                                    'color' : 'rgb'+str(color),
+                                    'symbol': 'circle'
+                                    }
+                    })
+        else:
+            raise Exception("Unsupported plot type.\n Please use 'Scatter' or 'Bar'.")
+
+        self.plots[-1].append(data)
+        return
+    
+    def addAnno(self, labels, style='spline.bottom', mzRange = None, opacity = 0.8, name=None):
+        """
+        Add annotation to the graph
+        """
+        filling = None
+        
+        if style == 'sticks':  # stick width dependent on ms_precision!!
+            shape = 'linear'
+            ms_precision = float('1e-5') # get from user?
+            try:
+                pos   = style.split('.')[1]
+            except:
+                pos = 'medium'
+            filling = 'tozeroy'
+            xValues = []
+            yValues = []
+            txt     = []
+            for x in labels:
+                yPos   = yMax
+                xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
+                yValues += 0, yMax, 0, None
+                txt += None, x[3], None, None
+
+        elif style.split('.')[0] == 'triangle':
+            shape = 'linear'
+            try:
+                pos   = style.split('.')[1]
+            except:
+                pos = 'medium'
+            filling = 'tozeroy'
+            xValues = []
+            yValues = []
+            txt     = []
+            for x in labels:
+                if pos == 'small':
+                    yPos   = yMax
+                    relWidth = 1/float(200)
+
+                elif pos == 'medium':
+                    yPos   = 0
+                    relWidth = 1/float(100)
+
+                elif pos == 'big':
+                    yPos = (x[2]/2)
+                    relWidth = 1/float(50)
+                    print(relWidth)
+                
+                print (xMax, relWidth)
+                print ((xMax*relWidth),(xMax*relWidth))
+                yPos = x[3]
+                xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
+                yValues += 0, yMax, 0, None
+                txt += None, x[3], None, None
+
+        elif style.split('.')[0] == 'spline':
+            shape = style.split('.')[0]
+            try:
+                pos   = style.split('.')[1]
+            except:
+                pos = 'top'
+
+            xValues = []
+            yValues = []
+            txt     = []
+            for x in labels:
+                if pos == 'top':
+                    yPos   = yMax
+                    offset = yMax*0.05
+
+                elif pos == 'bottom':
+                    yPos   = 0
+                    offset = -(yMax*0.05)
+
+                elif pos == 'mid':
+                    yPos = (x[2]/2)
+                    offset = yMax*0.05
+                
+                xValues += x[0], (x[0]+x[1])/2, x[1], None
+                yValues += yPos, yPos+offset, yPos, None
+                txt += None, x[3], None, None
+
+        elif style.split('.')[0] == 'linear':
+            # increase offset if new anno is in x range of another anno
+            shape = style.split('.')[0]
+            try:
+                pos   = style.split('.')[1]
+            except:
+                pos = 'top'
+
+            xValues = []
+            yValues = []
+            txt     = []
+            txtOffset = 100
+            for x in labels:
+                if pos == 'top':
+                    yPos   = yMax
+                    offset = yMax*0.1
+
+                elif pos == 'bottom':
+                    yPos   = 0
+                    offset = -(yMax*0.1)
+                    print ('offset: ', yMax, -(yMax*0.1))
+
+                elif pos == 'mid':
+                    yPos = (x[2]+x[1])/2
+                    offset = 0 
+                    
+                xValues = x[0], (x[0]+x[1])/2, x[1], None  
+                yValues += yPos+offset, yPos+offset, yPos+offset, None  
+                txt += None, x[3], None, None
+
+        else:
+            raise Exception('Unknown style./n Please use spline.top, spline.bottom, spline.mid, sticks, triangle or linear!')
+        
+        annotation_trace = go.Scatter({
+                                        'x'       : xValues,
+                                        'y'       : yValues,
+                                        'text'    : txt,
+                                        'textfont'  : {
+                                                      'family' : 'Helvetica',
+                                                      'size' : 10,
+                                                      'color' :'#000000'
+                                                    },
+                                        'visible' : 'True',
+                                        'marker'  : {'size' : 10},
+                                        'mode'    : 'text+lines',
+                                        'name'    : name+' annotation',
+                                        'line'    : {
+                                                     'color' : '#FF0000',
+                                                     'width' : 1,
+                                                     'shape' : shape
+                                                    },
+                                        'fill'    : filling
+
+                                        })
+        pass
+    
     def add(self,data, color=(0,0,0) , labels = None, style='spline.bottom', mzRange = None, opacity = 0.8, name=None , plotType='Bar'):
         """
         Add data to the graph.
