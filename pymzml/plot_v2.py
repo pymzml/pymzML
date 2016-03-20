@@ -101,6 +101,8 @@ class Factory(object):
         """
         Add data to the graph
         """
+        if mzRange == None: # accept all values
+            mzRange = [-float('inf'), float('Inf')]
         if len(self.plots) == 0:
             self.newPlot()
 
@@ -135,11 +137,13 @@ class Factory(object):
         self.plots[-1].append(data)
         return
     
-    def addAnno(self, labels, style='spline.bottom', mzRange = None, opacity = 0.8, name=None):
+    def addAnno(self, labels, style='spline.bottom', mzRange = None, opacity = 0.8, name=None, color=(0,0,0)):
         """
         Add annotation to the graph
         """
         filling = None
+        yMax = max([x[2] for x in labels])
+        xMax = max([x[0] for x in labels]+[x[1] for x in labels])
         
         if style == 'sticks':  # stick width dependent on ms_precision!!
             shape = 'linear'
@@ -242,7 +246,7 @@ class Factory(object):
                     yPos = (x[2]+x[1])/2
                     offset = 0 
                     
-                xValues = x[0], (x[0]+x[1])/2, x[1], None  
+                xValues += x[0], (x[0]+x[1])/2, x[1], None  
                 yValues += yPos+offset, yPos+offset, yPos+offset, None  
                 txt += None, x[3], None, None
 
@@ -263,13 +267,14 @@ class Factory(object):
                                         'mode'    : 'text+lines',
                                         'name'    : name+' annotation',
                                         'line'    : {
-                                                     'color' : '#FF0000',
+                                                     'color' : 'rgb'+str(color),
                                                      'width' : 1,
                                                      'shape' : shape
                                                     },
                                         'fill'    : filling
 
                                         })
+        self.plots[-1].append(annotation_trace)
         pass
     
     def add(self,data, color=(0,0,0) , labels = None, style='spline.bottom', mzRange = None, opacity = 0.8, name=None , plotType='Bar'):
@@ -441,9 +446,10 @@ class Factory(object):
                     yPos = (x[2]+x[1])/2
                     offset = 0 
                     
-                xValues = x[0], (x[0]+x[1])/2, x[1], None  
+                xValues += x[0], (x[0]+x[1])/2, x[1], None  
                 yValues += yPos+offset, yPos+offset, yPos+offset, None  
                 txt += None, x[3], None, None
+            print ('xValues',xValues,'yValues', yValues)
 
         else:
             raise Exception('Unknown style./n Please use spline.top, spline.bottom, spline.mid, sticks, triangle or linear!')
