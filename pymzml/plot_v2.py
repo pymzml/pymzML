@@ -141,10 +141,17 @@ class Factory(object):
         	yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
 	        yMax = max(yVals)
 	        xMax = max(xVals) # what if not data and just anno?
-	        print(xVals, yVals)
-
+	        self.maxI.append(yMax)
+	        self.maxMZ.append(xMax)
+        else:
+            try:
+                yMax = self.maxI[-1] # use yMax from most recent created plot
+                xMax = self.maxMZ[-1] # use xMax from most recent created plot
+            except:
+                raise Exception('Add actual data before you add Annotation')
 
         filling = None
+        
         yMax = self.maxI[-1] # use yMax from most recent created plot
         xMax = self.maxMZ[-1] # use xMax from most recent created plot
         
