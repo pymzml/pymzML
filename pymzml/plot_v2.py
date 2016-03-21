@@ -60,7 +60,7 @@ class Factory(object):
         self.layoutObjs     = [ ] # more than one Object required?
         self.maxI           = [ ] # maxI for each plot
         self.maxMZ			= [ ] # maxMZ for each plot
-        self.linearOffset   = [ ]
+        self.linearPoints   = [ ]
 
     def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
         """
@@ -143,8 +143,6 @@ class Factory(object):
 	        xMax = max(xVals) # what if not data and just anno?
 	        print(xVals, yVals)
 
-        self.maxI.append(yMax) 
-        self.maxMZ.append(xMax)
 
         filling = None
         yMax = self.maxI[-1] # use yMax from most recent created plot
