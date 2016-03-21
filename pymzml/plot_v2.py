@@ -6,7 +6,7 @@ Plotting functions for pymzML
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Kösters, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -54,12 +54,12 @@ class Factory(object):
 
     """
     def __init__(self, filename = None):
-        self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function
+        self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
         self.normalizations = [ ] # rather or not normalize data : True or False
         self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
-        self.layoutObjs     = [ ]
-        self.maxI           = [ ]
-        self.maxMZ			= [ ]
+        self.layoutObjs     = [ ] # more than one Object required?
+        self.maxI           = [ ] # maxI for each plot
+        self.maxMZ			= [ ] # maxMZ for each plot
 
     def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
         """
@@ -71,8 +71,10 @@ class Factory(object):
         :type mzRange: tuple of minMZ,maxMZ
         :param normalize: whether or not the individal data sets are normalized in the plot
         :type boolean:
+        :param precision: measuring precision used in handler. Default 5e-6.
+        :type precision: float
         """
-        if mzRange == None: # accept all values
+        if mzRange == None:
             mzRange = [-float('inf'), float('Inf')]
 
         self.plots.append( [] )
@@ -306,13 +308,13 @@ class Factory(object):
             *   'spline'
             *   'linear'
         """
-        
+
         if mzRange == None:
             mzRange = [-float('Inf'), float('Inf')]
 
         #  check if data is (mz, i) or (mz1, mz2, i, string)
 
-        if  len(data[0]) == 2:
+        if  len(data[0]) == 2: # normal data array with (mz, i)
             if len(self.plots) == 0:
                 self.newPlot()
             xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
@@ -350,15 +352,12 @@ class Factory(object):
             xMax = max(xVals) # what if not data and just anno?
             self.maxI.append(yMax) 
             self.maxMZ.append(xMax)
-            print (myData)
             try:
             	self.plots[plotNum].append(myData)
             except:
             	raise Exception("plot number out of range. Are you sure you already have {} plots?".format(plotNum+1))
 
-
-        print ("Length before anno: ", len(data[0]))
-        if len(data[0]) == 4:
+        if len(data[0]) == 4: # label array with (mz1, mz2, i, string)
 
 	        filling = None
 	        yMax = self.maxI[-1] # use yMax from most recent created plot
@@ -366,7 +365,7 @@ class Factory(object):
 	        
 	        if style == 'sticks':  # stick width dependent on ms_precision!!
 	            shape = 'linear'
-	            ms_precision = float('1e-5') # get from user?
+	            ms_precision = float('1e-5') # get from user? get from new Plot function?
 	            try:
 	                pos   = style.split('.')[1]
 	            except:
@@ -403,10 +402,7 @@ class Factory(object):
 	                elif pos == 'big':
 	                    yPos = (x[2]/2)
 	                    relWidth = 1/float(50)
-	                    print(relWidth)
-	                
-	                print (xMax, relWidth)
-	                print ((xMax*relWidth),(xMax*relWidth))
+
 	                yPos = x[3]
 	                xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
 	                yValues += 0, yMax, 0, None
@@ -439,8 +435,7 @@ class Factory(object):
 	                yValues += yPos, yPos+offset, yPos, None
 	                txt += None, x[3], None, None
 
-	        elif style.split('.')[0] == 'linear':
-	            # increase offset if new anno is in x range of another anno
+	        elif style.split('.')[0] == 'linear': # increase offset if new anno is in x range of another anno
 	            shape = style.split('.')[0]
 	            try:
 	                pos   = style.split('.')[1]
@@ -468,7 +463,6 @@ class Factory(object):
 	                xValues += x[0], (x[0]+x[1])/2, x[1], None  
 	                yValues += yPos+offset, yPos+offset, yPos+offset, None  
 	                txt += None, x[3], None, None
-	            print ('xValues',xValues,'yValues', yValues)
 
 	        else:
 	            raise Exception('Unknown style./n Please use spline.top, spline.bottom, spline.mid, sticks, triangle or linear!')
@@ -494,8 +488,8 @@ class Factory(object):
 	                                        'fill'    : filling
 
 	                                        })
+	        
         	self.plots[plotNum].append(annotation_trace)
-
         return
 
     def info(self):
