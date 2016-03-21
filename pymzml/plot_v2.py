@@ -151,25 +151,23 @@ class Factory(object):
                 raise Exception('Add actual data before you add Annotation')
 
         filling = None
-        
-        yMax = self.maxI[-1] # use yMax from most recent created plot
-        xMax = self.maxMZ[-1] # use xMax from most recent created plot
+
         
         if style == 'sticks':  # stick width dependent on ms_precision!! works on 4 tuple array as data and anno
             shape = 'linear'
             ms_precision = float('1e-5') # get from user? get from new Plot function?
-            try:
-                pos   = style.split('.')[1]
-            except:
-                pos = 'medium'
+
             filling = 'tozeroy'
             xValues = []
             yValues = []
             txt     = []
-            for x in data:
-                yPos   = yMax
+            for i, x in enumerate(data):
+                if len(data[0]) == 2:
+                    yPos   = yVals[i]
+                else:
+                    yPos = yMax
                 xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
-                yValues += 0, yMax, 0, None
+                yValues += 0, yPos, 0, None
                 try:
                 	txt += None, x[3], None, None
                 except:
