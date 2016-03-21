@@ -103,7 +103,7 @@ class Factory(object):
                             } )
         return
     
-    def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity = 0.8, name=None, plotNum = -1):
+    def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity=0.8, name=None, plotNum = -1):
         """
         Add data to the graph.
 
@@ -130,45 +130,9 @@ class Factory(object):
             *   'spline'
             *   'linear'
         """
-
         if mzRange == None:
             mzRange = [-float('Inf'), float('Inf')]
 
-        #  check if data is (mz, i) or (mz1, mz2, i, string)
-
-        # if  len(data[0]) == 2: # normal data array with (mz, i)
-        #     if len(self.plots) == 0:
-        #         self.newPlot()
-        #     xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
-        #     yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
-        #     if plotType == 'Bar':
-        #         myData = go.Bar({
-        #                 'x'           : xVals,
-        #                 'y'           : yVals,
-        #                 'text'        : name,
-        #                 'hoverinfo'   : 'x+y',
-        #                 'name'        : name,
-        #                 'opacity'     : opacity,
-        #                 'marker'      : {
-        #                                 'color' : 'rgb'+str(color)
-        #                                 }
-        #                 })
-        #     elif plotType == 'Scatter':
-        #         myData = go.Scatter({
-        #                 'x'           : xVals,
-        #                 'y'           : yVals,
-        #                 'text'        : 'annotation',
-        #                 'hoverinfo'   : 'x+y',
-        #                 'name'        : name,
-        #                 'opacity'     : opacity,
-        #                 'mode'        : 'markers',
-        #                 'marker'      : {
-        #                                 'color' : 'rgb'+str(color),
-        #                                 'symbol': 'circle'
-        #                                 }
-        #                 })
-        #     else:
-        #         raise Exception("Unsupported plot type.\n Please use 'Scatter' or 'Bar'.")
         if len(self.plots) == 0:
         	self.newPlot()
 
@@ -318,7 +282,10 @@ class Factory(object):
                                                      'width' : 1,
                                                      'shape' : shape
                                                     },
-                                        'fill'    : filling
+                                        'fill'    : filling,
+                                        'fillcolor' : 	{
+                                        				'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
+                                        				}
                                         })
 
     	self.plots[plotNum].append(annotation_trace)
