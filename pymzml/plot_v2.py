@@ -32,345 +32,380 @@ import pprint
 
 
 class Factory(object):
-    """
-    Class to plot pymzml.spec.Spectrum as svg/xhtml.
+	"""
+	Class to plot pymzml.spec.Spectrum as svg/xhtml.
 
-    :param filename: Name for the output file. Default = "spectra.xhtml"
-    :type filename: string
+	:param filename: Name for the output file. Default = "spectra.xhtml"
+	:type filename: string
 
-    Example:
+	Example:
 
-    >>> import pymzml, get_example_file
-    >>> mzMLFile = 'profile-mass-spectrum.mzml'
-    >>> example_file = get_example_file.open_example(mzMLFile)
-    >>> run = pymzml.run.Run("../mzML_example_files/"+mzMLFile, precisionMSn = 250e-6)
-    >>> p = pymzml.plot.Factory()
-    >>> for spec in run:
-    >>>     p.newPlot()
-    >>>     p.add(spec.peaks, color=(200,00,00), style='circles')
-    >>>     p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
-    >>>     p.add(spec.reprofiledPeaks, color=(00,255,00), style='circles')
-    >>>     p.save( filename="output/plotAspect.xhtml" , mzRange = [745.2,745.6] )
+	>>> import pymzml, get_example_file
+	>>> mzMLFile = 'profile-mass-spectrum.mzml'
+	>>> example_file = get_example_file.open_example(mzMLFile)
+	>>> run = pymzml.run.Run("../mzML_example_files/"+mzMLFile, precisionMSn = 250e-6)
+	>>> p = pymzml.plot.Factory()
+	>>> for spec in run:
+	>>>     p.newPlot()
+	>>>     p.add(spec.peaks, color=(200,00,00), style='circles')
+	>>>     p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
+	>>>     p.add(spec.reprofiledPeaks, color=(00,255,00), style='circles')
+	>>>     p.save( filename="output/plotAspect.xhtml" , mzRange = [745.2,745.6] )
 
-    """
-    def __init__(self, filename = None):
-        self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
-        self.normalizations = [ ] # rather or not normalize data : True or False
-        self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
-        self.layoutObjs     = [ ] # more than one Object required?
-        self.maxI           = [ ] # maxI for each plot
-        self.maxMZ			= [ ] # maxMZ for each plot
-        self.linearPoints   = [ ]
+	"""
+	def __init__(self, filename = None):
+		self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
+		self.normalizations = [ ] # rather or not normalize data : True or False
+		self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
+		self.layoutObjs     = [ ] # more than one Object required?
+		self.maxVals        = [ ] # maxI for each plot
+		self.lookup         = dict()
+		self.linearPoints   = [ ]
+		self.yMax = []
+		self.xMax  = []
 
-    def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
-        """
-        Add new plot to the plotFactory.
+	def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
+		"""
+		Add new plot to the plotFactory.
 
-        :param header: an optional title that will be printed above the plot
-        :type header: string
-        :param mzRange: Boundaries of the new plot
-        :type mzRange: tuple of minMZ,maxMZ
-        :param normalize: whether or not the individal data sets are normalized in the plot
-        :type boolean:
-        :param precision: measuring precision used in handler. Default 5e-6.
-        :type precision: float
-        """
-        if mzRange == None:
-            mzRange = [-float('inf'), float('Inf')]
+		:param header: an optional title that will be printed above the plot
+		:type header: string
+		:param mzRange: Boundaries of the new plot
+		:type mzRange: tuple of minMZ,maxMZ
+		:param normalize: whether or not the individal data sets are normalized in the plot
+		:type boolean:
+		:param precision: measuring precision used in handler. Default 5e-6.
+		:type precision: float
+		"""
+		if mzRange == None:
+			mzRange = [-float('inf'), float('Inf')]
 
-        self.plots.append( [] )
-        # necessary?
-        self.layoutObjs.append({'xaxis'       : { 
-                                                    'title'     : 'm/z',
-                                                    'titlefont' : { 'color' : '#000000',
-                                                                    'family': 'Helvetica',
-                                                                    'size'  : '18'
-                                                                  }
-                                                },
-                                'yaxis'       : {
-                                                    'title'     : 'Intensity',
-                                                    'titlefont' : { 'color' : '#000000',
-                                                                    'family': 'Helvetica',
-                                                                    'size'  : '18'
-                                                                  }
-                                                },
-                                'title'       : header,
-                                'legend'      : { 'font' : { 'size' :10,
-                                                            'color' : '#FF0000'
-                                                            }
-                                                }
+		self.plots.append( [] )
+		self.lookup[header] = len(self.plots)-1 # map header to index number
+		self.yMax.append(1) # initialize with 1
+		self.xMax.append(1) # initialize with 1
+		# placeholderDict = {
+		# 	'__Y__' 		: lambda x : ,
+		# 	'__Y__+offset'	: lambda x : ,
+		# }
+		self.layoutObjs.append({'xaxis'       : { 
+													'title'     : 'm/z',
+													'titlefont' : { 'color' : '#000000',
+																	'family': 'Helvetica',
+																	'size'  : '18'
+																  }
+												},
+								'yaxis'       : {
+													'title'     : 'Intensity',
+													'titlefont' : { 'color' : '#000000',
+																	'family': 'Helvetica',
+																	'size'  : '18'
+																  }
+												},
+								'title'       : header,
+								'legend'      : { 'font' : { 'size' :10,
+															'color' : '#FF0000'
+															}
+												}
 
-                            } )
-        return
-    
-    def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity=0.8, name=None, plotNum = -1):
-        """
-        Add data to the graph.
+							} )
+		return
+	
+	def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity=0.8, name=None, plotNum = -1):
+		"""
+		Add data to the graph.
 
-        :param data: The data added to the graph
-        :type data: list of tuples (mz,i) or (mz1, mz2, i, string)
-        :param color: color encoded in RGB. Default = (0,0,0)
-        :type color: tuple (R,G,B)
-        :param style: plotting style. Default = "sticks".
-        :type style: string
-        :param mzRange: Boundaries that should be added to the current plot
-        :type mzRange: tuple of minMZ,maxMZ
-        :param opacity: opacity of the data points
-        :type opacity: float
-        :param name: name of data in legend
-        :type name: string
-        :param plotType: Plot type, must be either 'Scatter' or 'Bar'. Default = 'Bar'
-        :type plotType: string
-        :param plotNum: Add data to plot[plotNum]
-        :type plotNum: integer
+		:param data: The data added to the graph
+		:type data: list of tuples (mz,i) or (mz1, mz2, i, string)
+		:param color: color encoded in RGB. Default = (0,0,0)
+		:type color: tuple (R,G,B)
+		:param style: plotting style. Default = "sticks".
+		:type style: string
+		:param mzRange: Boundaries that should be added to the current plot
+		:type mzRange: tuple of minMZ,maxMZ
+		:param opacity: opacity of the data points
+		:type opacity: float
+		:param name: name of data in legend
+		:type name: string
+		:param plotType: Plot type, must be either 'Scatter' or 'Bar'. Default = 'Bar'
+		:type plotType: string
+		:param plotNum: Add data to plot[plotNum]
+		:type plotNum: integer
 
-        Currently supported styles are:
-            *   'sticks'
-            *   'triangle'
-            *   'spline'
-            *   'linear'
-        """
-        if mzRange == None:
-            mzRange = [-float('Inf'), float('Inf')]
+		Currently supported styles are:
+			*   'sticks'
+			*   'triangle'
+			*   'spline'
+			*   'linear'
+		"""
+		if mzRange == None:
+			mzRange = [-float('Inf'), float('Inf')]
 
-        if len(self.plots) == 0:
-        	self.newPlot()
+		if len(self.plots) == 0:
+			self.newPlot()
 
-        if len(data[0]) == 2:
-        	xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
-        	yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
-	        yMax = max(yVals)
-	        xMax = max(xVals) # what if not data and just anno?
-	        self.maxI.append(yMax)
-	        self.maxMZ.append(xMax)
-        else:
-            try:
-                yMax = self.maxI[-1] # use yMax from most recent created plot
-                xMax = self.maxMZ[-1] # use xMax from most recent created plot
-            except:
-                raise Exception('Add actual data before you add Annotation')
+		filling = None
 
-        filling = None
+		style = style.split('.')
+		ms_precision = float('1e-5') # get from user? get from new Plot function?
+		if style[0] == 'label':
 
-        
-        if style == 'sticks':  # stick width dependent on ms_precision!! works on 4 tuple array as data and anno
-            shape = 'linear'
-            ms_precision = float('1e-5') # get from user? get from new Plot function?
+			if style[1] == 'sticks':
+				shape = 'linear'
+				filling = 'tozeroy'
+				xValues = list()
+				yValues = list()
+				txt     = list()
+				for x in data:
+					yPos = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
+					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
+					yValues += .0, yPos, .0, None
+					txt     += None, x[3], None, None
 
-            filling = 'tozeroy'
-            xValues = []
-            yValues = []
-            txt     = []
-            for i, x in enumerate(data):
-                if len(data[0]) == 2:
-                    yPos   = yVals[i]
-                else:
-                    yPos = yMax
-                xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
-                yValues += 0, yPos, 0, None
-                try:
-                	txt += None, x[3], None, None
-                except:
-                	pass
+			elif style[1] == 'triangle':
+				shape = 'linear'
+				filling = 'tozeroy'
+				xValues = []
+				yValues = []
+				txt     = []
+				if len(style) == 3:
+					pos = style[1]
 
-        elif style.split('.')[0] == 'triangle': # works on 4 tuple array as 
-            shape = 'linear'
-            try:
-                pos   = style.split('.')[1]
-            except:
-                pos = 'medium'
-            filling = 'tozeroy'
-            xValues = []
-            yValues = []
-            txt     = []
-            for x in data:
-                if pos == 'small':
-                    yPos   = yMax
-                    relWidth = 1/float(200)
+				else:
+					pos = 'medium'
+					relWidth = 1/float(100)
 
-                elif pos == 'medium':
-                    yPos   = 0
-                    relWidth = 1/float(100)
+				for x in data:
+					if pos == 'small':
+						yPos   = yMax
+						relWidth = 1/float(200)
 
-                elif pos == 'big':
-                    yPos = (x[2]/2)
-                    relWidth = 1/float(50)
+					elif pos == 'medium':
+						yPos   = .0
+						relWidth = 1/float(100)
 
-                print (data)
-                if len(data[0]) == 4:
-                	yPos = x[3]
-                else:
-                	yPos = x[1]
-                xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
-                yValues += 0, yMax, 0, None
-                try:
-                	txt += None, x[3], None, None
-                except:
-                	pass
+					elif pos == 'big':
+						yPos = (x[2]/2)
+						relWidth = 1/float(50)
 
-        elif style.split('.')[0] == 'spline': # works on 4 tuple only for anno (requires 2 x coordinates)
-            shape = style.split('.')[0]
-            try:
-                pos   = style.split('.')[1]
-            except:
-                pos = 'top'
+					yMax = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
+					xMax = self.xMax[plotNum]
+					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
+					yValues += .0, yMax, .0, None
+					txt += None, x[3], None, None
+				pass
 
-            xValues = []
-            yValues = []
-            txt     = []
-            for x in data:
-                if pos == 'top':
-                    yPos   = yMax
-                    offset = yMax*0.05
+			elif style[1] == 'spline':
+				shape = 'spline'
+				xValues = []
+				yValues = []
+				txt     = []
+				if len(style) == 3:
+					pos = style[2]
+				else:
+					pos = 'top'
+				xValues = []
+				yValues = []
+				txt     = []
+				for x in data:
+					yMax = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
+					if pos == 'top':
+						yPos   = yMax
+						offset = '+(self.yMax[i]*0.05)'
 
-                elif pos == 'bottom':
-                    yPos   = 0
-                    offset = -(yMax*0.05)
+					elif pos == 'medium':
+						yPos = x[2]/2
+						offset = '+(self.yMax[i]*0.05)'
 
-                elif pos == 'mid':
-                    yPos = (x[2]/2)
-                    offset = yMax*0.05
-                
-                xValues += x[0], (x[0]+x[1])/2, x[1], None
-                yValues += yPos, yPos+offset, yPos, None
-                txt += None, x[3], None, None
+					elif pos == 'bottom':
+						yPos = .0
+						offset = '-(self.yMax[i]*0.05)'
 
-        elif style.split('.')[0] == 'linear': # increase offset if new anno is in x range of another anno # works on 4 tuple only for anno (requires 2 x coordinates)
-            shape = style.split('.')[0]
-            try:
-                pos   = style.split('.')[1]
-            except:
-                pos = 'top'
+					xValues += x[0], (x[0]+x[1])/2, x[1], None
+					yValues += yPos, str(yPos)+str(offset), yPos, None
+					txt += None, x[3], None, None
 
-            xValues = []
-            yValues = []
-            txt     = []
-            txtOffset = 100
-            for x in data:
-                if pos == 'top':
-                    yPos   = yMax
-                    offset = yMax*0.1
+			elif style[1] == 'linear':
+				shape = 'linear'
+				if len(style) == 3:
+					pos = style[2]
+				else:
+					pos = 'bottom'
+				xValues = []
+				yValues = []
+				txt     = []
+				txtOffset = 100
+				for x in data:
+					yMax = 'self.yMax[i]'#NOTE self.yMax[plotNum] = __Y__
+					if pos == 'top':
+						yPos   = yMax
+						offset = '-(self.yMax[i]*0.05)'
+					elif pos == 'medium':
+						yPos = x[2]/2
+						offset = '-(self.yMax[i]*0.05)'
+					elif pos == 'bottom':
+						yPos = .0
+						offset = '-(self.yMax[i]*0.05)'
+					xValues += x[0], (x[0]+x[1])/2, x[1], None
+					yValues += str(yPos)+str(offset), str(yPos)+str(offset), str(yPos)+str(offset), None
+					txt     += None, x[3], None, None
+			
+			else:
+				raise Exception("Unknown label type or position")
+		
+		else:
+			xVals     = [mz for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
+			yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
+			yMax = max(yVals)
+			xMax = max(xVals)
+			print (yMax)
 
-                elif pos == 'bottom':
-                    yPos   = 0
-                    offset = -(yMax*0.1)
-                    print ('offset: ', yMax, -(yMax*0.1))
+			if self.xMax[plotNum] < xMax:
+				self.xMax[plotNum] = xMax
+			if self.yMax[plotNum] < yMax: #NOTE self.yMax[plotNum] = __Y__
+				self.yMax[plotNum] = yMax #NOTE self.yMax[plotNum] = __Y__
 
-                elif pos == 'mid':
-                    yPos = (x[2]+x[1])/2
-                    offset = 0 
-                    
-                xValues += x[0], (x[0]+x[1])/2, x[1], None  
-                yValues += yPos+offset, yPos+offset, yPos+offset, None  
-                txt += None, x[3], None, None
 
-        else:
-            raise Exception('Unknown style./n Please use spline.top, spline.bottom, spline.mid, sticks, triangle or linear!')
+			if style[0] == 'sticks':
+				shape = 'linear'
+				filling = 'tozeroy'
+				xValues = []
+				yValues = []
+				txt     = []
+				for x in data:
+					yPos   = x[1]
+					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
+					yValues += .0, yPos, .0, None
 
-        annotation_trace = go.Scatter({
-                                        'x'       : xValues,
-                                        'y'       : yValues,
-                                        'text'    : txt,
-                                        'textfont'  : {
-                                                      'family' : 'Helvetica',
-                                                      'size' : 10,
-                                                      'color' : '#000000'
-                                                    },
-                                        'visible' : 'True',
-                                        'marker'  : {'size' : 10},
-                                        'mode'    : 'text+lines',
-                                        'name'    : name,
-                                        'line'    : {
-                                                     'color' : 'rgb'+str(color),
-                                                     'width' : 1,
-                                                     'shape' : shape
-                                                    },
-                                        'fill'    : filling,
-                                        'fillcolor' : 	{
-                                        				'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
-                                        				}
-                                        })
+			elif style[0] == 'triangle':
+				if len(style) == 2:
+					pos = style[1]
+				else:
+					pos = 'medium'
+				shape = 'linear'
+				filling = 'tozeroy'
+				xValues = []
+				yValues = []
+				txt     = []
+				for x in data:
+					if pos == 'small':
+						relWidth = 1/float(200)
 
-    	self.plots[plotNum].append(annotation_trace)
-        return
+					elif pos == 'medium':
+						relWidth = 1/float(100)
 
-    def info(self):
-        """
-        Returns summary about the plotting factory, i.e.how many plots and how many datasets per plot.
-        """
-        print("""
-        Factory holds {0} unique plots""".format(len(self.plots)))
-        for i,plot in enumerate(self.plots):
-            print("                Plot {0} holds {1} unique datasets".format(i,len(plot)))
-            for j,dataset in enumerate(plot):
-                print("                  Dataset {0} holds {1} datapoints".format(j,len(dataset['x'])))
+					elif pos == 'big':
+						relWidth = 1/float(50)
+					yPos = x[1]
+					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
+					yValues += .0, yPos, .0, None
 
-        print()
-        return
+		annotation_trace = go.Scatter({
+										'x'       : xValues,
+										'y'       : yValues,
+										'text'    : txt,
+										'textfont'  : {
+													  'family' : 'Helvetica',
+													  'size' : 10,
+													  'color' : '#000000'
+													},
+										'visible' : 'True',
+										'marker'  : {'size' : 10},
+										'mode'    : 'text+lines',
+										'name'    : name,
+										'line'    : {
+													 'color' : 'rgb'+str(color),
+													 'width' : 1,
+													 'shape' : shape
+													},
+										'fill'    : filling,
+										'fillcolor' : 	{
+														'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
+														}
+										})
 
-    def save(self, filename = "spectra.xhtml", mzRange = None):
-        """
-        Saves all plots and their data points that have been added to the plotFactory.
+		self.plots[plotNum].append(annotation_trace)
+		return
 
-        :param filename: Name for the output file. Default = "spectra.xhtml"
-        :type filename: string
-        :param mzRange: m/z range which should be considered [start, end]. Default = None
-        :type mzRange: list
-        """
-        # Save as Plotly html in given range, also enable to create pure SVGs???
-        if mzRange == None: # accept all values
-            mzRange = [-float('inf'), float('Inf')]
+	def info(self):
+		"""
+		Returns summary about the plotting factory, i.e.how many plots and how many datasets per plot.
+		"""
+		print("""
+		Factory holds {0} unique plots""".format(len(self.plots)))
+		for i,plot in enumerate(self.plots):
+			print("                Plot {0} holds {1} unique datasets".format(i,len(plot)))
+			for j,dataset in enumerate(plot):
+				print("                  Dataset {0} holds {1} datapoints".format(j,len(dataset['x'])))
 
-        plotNumber = len(self.plots)
-        rows, cols = int(math.ceil(plotNumber/float(2))), 2
-        print (rows, cols)
-        if plotNumber%2 == 0:
-            myFigure = tools.make_subplots(rows=rows, cols=cols, vertical_spacing=0.6/rows)
-        else:
-            specs = [[{}, {}] for x in range(rows-1)]
-            specs.append([{'colspan': 2}, None])
-            myFigure = tools.make_subplots(rows=rows, cols=cols, vertical_spacing=0.6/rows, specs=specs)
-            
-        for i, plot in enumerate(self.plots):
-            for j, trace in enumerate(plot):
-                myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)# insert correct arguments, modulo to always have max 2 cols
+		print()
+		return
 
-        
-        for i in range(plotNumber):
-            print('xaxis'+str(i+1))
-            myFigure['layout']['xaxis'+str(i+1)].update(title='m/z ')
-            myFigure['layout']['yaxis'+str(i+1)].update(title='Intensity')
-            myFigure['layout']['xaxis'+str(i+1)].update(titlefont = { 'color' : '#000000',
-                                                                'family': 'Helvetica',
-                                                                'size'  : '18'
-                                                              })
-            myFigure['layout']['yaxis'+str(i+1)].update(titlefont = { 'color' : '#000000',
-                                                                'family': 'Helvetica',
-                                                                'size'  : '18'
-                                                              })
-        myFigure['layout']['legend'].update(font={ 'size' :10,
-                                                        'color' : '#FF0000'
-                                                        })
-        plt.plot(myFigure, filename='test1')
-        return
+	def save(self, filename = "spectra.xhtml", mzRange = None):
+		"""
+		Saves all plots and their data points that have been added to the plotFactory.
 
-    def get_json(self):
-        """
-        return data and layout in JSON format
-        """
-        return json.dumps([self.plots, self.layoutObjs[-1]])
+		:param filename: Name for the output file. Default = "spectra.xhtml"
+		:type filename: string
+		:param mzRange: m/z range which should be considered [start, end]. Default = None
+		:type mzRange: list
+		"""
+		# Save as Plotly html in given range, also enable to create pure SVGs???
+		if mzRange == None: # accept all values
+			mzRange = [-float('inf'), float('Inf')]
+
+		plotNumber = len(self.plots)
+		rows, cols = int(math.ceil(plotNumber/float(2))), 2
+
+		if plotNumber%2 == 0:
+			myFigure = tools.make_subplots(rows=rows, cols=cols, vertical_spacing=0.6/rows)
+		else:
+			specs = [[{}, {}] for x in range(rows-1)]
+			specs.append([{'colspan': 2}, None])
+			myFigure = tools.make_subplots(rows=rows, cols=cols, vertical_spacing=0.6/rows, specs=specs)
+		
+		for i, plot in enumerate(self.plots):
+			for j, trace in enumerate(plot):
+				print (trace['y'])
+				trace['y'] = [x if type(x) == float else eval(x) if x == 'self.yMax[i]' else eval(x) if type(x) == str else x for x in trace['y']]
+				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)# insert correct arguments, modulo to always have max 2 cols
+
+		for i in range(plotNumber):
+			myFigure['layout']['xaxis'+str(i+1)].update(title='m/z ')
+			myFigure['layout']['yaxis'+str(i+1)].update(title='Intensity')
+			myFigure['layout']['xaxis'+str(i+1)].update(titlefont = { 'color' : '#000000',
+																'family': 'Helvetica',
+																'size'  : '18'
+															  })
+			myFigure['layout']['yaxis'+str(i+1)].update(titlefont = { 'color' : '#000000',
+																'family': 'Helvetica',
+																'size'  : '18'
+															  })
+
+		myFigure['layout']['legend'].update(font={ 'size' :10,
+														'color' : '#FF0000'
+														})
+		plt.plot(myFigure, filename='test1')
+		print (self.yMax[i])
+		return
+
+	def get_json(self):
+		"""
+		return data and layout in JSON format
+		"""
+		return json.dumps([self.plots, self.layoutObjs[-1]])
 
 if __name__ == '__main__':
-    print(__doc__)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+	print(__doc__)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
