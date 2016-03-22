@@ -63,7 +63,25 @@ class Factory(object):
 		self.linearPoints   = [ ]
 		self.yMax = []
 		self.xMax  = []
-
+		self.functionMapper =  {
+                        'self.yMax[i]'                     : self.__returnMaxY,
+                        'self.yMax[i]+(self.yMax[i]*0.05)' : self.__returnPosOffset,
+                        'self.yMax[i]-(self.yMax[i]*0.05)' : self.__returnNegOffset,
+                        '0.0-(self.yMax[i]*0.05)'          : self.__returnBaseOffset
+                    }
+        
+        def __returnMaxY(self, i):
+            return self.yMax[i]
+        
+        def __returnPosOffset(self, i):
+            return self.yMax[i]+(self.yMax[i]*0.05)
+        
+        def __returnNegOffset(self, i):
+            return self.yMax[i]-(self.yMax[i]*0.05)
+        
+        def __returnBaseOffset(self, i):
+            return .0-(self.yMax[i]*0.05)
+        
 	def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
 		"""
 		Add new plot to the plotFactory.
@@ -84,10 +102,8 @@ class Factory(object):
 		self.lookup[header] = len(self.plots)-1 # map header to index number
 		self.yMax.append(1) # initialize with 1
 		self.xMax.append(1) # initialize with 1
-		# placeholderDict = {
-		# 	'__Y__' 		: lambda x : ,
-		# 	'__Y__+offset'	: lambda x : ,
-		# }
+		
+                
 		self.layoutObjs.append({'xaxis'       : { 
 													'title'     : 'm/z',
 													'titlefont' : { 'color' : '#000000',
@@ -149,7 +165,6 @@ class Factory(object):
 		style = style.split('.')
 		ms_precision = float('1e-5') # get from user? get from new Plot function?
 		if style[0] == 'label':
-
 			if style[1] == 'sticks':
 				shape = 'linear'
 				filling = 'tozeroy'
@@ -214,6 +229,8 @@ class Factory(object):
 						offset = '+(self.yMax[i]*0.05)'
 
 					elif pos == 'medium':
+                                                print ('Not working atm')
+                                                sys.exit(0)
 						yPos = x[2]/2
 						offset = '+(self.yMax[i]*0.05)'
 
@@ -241,6 +258,8 @@ class Factory(object):
 						yPos   = yMax
 						offset = '-(self.yMax[i]*0.05)'
 					elif pos == 'medium':
+                                                print ('Not working atm')
+                                                sys.exit(0)
 						yPos = x[2]/2
 						offset = '-(self.yMax[i]*0.05)'
 					elif pos == 'bottom':
@@ -366,8 +385,10 @@ class Factory(object):
 		
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
-				print (trace['y'])
-				trace['y'] = [x if type(x) == float else eval(x) if x == 'self.yMax[i]' else eval(x) if type(x) == str else x for x in trace['y']]
+				#pprint.pprint (trace['y'])
+				#trace['y'] = [x if type(x) == float else eval(x) if x == 'self.yMax[i]' else eval(x) if type(x) == str else x for x in trace['y']]
+				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
+				#pprint.pprint (trace['y'])
 				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)# insert correct arguments, modulo to always have max 2 cols
 
 		for i in range(plotNumber):
