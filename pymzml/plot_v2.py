@@ -340,10 +340,12 @@ class Factory(object):
 										'fill'    : filling,
 										'fillcolor' : 	{
 														'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
-														}
+														},
+                                                                                'opacity' : opacity
 										})
 
 		self.plots[plotNum].append(annotation_trace)
+		print('rgba'+str((color[0], color[1], color[2], opacity)))
 		return
 
 	def info(self):
