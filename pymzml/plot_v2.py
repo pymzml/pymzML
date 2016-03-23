@@ -57,7 +57,7 @@ class Factory(object):
 		self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
 		self.normalizations = [ ] # rather or not normalize data : True or False
 		self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
-		self.layoutObjs     = [ ] # more than one Object required?
+		#self.layoutObjs     = [ ] # more than one Object required?
 		self.maxVals        = [ ] # maxI for each plot
 		self.lookup         = dict()
 		self.linearPoints   = [ ]
@@ -99,32 +99,9 @@ class Factory(object):
 			mzRange = [-float('inf'), float('Inf')]
 
 		self.plots.append( [] )
-		self.lookup[header] = len(self.plots)-1 # map header to index number
+		self.lookup[header] = len(self.plots)-1 # TODO map header to index number
 		self.yMax.append(1) # initialize with 1
 		self.xMax.append(1) # initialize with 1
-		
-                
-		self.layoutObjs.append({'xaxis'       : { 
-													'title'     : 'm/z',
-													'titlefont' : { 'color' : '#000000',
-																	'family': 'Helvetica',
-																	'size'  : '18'
-																  }
-												},
-								'yaxis'       : {
-													'title'     : 'Intensity',
-													'titlefont' : { 'color' : '#000000',
-																	'family': 'Helvetica',
-																	'size'  : '18'
-																  }
-												},
-								'title'       : header,
-								'legend'      : { 'font' : { 'size' :10,
-															'color' : '#FF0000'
-															}
-												}
-
-							} )
 		return
 	
 	def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity=0.8, name=None, plotNum = -1):
@@ -229,8 +206,8 @@ class Factory(object):
 						offset = '+(self.yMax[i]*0.05)'
 
 					elif pos == 'medium':
-                                                print ('Not working atm')
-                                                sys.exit(0)
+						print ('Not working atm')
+						sys.exit(0)
 						yPos = x[2]/2
 						offset = '+(self.yMax[i]*0.05)'
 
@@ -258,8 +235,8 @@ class Factory(object):
 						yPos   = yMax
 						offset = '-(self.yMax[i]*0.05)'
 					elif pos == 'medium':
-                                                print ('Not working atm')
-                                                sys.exit(0)
+						print ('Not working atm')
+						sys.exit(0)
 						yPos = x[2]/2
 						offset = '-(self.yMax[i]*0.05)'
 					elif pos == 'bottom':
@@ -409,14 +386,17 @@ class Factory(object):
 														'color' : '#FF0000'
 														})
 		plt.plot(myFigure, filename='test1')
-		print (self.yMax[i])
 		return
 
 	def get_json(self):
 		"""
 		return data and layout in JSON format
 		"""
-		return json.dumps([self.plots, self.layoutObjs[-1]])
+		for i, plot in enumerate(self.plots):
+			for j, trace in enumerate(plot):
+				self.plots[i][j]['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
+		return json.dumps(self.plots, sort_keys=True,
+			indent=4, separators=(',', ': '))
 
 if __name__ == '__main__':
 	print(__doc__)
