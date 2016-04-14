@@ -22,13 +22,13 @@ Plotting functions for pymzML
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-import math
 import sys
-import plotly.offline as plt
-import plotly.graph_objs as go # or use python dicts???
-from plotly import tools
+import math
 import json
-import pprint
+
+import plotly.offline as plt
+import plotly.graph_objs as go
+from plotly import tools
 
 
 class Factory(object):
@@ -47,25 +47,21 @@ class Factory(object):
 	>>> p = pymzml.plot.Factory()
 	>>> for spec in run:
 	>>>     p.newPlot()
-	>>>     p.add(spec.peaks, color=(200,00,00), style='circles')
+	>>>     p.add(spec.peaks, color=(200,00,00), style='sticks')
 	>>>     p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
-	>>>     p.add(spec.reprofiledPeaks, color=(00,255,00), style='circles')
+	>>>     p.add(spec.reprofiledPeaks, color=(00,255,00), style='sticks')
 	>>>     p.save( filename="output/plotAspect.xhtml" , mzRange = [745.2,745.6] )
 
 	"""
 	def __init__(self, filename = None):
-		self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
-		self.normalizations = [ ] # rather or not normalize data : True or False
-		self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
+		self.filename       = filename if filename != None else "spectra.xhtml"
+		self.plots          = [ ] # will become list of lists, whereas each inner list can have different Dataobjects (traces)
 		self.lookup         = dict()
 		self.yMax = []
 		self.xMax  = []
 		self.offset = 1
 		self.precisions = []
 		self.functionMapper =  {
-								'+__splineOffset__1'				: self.__returnPosOffset,
-								'+__splineOffset__0'				: self.__returnPosOffset0,
-								'-__splineOffset__1'				: self.__returnNegOffset,
 								'-__splineOffset__0'				: self.__returnNegOffset0,
 								'self.yMax[i]'                      : self.__returnMaxY
 								}
@@ -126,52 +122,41 @@ class Factory(object):
 		:type opacity: float
 		:param name: name of data in legend
 		:type name: string
-		:param plotType: Plot type, must be either 'Scatter' or 'Bar'. Default = 'Bar'
-		:type plotType: string
 		:param plotNum: Add data to plot[plotNum]
 		:type plotNum: integer
 
 		Currently supported styles are:
 			*   'sticks'
-			*   'triangle'
-			*   'spline'
-			*   'linear'
+			*   'triangle' (small, medium or big)
+			*   'spline'   (top, medium or bottom)
+			*   'linear'   (top, medium or bottom)
 		"""
-
-		# another input structure: [(MZ, offset, LABEL, YMAX),(MZ, offset, LABEL, YMAX),(MZ, offset, LABEL, YMAX),(MZ, offset, LABEL, YMAX),(MZ, offset, LABEL, YMAX)]
 		if mzRange == None:
 			mzRange = [-float('Inf'), float('Inf')]
 
 		if len(self.plots) == 0:
 			self.newPlot()
-
 		filling = None
-
+		xValues = []
+		yValues = []
+		txt     = []
 		style = style.split('.')
-		ms_precision = float(self.precisions[-1]) # get from user? get from new Plot function?
+		ms_precision = float(self.precisions[plotNum])
 		if style[0] == 'label':
 			if style[1] == 'sticks':
 				shape = 'linear'
 				filling = 'tozeroy'
-				xValues = list()
-				yValues = list()
 				txt     = list()
-				#offsets = list()
 				for x in data:
 					yPos = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
-					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None #FIXME
+					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None #FIXME: not - but x[0]-x[0]*ms_prec
 					yValues += .0, yPos, .0, None
 					txt     += None, x[3], None, None
-					#offsets += 0
-					# test if another datapoint is next to current datapoint, if yes increase offset for current value times number of near datapoints
 
 
 			elif style[1] == 'triangle':
 				shape = 'linear'
 				filling = 'tozeroy'
-				xValues = []
-				yValues = []
-				txt     = []
 				if len(style) == 3:
 					pos = style[1]
 
@@ -201,16 +186,11 @@ class Factory(object):
 
 			elif style[1] == 'spline':
 				shape = 'spline'
-				xValues = []
-				yValues = []
 				txt     = []
 				if len(style) == 3:
 					pos = style[2]
 				else:
 					pos = 'top'
-				xValues = []
-				yValues = []
-				txt     = []
 				for x in data:
 					yMax = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
 					if pos == 'top':
@@ -237,9 +217,6 @@ class Factory(object):
 					pos = style[2]
 				else:
 					pos = 'bottom'
-				xValues = []
-				yValues = []
-				txt     = []
 				txtOffset = 100
 				for x in data:
 					yMax = 'self.yMax[i]'#NOTE self.yMax[plotNum] = __Y__
@@ -254,13 +231,6 @@ class Factory(object):
 					elif pos == 'bottom':
 						yPos = .0
 						offset = '-__splineOffset__0'
-
-					if (int(round(x[0], 0)), int(yPos) ) in self.linearAnnoPoints:
-						print ("increase offset")
-						# self.offset += 1
-
-					for point in range(int(round(x[0], 0)), int(round(x[1], 0)), 1):
-						self.linearAnnoPoints.add((point,int(yPos)))
 
 					xValues += x[0], (x[0]+x[1])/2, x[1], None
 					yValues += str(offset), str(offset), str(offset), None
@@ -284,9 +254,6 @@ class Factory(object):
 			if style[0] == 'sticks':
 				shape = 'linear'
 				filling = 'tozeroy'
-				xValues = []
-				yValues = []
-				txt     = []
 				for x in data:
 					yPos   = x[1]
 					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
@@ -299,9 +266,6 @@ class Factory(object):
 					pos = 'medium'
 				shape = 'linear'
 				filling = 'tozeroy'
-				xValues = []
-				yValues = []
-				txt     = []
 				for x in data:
 					if pos == 'small':
 						relWidth = 1/float(200)
@@ -366,13 +330,14 @@ class Factory(object):
 		:param mzRange: m/z range which should be considered [start, end]. Default = None
 		:type mzRange: list
 		"""
-		# Save as Plotly html in given range, also enable to create pure SVGs???
-		if mzRange == None: # accept all values
+		if mzRange == None:
 			mzRange = [-float('inf'), float('Inf')]
 
 		plotNumber = len(self.plots)
 		rows, cols = int(math.ceil(plotNumber/float(2))), 2
 
+
+		# enable possibility to have different subplots in on Pic
 		if plotNumber%2 == 0:
 			myFigure = tools.make_subplots(rows=rows, cols=cols, vertical_spacing=0.6/rows)
 		else:
@@ -383,7 +348,7 @@ class Factory(object):
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
 				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
-				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)# insert correct arguments, modulo to always have max 2 cols
+				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)
 
 		for i in range(plotNumber):
 			myFigure['layout']['xaxis'+str(i+1)].update(title='m/z ')
