@@ -6,7 +6,7 @@ Plotting functions for pymzML
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Kösters, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Kösters, A. Niehues, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
