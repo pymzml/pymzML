@@ -84,7 +84,7 @@ class Factory(object):
 	def __returnPosOffset0(self, i):
 		pass
 		
-	def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
+	def newPlot(self, header = "Title" , mzRange = None , normalize = False, precision='5e-6'):
 		"""
 		Add new plot to the plotFactory.
 
@@ -101,9 +101,10 @@ class Factory(object):
 			mzRange = [-float('inf'), float('Inf')]
 		self.precisions.append(precision)
 		self.plots.append( [] )
-		self.lookup[header] = len(self.plots)-1 # TODO map header to index number
-		self.yMax.append(1) # initialize with 1
-		self.xMax.append(1) # initialize with 1
+		#self.lookup[header] = len(self.plots)-1 # map header name 
+		# Initialize current yMax and xMax with 0, see line 249
+		self.yMax.append(0) 
+		self.xMax.append(0)
 		return
 	
 	def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity=0.8, name=None, plotNum = -1):
@@ -136,10 +137,13 @@ class Factory(object):
 
 		if len(self.plots) == 0:
 			self.newPlot()
+		# Init variables
+		
 		filling = None
 		xValues = []
 		yValues = []
 		txt     = []
+
 		style = style.split('.')
 		ms_precision = float(self.precisions[plotNum])
 		if style[0] == 'label':
@@ -365,6 +369,8 @@ class Factory(object):
 		myFigure['layout']['legend'].update(font={ 'size' :10,
 														'color' : '#FF0000'
 														})
+		print ('ANIDUNNIODANNFAN\nadsubibfanu\naubfbf', self.header)
+		#myFigure['layout']['title'].update(title=self.header[-1])
 		plt.plot(myFigure, filename='test1')
 		return
 
