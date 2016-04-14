@@ -138,7 +138,7 @@ class Factory(object):
 		if len(self.plots) == 0:
 			self.newPlot()
 		# Init variables
-		
+
 		filling = None
 		xValues = []
 		yValues = []
@@ -162,7 +162,7 @@ class Factory(object):
 				shape = 'linear'
 				filling = 'tozeroy'
 				if len(style) == 3:
-					pos = style[1]
+					pos = style[2]
 
 				else:
 					pos = 'medium'
@@ -170,17 +170,16 @@ class Factory(object):
 
 				for x in data:
 					if pos == 'small':
-						yPos   = yMax
+						yPos   = 'self.yMax[i]'
 						relWidth = 1/float(200)
 
 					elif pos == 'medium':
-						yPos   = .0
+						yPos   = 'self.yMax[i]'
 						relWidth = 1/float(100)
 
 					elif pos == 'big':
-						yPos = (x[2]/2)
+						yPos = 'self.yMax[i]'
 						relWidth = 1/float(50)
-
 					yMax = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
 					xMax = self.xMax[plotNum]
 					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
@@ -283,6 +282,21 @@ class Factory(object):
 					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
 					yValues += .0, yPos, .0, None
 
+
+
+		# USING EVENTS
+
+		# Plots emit events prefixed with plotly_ when clicked or hovered over, and event handlers can be bound to events using the on method that is exposed by the plot div object. It is possible to use jQuery events, but plotly.js no longer bundles jQuery, so we recommend using the plotly.js implementation.
+
+
+		# 	// You can obtain the plot using document.getElementById('graphDiv')
+		# 	graphDiv.on('plotly_click', function(data){
+	  	#	// do something using the event data
+		# 	});
+		# may be used to scale the annotation text when user tries to zoom???
+
+
+
 		trace = go.Scatter({
 										'x'          	: xValues,
 										'y'          	: yValues,
@@ -369,7 +383,6 @@ class Factory(object):
 		myFigure['layout']['legend'].update(font={ 'size' :10,
 														'color' : '#FF0000'
 														})
-		print ('ANIDUNNIODANNFAN\nadsubibfanu\naubfbf', self.header)
 		#myFigure['layout']['title'].update(title=self.header[-1])
 		plt.plot(myFigure, filename='test1')
 		return
