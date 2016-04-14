@@ -57,36 +57,36 @@ class Factory(object):
 		self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
 		self.normalizations = [ ] # rather or not normalize data : True or False
 		self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
-		#self.layoutObjs     = [ ] # more than one Object required?
 		self.maxVals        = [ ] # maxI for each plot
 		self.lookup         = dict()
 		self.linearAnnoPoints   = set()
 		self.yMax = []
 		self.xMax  = []
 		self.offset = 1
-		self.functionMapper =  {
-								'+__splineOffset__1'				: self.__returnPosOffset,
-								'+__splineOffset__0'				: self.__returnPosOffset0,
-								'-__splineOffset__1'				: self.__returnNegOffset,
-								'-__splineOffset__0'				: self.__returnNegOffset0
-								}
-	def __returnMaxY(self, i):
-		return self.yMax[i]
-	
-	def __returnPosOffset(self, i):
-		return self.yMax[i]+(self.yMax[i]*(self.offset*0.05))
-	
-	def __returnNegOffset(self, i):
-		return self.yMax[i]-(self.yMax[i]*(self.offset*0.05))
-	
-	def __returnBaseOffset(self, i):
-		return .0-(self.yMax[i]*(self.offset*0.05))
+		# self.functionMapper =  {
+		# 						'+__splineOffset__1'				: self.__returnPosOffset,
+		# 						'+__splineOffset__0'				: self.__returnPosOffset0,
+		# 						'-__splineOffset__1'				: self.__returnNegOffset,
+		# 						'-__splineOffset__0'				: self.__returnNegOffset0
+		# 						}
 
-	def __returnNegOffset0(self, i):
-		return .0-(self.yMax[i]*(self.offset*0.05))
+	# def __returnMaxY(self, i):
+	# 	return self.yMax[i]
+	
+	# def __returnPosOffset(self, i):
+	# 	return self.yMax[i]+(self.yMax[i]*(self.offset*0.05))
+	
+	# def __returnNegOffset(self, i):
+	# 	return self.yMax[i]-(self.yMax[i]*(self.offset*0.05))
+	
+	# def __returnBaseOffset(self, i):
+	# 	return .0-(self.yMax[i]*(self.offset*0.05))
 
-	def __returnPosOffset0(self, i):
-		pass
+	# def __returnNegOffset0(self, i):
+	# 	return .0-(self.yMax[i]*(self.offset*0.05))
+
+	# def __returnPosOffset0(self, i):
+	# 	pass
 		
 	def newPlot(self, header = None , mzRange = None , normalize = False, precision='5e-6'):
 		"""
@@ -104,8 +104,9 @@ class Factory(object):
 		if mzRange == None:
 			mzRange = [-float('inf'), float('Inf')]
 
-		self.plots.append( [] )
+		self.plots.append( [] ) # create new plot
 		self.lookup[header] = len(self.plots)-1 # TODO map header to index number
+		self.precision = precision
 		self.yMax.append(1) # initialize with 1
 		self.xMax.append(1) # initialize with 1
 		return
@@ -132,10 +133,10 @@ class Factory(object):
 		:type plotNum: integer
 
 		Currently supported styles are:
-			*   'sticks'
-			*   'triangle'
-			*   'spline'
-			*   'linear'
+			*   'sticks' 
+			*   'triangle' (big, medium or small)
+			*   'spline'   (top, medium or bottom)
+			*   'linear'   (top, medium or bottom)
 		"""
 		if mzRange == None:
 			mzRange = [-float('Inf'), float('Inf')]
@@ -146,7 +147,7 @@ class Factory(object):
 		filling = None
 
 		style = style.split('.')
-		ms_precision = float('1e-5') # get from user? get from new Plot function?
+		ms_precision = self.precision # get from user? get from new Plot function?
 		if style[0] == 'label':
 			if style[1] == 'sticks':
 				shape = 'linear'
@@ -156,7 +157,7 @@ class Factory(object):
 				txt     = list()
 				for x in data:
 					yPos = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
-					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
+					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None # FIXME
 					yValues += .0, yPos, .0, None
 					txt     += None, x[3], None, None
 
@@ -310,33 +311,32 @@ class Factory(object):
 					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
 					yValues += .0, yPos, .0, None
 
-		annotation_trace = go.Scatter({
-										'x'       : xValues,
-										'y'       : yValues,
-										'text'    : txt,
-										'textfont'  : {
-													  'family' : 'Helvetica',
-													  'size' : 10,
-													  'color' : '#000000'
-													},
-										'visible' : 'True',
-										'marker'  : {'size' : 10},
-										'mode'    : 'text+lines',
-										'name'    : name,
-										'line'    : {
-													 'color' : 'rgb'+str(color),
-													 'width' : 1,
-													 'shape' : shape
-													},
-										'fill'    : filling,
-										'fillcolor' : 	{
-														'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
-														},
-																				'opacity' : opacity
-										})
-
-		self.plots[plotNum].append(annotation_trace)
-		print('rgba'+str((color[0], color[1], color[2], opacity)))
+		# In case one needs different Layouts, here is how a simple layout may look like			
+		# annotation_trace = go.Scatter({
+		# 								'x'       : xValues,
+		# 								'y'       : yValues,
+		# 								'text'    : txt,
+		# 								'textfont'  : {
+		# 											  'family' : 'Helvetica',
+		# 											  'size' : 10,
+		# 											  'color' : '#000000'
+		# 											},
+		# 								'visible' : 'True',
+		# 								'marker'  : {'size' : 10},
+		# 								'mode'    : 'text+lines',
+		# 								'name'    : name,
+		# 								'line'    : {
+		# 											 'color' : 'rgb'+str(color),
+		# 											 'width' : 1,
+		# 											 'shape' : shape
+		# 											},
+		# 								'fill'    : filling,
+		# 								'fillcolor' : 	{
+		# 												'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
+		# 												},
+		# 																		'opacity' : opacity
+		# 								})
+		# self.plots[plotNum].append(annotation_trace)
 		return
 
 	def info(self):
@@ -378,12 +378,9 @@ class Factory(object):
 		
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
-				#pprint.pprint (trace['y'])
-				#trace['y'] = [x if type(x) == float else eval(x) if x == 'self.yMax[i]' else eval(x) if type(x) == str else x for x in trace['y']]
 				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
-				# print (trace['y'])
-				#pprint.pprint (trace['y'])
-				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)# insert correct arguments, modulo to always have max 2 cols
+				# insert correct arguments, modulo to always have max 2 cols
+				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)
 
 		for i in range(plotNumber):
 			myFigure['layout']['xaxis'+str(i+1)].update(title='m/z ')
