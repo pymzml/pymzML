@@ -6,7 +6,7 @@ Plotting functions for pymzML
 
 # pymzml
 #
-# Copyright (C) 2010-2011 T. Bald, J. Barth, A. Niehues, M. Kösters, C. Fufezan
+# Copyright (C) 2010-2011 T. Bald, J. Barth, M. Kösters, A. Niehues, C. Fufezan
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -311,32 +311,32 @@ class Factory(object):
 					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
 					yValues += .0, yPos, .0, None
 
-		# In case one needs different Layouts, here is how a simple layout may look like			
-		# annotation_trace = go.Scatter({
-		# 								'x'       : xValues,
-		# 								'y'       : yValues,
-		# 								'text'    : txt,
-		# 								'textfont'  : {
-		# 											  'family' : 'Helvetica',
-		# 											  'size' : 10,
-		# 											  'color' : '#000000'
-		# 											},
-		# 								'visible' : 'True',
-		# 								'marker'  : {'size' : 10},
-		# 								'mode'    : 'text+lines',
-		# 								'name'    : name,
-		# 								'line'    : {
-		# 											 'color' : 'rgb'+str(color),
-		# 											 'width' : 1,
-		# 											 'shape' : shape
-		# 											},
-		# 								'fill'    : filling,
-		# 								'fillcolor' : 	{
-		# 												'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
-		# 												},
-		# 																		'opacity' : opacity
-		# 								})
-		# self.plots[plotNum].append(annotation_trace)
+		#In case one needs different Layouts, here is how a simple layout may look like			
+		annotation_trace = go.Scatter({
+										'x'       : xValues,
+										'y'       : yValues,
+										'text'    : txt,
+										'textfont'  : {
+													  'family' : 'Helvetica',
+													  'size' : 10,
+													  'color' : '#000000'
+													},
+										'visible' : 'True',
+										'marker'  : {'size' : 10},
+										'mode'    : 'text+lines',
+										'name'    : name,
+										'line'    : {
+													 'color' : 'rgb'+str(color),
+													 'width' : 1,
+													 'shape' : shape
+													},
+										'fill'    : filling,
+										'fillcolor' : 	{
+														'color' : 'rgba'+str((color[0], color[1], color[2], opacity))
+														},
+																				'opacity' : opacity
+										})
+		self.plots[plotNum].append(annotation_trace)
 		return
 
 	def info(self):

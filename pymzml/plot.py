@@ -57,11 +57,7 @@ class Factory(object):
 		self.filename       = filename if filename != None else "spectra.xhtml" # why not spectra.xml no default in function # can be removed
 		self.normalizations = [ ] # rather or not normalize data : True or False
 		self.plots          = [ ] # List of Lists, whereas each inner list can have different Dataobjects (traces)
-		#self.layoutObjs     = [ ] # more than one Object required?
-		self.maxVals        = [ ] # maxI for each plot
 		self.lookup         = dict()
-		self.occupiedBins   = set()
-		self.binSize        = None
 		self.yMax = []
 		self.xMax  = []
 		self.offset = 1
@@ -163,7 +159,7 @@ class Factory(object):
 				#offsets = list()
 				for x in data:
 					yPos = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
-					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
+					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None #FIXME
 					yValues += .0, yPos, .0, None
 					txt     += None, x[3], None, None
 					#offsets += 0
@@ -278,7 +274,6 @@ class Factory(object):
 			yVals     = [i  for mz,i in data if mzRange[0] <= mz <= mzRange[1]]
 			yMax = max(yVals)
 			xMax = max(xVals)
-			# print (yMax)
 
 			if self.xMax[plotNum] < xMax:
 				self.xMax[plotNum] = xMax
@@ -320,13 +315,13 @@ class Factory(object):
 					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
 					yValues += .0, yPos, .0, None
 
-		annotation_trace = go.Scatter({
+		trace = go.Scatter({
 										'x'          	: xValues,
 										'y'          	: yValues,
 										'text'       	: txt,
 										'textfont'   	: {
 													    	'family' : 'Helvetica',
-													    	'size' : 12,
+													    	'size' : 10,
 													    	'color' : '#000000'
 													    	},
 										'textposition' 	: 'bottom center',
@@ -345,7 +340,7 @@ class Factory(object):
 														},
 										'opacity' : opacity
 										})
-		self.plots[plotNum].append(annotation_trace)
+		self.plots[plotNum].append(trace)
 		return
 
 	def info(self):
@@ -408,27 +403,13 @@ class Factory(object):
 		plt.plot(myFigure, filename='test1')
 		return
 
-	def get_json(self):
+	def get_data(self):
 		"""
 		return data and layout in JSON format
 		"""
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
 				self.plots[i][j]['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
-				# # create bins
-				# binSize = 200
-				# try:
-				# 	xMax = (max([i for i in self.plots[i][j]['x'] if i is not None]))
-				# except:
-				# 	print ("emptylist",self.plots[i][j]['x'])
-				# #xMax =  (max(filter(None, self.plots[i][j]['x'])))
-				# occupiedBins = [False for boolean in range(math.ceil(xMax/binSize))]
-				# print ('No of Bins', len(occupiedBins))
-				# # calculate offsets here
-				# # 
-				# offsets = []
-				# add offsets to y Values
-
 		return self.plots
 
 if __name__ == '__main__':
