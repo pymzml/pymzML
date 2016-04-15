@@ -63,7 +63,8 @@ class Factory(object):
 		self.precisions = []
 		self.functionMapper =  {
 								'-__splineOffset__0'				: self.__returnNegOffset0,
-								'self.yMax[i]'                      : self.__returnMaxY
+								'self.yMax[i]'                      : self.__returnMaxY,
+								'+__splineOffset1__'                : self.__returnPosOffset
 								}
 
 	def __returnMaxY(self, i):
@@ -150,12 +151,11 @@ class Factory(object):
 			if style[1] == 'sticks':
 				shape = 'linear'
 				filling = 'tozeroy'
-				txt     = list()
 				for x in data:
 					yPos = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
 					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None #FIXME: not - but x[0]-x[0]*ms_prec
 					yValues += .0, yPos, .0, None
-					txt     += None, x[3], None, None
+					txt     += '\n', x[3], '\n', '\n'
 
 			elif style[1] == 'triangle':
 				shape = 'linear'
@@ -183,12 +183,11 @@ class Factory(object):
 					xMax = self.xMax[plotNum]
 					xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
 					yValues += .0, yMax, .0, None
-					txt += None, x[3], None, None
+					txt += '\n', x[3], '\n', '\n'
 				pass
 
 			elif style[1] == 'spline':
 				shape = 'spline'
-				txt     = []
 				if len(style) == 3:
 					pos = style[2]
 				else:
@@ -211,7 +210,7 @@ class Factory(object):
 
 					xValues += x[0], (x[0]+x[1])/2, x[1], None
 					yValues += yPos, str(offset), yPos, None
-					txt += None, x[3], None, None
+					txt += '\n', x[3], '\n', '\n'
 
 			elif style[1] == 'linear':
 				shape = 'linear'
@@ -236,7 +235,7 @@ class Factory(object):
 
 					xValues += x[0], (x[0]+x[1])/2, x[1], None
 					yValues += str(offset), str(offset), str(offset), None
-					txt     += None, x[3], None, None
+					txt     += '\n', x[3], '\n', '\n'
 			
 			else:
 				raise Exception("Unknown label type or position")
@@ -294,7 +293,8 @@ class Factory(object):
 		# 	});
 		# may be used to scale the annotation text when user tries to zoom???
 
-
+		print(xValues)
+		print(yValues)
 
 		trace = go.Scatter({
 										'x'          	: xValues,
@@ -364,7 +364,9 @@ class Factory(object):
 		
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
+				print ('before functionMapper', self.plots[i][j]['y'])
 				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
+				print ('after functionMapper', self.plots[i][j]['y'])
 				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)
 
 		for i in range(plotNumber):
