@@ -157,7 +157,6 @@ class Factory(object):
 					yValues += .0, yPos, .0, None
 					txt     += None, x[3], None, None
 
-
 			elif style[1] == 'triangle':
 				shape = 'linear'
 				filling = 'tozeroy'
