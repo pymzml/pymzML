@@ -293,9 +293,6 @@ class Factory(object):
 		# 	});
 		# may be used to scale the annotation text when user tries to zoom???
 
-		print(xValues)
-		print(yValues)
-
 		trace = go.Scatter({
 										'x'          	: xValues,
 										'y'          	: yValues,
@@ -364,9 +361,7 @@ class Factory(object):
 		
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
-				print ('before functionMapper', self.plots[i][j]['y'])
 				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
-				print ('after functionMapper', self.plots[i][j]['y'])
 				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)
 
 		for i in range(plotNumber):
