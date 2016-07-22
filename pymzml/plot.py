@@ -256,7 +256,7 @@ class Factory(object):
 			if style[0] == 'sticks':
 				shape = 'linear'
 				filling = 'tozeroy'
-				for x in data:
+				for x in zip(xVals, yVals):
 					yPos   = x[1]
 					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
 					yValues += .0, yPos, .0, None
@@ -268,7 +268,7 @@ class Factory(object):
 					pos = 'medium'
 				shape = 'linear'
 				filling = 'tozeroy'
-				for x in data:
+				for x in zip(xVals, yVals):
 					if pos == 'small':
 						relWidth = 1/float(200)
 
@@ -383,7 +383,7 @@ class Factory(object):
 														'color' : '#FF0000'
 														})
 		#myFigure['layout']['title'].update(title=self.header[-1])
-		plt.plot(myFigure, filename='test1')
+		plt.plot(myFigure, filename=filename)
 		return
 
 	def get_data(self):

@@ -1528,7 +1528,6 @@ class Spectrum(dict):
                 )
         return
 
-
     def initFromTreeObject(self, treeObject):
         """
         treeObject.get('nativeID')

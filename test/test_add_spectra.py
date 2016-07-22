@@ -26,6 +26,7 @@ import pymzml
 
 class TestRun(unittest.TestCase):
     def setUp(self):
+        print('file', pymzml.__file__)
         self.specs = {}
         for precision in [1e-6, 100e-6]:
             self.specs[ precision ] = pymzml.spec.Spectrum(
@@ -34,7 +35,7 @@ class TestRun(unittest.TestCase):
             self.specs[ precision ].peaks = [ (1000,10), (1000.01, 10)]
 
     def test_peaks_are_set(self):
-        spec = pymzml.spec.Spectrum()
+        spec = pymzml.spec.Spectrum(measuredPrecision=1e-6)
         spec.peaks = [(1000,10)]
         self.assertEqual( spec.mz , [1000] )
 
