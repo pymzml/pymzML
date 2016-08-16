@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # encoding: utf-8
 """
-Plotting functions for pymzML
+Plotting functions for pymzML.
+The Factory object can hold several plots with several data traces each.
+The plot will be rendered as interactive plotly plots.
 """
 
 # pymzml
@@ -34,9 +36,9 @@ from plotly import tools
 class Factory(object):
 	"""
 	Class to plot pymzml.spec.Spectrum as svg/xhtml.
-
-	:param filename: Name for the output file. Default = "spectra.xhtml"
-	:type filename: string
+	
+	Args:
+		filename (str): Name for the output file. Default = "spectra.xhtml"
 
 	Example:
 
@@ -48,23 +50,23 @@ class Factory(object):
 	>>> for spec in run:
 	>>>     p.newPlot()
 	>>>     p.add(spec.peaks, color=(200,00,00), style='sticks')
-	>>>     p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
-	>>>     p.add(spec.reprofiledPeaks, color=(00,255,00), style='sticks')
-	>>>     p.save( filename="output/plotAspect.xhtml" , mzRange = [745.2,745.6] )
+	>>>     p.add(spec.centroided_peaks, color=(00,00,00), style='sticks')
+	>>>     p.add(spec.reprofiled_peaks, color=(00,255,00), style='sticks')
+	>>>     p.save( filename="output/plotAspect.xhtml" , mzRange = (745.2,745.6) )
 
 	"""
 	def __init__(self, filename = None):
 		self.filename       = filename if filename != None else "spectra.xhtml"
 		self.plots          = [ ] # will become list of lists, whereas each inner list can have different Dataobjects (traces)
 		self.lookup         = dict()
-		self.yMax = []
-		self.xMax  = []
-		self.offset = 1
-		self.precisions = []
-		self.functionMapper =  {
-								'-__splineOffset__0'				: self.__returnNegOffset0,
-								'self.yMax[i]'                      : self.__returnMaxY
-								}
+		self.yMax           = []
+		self.xMax           = []
+		self.offset         = 1
+		self.precisions     = []
+		self.functionMapper = {
+			'-__splineOffset__0' : self.__returnNegOffset0,
+			'self.yMax[i]'       : self.__returnMaxY
+		}
 
 	def __returnMaxY(self, i):
 		return self.yMax[i]
@@ -84,18 +86,21 @@ class Factory(object):
 	def __returnPosOffset0(self, i):
 		pass
 		
-	def newPlot(self, header = "Title" , mzRange = None , normalize = False, precision='5e-6'):
+	def newPlot(
+		self,
+		header    = "",
+		mzRange   = None,
+		normalize = False,
+		precision = '5e-6'
+		):
 		"""
-		Add new plot to the plotFactory.
-
-		:param header: an optional title that will be printed above the plot
-		:type header: string
-		:param mzRange: Boundaries of the new plot
-		:type mzRange: tuple of minMZ,maxMZ
-		:param normalize: whether or not the individal data sets are normalized in the plot
-		:type boolean:
-		:param precision: measuring precision used in handler. Default 5e-6.
-		:type precision: float
+		Add new plot to the plotting Factory.
+		
+		Args:
+			header (str): an optional title that will be printed above the plot
+			mzRange (tuple): Boundaries of the new plot
+			normalize (boolean): whether or not the individal data sets are normalized in the plot
+			precision (float): measuring precision used in handler. Default 5e-6.
 		"""
 		if mzRange == None:
 			mzRange = [-float('inf'), float('Inf')]
@@ -107,30 +112,34 @@ class Factory(object):
 		self.xMax.append(0)
 		return
 	
-	def add(self,data, color=(0,0,0), style='sticks', mzRange = None, opacity=0.8, name=None, plotNum = -1):
+	def add(
+		self,
+		data,
+		color   = (0,0,0),
+		style   = 'sticks',
+		mzRange = None,
+		opacity = 0.8,
+		name    = None,
+		plotNum = -1
+		):
 		"""
 		Add data to the graph.
+		
+		Arguments:
+			data (list): The data added to the graph. Must be list of
+				tuples, like (mz,i) or (mz1, mz2, i, string)
+				style (str): plotting style. Default = "sticks".\n
+				Currently supported styles are:\n
+					*   'sticks'\n
+					*   'triangle' (small, medium or big)\n
+					*   'spline'   (top, medium or bottom)\n
+					*   'linear'   (top, medium or bottom)\n
+			color (tuple): color encoded in RGB. Default = (0,0,0)
+			mzRange (tuple): Boundaries that should be added to the current plot\n
+			opacity (float): opacity of the data points\n
+			name (str): name of data in legend\n
+			plotNum (int): Add data to plot[plotNum]\n
 
-		:param data: The data added to the graph
-		:type data: list of tuples (mz,i) or (mz1, mz2, i, string)
-		:param color: color encoded in RGB. Default = (0,0,0)
-		:type color: tuple (R,G,B)
-		:param style: plotting style. Default = "sticks".
-		:type style: string
-		:param mzRange: Boundaries that should be added to the current plot
-		:type mzRange: tuple of minMZ,maxMZ
-		:param opacity: opacity of the data points
-		:type opacity: float
-		:param name: name of data in legend
-		:type name: string
-		:param plotNum: Add data to plot[plotNum]
-		:type plotNum: integer
-
-		Currently supported styles are:
-			*   'sticks'
-			*   'triangle' (small, medium or big)
-			*   'spline'   (top, medium or bottom)
-			*   'linear'   (top, medium or bottom)
 		"""
 		if mzRange == None:
 			mzRange = [-float('Inf'), float('Inf')]
@@ -153,7 +162,7 @@ class Factory(object):
 				txt     = list()
 				for x in data:
 					yPos = 'self.yMax[i]' #NOTE self.yMax[plotNum] = __Y__
-					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None #FIXME: not - but x[0]-x[0]*ms_prec
+					xValues += x[0]-(x[0]*ms_precision), x[0], x[0]+(x[0]*ms_precision), None #FIXME: not - but x[0]-(x[0]*ms_prec)
 					yValues += .0, yPos, .0, None
 					txt     += None, x[3], None, None
 
@@ -305,7 +314,7 @@ class Factory(object):
 													    	'size' : 10,
 													    	'color' : '#000000'
 													    	},
-										'textposition' 	: 'bottom center',
+										'textposition' 	: 'top center',
 										'visible' : 'True',
 										'marker'  : {'size' : 10},
 										'mode'    : 'text+lines',
@@ -326,7 +335,7 @@ class Factory(object):
 
 	def info(self):
 		"""
-		Returns summary about the plotting factory, i.e.how many plots and how many datasets per plot.
+		Prints summary about the plotting factory, i.e.how many plots and how many datasets per plot.
 		"""
 		print("""
 		Factory holds {0} unique plots""".format(len(self.plots)))
@@ -341,11 +350,10 @@ class Factory(object):
 	def save(self, filename = "spectra.xhtml", mzRange = None):
 		"""
 		Saves all plots and their data points that have been added to the plotFactory.
-
-		:param filename: Name for the output file. Default = "spectra.xhtml"
-		:type filename: string
-		:param mzRange: m/z range which should be considered [start, end]. Default = None
-		:type mzRange: list
+		
+		Args:
+		filename (str): Name for the output file. Default = "spectra.xhtml"
+		mzRange (tuple): m/z range which should be considered [start, end]. Default = None
 		"""
 		if mzRange == None:
 			mzRange = [-float('inf'), float('Inf')]
@@ -388,7 +396,10 @@ class Factory(object):
 
 	def get_data(self):
 		"""
-		return data and layout in JSON format
+		Return data and layout in JSON format.
+
+		Returns:
+			plots (dict): JSON compatible python dict
 		"""
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
@@ -397,15 +408,3 @@ class Factory(object):
 
 if __name__ == '__main__':
 	print(__doc__)
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
