@@ -89,6 +89,8 @@ def main(verbose = False):
                 return True
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
     if len(sys.argv) == 2:
         if sys.argv[1] == '-v':
             main(True)
