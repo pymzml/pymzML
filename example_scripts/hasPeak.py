@@ -7,13 +7,13 @@ or :py:func:`spec.Spectrum.hasDeconvolutedPeak`
 Example:
 
 >>> import pymzml, get_example_file
->>> example_file = get_example_file.open_example('deconvolution.mzml.gz')
+>>> example_file = get_example_file.open_example('deconvolution.mzML.gz')
 >>> run = pymzml.run.Reader(example_file, MS1_Precision = 5e-6, MSn_Precision = 20e-6)
 >>> for spectrum in run:
 ...     if spectrum["ms level"] == 2:
-...             peak_to_find = spectrum.haspeak(1016.5404)
+...             peak_to_find = spectrum.hasPeak(1016.5404)
 ...             print(peak_to_find)
-(1016.5404, 19141.735187697403)
+[(1016.5402567492666, 19141.735187697403)]
 
 """
 
@@ -89,6 +89,8 @@ def main(verbose = False):
                 return True
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
     if len(sys.argv) == 2:
         if sys.argv[1] == '-v':
             main(True)
