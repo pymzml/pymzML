@@ -347,20 +347,19 @@ class Factory(object):
 		print()
 		return
 
-	def save(self, filename = "spectra.xhtml", mzRange = None):
+	def save(self, filename = "spectra.xhtml", mzRange = None, xLimits=None):
 		"""
 		Saves all plots and their data points that have been added to the plotFactory.
 		
 		Args:
-		filename (str): Name for the output file. Default = "spectra.xhtml"
-		mzRange (tuple): m/z range which should be considered [start, end]. Default = None
+			filename (str): Name for the output file. Default = "spectra.xhtml"
+			mzRange (tuple): m/z range which should be considered [start, end]. Default = None
 		"""
 		if mzRange == None:
 			mzRange = [-float('inf'), float('Inf')]
 
 		plotNumber = len(self.plots)
 		rows, cols = int(math.ceil(plotNumber/float(2))), 2
-
 
 		# enable possibility to have different subplots in on Pic
 		if plotNumber%2 == 0:
@@ -372,10 +371,12 @@ class Factory(object):
 		
 		for i, plot in enumerate(self.plots):
 			for j, trace in enumerate(plot):
-				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper else x for x in trace['y']]
+				trace['y'] = [self.functionMapper[x](i) if x in self.functionMapper and mzRange[0] <= x <= mzRange[1] else x for x in trace['y']]
 				myFigure.append_trace(trace, int(math.ceil((i/2)+1)), (i%2)+1)
 
 		for i in range(plotNumber):
+			if xLimits:
+				myFigure['layout']['xaxis'+str(i+1)].update(range=xLimits[i])
 			myFigure['layout']['xaxis'+str(i+1)].update(title='m/z ')
 			myFigure['layout']['yaxis'+str(i+1)].update(title='Intensity')
 			myFigure['layout']['xaxis'+str(i+1)].update(titlefont = { 'color' : '#000000',
