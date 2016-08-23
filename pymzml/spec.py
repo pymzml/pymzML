@@ -51,19 +51,19 @@ PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
 
 class Spectrum(dict):
-    def __init__(self, measuredPrecision = None , param=None):
+    def __init__(self, measuredPrecision = 5e-6 , param=None):
         """
         .. function:: __init__( measuredPrecision = value* )
 
             Initializes a pymzml.spec.Spectrum class.
 
-            :param measuredPrecision: in m/z, mandatory
+            :param measuredPrecision: in ppm, i.e. 5e-6 equals to 5 ppm
             :type measuredPrecision: float
 
 
         """
         assert isinstance( measuredPrecision , float ), \
-            "Require measured precision as input parameter..."
+            "Require measured precision as as float"
         self.measuredPrecision = measuredPrecision
         # this will also set and update internalPrecision
         self.clear()
@@ -209,6 +209,7 @@ class Spectrum(dict):
         self._iter                          = None
         self['BinaryArrayOrder']            = []
         self.ms                             = {}
+        self['_id']                         = hex(id(self))
         return
 
     def strip(self, scope = 'all'):
@@ -365,6 +366,8 @@ class Spectrum(dict):
         """
         if 'reprofiled' in self.keys():
             self.peaks = self._centroid_peaks()
+            del self['reprofiled']
+
         elif self._peaks is None:
             if self._mz is None and 'encodedData' not in self.keys():
                 self._peaks = []
@@ -448,16 +451,18 @@ class Spectrum(dict):
         """
         isProfile = False
         for k in self.keys():
-            if isinstance(k,str):
+            if isinstance(k, str):
                 if 'profile' in k:
                     isProfile = True
                     break
+
         if isProfile:
             tmp = []
+
             if 'reprofiled' in self.keys():
                 intensity_array = [ i for mz, i in self.reprofiledPeaks ]
                 mz_array = [ mz for mz, i in self.reprofiledPeaks ]
-                del self['reprofiled']
+                # del self['reprofiled']
             else:
                 intensity_array = self.i
                 mz_array = self.mz
@@ -475,7 +480,6 @@ class Spectrum(dict):
                     y2  = intensity_array[pos]
                     x3  = mz_array[pos + 1]
                     y3  = intensity_array[pos + 1]
-
                     if x2 - x1 > (x3 - x2) * 10 or (x2 - x1) * 10 < x3 - x2:
                         # no gauss fit if distance between mz values is too large
                         continue
@@ -484,7 +488,10 @@ class Spectrum(dict):
                         # we start a bit closer to the mid point.
                         before = 3
                         after = 4
-                        while (not 0 < y1 < y2 > y3 > 0) and y1 == y3 and after < 10:  #we dont want to go too far
+                        # while (not 0 < y1 < y2 > y3 > 0) and y1 == y3 and after < 10:  #we dont want to go too far
+                        # This used to be in here and I cannpt make sense out of it
+                        #
+                        while  y1 == y3 and after < 10:  #we dont want to go too far
                             if pos - before < 0:
                                 lower_pos = 0
                             else:
@@ -501,10 +508,12 @@ class Spectrum(dict):
                                 after += 1
                             else:
                                 before += 1
-                    if not (0 < y1 < y2 > y3 > 0) or y1 == y3:
-                        #If we dont check this, there is a chance to apply gauss fit to a section
-                        #where there is no peak.
-                        continue
+
+                    # if not (0 < y1 < y2 > y3 > 0):# or y1 == y3:
+                    #     # Then we wouldnt be in this loop
+                    #     #If we dont check this, there is a chance to apply gauss fit to a section
+                    #     #where there is no peak.
+                    #     continue
                     try:
                         doubleLog = math.log(y2 / y1) / math.log(y3 / y1)
                         mue = (doubleLog * ( x1 * x1 - x3 * x3 ) - x1 * x1 + x2 * x2 ) / (2 * (x2 - x1) - 2 * doubleLog * (x3 - x1))
@@ -518,10 +527,14 @@ class Spectrum(dict):
                             #print(x3, "\t", y3)
                             #print()
                     except:
+                        # doubleLog = math.log(y2 / y1) / math.log(y3 / y1)
+                        # mue = (doubleLog * ( x1 * x1 - x3 * x3 ) - x1 * x1 + x2 * x2 ) / (2 * (x2 - x1) - 2 * doubleLog * (x3 - x1))
+                        # cSquarred = ( x2*x2 - x1*x1 - 2*x2*mue + 2*x1*mue )/ ( 2* math.log(y1/y2 ))
+                        # A = y1 * math.exp( (x1 - mue) * (x1 - mue) / ( 2 * cSquarred ) )
                         continue
                     tmp.append((mue, A))
-            #for mue, A in tmp:
-                #print(mue, "\t", A)
+            # for mue, A in tmp:
+            #     print(mue, "\t", A)
             return tmp
         else:
             return self.peaks
@@ -894,6 +907,14 @@ class Spectrum(dict):
                 else:
                     print("Arraytype {0} not supported ...".format(arrayType), file = sys.stderr)
                     exit(1)
+        else:
+            if self.peaks is not None:
+                # we have reprofiled data ...
+                self.i = []
+                self.mz = []
+                for mz, i in self.peaks:
+                    self.i.append( i )
+                    self.mz.append( mz )
         return
 
     def hasPeak(self, mz2find):
@@ -1327,12 +1348,13 @@ class Spectrum(dict):
                 return True
         return False
 
-    def similarityTo(self,spec2):
+    def similarityTo(self, spec2, round_precision=0):
         """
         Compares two spectra and returns cosine
 
         :param spec2: another pymzml spectrum that is compated to the current spectrum.
         :type spec2: pymzml.spec.Spectrum
+        :param round_precision: precision mzs are rounded to, ie round( mz, round_precision )
         :return: value between 0 and 1, i.e. the cosine between the two spectra.
         :rtype: float
 
@@ -1349,11 +1371,11 @@ class Spectrum(dict):
         vector2 = ddict(int)
         mzs = set()
         for mz, i in self.peaks:
-            vector1[round(mz, 1)] += i
-            mzs.add(round(mz, 1))
+            vector1[round(mz, round_precision)] += i
+            mzs.add(round(mz, round_precision))
         for mz, i in spec2.peaks:
-            vector2[round(mz, 1)] += i
-            mzs.add(round(mz, 1))
+            vector2[round(mz, round_precision)] += i
+            mzs.add(round(mz, round_precision))
 
         z = 0
         n_v1 = 0
@@ -1505,7 +1527,6 @@ class Spectrum(dict):
                     name  = 'encodedData'
                 )
         return
-
 
     def initFromTreeObject(self, treeObject):
         """

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''%(prog)s [-h] [-v VERSION] query
 
-Use this script to interogate the OBO database files.
+Use this script to interrogate the OBO database files.
 
 example:
   $ %(prog)s 'scan time'
@@ -21,7 +21,7 @@ import pymzml.obo
 
 
 def search_by_name(obo, name):
-    print(name.lower())
+    print('Searching for {0]'.format(name.lower()))
     matches = []
     for lookup in obo.lookups:
         for key in lookup.keys():

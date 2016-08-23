@@ -152,7 +152,10 @@ class Reader(object):
         assert path is not None or file_object is not None, \
             'Must provide either a path or a file object to parse'
 
-        self.info['fileObject'], self.info['seekable'] = self.__open_file(path, file_object)
+        self.info['fileObject'], self.info['seekable'] = self.__open_file(
+            path,
+            file_object
+        )
         self.info['filename'] = path
 
         if self.info['seekable']:
@@ -628,6 +631,8 @@ class Writer(object):
     :param overwrite: force the re-initialization of mzML file, even if file exists.
     :type overwrite: boolean
 
+    At the moment no index is written.
+
     Example:
 
     >>> run = pymzml.run.Reader(
@@ -658,61 +663,67 @@ class Writer(object):
         else:
             io = open(self.run.info['filename'], 'r')
 
-        for event, element in cElementTree.iterparse(io, events=(b'start', b'end')):
-            if self.newTree is None:
-                self.newTree = cElementTree.Element(element.tag, element.attrib)
-                if event == b'start' and element.tag.endswith("}mzML"):
-                    self.TreeBuilder.start(element.tag, element.attrib)
-            else:
-                if event == b'start':
-                    self.TreeBuilder.start(element.tag, element.attrib)
-                    if element.tag.endswith('}run'):
-                        self.lookup['run'] = cElementTree.Element(element.tag, element.attrib)
-                    if element.tag.endswith('}spectrumList'):
-                        self.lookup['spectrumList'] = \
-                            cElementTree.Element(element.tag, element.attrib)
-                        self.lookup['spectrumIndeces'] = \
-                            cElementTree.Element('index', {'name': 'spectrum'}),
-                        break
-                    elif element.tag.endswith('}chromatogramList'):
-                        break
-                    else:
-                        pass
-                else:
-                    if element.tag.endswith('}softwareList'):
-                        # Insert pymzML software tag
-                        # Example:
-                        #  <software id="pwiz_Reader_Thermo">
-                        #  <softwareParam
-                        #   accession="MS:1000615"
-                        #   cvRef="MS"
-                        #   name="ProteoWizard"
-                        #   version="1.0"
-                        #  />
+        #read the rest as original file
+        input_xml_string = ''
+        pymzml_tag_written = False
+        #open again to read as text!
+        for line in open(self.run.info['filename'], 'r').readlines():
+            if 'indexedmzML' in line:
+                # writing of indexed mzML is not possible at the moment
+                continue
+            if 'run' in line:
+                # the run is appended from the original parser to avoid messing
+                # with the new xml tree, we break before the run data starts
+                break
 
-                        self.TreeBuilder.start('software', {'id': 'pymzML 0.7.1'})
-                        self.TreeBuilder.start('softwareParam', {
-                            'accession': 'MS:0000000',
-                            'cvRef': 'MS',
-                            'name': 'pymzML writer',
-                            'version': '0.7.1',
-                        })
-                        self.newTree.append(self.TreeBuilder.end('softwareParam'))
-                        self.newTree.append(self.TreeBuilder.end('software'))
-                    self.TreeBuilder.data(element.text)
-                    self.newTree.append(self.TreeBuilder.end(element.tag))
+            input_xml_string += line
+            if 'softwareList' in line and pymzml_tag_written is False:
+                addon =  cElementTree.Element(
+                    'software',
+                    {
+                        'id'      : 'pymzML',
+                        'version' : "0.7.6"
+                    }
+                )
+                cElementTree.SubElement(
+                    addon,
+                    'cvParam',
+                    {
+                        'accession' : 'MS:1000531',
+                        'cvRef'     : 'MS',
+                        'name'      : 'pymzML Writer',
+                        'version'   : '0.7.6',
+                    }
+                )
+                new_line = cElementTree.tostring(addon, encoding='utf-8')
+                input_xml_string += new_line
+                pymzml_tag_written = True
+        input_xml_string += '</mzML>\n'
+
+        self.newTree = cElementTree.fromstring(input_xml_string)
+
+        for event, element in cElementTree.iterparse(io, events=(b'start', b'end')):
+            if event ==b'start':
+                if element.tag.endswith('}run'):
+                    self.lookup['run'] = cElementTree.Element(element.tag, element.attrib)
+                if element.tag.endswith('}spectrumList'):
+                    self.lookup['spectrumList'] = \
+                        cElementTree.Element(element.tag, element.attrib)
+                    self.lookup['spectrumIndeces'] = \
+                        cElementTree.Element('index', {'name': 'spectrum'})
+                    break
         return
 
     def addSpec(self, spec):
-        self._addTree(spec, typeOfSpec='spectrum')
+        self._addTree(spec.deRef(), typeOfSpec='spectrum')
         return
 
     def addChromatogram(self, spec):
-        self._addTree(spec, typeOfSpec='chromatogram')
+        self._addTree(spec.deRef(), typeOfSpec='chromatogram')
         return
 
     def _addTree(self, spec, typeOfSpec=None):
-        if typeOfSpec not in self.lookup.keys():
+        if not self.lookup.has_key('{0}List'.format(typeOfSpec)):
             self.lookup['{0}List'.format(typeOfSpec)] = \
                 cElementTree.Element('{0}List'.format(typeOfSpec), {'count': 0})
             self.lookup['{0}Indeces'.format(typeOfSpec)] = \
@@ -720,7 +731,7 @@ class Writer(object):
 
         self.lookup[typeOfSpec + 'List'].append(spec._xmlTree)
         offset = cElementTree.Element('offset')
-        offset.text = 'Not implemented yet'
+        offset.text = '0'
         offset.attrib = {'idRef': 'NaN', 'nativeID': str(spec['id'])}
         self.lookup[typeOfSpec + 'Indeces'].append(offset)
 
@@ -734,21 +745,37 @@ class Writer(object):
                 self.lookup['{0}List'.format(typeOfSpec)].set(
                     'count', str(self.info['counters'][typeOfSpec]),
                 )
+                if typeOfSpec == 'spectrum':
+                    self.lookup['{0}List'.format(typeOfSpec)].set(
+                        'defaultDataProcessingRef',
+                        "pwiz_Reader_Thermo_conversion",
+                    )
                 self.lookup['run'].append(self.lookup[typeOfSpec + 'List'])
-        self.newTree.append(self.lookup['run'])
+                
+        self.newTree.append(
+            self.lookup['run']
+        )
 
-        IndexList = cElementTree.Element('IndexList', {
-            'count': str(len(self.info['counters'].keys()))
-        })
+        # IndexList = cElementTree.Element('IndexList', {
+        #     'count': str(len(self.info['counters'].keys()))
+        # })
 
-        for typeOfSpec in ['spectrum', 'chromatogram']:
-            if typeOfSpec + 'Indeces' in self.lookup.keys():
-                IndexList.append(self.lookup['{0}Indeces'.format(typeOfSpec)])
-        self.newTree.append(IndexList)
+        # for typeOfSpec in ['spectrum', 'chromatogram']:
+        #     if typeOfSpec + 'Indeces' in self.lookup.keys():
+        #         IndexList.append(self.lookup['{0}Indeces'.format(typeOfSpec)])
+        # self.newTree.append(IndexList)
 
-        self.prettyXMLformater(self.newTree)
-        self.xmlTree = cElementTree.ElementTree(self.newTree)
-        self.xmlTree.write(self.filename, encoding='ISO-8859-1', xml_declaration=True)
+        self.prettyXMLformater(
+            self.newTree
+        )
+        self.xmlTree = cElementTree.ElementTree(
+            self.newTree
+        )
+        self.xmlTree.write(
+            self.filename,
+            encoding        = "utf-8",
+            xml_declaration = True
+        )
 
         return
 
