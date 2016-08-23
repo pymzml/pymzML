@@ -128,12 +128,15 @@ class Factory(object):
 		Arguments:
 			data (list): The data added to the graph. Must be list of
 				tuples, like (mz,i) or (mz1, mz2, i, string)
-				style (str): plotting style. Default = "sticks".\n
-				Currently supported styles are:\n
-					*   'sticks'\n
-					*   'triangle' (small, medium or big)\n
-					*   'spline'   (top, medium or bottom)\n
-					*   'linear'   (top, medium or bottom)\n
+			style (str): plotting style. Default = "sticks".\n
+                Currently supported styles are:\n
+                    *   'sticks'\n
+                    *   'sticks.centroided'\n
+                    *   'triangle' (small, medium or big)\n
+                    *   'label.sticks'\n
+                    *   'label.triangle' (small, medium or big)\n
+                    *   'label.spline'   (top, medium or bottom)\n
+                    *   'label.linear'   (top, medium or bottom)\n
 			color (tuple): color encoded in RGB. Default = (0,0,0)
 			mzRange (tuple): Boundaries that should be added to the current plot\n
 			opacity (float): opacity of the data points\n
@@ -263,12 +266,21 @@ class Factory(object):
 
 
 			if style[0] == 'sticks':
-				shape = 'linear'
-				filling = 'tozeroy'
-				for x in zip(xVals, yVals):
-					yPos   = x[1]
-					xValues += x[0]-(ms_precision), x[0], x[0]+(ms_precision), None
-					yValues += .0, yPos, .0, None
+				if len(style) == 2:
+                    if style[1] == 'centroided':
+                        shape = 'linear'
+                        filling = 'tozeroy'
+                        for x in zip(xVals, yVals):
+                            yPos   = x[1]
+                            xValues += x[0], x[0], x[0], None
+                            yValues += .0, yPos, .0, None
+                else:
+                    shape = 'linear'
+                    filling = 'tozeroy'
+                    for x in zip(xVals, yVals):
+                        yPos   = x[1]
+                        xValues += x[0]-(x[0]*ms_precision), x[0], x[0]+(x[0]*ms_precision), None
+                        yValues += .0, yPos, .0, None
 
 			elif style[0] == 'triangle':
 				if len(style) == 2:
