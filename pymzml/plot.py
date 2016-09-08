@@ -302,6 +302,11 @@ class Factory(object):
                     xValues += x[0]-(xMax*relWidth), x[0], x[0]+(xMax*relWidth), None
                     yValues += .0, yPos, .0, None
 
+            else:
+                # instead of silently failing which might lead to errors
+                # somewhere else, raise an exception!
+                raise Exception("Unknown style")
+
 
 
         # USING EVENTS
