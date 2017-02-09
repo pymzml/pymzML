@@ -822,7 +822,7 @@ class Spectrum(dict):
         try:
             import pyopenms
         except ImportError:
-            print("Could not import pyOpenMS to decode numpress-encoded data -- please install the module to enable this functionality.")
+            print("Could not import pyOpenMS to decode numpress-encoded data -- please install the module to enable this functionality.", file = sys.stderr)
             exit(1)
 
         result = []
@@ -896,6 +896,7 @@ class Spectrum(dict):
                             unpackedData = unpack(fmt, decodedData)
                     except: # NOTE raises struct.error, but cannot be checked for here
                         # print('>{0}<'.format(compression))
+                        print("Compression was", compression.decode("utf8"), file = sys.stderr)
                         print("Couldn't extract data {0} fmt: {1}".format(arrayType, fmt), file = sys.stderr)
                         print(len(self['encodedData'][int(pos * 0.5)]), file = sys.stderr)
                         exit(1)

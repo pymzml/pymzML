@@ -73,7 +73,7 @@ class TestReadChromatogram(unittest.TestCase):
     def test_read_numpress(self):
         run = pymzml.run.Reader(
             self.mini_numpress_file,
-            obo_version = '1.1.0'
+            obo_version = '3.51.0'
         )
         self.assertFalse(run.info['seekable'])
 
