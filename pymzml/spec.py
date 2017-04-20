@@ -889,7 +889,8 @@ class Spectrum(dict):
                         pass
                     else:
                         print("New data compression ({0}) detected, please adjust parser".format(compression), file = sys.stderr)
-                        exit(1)
+                        # exit(1)
+                        raise Exception("New data compression type")
                     fmt = "{endian}{arraylength}{floattype}".format( endian = "<" , arraylength = self['defaultArrayLength'] , floattype = floattype )
                     try:
                         if compression in ["no", "zlib"]:
@@ -899,7 +900,7 @@ class Spectrum(dict):
                         print("Compression was", compression.decode("utf8"), file = sys.stderr)
                         print("Couldn't extract data {0} fmt: {1}".format(arrayType, fmt), file = sys.stderr)
                         print(len(self['encodedData'][int(pos * 0.5)]), file = sys.stderr)
-                        exit(1)
+                        raise Exception("Could not extract data type")
 
                 if arrayType == 'mz' or arrayType == 'time':
                     self._mz = unpackedData
@@ -907,7 +908,7 @@ class Spectrum(dict):
                     self._i = unpackedData
                 else:
                     print("Arraytype {0} not supported ...".format(arrayType), file = sys.stderr)
-                    exit(1)
+                    raise Exception("Unsupported array type")
         else:
             if self.peaks is not None:
                 # we have reprofiled data ...
