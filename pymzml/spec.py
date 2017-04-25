@@ -1497,30 +1497,54 @@ class Spectrum(dict):
                 # TODO remove this completely?
                 self['precursors'] = []
 
-            elif element.tag.endswith('selectedIon'):
+            elif element.tag.endswith('precursor'):
                 if 'precursors' not in self.keys():
                     self['precursors'] = []
                 self['precursors'].append({'mz': None, 'charge': None})
-                for subElement in element.getiterator():
-                    if subElement.tag.endswith('cvParam'):
-                        accession = subElement.get('accession')
-                        if accession == 'MS:1000040':
-                            try:
-                                self['precursors'][-1]['mz'] = float(subElement.get('value'))
-                            except ValueError:
-                                self['precursors'][-1]['mz'] = subElement.get('value')
-                        elif accession == 'MS:1000041':
-                            try:
-                                self['precursors'][-1]['charge'] = int(subElement.get('value'))
-                            except ValueError:
-                                self['precursors'][-1]['charge'] = subElement.get('value')
-                        elif accession == 'MS:1000744':
-                            try:
-                                self['precursors'][-1]['mz'] = float(subElement.get('value'))
-                            except ValueError:
-                                self['precursors'][-1]['mz'] = subElement.get('value')
-                        else:
-                            pass
+                for precursorElement in element.getiterator():
+
+                    if precursorElement.tag.endswith('userParam'):
+                        print ("found user param inside precursor!")
+                        itemdict = dict(precursorElement.items())
+                        print(itemdict)
+                        if 'userParams' not in self['precursors'][-1].keys():
+                            self['precursors'][-1]["userParams"] = {}
+                        self['precursors'][-1]["userParams"][ itemdict["name"] ] = itemdict["value"]
+
+                    elif precursorElement.tag.endswith('isolationWindow'):
+
+                        print ("get isolation window!")
+                        for subElement in precursorElement.getiterator():
+                            if subElement.tag.endswith('cvParam'):
+                                accession = subElement.get('accession')
+                                if accession == 'MS:1000827': # isolation window target m/z
+                                    try:
+                                        self['precursors'][-1]['mz'] = float(subElement.get('value'))
+                                    except ValueError:
+                                        self['precursors'][-1]['mz'] = subElement.get('value')
+                                else:
+                                    pass
+                    elif precursorElement.tag.endswith('selectedIon'):
+                        for subElement in precursorElement.getiterator():
+                            if subElement.tag.endswith('cvParam'):
+                                accession = subElement.get('accession')
+                                if accession == 'MS:1000040': # m/z
+                                    try:
+                                        self['precursors'][-1]['mz'] = float(subElement.get('value'))
+                                    except ValueError:
+                                        self['precursors'][-1]['mz'] = subElement.get('value')
+                                elif accession == 'MS:1000041': # charge state
+                                    try:
+                                        self['precursors'][-1]['charge'] = int(subElement.get('value'))
+                                    except ValueError:
+                                        self['precursors'][-1]['charge'] = subElement.get('value')
+                                elif accession == 'MS:1000744': # selected ion m/z
+                                    try:
+                                        self['precursors'][-1]['mz'] = float(subElement.get('value'))
+                                    except ValueError:
+                                        self['precursors'][-1]['mz'] = subElement.get('value')
+                                else:
+                                    pass
 
             elif element.tag.endswith('binary'):
                 self._link(
