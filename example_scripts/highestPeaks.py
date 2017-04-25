@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3
 
 """
 Testscript to isolate the n-highest peaks from an example file.

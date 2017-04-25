@@ -3,6 +3,7 @@ prune compare
 exclude Documentation/html/.buildinfo
 
 recursive-include Documentation/html *
+recursive-include test/data *
 
 include example_scripts/accessAllData.py
 include example_scripts/compareSpectra.py
@@ -24,5 +25,6 @@ include COPYING.txt
 include Documentation/pymzml.pdf
 include AUTHORS.txt
 include README.txt
+include requirements.txt
 
 recursive-include pymzml/obo *

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Compare two spectra and return the cosine distance between them.

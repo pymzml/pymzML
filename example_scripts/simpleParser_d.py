@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3
 import pymzml, sys
 run = pymzml.run.Reader(sys.argv[1])
 with open("pyOutput.txt","w") as io:

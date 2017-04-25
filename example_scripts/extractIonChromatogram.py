@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3
 
 """
 Demonstration of the extraction of a specific ion chromatogram, i.e. XIC or EIC

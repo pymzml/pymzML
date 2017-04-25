@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+#!/usr/bin/env python3
 import pymzml
 import sys
 run = pymzml.run.Reader(sys.argv[1])
