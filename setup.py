@@ -30,11 +30,11 @@ setup(name='pymzml',
             'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.1',
-            'Programming Language :: Python :: 2.2',
+            # 'Programming Language :: Python :: 2.2',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
             'Topic :: Scientific/Engineering :: Chemistry',
             'Topic :: Scientific/Engineering :: Medical Science Apps.',
-            'Topic :: Scientific/Engineering :: Education',
+            # 'Topic :: Scientific/Engineering :: Education',
             'Topic :: Software Development :: Libraries :: Python Modules'
             ],
       )

@@ -21,11 +21,12 @@ cp -R Documentation_src/build/html/* Website/
 
 rm -rf dist/*
 # Creating Python packages
-python setup.py sdist --formats=bztar,gztar,zip
+# python setup.py sdist --formats=bztar,gztar,zip
+python setup.py sdist --formats=zip
 cd dist
-tar xvfj *.bz2
+# tar xvfj *.bz2
 cd ..
 
 # Copying packages to Website
-cp dist/pymzml*.zip     Website/dist/pymzml.zip
-cp dist/pymzml*.tar.bz2 Website/dist/pymzml.tar.bz2
+# cp dist/pymzml*.zip     Website/dist/pymzml.zip
+# cp dist/pymzml*.tar.bz2 Website/dist/pymzml.tar.bz2

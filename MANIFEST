@@ -62,6 +62,7 @@ Documentation/html/_static/fonts/fontawesome-webfont.woff
 Documentation/html/_static/js/modernizr.min.js
 Documentation/html/_static/js/theme.js
 example_scripts/accessAllData.py
+example_scripts/chromatogram.py
 example_scripts/compareSpectra.py
 example_scripts/deconvolution.py
 example_scripts/extractIonChromatogram.py
