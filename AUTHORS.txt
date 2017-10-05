@@ -1,0 +1,23 @@
+v.1.0.0 Authors:
+----------------
+Koesters, Manuel
+Leufken, Johannes
+Schulze, Stefan
+Sugimoto, Kazuhiko
+Zahedi, Rene
+Fufezan, Christian
+
+
+v0.7.7 Authors:
+----------------
+Bald, Till
+Barth, Johannes
+Niehues, Anna
+Fufezan, Christian
+
+
+Contributors:
+-------------
+Röst, Hannes
+Specht, Michael
+Wolfson, Misha

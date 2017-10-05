@@ -1,0 +1,21 @@
+recursive-include example_scripts *.py
+recursive-include tests *.py
+recursive-include tests/data *.gz
+recursive-include tests/data *.mzML
+
+recursive-include compile_tools *.py
+recursive-include scripts *.py
+recursive-include Numpress *
+
+
+include LICENSE.txt
+include AUTHORS.txt
+include README.rst
+include requirements.txt
+include pymzml/utils/Moby_Dick_indexed.gz
+
+prune docs/build/html/.doctrees/
+prune compare
+exclude docs/build/html/.buildinfo
+
+recursive-include docs/build/html *

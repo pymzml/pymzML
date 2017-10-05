@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mzML xmlns="http://psi.hupo.org/ms/mzml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd" accession="" version="1.1.0">
+	<cvList count="2">
+		<cv id="MS" fullName="Proteomics Standards Initiative Mass Spectrometry Ontology" URI="http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"/>
+		<cv id="UO" fullName="Unit Ontology" URI="http://obo.cvs.sourceforge.net/obo/obo/ontology/phenotype/unit.obo"/>
+		<cv id="BTO" fullName="BrendaTissue545" version="unknown" URI="http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO"/>
+		<cv id="GO" fullName="Gene Ontology - Slim Versions" version="unknown" URI="http://www.geneontology.org/GO_slims/goslim_goa.obo"/>
+		<cv id="PATO" fullName="Quality ontology" version="unknown" URI="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/quality.obo"/>
+	</cvList>
+	<fileDescription>
+		<fileContent>
+			<cvParam cvRef="MS" accession="MS:1000294" name="mass spectrum" />
+		</fileContent>
+		<sourceFileList count="1">
+			<sourceFile id="sf_ru_0" name="file://X:/html/tripletof_workflow/wiff/olgas_disk/hroest_K120808_Strep10PlasmaBiolRepl1_R02_SW.wiff" location="">
+				<cvParam cvRef="MS" accession="MS:1000569" name="SHA-1" value="2ae9910d00d01bb67f7e3ccc9eba71add1bc2f20" />
+				<cvParam cvRef="MS" accession="MS:1000564" name="PSI mzData file" />
+				<cvParam cvRef="MS" accession="MS:1000777" name="spectrum identifier nativeID format" />
+			</sourceFile>
+		</sourceFileList>
+	</fileDescription>
+	<sampleList count="1">
+		<sample id="sa_0" name="">
+			<cvParam cvRef="MS" accession="MS:1000004" name="sample mass" value="0" unitAccession="UO:0000021" unitName="gram" unitCvRef="UO" />
+			<cvParam cvRef="MS" accession="MS:1000005" name="sample volume" value="0" unitAccession="UO:0000098" unitName="milliliter" unitCvRef="UO" />
+			<cvParam cvRef="MS" accession="MS:1000006" name="sample concentration" value="0" unitAccession="UO:0000175" unitName="gram per liter" unitCvRef="UO" />
+		</sample>
+	</sampleList>
+	<softwareList count="5">
+		<software id="so_in_0" version="unknown" >
+			<cvParam cvRef="MS" accession="MS:1000551" name="Analyst" />
+		</software>
+		<software id="so_default" version="" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="" />
+		</software>
+		<software id="so_dp_sp_0_pm_0" version="3.0.3316" >
+			<cvParam cvRef="MS" accession="MS:1000615" name="ProteoWizard" />
+		</software>
+		<software id="so_dp_sp_0_pm_1" version="1.9.0" >
+			<cvParam cvRef="MS" accession="MS:1000756" name="FileConverter" />
+		</software>
+		<software id="so_dp_sp_0_pm_2" version="1.10.0" >
+			<cvParam cvRef="MS" accession="MS:1000799" name="custom unreleased software tool" value="OpenSwathChromatogramExtractor" />
+		</software>
+	</softwareList>
+	<instrumentConfigurationList count="1">
+		<instrumentConfiguration id="ic_0">
+			<cvParam cvRef="MS" accession="MS:1000031" name="instrument model" />
+			<softwareRef ref="so_in_0" />
+		</instrumentConfiguration>
+	</instrumentConfigurationList>
+	<dataProcessingList count="1">
+		<dataProcessing id="dp_sp_0">
+			<processingMethod order="0" softwareRef="so_default">
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" />
+				<userParam name="warning" type="xsd:string" value="fictional processing method used to fulfill format requirements" />
+			</processingMethod>
+		</dataProcessing>
+		<dataProcessing id="dp_sp_0">
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_0">
+				<cvParam cvRef="MS" accession="MS:1000543" name="data processing action" />
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" value=""/>
+				<userParam name="#type" type="xsd:string" value="conversion"/>
+				<userParam name="performed_on_spectra" type="xsd:string" value="true"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_1">
+				<cvParam cvRef="MS" accession="MS:1000544" name="Conversion to mzML" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2012-08-15+19:42" />
+				<userParam name="parameter: in" type="xsd:string" value="split_hroest_K120808_Strep10PlasmaBiolRepl1_R02_SW-Strep_10%_Plasma_Biol_Repl1_16.mzXML"/>
+				<userParam name="parameter: out" type="xsd:string" value="split_hroest_K120808_Strep10PlasmaBiolRepl1_R02_SW-Strep_10%_Plasma_Biol_Repl1_16.mzML"/>
+				<userParam name="parameter: in_type" type="xsd:string" value=""/>
+				<userParam name="parameter: out_type" type="xsd:string" value=""/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="1"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+				<userParam name="performed_on_spectra" type="xsd:string" value="true"/>
+			</processingMethod>
+			<processingMethod order="0" softwareRef="so_dp_sp_0_pm_2">
+				<cvParam cvRef="MS" accession="MS:1000592" name="smoothing" />
+				<cvParam cvRef="MS" accession="MS:1000747" name="completion time" value="2013-04-24+19:29" />
+				<userParam name="parameter: in" type="xsd:string" value="[/cluster/home/biol/hroest/scratch_xl/data/hroest_K120808_StrepTripl/Strep10_Repl1_R02/split_hroest_K120808_Strep10PlasmaBiolRepl1_R02_SW-Strep_10%_Plasma_Biol_Repl1_16.mzML.gz]"/>
+				<userParam name="parameter: out" type="xsd:string" value="split_hroest_K120808_Strep10PlasmaBiolRepl1_R02_SW-Strep_10%_Plasma_Biol_Repl1_16._chrom.mzML"/>
+				<userParam name="parameter: in_type" type="xsd:string" value=""/>
+				<userParam name="parameter: log" type="xsd:string" value=""/>
+				<userParam name="parameter: debug" type="xsd:integer" value="0"/>
+				<userParam name="parameter: threads" type="xsd:integer" value="4"/>
+				<userParam name="parameter: no_progress" type="xsd:string" value="false"/>
+				<userParam name="parameter: test" type="xsd:string" value="false"/>
+				<userParam name="parameter: tr" type="xsd:string" value="/cluster/home/biol/hroest/hroest/html/xtandem/strepsearch/oge_plus_shotgun_only_300_finaldecoy.TraML"/>
+				<userParam name="parameter: rt_norm" type="xsd:string" value="split_hroest_K120808_Strep10PlasmaBiolRepl1_R02_SW-Strep_10.rtnorm.trafoXML"/>
+				<userParam name="parameter: min_upper_edge_dist" type="xsd:double" value="1"/>
+				<userParam name="parameter: extraction_window" type="xsd:double" value="0.05"/>
+				<userParam name="parameter: rt_extraction_window" type="xsd:double" value="300"/>
+				<userParam name="parameter: is_swath" type="xsd:string" value="true"/>
+				<userParam name="parameter: ppm" type="xsd:string" value="false"/>
+				<userParam name="parameter: extraction_function" type="xsd:string" value="tophat"/>
+				<userParam name="parameter: ini" type="xsd:string" value="/cluster/apps/openms/openswath-testing/mapdiv/scripts/workflows/OpenSwath_PaperWorkflow.ini"/>
+				<userParam name="parameter: model:type" type="xsd:string" value="linear"/>
+				<userParam name="parameter: model:symmetric_regression" type="xsd:string" value="false"/>
+				<userParam name="parameter: model:num_breakpoints" type="xsd:integer" value="5"/>
+				<userParam name="parameter: model:interpolation_type" type="xsd:string" value="cspline"/>
+			</processingMethod>
+		</dataProcessing>
+	</dataProcessingList>
+	<run id="ru_0" defaultInstrumentConfigurationRef="ic_0" sampleRef="sa_0" defaultSourceFileRef="sf_ru_0">
+		<chromatogramList count="3" defaultDataProcessingRef="dp_sp_0">
+      <chromatogram id="DECOY_24891_FLEQHGVNFQEINIDEHPEK/3_y6" index="2379" defaultArrayLength="175">
+						<cvParam cvRef="MS" accession="MS:1001473" name="selected reaction monitoring chromatogram" />
+					<precursor>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="808.4924" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="799" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="825" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+						<selectedIonList count="1">
+							<selectedIon>
+								<cvParam cvRef="MS" accession="MS:1000744" name="selected ion m/z" value="808.4924" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+								<cvParam cvRef="MS" accession="MS:1000041" name="charge state" value="0" />
+								<cvParam cvRef="MS" accession="MS:1000042" name="peak intensity" value="0" unitAccession="MS:1000132" unitName="percent of base peak" unitCvRef="MS" />
+							</selectedIon>
+						</selectedIonList>
+						<activation>
+							<cvParam cvRef="MS" accession="MS:1000044" name="dissociation method" />
+						<userParam name="peptide_sequence" type="xsd:string" value="DQIVILENEEEFQFGHNPHK"/>
+						</activation>
+					</precursor>
+					<product>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="689.347785870371" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+					</product>
+				<binaryDataArrayList count="2">
+					<binaryDataArray encodedLength="1868">
+						<cvParam cvRef="MS" accession="MS:1000595" name="time array" unitAccession="UO:0000010" unitName="second" unitCvRef="MS" />
+						<cvParam cvRef="MS" accession="MS:1000523" name="64-bit float" />
+						<cvParam cvRef="MS" accession="MS:1000576" name="no compression" />
+						<binary>mpmZmZnzqkBSuB6Fa/qqQPYoXI9CAatArkfhehQIq0BSuB6F6w6rQArXo3C9FatAw/UoXI8cq0BmZmZmZiOrQB+F61E4KqtA16NwPQoxq0B7FK5H4TerQDMzMzOzPqtA16NwPYpFq0CPwvUoXEyrQEjhehQuU6tA7FG4HgVaq0CkcD0K12CrQEjhehSuZ6tAAAAAAIBuq0C4HoXrUXWrQFyPwvUofKtAFK5H4fqCq0C4HoXr0YmrQHE9CtejkKtAKVyPwnWXq0DNzMzMTJ6rQIXrUbgepatAKVyPwvWrq0DhehSux7KrQJqZmZmZuatAPQrXo3DAq0D2KFyPQserQK5H4XoUzqtAUrgehevUq0AK16NwvdurQK5H4XqU4qtAZmZmZmbpq0AfhetROPCrQMP1KFwP96tAexSuR+H9q0AzMzMzswSsQNejcD2KC6xAj8L1KFwSrEAzMzMzMxmsQOxRuB4FIKxApHA9CtcmrEBI4XoUri2sQAAAAACANKxAuB6F61E7rEBcj8L1KEKsQBSuR+H6SKxAuB6F69FPrEBxPQrXo1asQBSuR+F6XaxAzczMzExkrECF61G4HmusQClcj8L1caxA4XoUrsd4rECamZmZmX+sQD0K16NwhqxA9ihcj0KNrECamZmZGZSsQFK4HoXrmqxACtejcL2hrECuR+F6lKisQGZmZmZmr6xAH4XrUTi2rEDD9ShcD72sQHsUrkfhw6xAH4XrUbjKrEDXo3A9itGsQI/C9Shc2KxAMzMzMzPfrEDsUbgeBeasQKRwPQrX7KxASOF6FK7zrEAAAAAAgPqsQKRwPQpXAa1AXI/C9SgIrUAUrkfh+g6tQLgehevRFa1AcT0K16McrUAUrkfheiOtQM3MzMxMKq1AhetRuB4xrUApXI/C9TetQOF6FK7HPq1AhetRuJ5FrUA9CtejcEytQPYoXI9CU61AmpmZmRlarUBSuB6F62CtQPYoXI/CZ61ArkfhepRurUBmZmZmZnWtQArXo3A9fK1Aw/UoXA+DrUB7FK5H4YmtQB+F61G4kK1A16NwPYqXrUB7FK5HYZ6tQDMzMzMzpa1A7FG4HgWsrUCPwvUo3LKtQEjhehSuua1AAAAAAIDArUCkcD0KV8etQFyPwvUozq1AAAAAAADVrUC4HoXr0dutQHE9Ctej4q1AFK5H4XrprUDNzMzMTPCtQIXrUbge961AKVyPwvX9rUDhehSuxwSuQIXrUbieC65APQrXo3ASrkD2KFyPQhmuQJqZmZkZIK5AUrgehesmrkAK16NwvS2uQK5H4XqUNK5AZmZmZmY7rkAK16NwPUKuQMP1KFwPSa5AZmZmZuZPrkAfhetRuFauQNejcD2KXa5AexSuR2FkrkAzMzMzM2uuQOxRuB4Fcq5Aj8L1KNx4rkBI4XoUrn+uQOxRuB6Fhq5ApHA9CleNrkBcj8L1KJSuQAAAAAAAm65AuB6F69GhrkBxPQrXo6iuQBSuR+F6r65AzczMzEy2rkBxPQrXI72uQClcj8L1w65A4XoUrsfKrkCF61G4ntGuQD0K16Nw2K5A9ihcj0LfrkCamZmZGeauQFK4HoXr7K5A9ihcj8LzrkCuR+F6lPquQGZmZmZmAa9ACtejcD0Ir0DD9ShcDw+vQHsUrkfhFa9AH4XrUbgcr0DXo3A9iiOvQHsUrkdhKq9AMzMzMzMxr0DsUbgeBTivQI/C9SjcPq9ASOF6FK5Fr0AAAAAAgEyvQKRwPQpXU69AXI/C9Shar0AAAAAAAGGvQLgehevRZ69AcT0K16Nur0AUrkfhenWvQM3MzMxMfK9AhetRuB6Dr0ApXI/C9YmvQOF6FK7HkK9AhetRuJ6Xr0A=</binary>
+					</binaryDataArray>
+					<binaryDataArray encodedLength="936">
+						<cvParam cvRef="MS" accession="MS:1000515" name="intensity array" unitAccession="MS:1000131" unitName="number of counts" unitCvRef="MS"/>
+						<cvParam cvRef="MS" accession="MS:1000521" name="32-bit float" />
+						<cvParam cvRef="MS" accession="MS:1000576" name="no compression" />
+						<binary>AABIQgAAtEIAAKBCAAAWQwAASEMAACpDAADIQgAA8EIAAAJDAADwQgAAtEIAAHBCAAC0QgAAcEIAAMhCAAAgQgAAoEIAAPBBAABIQgAAoEIAAKBCAADwQQAA8EEAAIxCAABIQgAAoEIAAHBCAACgQQAAtEIAANxCAADIQgAASEIAAEhCAABwQgAAjEIAAEhCAABwQgAASEIAAKBCAACMQgAASEIAALRCAAA+QwAAKkMAADRDAAC0QgAAIEIAAKBCAACMQgAAIEIAAPBBAABIQgAAIEIAACBCAAAgQgAAjEIAAPBBAACgQQAAoEEAAPBBAAAgQgAAcEIAAIxCAACgQgAAyEIAACBCAABIQgAAtEIAAEhCAABIQgAAIEIAAMhCAAAMQwAAh0MAgJtDAABcQwCAkUMAAIdDAABcQwAANEMAABZDAACMQgAAjEIAAIxCAACMQgAAyEIAAEhCAABwQgAAIEEAAKBBAACgQQAAcEIAAPBBAACgQQAAoEIAAHBCAABIQgAA8EEAAEhCAACgQgAAIEIAAKBBAADwQQAAjEIAAEhCAACgQQAAIEIAACBCAACgQQAA8EEAAKBCAAC0QgAANEMAANxCAACHQwAANEMAAAJDAAACQwAAAkMAAHBCAAC0QgAAjEIAAKBCAACMQgAA8EIAAMhCAADwQQAASEIAAEhCAAAgQgAASEIAAPBBAACgQgAASEIAAEhCAADwQQAAtEIAALRCAABIQgAAjEIAAEhCAAAgQgAASEIAAPBBAAAgQgAA3EIAACBDAAAXQwAAAkMAAIxCAACgQgAAoEEAALRCAAAgQgAAyEIAAEhCAADIQgAAyEIAAKBCAAC0QgAAjEIAAPBBAACgQgAAoEEAAHBCAAAgQgAAjEIAALRCAABwQgAAoEIAAHBCAADwQgAAoEIAACBDAACCQw==</binary>
+					</binaryDataArray>
+				</binaryDataArrayList>
+			</chromatogram>
+      <chromatogram id="4092_IEVLDYQAGDEAGIK/2_y7" index="2380" defaultArrayLength="176">
+						<cvParam cvRef="MS" accession="MS:1001473" name="selected reaction monitoring chromatogram" />
+					<precursor>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="810.9094" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="799" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="825" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+						<selectedIonList count="1">
+							<selectedIon>
+								<cvParam cvRef="MS" accession="MS:1000744" name="selected ion m/z" value="810.9094" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+								<cvParam cvRef="MS" accession="MS:1000041" name="charge state" value="0" />
+								<cvParam cvRef="MS" accession="MS:1000042" name="peak intensity" value="0" unitAccession="MS:1000132" unitName="percent of base peak" unitCvRef="MS" />
+							</selectedIon>
+						</selectedIonList>
+						<activation>
+							<cvParam cvRef="MS" accession="MS:1000044" name="dissociation method" />
+						<userParam name="peptide_sequence" type="xsd:string" value="IEVLDYQAGDEAGIK"/>
+						</activation>
+					</precursor>
+					<product>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="689.3548" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+					</product>
+				<binaryDataArrayList count="2">
+					<binaryDataArray encodedLength="1880">
+						<cvParam cvRef="MS" accession="MS:1000595" name="time array" unitAccession="UO:0000010" unitName="second" unitCvRef="MS" />
+						<cvParam cvRef="MS" accession="MS:1000523" name="64-bit float" />
+						<cvParam cvRef="MS" accession="MS:1000576" name="no compression" />
+						<binary>CtejcD07qkCuR+F6FEKqQGZmZmbmSKpACtejcL1PqkDD9Shcj1aqQHsUrkdhXapAH4XrUThkqkDXo3A9CmuqQHsUrkfhcapAMzMzM7N4qkDsUbgehX+qQI/C9ShchqpASOF6FC6NqkAAAAAAAJSqQKRwPQrXmqpAXI/C9aihqkAAAAAAgKiqQLgehetRr6pAXI/C9Si2qkAUrkfh+ryqQM3MzMzMw6pAcT0K16PKqkApXI/CddGqQOF6FK5H2KpAhetRuB7fqkA9Ctej8OWqQOF6FK7H7KpAmpmZmZnzqkBSuB6Fa/qqQPYoXI9CAatArkfhehQIq0BSuB6F6w6rQArXo3C9FatAw/UoXI8cq0BmZmZmZiOrQB+F61E4KqtA16NwPQoxq0B7FK5H4TerQDMzMzOzPqtA16NwPYpFq0CPwvUoXEyrQEjhehQuU6tA7FG4HgVaq0CkcD0K12CrQEjhehSuZ6tAAAAAAIBuq0C4HoXrUXWrQFyPwvUofKtAFK5H4fqCq0C4HoXr0YmrQHE9CtejkKtAKVyPwnWXq0DNzMzMTJ6rQIXrUbgepatAKVyPwvWrq0DhehSux7KrQJqZmZmZuatAPQrXo3DAq0D2KFyPQserQK5H4XoUzqtAUrgehevUq0AK16NwvdurQK5H4XqU4qtAZmZmZmbpq0AfhetROPCrQMP1KFwP96tAexSuR+H9q0AzMzMzswSsQNejcD2KC6xAj8L1KFwSrEAzMzMzMxmsQOxRuB4FIKxApHA9CtcmrEBI4XoUri2sQAAAAACANKxAuB6F61E7rEBcj8L1KEKsQBSuR+H6SKxAuB6F69FPrEBxPQrXo1asQBSuR+F6XaxAzczMzExkrECF61G4HmusQClcj8L1caxA4XoUrsd4rECamZmZmX+sQD0K16NwhqxA9ihcj0KNrECamZmZGZSsQFK4HoXrmqxACtejcL2hrECuR+F6lKisQGZmZmZmr6xAH4XrUTi2rEDD9ShcD72sQHsUrkfhw6xAH4XrUbjKrEDXo3A9itGsQI/C9Shc2KxAMzMzMzPfrEDsUbgeBeasQKRwPQrX7KxASOF6FK7zrEAAAAAAgPqsQKRwPQpXAa1AXI/C9SgIrUAUrkfh+g6tQLgehevRFa1AcT0K16McrUAUrkfheiOtQM3MzMxMKq1AhetRuB4xrUApXI/C9TetQOF6FK7HPq1AhetRuJ5FrUA9CtejcEytQPYoXI9CU61AmpmZmRlarUBSuB6F62CtQPYoXI/CZ61ArkfhepRurUBmZmZmZnWtQArXo3A9fK1Aw/UoXA+DrUB7FK5H4YmtQB+F61G4kK1A16NwPYqXrUB7FK5HYZ6tQDMzMzMzpa1A7FG4HgWsrUCPwvUo3LKtQEjhehSuua1AAAAAAIDArUCkcD0KV8etQFyPwvUozq1AAAAAAADVrUC4HoXr0dutQHE9Ctej4q1AFK5H4XrprUDNzMzMTPCtQIXrUbge961AKVyPwvX9rUDhehSuxwSuQIXrUbieC65APQrXo3ASrkD2KFyPQhmuQJqZmZkZIK5AUrgehesmrkAK16NwvS2uQK5H4XqUNK5AZmZmZmY7rkAK16NwPUKuQMP1KFwPSa5AZmZmZuZPrkAfhetRuFauQNejcD2KXa5AexSuR2FkrkAzMzMzM2uuQOxRuB4Fcq5Aj8L1KNx4rkBI4XoUrn+uQOxRuB6Fhq5ApHA9CleNrkBcj8L1KJSuQAAAAAAAm65AuB6F69GhrkBxPQrXo6iuQBSuR+F6r65AzczMzEy2rkBxPQrXI72uQClcj8L1w65A4XoUrsfKrkCF61G4ntGuQD0K16Nw2K5A9ihcj0LfrkCamZmZGeauQA==</binary>
+					</binaryDataArray>
+					<binaryDataArray encodedLength="940">
+						<cvParam cvRef="MS" accession="MS:1000515" name="intensity array" unitAccession="MS:1000131" unitName="number of counts" unitCvRef="MS"/>
+						<cvParam cvRef="MS" accession="MS:1000521" name="32-bit float" />
+						<cvParam cvRef="MS" accession="MS:1000576" name="no compression" />
+						<binary>AADwQQAAAAAAAKBBAAAgQgAAIEIAAKBBAADwQQAA8EEAAPBBAABIQgAAIEIAAEhCAABwQgAAjEIAAIxCAACgQgAAoEIAACBCAABwQgAA8EIAACBCAAAgQgAAjEIAAPBBAACMQgAAjEIAACBCAABwQgAA8EIAAAxDAAB7QwAAZkMAAFxDAADwQgAA3EIAAAJDAAAMQwAAoEIAAMhCAACgQgAAjEIAALRCAAAgQgAAoEIAAKBBAABwQgAAtEIAALRCAADwQQAAIEIAAKBCAABIQgAA3EIAAKBCAAAgQgAAoEIAAAxDAAACQwAAjEIAAEhCAABIQgAAcEIAACBCAABIQgAAIEIAAEhCAACMQgAA8EEAAKBCAAACQwAA8EIAABZDAACMQgAAoEEAAEhCAABwQgAAIEIAAKBBAAAgQgAAIEIAAEhCAACgQQAASEIAAPBBAAAgQQAAIEEAAPBBAABIQgAAcEIAAIxCAADIQgAAyEIAAHBCAABIQgAAoEIAACBCAADwQQAA8EEAANxCAAAMQwAAjEMAgJZDAACHQwCAh0MAAKVDAABmQwAASEMAAAxDAACMQgAAjEIAAHBCAACMQgAAyEIAAEhCAABwQgAAIEEAAPBBAACgQQAAcEIAAPBBAACgQQAAcEIAAEhCAABwQgAA8EEAACBCAABIQgAASEIAAKBBAACgQQAASEIAAEhCAADwQQAAIEIAACBCAADwQQAAoEEAAKBCAACMQgAAIEMAANxCAAB6QwAADEMAAAJDAADIQgAAAkMAACBCAACgQgAAcEIAAIxCAACMQgAA3EIAALRCAAAgQgAASEIAACBCAACgQQAAcEIAAPBBAABwQgAAIEIAACBCAACgQQAAyEIAALRCAADwQQAAoEIAACBCAABIQgAASEIAAPBBAAAgQgAA8EIAACpDAAAhQwAADEM=</binary>
+					</binaryDataArray>
+				</binaryDataArrayList>
+			</chromatogram>
+      <chromatogram id="54036_LEKELEEKKEALELAIDQASR/3_y6" index="2381" defaultArrayLength="176">
+						<cvParam cvRef="MS" accession="MS:1001473" name="selected reaction monitoring chromatogram" />
+					<precursor>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="814.7744" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="799" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="825" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+						<selectedIonList count="1">
+							<selectedIon>
+								<cvParam cvRef="MS" accession="MS:1000744" name="selected ion m/z" value="814.7744" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+								<cvParam cvRef="MS" accession="MS:1000041" name="charge state" value="0" />
+								<cvParam cvRef="MS" accession="MS:1000042" name="peak intensity" value="0" unitAccession="MS:1000132" unitName="percent of base peak" unitCvRef="MS" />
+							</selectedIon>
+						</selectedIonList>
+						<activation>
+							<cvParam cvRef="MS" accession="MS:1000044" name="dissociation method" />
+						<userParam name="peptide_sequence" type="xsd:string" value="LEKELEEKKEALELAIDQASR"/>
+						</activation>
+					</precursor>
+					<product>
+						<isolationWindow>
+							<cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="689.3626" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000828" name="isolation window lower offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+							<cvParam cvRef="MS" accession="MS:1000829" name="isolation window upper offset" value="0" unitAccession="MS:1000040" unitName="m/z" unitCvRef="MS" />
+						</isolationWindow>
+					</product>
+				<binaryDataArrayList count="2">
+					<binaryDataArray encodedLength="1880">
+						<cvParam cvRef="MS" accession="MS:1000595" name="time array" unitAccession="UO:0000010" unitName="second" unitCvRef="MS" />
+						<cvParam cvRef="MS" accession="MS:1000523" name="64-bit float" />
+						<cvParam cvRef="MS" accession="MS:1000576" name="no compression" />
+						<binary>FK5H4XqvrkDNzMzMTLauQHE9Ctcjva5AKVyPwvXDrkDhehSux8quQIXrUbie0a5APQrXo3DYrkD2KFyPQt+uQJqZmZkZ5q5AUrgehevsrkD2KFyPwvOuQK5H4XqU+q5AZmZmZmYBr0AK16NwPQivQMP1KFwPD69AexSuR+EVr0AfhetRuByvQNejcD2KI69AexSuR2Eqr0AzMzMzMzGvQOxRuB4FOK9Aj8L1KNw+r0BI4XoUrkWvQAAAAACATK9ApHA9CldTr0Bcj8L1KFqvQAAAAAAAYa9AuB6F69Fnr0BxPQrXo26vQBSuR+F6da9AzczMzEx8r0CF61G4HoOvQClcj8L1ia9A4XoUrseQr0CF61G4npevQD0K16Nwnq9A9ihcj0Klr0CamZmZGayvQFK4HoXrsq9ACtejcL25r0CuR+F6lMCvQGZmZmZmx69ACtejcD3Or0DD9ShcD9WvQHsUrkfh269AH4XrUbjir0DXo3A9iumvQHsUrkdh8K9AMzMzMzP3r0DsUbgeBf6vQEjhehRuArBApHA9CtcFsEAAAAAAQAmwQFK4HoWrDLBArkfhehQQsEAK16NwfROwQFyPwvXoFrBAuB6F61EasEAUrkfhuh2wQGZmZmYmIbBAuB6F65EksEAUrkfh+iewQHE9CtdjK7BAw/UoXM8usEAfhetRODKwQHsUrkehNbBAzczMzAw5sEApXI/CdTywQIXrUbjeP7BA16NwPUpDsEAzMzMzs0awQIXrUbgeSrBA4XoUrodNsEA9Ctej8FCwQI/C9ShcVLBA7FG4HsVXsEBI4XoULluwQJqZmZmZXrBA9ihcjwJisEBI4XoUbmWwQKRwPQrXaLBAAAAAAEBssEBSuB6Fq2+wQK5H4XoUc7BACtejcH12sEBcj8L16HmwQLgehetRfbBACtejcL2AsEBmZmZmJoSwQMP1KFyPh7BAFK5H4fqKsEBxPQrXY46wQM3MzMzMkbBAH4XrUTiVsEB7FK5HoZiwQNejcD0KnLBAKVyPwnWfsECF61G43qKwQNejcD1KprBAMzMzM7OpsECPwvUoHK2wQOF6FK6HsLBAPQrXo/CzsECPwvUoXLewQOxRuB7FurBASOF6FC6+sECamZmZmcGwQPYoXI8CxbBAUrgehWvIsECkcD0K18uwQAAAAABAz7BAXI/C9ajSsECuR+F6FNawQArXo3B92bBAXI/C9ejcsEC4HoXrUeCwQBSuR+G647BAZmZmZibnsEDD9Shcj+qwQB+F61H47bBAcT0K12PxsEDNzMzMzPSwQB+F61E4+LBAexSuR6H7sEDXo3A9Cv+wQClcj8J1ArFAhetRuN4FsUDhehSuRwmxQDMzMzOzDLFAhetRuB4QsUDhehSuhxOxQD0K16PwFrFAmpmZmVkasUDsUbgexR2xQEjhehQuIbFAmpmZmZkksUD2KFyPAiixQFK4HoVrK7FApHA9CtcusUAAAAAAQDKxQFK4HoWrNbFArkfhehQ5sUAK16NwfTyxQFyPwvXoP7FAuB6F61FDsUAUrkfhukaxQGZmZmYmSrFAw/UoXI9NsUAUrkfh+lCxQHE9CtdjVLFAzczMzMxXsUAfhetROFuxQHsUrkehXrFA16NwPQpisUApXI/CdWWxQIXrUbjeaLFA16NwPUpssUAzMzMzs2+xQI/C9Sgcc7FA4XoUrod2sUA9Ctej8HmxQJqZmZlZfbFA7FG4HsWAsUBI4XoULoSxQJqZmZmZh7FA9ihcjwKLsUBSuB6Fa46xQKRwPQrXkbFAAAAAAECVsUBSuB6Fq5ixQK5H4XoUnLFACtejcH2fsUBcj8L16KKxQLgehetRprFACtejcL2psUBmZmZmJq2xQA==</binary>
+					</binaryDataArray>
+					<binaryDataArray encodedLength="940">
+						<cvParam cvRef="MS" accession="MS:1000515" name="intensity array" unitAccession="MS:1000131" unitName="number of counts" unitCvRef="MS"/>
+						<cvParam cvRef="MS" accession="MS:1000521" name="32-bit float" />
+						<cvParam cvRef="MS" accession="MS:1000576" name="no compression" />
+						<binary>AAAgQgAASEIAAPBBAACgQQAAIEIAAPBCAAAMQwAAF0MAAAJDAAAgQgAAoEIAACBBAACMQgAASEIAALRCAAAgQgAAoEIAAHBCAABIQgAAcEIAAHBCAAAAAAAASEIAACBBAADwQQAAoEEAAIxCAADIQgAASEIAAIxCAABIQgAADEMAAIxCAAAgQwAAcEMAAPBCAADcQgAAAkMAAAJDAAA0QwAAyEIAALRCAACMQgAASEIAAEhCAICHQwDALUQAAGtEAABKRACAMEQAgLRDAABmQwAAyEIAALRCAADwQQAAIEIAAEhCAAAgQgAASEIAAMhCAACgQgAAjEIAACBCAABwQgAA8EEAAPBBAACgQgAAIEIAAAxDAAC0QgAA8EIAAKBCAABIQgAA8EIAAPBCAADIQgAA3EIAAHBCAAAgQgAAyEIAAEhCAABIQgAASEIAAEhCAACgQQAAcEIAACBCAADcQgAASEIAAKBCAABwQgAAcEIAAKBCAAAWQwAAyEIAAPBCAAACQwAAyEIAAHBCAAC0QgAAIEMAACBDAABmQwAANEMAAPBCAACgQgAAyEIAAPBBAAAgQgAASEIAAEhCAACMQgAAIEIAACBCAACgQgAAoEIAALRCAAA0QwAAyEIAALRCAADcQgAAIEIAAIxCAADcQgAA8EIAANxCAADIQgAAyEIAAIxCAABIQgAAcEIAAHBCAABIQgAAjEIAAEhCAACMQgAASEIAAEhCAADIQgAAIEEAAMhCAADcQgAAAkMAAPBCAAAgQwAAtEIAAPBCAACgQgAAIEIAAPBBAADwQQAAcEIAACBBAACgQQAASEIAAEhCAACMQgAAcEIAACBCAAAgQgAA8EEAAPBBAAC0QgAAoEIAAPBBAAACQwAAjEIAAKBBAABwQgAASEIAANxCAADcQgAAcEIAAKBCAACMQgAAjEI=</binary>
+					</binaryDataArray>
+				</binaryDataArrayList>
+			</chromatogram>
+    </chromatogramList>
+	</run>
+</mzML>
