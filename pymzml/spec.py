@@ -871,7 +871,10 @@ class Spectrum(MS_Spectrum):
             for obj in selected_precursor_is:
                 i = obj.get('value')
                 i_values.append( float(i) )
-            self._selected_precursors = [n for n in zip(mz_values, i_values) ]
+            if i_values == []:
+                self._selected_precursors = [(mz, None) for mz in mz_values]
+            else:
+                self._selected_precursors = [n for n in zip(mz_values, i_values) ]
 
         return self._selected_precursors
 
