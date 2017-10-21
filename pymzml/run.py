@@ -204,6 +204,8 @@ class Reader(object):
         """
         # parse obo, check MS tags and if they are ok in minimum.py (minimum
         # required) ...
+        if self.info.get('obo_version', None) is None:
+            self.info['obo_version'] = '1.1.0'
         obo_translator = obo.OboTranslator(version=self.info['obo_version'])
 
         return obo_translator
@@ -237,7 +239,7 @@ class Reader(object):
                         r'[0-9]*\.[0-9]*\.[0-9]*', s).group()
             elif element.tag.endswith('}cv'):
                 if not self.info['obo_version'] \
-                        and element.attrib['id'] == 'MS':
+                        and element.attrib.get('id', None) == 'MS':
                     self.info['obo_version'] = element.attrib.get(
                         'version',
                         '1.1.0'
