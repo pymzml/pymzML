@@ -45,30 +45,47 @@ class runTest(unittest.TestCase):
         mzml_version = self.reader_compressed_indexed.info['mzml_version']
         obo_version  = self.reader_compressed_indexed.info['obo_version']
         spec_count   = self.reader_compressed_indexed.info['spectrum_count']
+        run_id       = self.reader_uncompressed_unindexed.info['run_id']
+        start_time   = self.reader_uncompressed_unindexed.info['start_time']
         self.assertEqual(mzml_version, '1.1.0')
         self.assertEqual(obo_version, '3.25.0')
         self.assertIsInstance(spec_count, int)
+        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
+        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
 
         mzml_version = self.reader_compressed_unindexed.info['mzml_version']
         obo_version  = self.reader_compressed_unindexed.info['obo_version']
         spec_count   = self.reader_compressed_unindexed.info['spectrum_count']
+        run_id       = self.reader_uncompressed_unindexed.info['run_id']
+        start_time   = self.reader_uncompressed_unindexed.info['start_time']
         self.assertEqual(mzml_version, '1.1.0')
         self.assertEqual(obo_version, '3.25.0')
         self.assertIsInstance(spec_count, int)
+        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
+        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
 
         mzml_version = self.reader_uncompressed_indexed.info['mzml_version']
         obo_version  = self.reader_uncompressed_indexed.info['obo_version']
         spec_count   = self.reader_uncompressed_indexed.info['spectrum_count']
+        run_id       = self.reader_uncompressed_unindexed.info['run_id']
+        start_time   = self.reader_uncompressed_unindexed.info['start_time']
         self.assertEqual(mzml_version, '1.1.0')
         self.assertEqual(obo_version, '3.25.0')
         self.assertIsInstance(spec_count, int)
+        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
+        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
 
         mzml_version = self.reader_uncompressed_unindexed.info['mzml_version']
         obo_version  = self.reader_uncompressed_unindexed.info['obo_version']
         spec_count   = self.reader_uncompressed_unindexed.info['spectrum_count']
+        run_id       = self.reader_uncompressed_unindexed.info['run_id']
+        start_time   = self.reader_uncompressed_unindexed.info['start_time']
+
         self.assertEqual(mzml_version, '1.1.0')
         self.assertEqual(obo_version, '3.25.0')
         self.assertIsInstance(spec_count, int)
+        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
+        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
 
     def test_next(self):
         """

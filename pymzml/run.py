@@ -258,6 +258,11 @@ class Reader(object):
                 else:
                     self.info['chromatogram_count'] = int(chrom_cnt)
                 break
+            elif element.tag.endswith('}run'):
+                run_id = element.attrib.get('id')
+                start_time = element.attrib.get('startTimeStamp')
+                self.info['run_id'] = run_id
+                self.info['start_time'] = start_time
             else:
                 pass
         self.root.clear()
