@@ -535,7 +535,7 @@ class Factory(object):
         print()
         return
 
-    def save(self, filename=None, mz_range=None, int_range=None, layout=None, rows=None, cols=None):
+    def save(self, filename=None, mz_range=None, int_range=None, layout=None, cols=None):
         """
         Saves all plots and their data points that have been added to the
         plotFactory.
@@ -548,8 +548,6 @@ class Factory(object):
                 [min, max]. Default = None
             layout (dict): dictionary containing layout information in plotly
                 style
-            rows (int): number of rows for the plot grid, Default = number of
-                added plots
             cols (int): number of rows for the plot grid. Default =  None
                 Maximum number is 2, which is also currently set as default.
 
@@ -560,13 +558,13 @@ class Factory(object):
             corresponding to the subplots.
         """
         plot_number = len(self.plots)
-        if rows is None:
-            if cols in [ None, 2 ]:
-                rows = int(math.ceil(plot_number / float(2)))
-            else:
-                rows = plot_number
+
         if cols is None:
             cols = 2
+            rows = int(math.ceil(plot_number / float(2)))
+        else:
+            rows = plot_number
+
         if cols > 2:
             print('Currently not more than 2 columns are supported')
             exit()
