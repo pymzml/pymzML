@@ -535,7 +535,7 @@ class Factory(object):
         print()
         return
 
-    def save(self, filename=None, mz_range=None, int_range=None, layout=None):
+    def save(self, filename=None, mz_range=None, int_range=None, layout=None, rows=None, cols=None):
         """
         Saves all plots and their data points that have been added to the
         plotFactory.
@@ -544,9 +544,14 @@ class Factory(object):
             filename (str): Name for the output file. Default = "spectrum_plot.html"
             mz_range (list): m/z range which should be considered [start, end].
                 Default = None
-            int_range (list): intensity range which should be considered [min, max].
-                Default = None
-            layout (dict): dictionary containing layout information in plotly style
+            int_range (list): intensity range which should be considered
+                [min, max]. Default = None
+            layout (dict): dictionary containing layout information in plotly
+                style
+            rows (int): number of rows for the plot grid, Default = number of
+                added plots
+            cols (int): number of rows for the plot grid. Default =  None
+                Maximum number is 2, which is also currently set as default.
 
         Note:
             mz_range and int_range defined here will be applied to all subplots in
@@ -555,17 +560,28 @@ class Factory(object):
             corresponding to the subplots.
         """
         plot_number = len(self.plots)
-        rows, cols = int(math.ceil(plot_number / float(2))), 2
+        if rows is None:
+            if cols in [ None, 2 ]:
+                rows = int(math.ceil(plot_number / float(2)))
+            else:
+                rows = plot_number
+        if cols is None:
+            cols = 2
+        if cols > 2:
+            print('Currently not more than 2 columns are supported')
+            exit()
         if plot_number % 2 == 0:
             my_figure = tools.make_subplots(
-                rows=rows,
-                cols=cols,
-                vertical_spacing=0.6 / rows,
+                rows             = rows,
+                cols             = cols,
+                vertical_spacing = 0.6 / rows,
                 subplot_titles   = self.titles
             )
         else:
-            specs = [[{}, {}] for x in range(rows - 1)]
-            specs.append([{'colspan': 2}, None])
+            row_specification = [ {} for n in range(cols) ]
+            specs             = [ row_specification for x in range(rows - 1)]
+            last_row_spec     = [{'colspan': cols}] + [ None for x in range(cols - 1)]
+            specs.append(last_row_spec)
             my_figure = tools.make_subplots(
                 rows             = rows,
                 cols             = cols,
@@ -580,10 +596,16 @@ class Factory(object):
                 trace['y'] = [
                     self.function_mapper[x](i) if x in self.function_mapper else x for x in trace['y']
                 ]
+                if cols == 2:
+                    row = int(math.floor((i / 2) + 1))
+                    col = (i % 2) + 1
+                else:
+                    col = cols
+                    row = i + 1
                 my_figure.append_trace(
                     trace,
-                    int(math.floor((i / 2) + 1)),
-                    (i % 2) + 1
+                    row,
+                    col
                 )
 
         for i in range(plot_number):
