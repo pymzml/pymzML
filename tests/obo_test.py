@@ -38,7 +38,6 @@ class TestOboVersion(object):
             for line in f:
                 if line.decode().strip().startswith("data-version"):
                     v = line.decode().split(":")[-1].strip()
-                    break
                 if line.decode().startswith("remark: version"):
                     v = line.decode().split(":")[-1].strip()
                     break
