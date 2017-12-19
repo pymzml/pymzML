@@ -35,6 +35,8 @@ class StandardMzml(object):
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
+        self._build_index(False, False)
+
     # def __del__(self):
     #     """
     #     """
@@ -43,8 +45,9 @@ class StandardMzml(object):
 
     def __getitem__(self, identifier):
         """
-        Access the item with id 'identifier' in the file using
-        either linear, binary or interpolated search.
+        Access the item with id 'identifier'.
+
+        Either use linear, binary or interpolated search.
 
         Arguments:
             identifier (str): native id of the item to access
@@ -52,7 +55,6 @@ class StandardMzml(object):
         Returns:
             data (str): text associated with the given identifier
         """
-
         #############################################################################
         # DOES NOT HOLD IF NUMBERS DONT START WITH ONE AND/OR DONT INCREASE BY ONE  #
         # TODO FIXME                                                                #
@@ -99,7 +101,122 @@ class StandardMzml(object):
 
         return spectrum
 
-    def _interpol_search(self, target_index, chunk_size=8, fallback_cutoff=100):
+    def _build_index(self, from_scratch, use_spectra_sanity_check):
+        """
+        Build an index.
+
+        A list of offsets to which a file pointer can seek
+        directly to access a particular spectrum or chromatogram without
+        parsing the entire file.
+
+        Args:
+
+            from_scratch(bool): Whether or not to force building the index from
+                             scratch, by parsing the file, if no existing
+                             index can be found.
+
+            use_spectra_sanity_check(bool): Whether or not to assume all data are
+                spectra and follow the (scan=|nativeID=")
+                pattern. Disable this if you have
+                chromatograms or spectra with
+                different ids.
+
+        Returns:
+            A file-like object used to access the indexed content by
+            seeking to a particular offset for the file.
+        """
+        # Declare the pre-seeker
+        seeker = open(self.path, 'rb')
+        # Reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
+        index_list_offset_pattern = re.compile(
+            b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>'
+        )
+        chromatogram_offset_pattern = re.compile(
+            b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset'
+        )
+        self.offset_dict['TIC'] = None
+        seeker.seek(0, 2)
+        index_found = False
+
+        spectrum_index_pattern = regex_patterns.SPECTRUM_INDEX_PATTERN
+        for _ in range(1, 10):  # max 10kbyte
+            # some converters fail in writing a correct index
+            # we found
+            # a) the offset is always the same (silent fail hurray!)
+            sanity_check_set = set()
+            try:
+                seeker.seek(-1024 * _, 1)
+            except:
+                break
+                # File is smaller than 10kbytes ...
+            for line in seeker:
+                match = chromatogram_offset_pattern.search(line)
+                if match:
+                    self.offset_dict['TIC'] = int(
+                        bytes.decode(match.group('offset'))
+                    )
+
+                match_spec = spectrum_index_pattern.search(line)
+                if match_spec is not None:
+                    spec_byte_offset = int(
+                        bytes.decode(match_spec.group('offset'))
+                    )
+                    sanity_check_set.add(spec_byte_offset)
+
+                match = index_list_offset_pattern.search(line)
+                if match:
+                    index_found = True
+                    # print(int(match.group('indexListOffset').decode('utf-8')))
+                    # print(line)
+                    # exit(1)
+                    index_list_offset = int(
+                        match.group('indexListOffset').decode('utf-8')
+                    )
+                    # break
+
+            if index_found is True and \
+                    self.offset_dict['TIC'] is not None:
+                break
+
+        if use_spectra_sanity_check and len(sanity_check_set) <= 2:
+            # print( 'Convert error obvious ... ')
+            pass
+
+        else:
+            # Jumping to index list and slurpin all specOffsets
+            seeker.seek(index_list_offset, 0)
+            spectrum_index_pattern = regex_patterns.SPECTRUM_INDEX_PATTERN
+            sim_index_pattern = regex_patterns.SIM_INDEX_PATTERN
+
+            for line in seeker:
+                match_spec = spectrum_index_pattern.search(line)
+                if match_spec and match_spec.group('nativeID') == b'':
+                    match_spec = None
+                match_sim = sim_index_pattern.search(line)
+                if match_spec:
+                    offset = int(bytes.decode(match_spec.group('offset')))
+                    native_id = int(bytes.decode(match_spec.group('nativeID')))
+                    print(native_id, offset)
+                    self.offset_dict[native_id] = (offset)
+                elif match_sim:
+                    offset = int(bytes.decode(match_sim.group('offset')))
+                    native_id = bytes.decode(match_sim.group('nativeID'))
+                    native_id = regex_patterns.SPECTRUM_ID_PATTERN.search(
+                        native_id
+                    ).group(0)
+                    try:
+                        native_id = int(native_id)
+                    except:
+                        pass
+                    self.offset_dict[native_id] = (offset,)
+        seeker.close()
+
+    def _interpol_search(
+        self,
+        target_index,
+        chunk_size=8,
+        fallback_cutoff=100
+    ):
         """
         Use linear interpolation search to find spectra faster.
 
