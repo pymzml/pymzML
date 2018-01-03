@@ -26,7 +26,7 @@ class TestOboVersion(object):
 
     """
     def __init__(self):
-        self.obodir = os.path.join(os.path.abspath('..'), 'pymzml', 'obo')
+        self.obodir = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir, 'pymzml', 'obo')
         self.obo_files = [f for f in os.listdir(self.obodir) if f.startswith('psi-ms')]
 
     def _check_version(self, a, b):

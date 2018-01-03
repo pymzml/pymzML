@@ -178,11 +178,7 @@ class StandardMzml(object):
                     self.offset_dict['TIC'] is not None:
                 break
 
-        if use_spectra_sanity_check and len(sanity_check_set) <= 2:
-            # print( 'Convert error obvious ... ')
-            pass
-
-        else:
+        if index_found is True:
             # Jumping to index list and slurpin all specOffsets
             seeker.seek(index_list_offset, 0)
             spectrum_index_pattern = regex_patterns.SPECTRUM_INDEX_PATTERN

@@ -55,10 +55,12 @@ try:
 except:
     __NP = None
 
-try:
-    import PyMSNumpress as PyNump
-except:
-    pass
+# try:
+#     import pynumpress as PyNump
+# except:
+#     pass
+import pynumpress as PyNump
+
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
@@ -339,13 +341,13 @@ class MS_Spectrum(object):
         comp_ms_tags = [self.calling_instance.OT[comp]['id'] for comp in compression]
         data = np.frombuffer(data, dtype=np.uint8)
         if 'MS:1002312' in comp_ms_tags:
-            result = pymzml.MSDecoder.decode_linear(data)
+            result = PyNump.decode_linear(data)
         elif 'MS:1002313' in comp_ms_tags:
-            PyNump.decodePic(data, result)
-            result  = pymzml.MSDecoder.decode_pic(data)
+            # PyNump.decodePic(data, result)
+            result  = PyNump.decode_pic(data)
         elif 'MS:1002314' in comp_ms_tags:
-            PyNump.decodeSlof(data, result)
-            result = pymzml.MSDecoder.decode_slof(data)
+            # PyNump.decodeSlof(data, result)
+            result = PyNump.decode_slof(data)
         return result
 
     def _median(self, data):

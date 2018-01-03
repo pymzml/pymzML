@@ -6,7 +6,7 @@ try:
 except:
     np = None
 
-from PyNumpress import MSNumpress
+import pynumpress
 
 @unittest.skipIf(np is None, 'Numpy is required for this test.')
 class test_MSNumpress(unittest.TestCase):
@@ -19,16 +19,16 @@ class test_MSNumpress(unittest.TestCase):
         """
         """
         self.mz_data = np.asarray([100.1, 100.01, 100.001, 100.0001], dtype=np.float64)
-        self.i_data = [5e6, 6.5e5, 2e6, 12e6]
-        self.i_slof_data = [1, 2, 4]
+        self.i_data = np.array([5e6, 6.5e5, 2e6, 12e6])
+        self.i_slof_data = np.array([1.0, 2.0, 4.0])
         self.integer = 23
         # self._encoded_int = bytes([ 0x06, 0x07, 0x01 ])
-        self.Decoder = MSNumpress([])
+        # pynumpress = MSNumpress([])
         self.fixed_point = 10000
 
     def test_encode_slof(self):
-        fp = self.Decoder.optimal_slof_fixed_point(self.i_slof_data)
-        encoded_array = self.Decoder.encode_slof(np.asarray(self.i_slof_data, dtype=np.float64), fp)
+        fp = pynumpress.optimal_slof_fixed_point(self.i_slof_data)
+        encoded_array = pynumpress.encode_slof(np.asarray(self.i_slof_data, dtype=np.float64), fp)
 
         self.assertEqual(len(encoded_array), 14)
 
@@ -55,8 +55,8 @@ class test_MSNumpress(unittest.TestCase):
             0xde, 0x3e
         ]
         test_array = bytearray(test_array)
-        # self.Decoder.encoded_data = test_array
-        decoded_array = self.Decoder.decode_slof(test_array)
+        # pynumpress.encoded_data = test_array
+        decoded_array = pynumpress.decode_slof(test_array)
         for i, dec in enumerate(decoded_array):
             self.assertAlmostEqual(dec, self.i_slof_data[i], places=2)
         # self.assertCountEqual(decoded_array, self.i_slof_data)
@@ -64,20 +64,21 @@ class test_MSNumpress(unittest.TestCase):
     def test_encode_decode_slof(self):
         """
         """
-        # self.Decoder.decoded_data = self.i_slof_data
-        fp = self.Decoder.optimal_slof_fixed_point(self.i_slof_data)
-        encoded_array = self.Decoder.encode_slof(
+        # pynumpress.decoded_data = self.i_slof_data
+        print(self.i_slof_data)
+        fp = pynumpress.optimal_slof_fixed_point(self.i_slof_data)
+        encoded_array = pynumpress.encode_slof(
             np.asarray(self.i_slof_data, dtype=np.float64),
             fp
         )
-        decoded_array = self.Decoder.decode_slof(
+        decoded_array = pynumpress.decode_slof(
             encoded_array
         )
         for i, dec in enumerate(decoded_array):
             self.assertAlmostEqual(dec, self.i_slof_data[i], places=2)
 
     def test_encode_pic_i_data(self):
-        encoded_array = self.Decoder.encode_pic(np.asarray(self.i_data, dtype=np.float64))
+        encoded_array = pynumpress.encode_pic(np.asarray(self.i_data, dtype=np.float64))
 
         self.assertEqual(
             len(encoded_array),
@@ -109,7 +110,7 @@ class test_MSNumpress(unittest.TestCase):
             0x48, 0xe1, 0x20, 0xb,
             0x17, 0xb0
         ]
-        decoded_array = self.Decoder.decode_pic(test_array)
+        decoded_array = pynumpress.decode_pic(test_array)
         self.assertCountEqual(
             decoded_array,
             self.i_data,
@@ -122,192 +123,191 @@ class test_MSNumpress(unittest.TestCase):
     def test_encode_decode_pic(self):
         """
         """
-        encoded_array = self.Decoder.encode_pic(
+        encoded_array = pynumpress.encode_pic(
             np.asarray(self.i_slof_data, dtype=np.float64)
         )
-        decoded_array = self.Decoder.decode_pic(encoded_array)
+        decoded_array = pynumpress.decode_pic(encoded_array)
         self.assertCountEqual(self.i_slof_data, decoded_array)
 
-    # def test_encode_linear(self):
-    #     self.Decoder.decoded_data = self.mz_data
-    #     self.Decoder.encoded_data = None
-    #     encoded_array = self.Decoder.encode_linear()
-    #     self.assertEqual(
-    #         len(encoded_array),
-    #         23,
-    #         msg='{0}\n{1}'.format(
-    #             [hex(x) for x in encoded_array],
-    #             [
-    #                 '0x41', '0x74', '0x75', '0xa4', '0x70', '0x0', '0x0',
-    #                 '0x0', '0xf6', '0xff', '0xff', '0x7f', '0xc2', '0x89',
-    #                 '0xe2', '0x7f', '0x2b', '0xf3', '0x8a', '0x13', '0xdc',
-    #                 '0x6a', '0x20'
-    #             ]
-    #         )
-    #     )
+    def test_encode_linear(self):
+        decoded_data = self.mz_data
+        fp = pynumpress.optimal_linear_fixed_point(self.mz_data)
+        encoded_array = pynumpress.encode_linear(decoded_data, fp)
+        self.assertEqual(
+            len(encoded_array),
+            23,
+            msg='{0}\n{1}'.format(
+                [hex(x) for x in encoded_array],
+                [
+                    '0x41', '0x74', '0x75', '0xa4', '0x70', '0x0', '0x0',
+                    '0x0', '0xf6', '0xff', '0xff', '0x7f', '0xc2', '0x89',
+                    '0xe2', '0x7f', '0x2b', '0xf3', '0x8a', '0x13', '0xdc',
+                    '0x6a', '0x20'
+                ]
+            )
+        )
 
-    #     # assert first value
-    #     self.assertEqual(
-    #         0xff & encoded_array[8],
-    #         0xf6,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             8, hex(0xff & encoded_array[8]), hex(0xf6)
-    #         )
-    #     )
+        # assert first value
+        self.assertEqual(
+            0xff & encoded_array[8],
+            0xf6,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                8, hex(0xff & encoded_array[8]), hex(0xf6)
+            )
+        )
 
-    #     self.assertEqual(
-    #         0xff & encoded_array[9],
-    #         0xff,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             9,
-    #             hex(0xff & encoded_array[9]),
-    #             hex(0xff)
-    #         )
-    #         )
-    #     self.assertEqual(
-    #         0xff & encoded_array[10],
-    #         0xff,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             10,
-    #             hex(0xff & encoded_array[10]),
-    #             hex(0xff)
-    #         )
-    #         )
-    #     self.assertEqual(
-    #         0xff & encoded_array[11],
-    #         0x7f,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             11,
-    #             hex(0xff & encoded_array[11]),
-    #             hex(0x7f)
-    #         )
-    #         )
+        self.assertEqual(
+            0xff & encoded_array[9],
+            0xff,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                9,
+                hex(0xff & encoded_array[9]),
+                hex(0xff)
+            )
+            )
+        self.assertEqual(
+            0xff & encoded_array[10],
+            0xff,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                10,
+                hex(0xff & encoded_array[10]),
+                hex(0xff)
+            )
+            )
+        self.assertEqual(
+            0xff & encoded_array[11],
+            0x7f,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                11,
+                hex(0xff & encoded_array[11]),
+                hex(0x7f)
+            )
+            )
 
-    #     # assert second value
-    #     self.assertEqual(
-    #         0xff & encoded_array[12],
-    #         0xc2,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             12,
-    #             hex(0xff & encoded_array[12]),
-    #             hex(0xc2)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[13],
-    #         0x89,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             13,
-    #             hex(0xff & encoded_array[13]),
-    #             hex(0x89)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[14],
-    #         0xe2,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             14,
-    #             hex(0xff & encoded_array[14]),
-    #             hex(0xe2)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[15],
-    #         0x7f,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             15,
-    #             hex(0xff & encoded_array[15]),
-    #             hex(0x7f)
-    #         )
-    #     )
+        # assert second value
+        self.assertEqual(
+            0xff & encoded_array[12],
+            0xc2,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                12,
+                hex(0xff & encoded_array[12]),
+                hex(0xc2)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[13],
+            0x89,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                13,
+                hex(0xff & encoded_array[13]),
+                hex(0x89)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[14],
+            0xe2,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                14,
+                hex(0xff & encoded_array[14]),
+                hex(0xe2)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[15],
+            0x7f,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                15,
+                hex(0xff & encoded_array[15]),
+                hex(0x7f)
+            )
+        )
 
-    #     # assert third value
-    #     self.assertEqual(
-    #         0xff & encoded_array[16],
-    #         0x2b,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             16,
-    #             hex(0xff & encoded_array[16]),
-    #             hex(0x2b)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[17],
-    #         0xf3,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             17,
-    #             hex(0xff & encoded_array[17]),
-    #             hex(0xc2)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[18],
-    #         0x8a,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             18,
-    #             hex(0xff & encoded_array[18]),
-    #             hex(0x8a)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[19],
-    #         0x13,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             19,
-    #             hex(0xff & encoded_array[19]),
-    #             hex(0x13)
-    #         )
-    #     )
+        # assert third value
+        self.assertEqual(
+            0xff & encoded_array[16],
+            0x2b,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                16,
+                hex(0xff & encoded_array[16]),
+                hex(0x2b)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[17],
+            0xf3,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                17,
+                hex(0xff & encoded_array[17]),
+                hex(0xc2)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[18],
+            0x8a,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                18,
+                hex(0xff & encoded_array[18]),
+                hex(0x8a)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[19],
+            0x13,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                19,
+                hex(0xff & encoded_array[19]),
+                hex(0x13)
+            )
+        )
 
-    #     # assert fourth value
-    #     self.assertEqual(
-    #         0xff & encoded_array[20],
-    #         0xdc,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             19,
-    #             hex(0xff & encoded_array[20]),
-    #             hex(0xdc)
-    #         )
-    #     )
-    #     self.assertEqual(
-    #         0xff & encoded_array[21],
-    #         0x6a,
-    #         msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #             19,
-    #             hex(0xff & encoded_array[21]),
-    #             hex(0x6a)
-    #         )
-    #     )
-    #     # self.assertEqual(
-    #     #     0xff & encoded_array[22],
-    #     #     0x20,
-    #     #     msg='Fail in value at pos {0}: {1} != {2}'.format(
-    #     #         19,
-    #     #         hex(0xff & encoded_array[22]),
-    #     #         hex(0x20)
-    #     #     )
-    #     # )
+        # assert fourth value
+        self.assertEqual(
+            0xff & encoded_array[20],
+            0xdc,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                19,
+                hex(0xff & encoded_array[20]),
+                hex(0xdc)
+            )
+        )
+        self.assertEqual(
+            0xff & encoded_array[21],
+            0x6a,
+            msg='Fail in value at pos {0}: {1} != {2}'.format(
+                19,
+                hex(0xff & encoded_array[21]),
+                hex(0x6a)
+            )
+        )
+        # self.assertEqual(
+        #     0xff & encoded_array[22],
+        #     0x20,
+        #     msg='Fail in value at pos {0}: {1} != {2}'.format(
+        #         19,
+        #         hex(0xff & encoded_array[22]),
+        #         hex(0x20)
+        #     )
+        # )
 
-    # def test_decode_linear(self):
+    def test_decode_linear(self):
 
-    #     # ouput of  >>> PyMSNumpress.encode_linear(self.mz_data, enc,
-    #     # self.fixed_point)
-    #     encoded_array = [
-    #         65, 116, 117, 164, 112, 0, 0, 0, 246, 255,
-    #         255, 127, 194, 137, 226, 127, 43, 243, 138, 19, 220, 106, 32
-    #     ]
+        # ouput of  >>> PyMSNumpress.encode_linear(self.mz_data, enc,
+        # self.fixed_point)
+        encoded_array = [
+            65, 116, 117, 164, 112, 0, 0, 0, 246, 255,
+            255, 127, 194, 137, 226, 127, 43, 243, 138, 19, 220, 106, 32
+        ]
 
-    #     # make bytearray from hex vals
-    #     encoded_array = bytearray(encoded_array)
-    #     MSNumpress.encoded_data = encoded_array
+        # make bytearray from hex vals
+        encoded_array = np.array(encoded_array, dtype=np.dtype('B'))
 
-    #     # decode bytearray to numpy array
-    #     decoded_array = self.Decoder.decode_linear()
-    #     self.assertIsInstance(decoded_array, np.ndarray)
-    #     self.assertEqual(len(decoded_array), len(self.mz_data))
-    #     for i in range(len(decoded_array)):
-    #         self.assertAlmostEqual(
-    #             decoded_array[i], self.mz_data[i], places=i+1)
+        # decode bytearray to numpy array
+        decoded_array = pynumpress.decode_linear(encoded_array)
+        self.assertIsInstance(decoded_array, np.ndarray)
+        self.assertEqual(len(decoded_array), len(self.mz_data))
+        for i in range(len(decoded_array)):
+            self.assertAlmostEqual(
+                decoded_array[i], self.mz_data[i], places=i+1)
 
     def test_encode_decode_linear(self):
         """
@@ -339,12 +339,12 @@ class test_MSNumpress(unittest.TestCase):
             112.01768
         ]
         test_array = np.asarray(test_array, dtype=np.float64)
-        fp = self.Decoder.optimal_linear_fixed_point(test_array)
-        encoded_array = self.Decoder.encode_linear(
+        fp = pynumpress.optimal_linear_fixed_point(test_array)
+        encoded_array = pynumpress.encode_linear(
             test_array,
             fp
         )
-        decoded_array = self.Decoder.decode_linear(encoded_array)
+        decoded_array = pynumpress.decode_linear(encoded_array)
         for i in range(len(decoded_array)):
             self.assertAlmostEqual(
                 decoded_array[i],
@@ -355,9 +355,9 @@ class test_MSNumpress(unittest.TestCase):
 
     def test_encode_decode_self_mz(self):
         mz_data = np.asarray(self.mz_data, dtype=np.float64)
-        fp = self.Decoder.optimal_linear_fixed_point(mz_data)
-        encoded_mz_data = self.Decoder.encode_linear(mz_data, fp)
-        decoded_mz_data = self.Decoder.decode_linear(encoded_mz_data)
+        fp = pynumpress.optimal_linear_fixed_point(mz_data)
+        encoded_mz_data = pynumpress.encode_linear(mz_data, fp)
+        decoded_mz_data = pynumpress.decode_linear(encoded_mz_data)
         for i in range(len(decoded_mz_data)):
             self.assertAlmostEqual(
                 decoded_mz_data[i],
