@@ -5,6 +5,8 @@ Introduction
 
 The latest Documentation was generated on: |today|
 
+|build-status-travis| |doc-status|
+
 
 *******************
 General information
