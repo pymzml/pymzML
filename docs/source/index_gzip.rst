@@ -133,11 +133,11 @@ by setting the 'Comment Flag' in FLG, an additional headerfield can be activated
 | file comment, zero-terminated (xX) |
 +------------------------------------+
 
-This field is then used to save the Uniq IDs, version, number of entries, index/offset length and index/offset pairs  and is terminated with a zero byte, like described in the following:
+This field is then used to save the Uniq IDs, version, index/offset length and is terminated with a zero byte, like described in the following:
 
-+-----+-----+---------+--------+-----------+-------------+
-| ID1 | ID2 | VERSION | IDXLEN | OFFSETLEN | ENTRYNUMBER |
-+-----+-----+---------+--------+-----------+-------------+
++-----+-----+---------+--------+-----------+
+| ID1 | ID2 | VERSION | IDXLEN | OFFSETLEN |
++-----+-----+---------+--------+-----------+
 
 +------------+------------+
 | Index (xX) | Offset (xX)|
@@ -151,5 +151,39 @@ This field is then used to save the Uniq IDs, version, number of entries, index/
 
 The length of the ID and the offset field can be set when initializing the gzip writer, along with the maximal number of ID/offset pairs.
 
+Example::
+
+    00000000:  1f8b 0810 ea57 4f5a 0203 4655 0109 06ac 4368 6170 7465 7230  :.....WOZ..FU....Chapter0
+    00000018:  acac ac36 3436 ac43 6861 7074 6572 31ac 3136 3033 32ac 4368  :...646.Chapter1.16032.Ch
+    00000030:  6170 7465 7232 ac32 3137 3831 ac43 6861 7074 6572 33ac 3235  :apter2.21781.Chapter3.25
+    00000048:  3534 37ac 4368 6170 7465 7234 ac33 3932 3436 ac43 6861 7074  :547.Chapter4.39246.Chapt
+    00000060:  6572 35ac 3433 3435 38ac 4368 6170 7465 7236 ac34 3535 3437  :er5.43458.Chapter6.45547
+    00000078:  ac43 6861 7074 6572 37ac 3437 3936 39ac 4368 6170 7465 7238  :.Chapter7.47969.Chapter8
+    00000090:  ac35 3037 3033 ac43 6861 7074 6572 39ac 3533 3239 3943 6861  :.50703.Chapter9.53299Cha
+    000000a8:  7074 6572 3130 ac36 3230 3138 4368 6170 7465 7231 31ac 3636  :pter10.62018Chapter11.66
+    000000c0:  3032 3843 6861 7074 6572 3132 ac36 3739 3536 4368 6170 7465  :028Chapter12.67956Chapte
+    000000d8:  7231 33ac 3730 3333 3043 6861 7074 6572 3134 ac37 3438 3331  :r13.70330Chapter14.74831
+    000000f0:  4368 6170 7465 7231 35ac 3736 3938 3443 6861 7074 6572 3136  :Chapter15.76984Chapter16
+    00000108:  ac38 3030 3937 4368 6170 7465 7231 37ac 3933 3134 3743 6861  :.80097Chapter17.93147Cha
+    00000120:  7074 6572 3138 ac39 3838 3534 4368 6170 7465 7231 3931 3032  :pter18.98854Chapter19102
+    00000138:  3430 3343 6861 7074 6572 3230 3130 3533 3932 4368 6170 7465  :403Chapter20105392Chapte
+    00000150:  7232 3131 3037 3739 3043 6861 7074 6572 3232 3131 3037 3232  :r21107790Chapter22110722
+    00000168:  4368 6170 7465 7232 3331 3134 3936 3143 6861 7074 6572 3234  :Chapter23114961Chapter24
+    00000180:  3131 3631 3134 4368 6170 7465 7232 3531 3230 3731 3943 6861  :116114Chapter25120719Cha
+    00000198:  7074 6572 3236 3132 3135 3633 4368 6170 7465 7232 3731 3234  :pter26121563Chapter27124
+    000001b0:  3839 3343 6861 7074 6572 3238 3132 3933 3138 4368 6170 7465  :893Chapter28129318Chapte
+    000001c8:  7232 3931 3333 3134 3843 6861 7074 6572 3330 3133 3633 3436  :r29133148Chapter30136346
+    000001e0:  4368 6170 7465 7233 3131 3337 3230 3043 6861 7074 6572 3332  :Chapter31137200Chapter32
+    000001f8:  3133 3933 3137 4368 6170 7465 7233 3331 3532 3031 3743 6861  :139317Chapter33152017Cha
+    00000210:  7074 6572 3334 3135 3437 3635 4368 6170 7465 7233 3531 3630  :pter34154765Chapter35160
+    00000228:  3536 3743 6861 7074 6572 3336 3136 3732 3736 4368 6170 7465  :567Chapter36167276Chapte
+    00000240:  7233 3731 3734 3530 3243 6861 7074 6572 3338 3137 3630 3330  :r37174502Chapter38176030
+    00000258:  4368 6170 7465 7233 3931 3737 3230 3043 6861 7074 6572 3430  :Chapter39177200Chapter40
+    00000270:  3137 3830 3338 4368 6170 7465 7234 3131 3832 3531 3900
+
+In this example of the Moby Dick igz header, the first 10 bytes show the gzip header explained above.
+After the first 10 bytes, the comment field starts with the 2 ID bytes F and U and version 1.
+The Idx len is set to have a length of 9 and the offset needs to fit in 6 bytes.
+After this, the index to offset mapping starts until the zero byte is reached.
 
 .. automodule:: pymzml.utils

@@ -28,8 +28,9 @@ def index_by_chapter(txt):
     chapter_start = regex_patterns.MOBY_DICK_CHAPTER_PATTERN
     general_seekable_gzip_writer = GSGW(
         file        = 'Moby_Dick_indexed.gz',
-        max_idx     = 50,
-        max_idx_len = 2,
+        max_idx     = 42,
+        max_idx_len = 9,
+        max_offset_len=6,
         output_path = './Moby_Dick_indexed.gz'
     )
 
@@ -45,15 +46,18 @@ def index_by_chapter(txt):
                     ),
                     end='\r',
                 )
-                index_writer.add_data(current_chapter, current_chapter_number)
+                index = 'Chapter{0}'.format(current_chapter_number)
+                index_writer.add_data(current_chapter, index)
                 current_chapter = ''
             else:
                 current_chapter += line
         current_chapter_number  += 1
-        index_writer.add_data(current_chapter, current_chapter_number)
+
+        index = 'Chapter{0}'.format(current_chapter_number)
+        index_writer.add_data(current_chapter, index)
         print(
             'index chapter {0} '.format(
-                current_chapter_number
+                index
             ),
             end='\r'
         )

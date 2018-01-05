@@ -22,6 +22,7 @@ if __name__ == '__main__':
         'example_scripts',
         '*.py',
     )
+    print(example_script_path)
     for example_script in glob.glob(example_script_path):
         if os.path.exists(example_script) is False:
             continue
