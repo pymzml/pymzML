@@ -16,8 +16,8 @@ Copyright 2010-2017 by:
 
     | M. Kösters,
     | J. Leufken,
-    | Bald, Till
-    | Niehues, Anna
+    | T. Bald
+    | A. Niehues
     | S. Schulze,
     | K. Sugimoto,
     | R.P. Zahedi,
