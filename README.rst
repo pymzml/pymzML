@@ -5,7 +5,12 @@ Introduction
 
 The latest Documentation was generated on: |today|
 
-[![Build Status](https://travis-ci.org/pymzml/pymzML.svg?branch=master)](https://travis-ci.org/pymzml/pymzML)
+.. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
+    :target: https://travis-ci.org/pymzml/pymzML
+
+.. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
+    :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 
 *******************
