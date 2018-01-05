@@ -109,7 +109,7 @@ Check old to new function name mapping
 
 
 Convert mzML(.gz) to mzML.gz (igzip)
--------------------------------
+------------------------------------
 
 .. autofunction:: gzip_mzml.main
 

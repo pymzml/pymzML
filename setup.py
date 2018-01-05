@@ -15,7 +15,7 @@ setup(
     },
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
-    author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi and C. Fufezan',
+    author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi, M. Hippler and C. Fufezan',
     author_email     = 'christian@fufezan.net',
     url              = 'http://pymzml.github.com',
     license          = 'GNU General Public License (GPL)',

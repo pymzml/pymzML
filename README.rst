@@ -12,12 +12,12 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2017 by:
+Copyright 2010-2018 by:
 
     | M. Kösters,
     | J. Leufken,
-    | Bald, Till
-    | Niehues, Anna
+    | T. Bald
+    | A. Niehues,
     | S. Schulze,
     | K. Sugimoto,
     | R.P. Zahedi,
@@ -99,7 +99,7 @@ pymzML requires `Python`_ 3.4 or higher.
     Further, usage of python3.4+ is recommended.
 
 
-Download pzmzML using `GitHub`_ **or** the zip file:
+Download pymzML using `GitHub`_ **or** the zip file:
 
 * GitHub version: Start by cloning the GitHub repository::
 
