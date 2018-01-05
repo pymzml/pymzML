@@ -5,7 +5,7 @@ Introduction
 
 The latest Documentation was generated on: |today|
 
-|build-status-travis| |doc-status|
+[![Build Status](https://travis-ci.org/pymzml/pymzML.svg?branch=master)](https://travis-ci.org/pymzml/pymzML)
 
 
 *******************
