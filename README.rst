@@ -41,14 +41,14 @@ Contact information
 Please refer to:
 
     | Dr. Christian Fufezan
-    | Institute of Plant Biology and Biotechnology
-    | Schlossplatz 8 , R 105
-    | University of Muenster
-    | Germany
+    | Group Leader Experimental Bioinformatics
+    | Cellzome GmbH
+    | R&D Platform Technology & Science
+    | GSK
+    | Germany 
     | eMail: christian@fufezan.net
-    | Tel: +049 251 83 24861
-    |
-    | http://www.uni-muenster.de/Biologie.IBBP.AGFufezan
+    | 
+    | http:// <in transition >
 
 
 *******
