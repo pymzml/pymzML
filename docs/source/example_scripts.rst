@@ -109,7 +109,7 @@ Check old to new function name mapping
 
 
 Convert mzML(.gz) to mzML.gz (igzip)
--------------------------------
+------------------------------------
 
 .. autofunction:: gzip_mzml.main
 
@@ -117,10 +117,10 @@ Convert mzML(.gz) to mzML.gz (igzip)
 
 
 Creating a custom Filehandler
-------------------------------
+-----------------------------
 
 Introduction
-+++++++++++++
+++++++++++++
 
 It is also possible to create an own API for different forms
 of mzML files. For this, a new class needs to be written, which
@@ -128,7 +128,7 @@ implements a `read` and a `__getitem__` function.
 
 
 Implementation of the API Class
-++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++
 
 Example::
 
@@ -174,8 +174,8 @@ Example::
 		def read(self, size=-1):
 			# implement read so it starts reading in first ID,
 			# if end reached switches to next id and so on ...
-		
-			return '<spectrum index="0" id="controllerType=0 controllerNumber=1 scan=1" defaultArrayLength="917"></spectrum>\n'	
+
+			return '<spectrum index="0" id="controllerType=0 controllerNumber=1 scan=1" defaultArrayLength="917"></spectrum>\n'
 
 Enabling the new API Class in File Interface
 +++++++++++++++++++++++++++++++++++++++++++++
@@ -200,17 +200,17 @@ Example::
 
 
 Moby Dick as indexed Gzip
----------------------------
+-------------------------
 
 Example of how to use the GSGW and GSGR class to create and access indexed Gzip files
-	
+
 .. code-block:: bash
 
 
 	python3 index_moby_dick.py
 
 	python3 read_moby_dick.py 10
-		
+
 
 
 .. Scripts
