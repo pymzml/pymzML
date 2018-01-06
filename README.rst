@@ -79,10 +79,6 @@ Download
 Get the latest version via github
     | https://github.com/pymzml/pymzML
 
-or the latest package at
-    | http://pymzml.github.com/dist/pymzml.tar.bz2
-    | http://pymzml.github.com/dist/pymzml.zip
-
 The complete Documentation can be found as pdf
     | http://pymzml.github.com/dist/pymzml.pdf
 
