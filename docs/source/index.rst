@@ -18,6 +18,7 @@ Contents
     modules
     examples
     pymzml_utils
+    suppl_material
 
 Indices and tables
 ==================
