@@ -19,7 +19,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print(__doc__)
     else:
-        chap_num = int(sys.argv[1])
+        try:
+            chap_num = int(sys.argv[1])
+        except:
+            chap_num = sys.argv[1]
         print(
             '''
     Reading indexed gzip and retrieving chapter {0}

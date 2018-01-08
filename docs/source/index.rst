@@ -17,7 +17,7 @@ Contents
     quick_start
     modules
     examples
-    pymzml_utils
+    suppl_material
 
 Indices and tables
 ==================

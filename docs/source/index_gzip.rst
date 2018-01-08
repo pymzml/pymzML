@@ -185,5 +185,3 @@ In this example of the Moby Dick igz header, the first 10 bytes show the gzip he
 After the first 10 bytes, the comment field starts with the 2 ID bytes F and U and version 1.
 The Idx len is set to have a length of 9 and the offset needs to fit in 6 bytes.
 After this, the index to offset mapping starts until the zero byte is reached.
-
-.. automodule:: pymzml.utils

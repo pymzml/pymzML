@@ -5,6 +5,13 @@ Introduction
 
 The latest Documentation was generated on: |today|
 
+.. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
+    :target: https://travis-ci.org/pymzml/pymzML
+
+.. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
+    :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 
 *******************
 General information
@@ -16,7 +23,7 @@ Copyright 2010-2018 by:
 
     | M. Kösters,
     | J. Leufken,
-    | T. Bald
+    | T. Bald,
     | A. Niehues,
     | S. Schulze,
     | K. Sugimoto,
@@ -34,14 +41,14 @@ Contact information
 Please refer to:
 
     | Dr. Christian Fufezan
-    | Institute of Plant Biology and Biotechnology
-    | Schlossplatz 8 , R 105
-    | University of Muenster
-    | Germany
+    | Group Leader Experimental Bioinformatics
+    | Cellzome GmbH
+    | R&D Platform Technology & Science
+    | GSK
+    | Germany 
     | eMail: christian@fufezan.net
-    | Tel: +049 251 83 24861
-    |
-    | http://www.uni-muenster.de/Biologie.IBBP.AGFufezan
+    | 
+    | http:// <in transition >
 
 
 *******
@@ -71,10 +78,6 @@ Download
 
 Get the latest version via github
     | https://github.com/pymzml/pymzML
-
-or the latest package at
-    | http://pymzml.github.com/dist/pymzml.tar.bz2
-    | http://pymzml.github.com/dist/pymzml.zip
 
 The complete Documentation can be found as pdf
     | http://pymzml.github.com/dist/pymzml.pdf

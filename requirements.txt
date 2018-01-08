@@ -4,4 +4,8 @@ coverage >= 4.2
 plotly >= 1.12.9
 nose >= 1.3.7
 sphinx
--e git+https://github.com/mobiusklein/pynumpress.git#egg=pynumpress
+cython
+#-e git+https://github.com/mobiusklein/pynumpress.git#egg=pynumpress
+-e git+https://github.com/MKoesters/pynumpress.git#egg=pynumpress
+sphinx_rtd_theme
+
