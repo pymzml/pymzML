@@ -114,6 +114,8 @@ Download pymzML using `GitHub`_ **or** the zip file:
 .. _GitHub:
    https://github.com/pymzML/pymzml
 
+If you have troubles installing the dependencies, install numpy first separately,
+since pynumpress requires numpy to be installed.
 
 If you use Windows 7 please use the 'SDK7.1 command prompt' for installation
 of pymzML to assure correct compiling of the C extensions.
