@@ -58,6 +58,10 @@ class Factory(object):
             '-__splineOffset__0' : self.__return_neg_offset_0,
             'max_intensity'      : self.__return_max_y,
         }
+        self.style_options = {
+            'line.width' : 1, # default value
+
+        }
 
     def __return_max_y(self, i):
         """
@@ -492,7 +496,7 @@ class Factory(object):
                 'name': name,
                 'line': {
                     'color': 'rgba'+str((color[0], color[1], color[2], opacity)),
-                    'width': 1,
+                    'width': self.style_options['line.width'],
                     'shape': shape,
                     'dash'  : dash,
                 },
