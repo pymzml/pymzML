@@ -16,7 +16,6 @@ class SpectrumMS2Test(unittest.TestCase):
     Selected_precursor [(443.711242675781, 0.0)]
 
     """
-   
 
     def setUp(self):
         """
@@ -33,14 +32,22 @@ class SpectrumMS2Test(unittest.TestCase):
         scan_time = self.spec.scan_time
         self.assertIsNotNone(scan_time)
         self.assertIsInstance(scan_time, float)
-        self.assertEqual(round(scan_time,4), round(28.96722412109367, 4))
+        self.assertEqual(round(scan_time, 4), round(28.96722412109367, 4))
 
     def test_select_precursors(self):
         selected_precursor = self.spec.selected_precursors
-        self.assertIsInstance(selected_precursor[0], tuple)
-        self.assertIsInstance(selected_precursor[0][0], float)
-        self.assertIsInstance(selected_precursor[0][1], float)
-        self.assertEqual(selected_precursor,[(443.711242675781, 0.0)])
+        self.assertIsInstance(selected_precursor[0], dict)
+        self.assertIsInstance(selected_precursor[0]['mz'], float)
+        self.assertIsInstance(selected_precursor[0]['i'], float)
+        self.assertIsInstance(selected_precursor[0]['charge'], int)
+        self.assertEqual(
+            selected_precursor,
+            [{
+                'mz': 443.711242675781,
+                'i' : 0.0,
+                'charge': 2,
+            }]
+        )
 
 if __name__ == '__main__':
     unittest.main(verbosity=3)

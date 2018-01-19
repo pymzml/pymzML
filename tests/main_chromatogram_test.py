@@ -35,9 +35,10 @@ class ChromatogramTest(unittest.TestCase):
         intensity = self.chrom.i
 
     def test_i(self):
-        self.chrom.profile = [(1,10), (2,20), (3,30)]
-        peaks = self.chrom.peaks
-        self.assertPeaksIdentical(self.chrom.peaks, [(1,10), (2,20), (3,30)])
+        self.chrom.profile = [(1, 10), (2, 20), (3, 30)]
+        peaks = self.chrom.peaks()
+        print(self.chrom.peaks())
+        self.assertPeaksIdentical(peaks, [(1, 10), (2, 20), (3, 30)])
 
     def test_profile(self):
         profile = self.chrom.profile

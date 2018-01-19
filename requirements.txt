@@ -7,5 +7,6 @@ sphinx
 cython
 #-e git+https://github.com/mobiusklein/pynumpress.git#egg=pynumpress
 -e git+https://github.com/MKoesters/pynumpress.git#egg=pynumpress
+#pynumpress
 sphinx_rtd_theme
 
