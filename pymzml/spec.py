@@ -41,7 +41,8 @@ from collections import defaultdict as ddict
 from operator import itemgetter as itemgetter
 from struct import unpack
 import math
-import pymzml.obo
+# import pymzml.obo
+from functools import lru_cache
 import pymzml.regex_patterns as regex_patterns
 import re
 import sys
@@ -659,6 +660,7 @@ class Spectrum(MS_Spectrum):
             self.ID, hex(id(self))
         )
 
+    @lru_cache()
     def __getitem__(self, accession):
         """
         Access spectrum XML information by tag name
@@ -669,7 +671,6 @@ class Spectrum(MS_Spectrum):
         Returns:
             value (float or str): value of the XML tag
         """
-
         #  TODO implement cache???
         if accession == 'id':
             return_val = self.ID
@@ -690,12 +691,36 @@ class Spectrum(MS_Spectrum):
             if len(elements) == 0:
                 return_val = None
             elif len(elements) == 1:
-                return_val = elements[ 0 ]
+                return_val = elements[0]
             else:
                 return_val = elements
         return return_val
 
-    # Properties, setter and getter
+    def get(self, acc, default=None):
+        """Mimic dicts get function.
+
+        Args:
+            acc (str): accession or obo tag to return
+            default (None, optional): default value if acc is not found
+        """
+        val = self[acc]
+        if val is None:
+            val = default
+        return val
+
+    def __contains__(self, value):
+        """Check if MS tag or name can be found in spectrum.
+
+        Args:
+            value (str): MS tag or OBO name
+
+        Returns:
+            bool
+        """
+        r = False
+        if self[value] is not None:
+            r = True
+        return r
 
     @property
     def measured_precision(self):
@@ -865,18 +890,31 @@ class Spectrum(MS_Spectrum):
             selected_precursor_is = self.element.findall(
                 ".//*[@accession='MS:1000042']"
             )
+            selected_precursor_cs = self.element.findall(
+                ".//*[@accession='MS:1000041']"
+            )
+
             mz_values = []
             i_values  = []
+            charges   = []
             for obj in selected_precursor_mzs:
                 mz = obj.get('value')
                 mz_values.append( float(mz) )
             for obj in selected_precursor_is:
                 i = obj.get('value')
                 i_values.append( float(i) )
-            self._selected_precursors = [n for n in zip(mz_values, i_values) ]
+            for obj in selected_precursor_cs:
+                c = obj.get('value')
+                charges.append(int(c))
+            self._selected_precursors = [
+                {
+                    'mz'    : l[0],
+                    'i'     : l[1],
+                    'charge': l[2]
+                } for l in zip(mz_values, i_values, charges)
+            ]
 
         return self._selected_precursors
-
 
     @property
     def mz(self):
@@ -1373,7 +1411,6 @@ class Spectrum(MS_Spectrum):
                 return True
         return False
 
-
     def similarity_to(self, spec2, round_precision=0):
         """
         Compares two spectra and returns cosine
@@ -1723,10 +1760,9 @@ class Chromatogram(MS_Spectrum):
         self._centroidedPeaks = None
         return self
 
-    @property
     def peaks(self):
         """
-        Returns the list of peaks of the spectrum as tuples (time, intensity).
+        Return the list of peaks of the spectrum as tuples (time, intensity).
 
         Returns:
             peaks (list): list of time, intensity tuples
