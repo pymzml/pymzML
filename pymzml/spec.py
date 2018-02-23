@@ -1511,6 +1511,7 @@ class Spectrum(MS_Spectrum):
             'estimatedNoiseLevel' : 'estimated_noise_level',
             'removeNoise'         : 'remove_noise',
             'newPlot'             : 'new_plot',
+            'centroidedPeaks'     : 'peaks'
         }
         print(
             '''
@@ -1556,6 +1557,10 @@ class Spectrum(MS_Spectrum):
         self.deprecation_warning( sys._getframe().f_code.co_name )
         return self.remove_noise( mode = mode, noise_level = noiseLevel )
 
+    @property
+    def centroidedPeaks(self):
+        # self.deprecation_warning( sys._getframe().f_code.co_name )
+        return self.peaks('centroided')
 
 
 class Chromatogram(MS_Spectrum):
