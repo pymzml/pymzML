@@ -19,7 +19,7 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2017 by:
+Copyright 2010-2018 by:
 
     | M. Kösters,
     | J. Leufken,
@@ -87,7 +87,8 @@ The complete Documentation can be found as pdf
 Citation
 ********
 
-To be anounced
+M Kösters, J Leufken, S Schulze, K Sugimoto, J Klein, R P Zahedi, M Hippler, S A Leidel, C Fufezan; pymzML v2.0: introducing a highly compressed and seekable gzip format, Bioinformatics,
+doi: https://doi.org/10.1093/bioinformatics/bty046
 
 
 ************
