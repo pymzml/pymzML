@@ -1504,9 +1504,9 @@ class Spectrum(dict):
                 for precursorElement in element.getiterator():
 
                     if precursorElement.tag.endswith('userParam'):
-                        print ("found user param inside precursor!")
+                        # print ("found user param inside precursor!")
                         itemdict = dict(precursorElement.items())
-                        print(itemdict)
+                        # print(itemdict)
                         if 'userParams' not in self['precursors'][-1].keys():
                             self['precursors'][-1]["userParams"] = {}
                         self['precursors'][-1]["userParams"][ itemdict["name"] ] = itemdict["value"]
