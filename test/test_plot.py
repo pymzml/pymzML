@@ -17,4 +17,4 @@ fac.add([(200, 200, 200, "TEST"),(400, 400, 400, "TEST")], style='label.triangle
 fac.add([(200+20, 200+20, 200+20, "TEST"),(400+20, 400+20, 400+20, "TEST")], style='label.triangle.big', name='triangle.big', color=(0, 0, 255))
 
 fac.info()
-fac.save(filename='filenameTest')
+fac.save(filename='filenameTest.html')
