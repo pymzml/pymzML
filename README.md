@@ -21,8 +21,12 @@ Mass spectrometry has evolved to a very diverse field that relies heavily on hig
 Please cite us when using pymzml for your publications.
 
 Bald, T., Barth, J., Niehues, A., Specht, M., Hippler, M., & Fufezan, C. (2012). pymzML - Python module for high throughput bioinformatics on mass spectrometry data. Bioinformatics, 1-2.
-doi: 10.1093/bioinformatics/bts066
+doi: https://doi.org/10.1093/bioinformatics/bts066
 
+pymzML 2.0.0 has been published!
+
+M Kösters, J Leufken, S Schulze, K Sugimoto, J Klein, R P Zahedi, M Hippler, S A Leidel, C Fufezan; pymzML v2.0: introducing a highly compressed and seekable gzip format, Bioinformatics,  
+doi: https://doi.org/10.1093/bioinformatics/bty046 
 
 ### INSTALLATION
 
