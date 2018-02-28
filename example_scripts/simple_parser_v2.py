@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import pymzml
+from collections import defaultdict as ddict
 
 
 def main(mzml_file):
@@ -20,6 +21,7 @@ def main(mzml_file):
     '''
     run = pymzml.run.Reader(mzml_file)
     # print( run[10000].keys() )
+    stats = ddict(int)
     for n, spec in enumerate( run ):
         print(
             'Spectrum {0}, MS level {ms_level}'.format(
@@ -28,13 +30,15 @@ def main(mzml_file):
             ),
             end = '\r'
         )
+        # the old method to obtain peaks from the Spectrum class
+        stats[spec.ID] = len(spec.centroidedPeaks)
+
     print(
         'Parsed {0} spectra from file {1}'.format(
-            n,
-            mzml_file
+            len(stats.keys()),
+            mzml_file,
         )
     )
-
     print()
 
 if __name__ == '__main__':
