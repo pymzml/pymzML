@@ -60,8 +60,10 @@ except:
 #     import pynumpress as PyNump
 # except:
 #     pass
-import pynumpress as PyNump
-
+try:
+    import pynumpress as PyNump
+except:
+    print('Please install pynumpress: pip install pynumpress')
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
