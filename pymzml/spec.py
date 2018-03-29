@@ -908,13 +908,17 @@ class Spectrum(MS_Spectrum):
             for obj in selected_precursor_cs:
                 c = obj.get('value')
                 charges.append(int(c))
-            self._selected_precursors = [
-                {
-                    'mz'    : l[0],
-                    'i'     : l[1],
-                    'charge': l[2]
-                } for l in zip(mz_values, i_values, charges)
-            ]
+            self._selected_precursors = []
+            for pos, mz in enumerate(mz_values):
+                dict_2_save = {
+                    'mz' : mz 
+                }
+                for key, list_of_values in [ ('i', i_values ), ('charge',charges) ]:
+                    try:
+                        dict_2_save[key] = list_of_values[pos]
+                    except:
+                        continue 
+                self._selected_precursors.append( dict_2_save )
 
         return self._selected_precursors
 
