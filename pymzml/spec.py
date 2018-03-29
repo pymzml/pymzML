@@ -879,8 +879,9 @@ class Spectrum(MS_Spectrum):
     @property
     def selected_precursors(self):
         """
-        Property to access the selected precursors of an MS2 spectrum. Returns
-        m/z, intensity tuples of the selected precursor ions.
+        Property to access the selected precursors of a MS2 spectrum. Returns
+        a list of dicts containing the precursors mz and, if available intensity
+        and charge for each precursor.
 
         Returns:
             selected_precursors (list):
@@ -901,24 +902,24 @@ class Spectrum(MS_Spectrum):
             charges   = []
             for obj in selected_precursor_mzs:
                 mz = obj.get('value')
-                mz_values.append( float(mz) )
+                mz_values.append(float(mz))
             for obj in selected_precursor_is:
                 i = obj.get('value')
-                i_values.append( float(i) )
+                i_values.append(float(i))
             for obj in selected_precursor_cs:
                 c = obj.get('value')
                 charges.append(int(c))
             self._selected_precursors = []
             for pos, mz in enumerate(mz_values):
                 dict_2_save = {
-                    'mz' : mz 
+                    'mz' : mz
                 }
-                for key, list_of_values in [ ('i', i_values ), ('charge',charges) ]:
+                for key, list_of_values in [('i', i_values), ('charge', charges)]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
                     except:
-                        continue 
-                self._selected_precursors.append( dict_2_save )
+                        continue
+                self._selected_precursors.append(dict_2_save)
 
         return self._selected_precursors
 
