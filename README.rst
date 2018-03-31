@@ -19,12 +19,12 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2017 by:
+Copyright 2010-2018 by:
 
     | M. Kösters,
     | J. Leufken,
-    | T. Bald
-    | A. Niehues
+    | T. Bald,
+    | A. Niehues,
     | S. Schulze,
     | K. Sugimoto,
     | R.P. Zahedi,
@@ -87,7 +87,8 @@ The complete Documentation can be found as pdf
 Citation
 ********
 
-To be anounced
+M Kösters, J Leufken, S Schulze, K Sugimoto, J Klein, R P Zahedi, M Hippler, S A Leidel, C Fufezan; pymzML v2.0: introducing a highly compressed and seekable gzip format, Bioinformatics,
+doi: https://doi.org/10.1093/bioinformatics/bty046
 
 
 ************
@@ -102,7 +103,7 @@ pymzML requires `Python`_ 3.4 or higher.
     Further, usage of python3.4+ is recommended.
 
 
-Download pzmzML using `GitHub`_ **or** the zip file:
+Download pymzML using `GitHub`_ **or** the zip file:
 
 * GitHub version: Start by cloning the GitHub repository::
 
@@ -117,6 +118,8 @@ Download pzmzML using `GitHub`_ **or** the zip file:
 .. _GitHub:
    https://github.com/pymzML/pymzml
 
+If you have troubles installing the dependencies, install numpy first separately,
+since pynumpress requires numpy to be installed.
 
 If you use Windows 7 please use the 'SDK7.1 command prompt' for installation
 of pymzML to assure correct compiling of the C extensions.

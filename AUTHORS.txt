@@ -1,10 +1,11 @@
-v.1.0.0 Authors:
+v.2.0.0 Authors:
 ----------------
 Koesters, Manuel
 Leufken, Johannes
 Schulze, Stefan
 Sugimoto, Kazuhiko
 Zahedi, Rene
+Hippler, Michael
 Fufezan, Christian
 
 

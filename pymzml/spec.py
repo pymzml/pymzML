@@ -60,8 +60,10 @@ except:
 #     import pynumpress as PyNump
 # except:
 #     pass
-import pynumpress as PyNump
-
+try:
+    import pynumpress as PyNump
+except:
+    print('Please install pynumpress: pip install pynumpress')
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
@@ -877,8 +879,9 @@ class Spectrum(MS_Spectrum):
     @property
     def selected_precursors(self):
         """
-        Property to access the selected precursors of an MS2 spectrum. Returns
-        m/z, intensity tuples of the selected precursor ions.
+        Property to access the selected precursors of a MS2 spectrum. Returns
+        a list of dicts containing the precursors mz and, if available intensity
+        and charge for each precursor.
 
         Returns:
             selected_precursors (list):
@@ -899,20 +902,24 @@ class Spectrum(MS_Spectrum):
             charges   = []
             for obj in selected_precursor_mzs:
                 mz = obj.get('value')
-                mz_values.append( float(mz) )
+                mz_values.append(float(mz))
             for obj in selected_precursor_is:
                 i = obj.get('value')
-                i_values.append( float(i) )
+                i_values.append(float(i))
             for obj in selected_precursor_cs:
                 c = obj.get('value')
                 charges.append(int(c))
-            self._selected_precursors = [
-                {
-                    'mz'    : l[0],
-                    'i'     : l[1],
-                    'charge': l[2]
-                } for l in zip(mz_values, i_values, charges)
-            ]
+            self._selected_precursors = []
+            for pos, mz in enumerate(mz_values):
+                dict_2_save = {
+                    'mz' : mz
+                }
+                for key, list_of_values in [('i', i_values), ('charge', charges)]:
+                    try:
+                        dict_2_save[key] = list_of_values[pos]
+                    except:
+                        continue
+                self._selected_precursors.append(dict_2_save)
 
         return self._selected_precursors
 
@@ -1511,6 +1518,7 @@ class Spectrum(MS_Spectrum):
             'estimatedNoiseLevel' : 'estimated_noise_level',
             'removeNoise'         : 'remove_noise',
             'newPlot'             : 'new_plot',
+            'centroidedPeaks'     : 'peaks'
         }
         print(
             '''
@@ -1556,6 +1564,10 @@ class Spectrum(MS_Spectrum):
         self.deprecation_warning( sys._getframe().f_code.co_name )
         return self.remove_noise( mode = mode, noise_level = noiseLevel )
 
+    @property
+    def centroidedPeaks(self):
+        # self.deprecation_warning( sys._getframe().f_code.co_name )
+        return self.peaks('centroided')
 
 
 class Chromatogram(MS_Spectrum):

@@ -13,9 +13,10 @@ setup(
             'obo/*.obo.gz'
         ]
     },
+    install_requires = ['numpy', 'pynumpress', 'plotly'],
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
-    author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi and C. Fufezan',
+    author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi, M. Hippler and C. Fufezan',
     author_email     = 'christian@fufezan.net',
     url              = 'http://pymzml.github.com',
     license          = 'GNU General Public License (GPL)',
@@ -36,7 +37,5 @@ setup(
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Chemistry',
         'Topic :: Scientific/Engineering :: Medical Science Apps.',
-        'Topic :: Scientific/Engineering :: Education',
-        'Topic :: Software Development :: Libraries :: Python Modules'
     ]
 )
