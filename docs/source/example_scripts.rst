@@ -116,6 +116,15 @@ Convert mzML(.gz) to mzML.gz (igzip)
 .. include:: code_inc/gzip_mzml.inc
 
 
+Acces run infos
+---------------
+
+.. autofunction:: access_run_info.main
+
+.. include:: code_inc/access_run_info.inc
+
+
+
 Creating a custom Filehandler
 -----------------------------
 
