@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 from setuptools import setup
-from pymzml.version import pymzml_version
+import os
+
+version_path = os.path.join(
+    os.path.dirname(__file__),
+    'pymzml',
+    'version.txt'
+)
+with open(version_path, 'r') as version_file:
+    pymzml_version = version_file.read().strip()
 
 setup(
     name             = 'pymzml',
