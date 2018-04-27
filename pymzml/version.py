@@ -1,1 +1,1 @@
-pymzml_version = '2.0.2'
+pymzml_version = '2.0.3'
