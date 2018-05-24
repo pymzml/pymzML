@@ -266,10 +266,15 @@ class StandardMzml(object):
                 positions.update(spec_positions)
             else:
                 print(
-                    f'[ Warning ] Found {len(spec_positions)} spectra '
-                    f'and {len(chrom_positions)} chromatograms\n'
-                    f'[ Warning ] However Spectrum index list shows {speccnt} and '
-                    f'Chromatogram index list shows {chromcnt} entries'
+                    '[ Warning ] Found {spec_count} spectra '
+                    'and {chrom_count} chromatograms\n'
+                    '[ Warning ] However Spectrum index list shows {speccnt} and '
+                    'Chromatogram index list shows {chromcnt} entries'.format(
+                        spec_count=len(spec_positions),
+                        chrom_count=len(chrom_positions),
+                        speccnt=speccnt,
+                        chromcnt=chromcnt
+                    )
                 )
                 print(
                     '[ Warning ] Updating offset dict with found offsets '
