@@ -177,7 +177,7 @@ class MS_Spectrum(object):
                 self._precursors.append(
                     regex_patterns.SPECTRUM_ID_PATTERN.search(
                         spec_ref
-                    ).group(0)
+                    ).group(1)
                 )
         return self._precursors
 
@@ -829,7 +829,7 @@ class Spectrum(MS_Spectrum):
         if self._ID is None:
             self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
                 self.element.get('id')
-            ).group(0)
+            ).group(1)
             try:
                 self._ID = int(self._ID)
             except:

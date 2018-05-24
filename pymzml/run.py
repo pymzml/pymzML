@@ -42,6 +42,7 @@ from pymzml.file_interface import FileInterface
 import pymzml.spec as spec
 import pymzml.obo as obo
 import pymzml.regex_patterns as regex_patterns
+from pymzml.file_classes.standardMzml import StandardMzml
 
 
 class Reader(object):
@@ -73,9 +74,11 @@ class Reader(object):
         path,
         MS_precisions = None,
         obo_version   = None,
+        build_index_from_scratch=False,
         **kwargs
     ):
         """Initialize and set required attributes."""
+        self.build_index_from_scratch = build_index_from_scratch
         if MS_precisions is None:
             MS_precisions = {}
             if 'MS1_Precision' in kwargs.keys():
@@ -95,6 +98,18 @@ class Reader(object):
         self.info['file_name']   = path
         self.info['encoding']    = self._determine_file_encoding(path)
         self.info['file_object'] = self._open_file(self.info['file_name'])
+        # if build_index_from_scratch is True:
+        #     print(isinstance(self.info['file_object'], StandardMzml))
+        #     print(type(self.info['file_object']))
+        #     if isinstance(self.info['file_object'], StandardMzml):
+        #         self.info['offset_dict'] = \
+        #             self.info['file_object']._build_index_from_scratch()
+        #     else:
+        #         raise Exception(
+        #             'Can only build index from scratch '
+        #             'for standard mzML files.'
+        #         )
+        # else:
         self.info['offset_dict'] = self.info['file_object'].offset_dict
         self.info['obo_version'] = obo_version
 
@@ -168,7 +183,11 @@ class Reader(object):
             (FileInterface): Wrapper class for compressed and uncompressed
                 mzml files
         """
-        return FileInterface(path, self.info['encoding'])
+        return FileInterface(
+            path,
+            self.info['encoding'],
+            build_index_from_scratch=self.build_index_from_scratch
+        )
 
     def _determine_file_encoding(self, path):
         """
