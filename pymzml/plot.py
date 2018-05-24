@@ -383,13 +383,13 @@ class Factory(object):
             x_max = max(x_vals)
             x_min = min(x_vals)
 
-            if self.x_max[plot_num] > x_max:
+            if self.x_max[plot_num] == float('Inf') or self.x_max[plot_num] < x_max:
                 self.x_max[plot_num] = x_max
-            if self.x_min[plot_num] < x_min:
+            if self.x_min[plot_num] == -float('Inf') or self.x_min[plot_num] > x_min:
                 self.x_min[plot_num] = x_min
-            if self.y_max[plot_num] > y_max:
+            if self.y_max[plot_num] == float('Inf') or self.y_max[plot_num] < y_max:
                 self.y_max[plot_num] = y_max
-            if self.y_min[plot_num] < y_min:
+            if self.y_min[plot_num] == -float('Inf') or self.y_min[plot_num] > y_min:
                 self.y_min[plot_num] = y_min
 
             if style[0] == 'sticks':
