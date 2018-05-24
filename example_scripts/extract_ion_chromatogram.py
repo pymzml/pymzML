@@ -41,7 +41,7 @@ def main():
                 for mz,I in has_peak_matches:
                     time_dependent_intensities.append(
                         [
-                            spectrum.scan_time,
+                            spectrum.scan_time_in_minutes(),
                             I,
                             mz
                         ]

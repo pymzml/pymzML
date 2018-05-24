@@ -206,7 +206,6 @@ class StandardMzml(object):
 
     def _build_index_from_scratch(self, seeker):
         """Build an index of spectra/chromatogram data with offsets by parsing the file."""
-
         def get_data_indices(fh, chunksize=8192, lookback_size=100):
             """Get a dictionary with binary file indices of spectra and
             chromatograms in an mzML file.
@@ -259,19 +258,27 @@ class StandardMzml(object):
                 m = speccntexp.search(chunk)
                 if m is not None:
                     speccnt = int(m.group(1))
-
             # Check if everything is ok (e.g. we found the right number of
             # chromatograms and spectra) and then return the dictionary.
             if (chromcnt == len(chrom_positions) and speccnt == len(spec_positions)):
                 positions = {}
                 positions.update(chrom_positions)
                 positions.update(spec_positions)
-                # return positions # return only once in function leaves my brain sane :)
-                # self.info['spectrum_count'] = speccnt
-                # self.info['chromatogram_count'] = chromcnt
-
             else:
-                positions = None
+                print(
+                    f'[ Warning ] Found {len(spec_positions)} spectra '
+                    f'and {len(chrom_positions)} chromatograms\n'
+                    f'[ Warning ] However Spectrum index list shows {speccnt} and '
+                    f'Chromatogram index list shows {chromcnt} entries'
+                )
+                print(
+                    '[ Warning ] Updating offset dict with found offsets '
+                    'but some might be still missing\n'
+                    '[ Warning ] This may happen because your is file truncated'
+                )
+                positions = {}
+                positions.update(chrom_positions)
+                positions.update(spec_positions)
             return positions
 
         indices = get_data_indices(seeker)
