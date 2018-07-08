@@ -132,7 +132,7 @@ class Reader(object):
         ...     print(spectrum.mz, end='\\r')
 
         """
-        has_ref_group = self.info['referenceable_param_group_list']
+        has_ref_group = self.info.get('referenceable_param_group_list', False)
         while True:
             event, element = next(self.iter, ('END', 'END'))
             if event == 'end':

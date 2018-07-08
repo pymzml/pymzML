@@ -1203,13 +1203,19 @@ class Spectrum(MS_Spectrum):
         return ((mz - PROTON) * charge)
 
     def _set_params_from_reference_group(self, ref_element):
-        for ele in ref_element.getiterator():
-            if ele.tag.endswith('}referenceableParamGroup'):
-                ref_id = ele.get('id')
-                if ref_id == self.element.get('id'):
-                    for param in ele.getiterator():
-                        self.element.append(ele)
-                        acc = param.get('accession')
+        ref = self.element.find('{ns}referenceableParamGroupRef'.format(
+            ns=self.ns
+        ))
+        if ref is not None:
+            ref = ref.get('ref')
+        ele = ref_element.find(".//*[@id='{ref}']".format(
+            ref=ref,
+            ns=self.ns
+        ))
+        if ele is not None and ref == ele.get('id'):
+            for param in ele.getiterator():
+                self.element.append(ele)
+                acc = param.get('accession')
     # Public functions
 
     def reduce(self, mz_range=(None, None)):
