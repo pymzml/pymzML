@@ -847,7 +847,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._ms_level is None:
             self._ms_level = self.element.find(
-                "./{ns}cvParam[@accession='MS:1000511']".format(
+                ".//{ns}cvParam[@accession='MS:1000511']".format(
                     ns=self.ns
                 )
             ).get('value') # put hardcoded MS tags in minimum.py???
@@ -1202,6 +1202,20 @@ class Spectrum(MS_Spectrum):
         """
         return ((mz - PROTON) * charge)
 
+    def _set_params_from_reference_group(self, ref_element):
+        ref = self.element.find('{ns}referenceableParamGroupRef'.format(
+            ns=self.ns
+        ))
+        if ref is not None:
+            ref = ref.get('ref')
+        ele = ref_element.find(".//*[@id='{ref}']".format(
+            ref=ref,
+            ns=self.ns
+        ))
+        if ele is not None and ref == ele.get('id'):
+            for param in ele.getiterator():
+                self.element.append(ele)
+                acc = param.get('accession')
     # Public functions
 
     def reduce(self, mz_range=(None, None)):

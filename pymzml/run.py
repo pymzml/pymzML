@@ -132,11 +132,16 @@ class Reader(object):
         ...     print(spectrum.mz, end='\\r')
 
         """
+        has_ref_group = self.info.get('referenceable_param_group_list', False)
         while True:
             event, element = next(self.iter, ('END', 'END'))
             if event == 'end':
                 if element.tag.endswith('}spectrum'):
                     spectrum = spec.Spectrum(element)
+                    if has_ref_group:
+                        spectrum._set_params_from_reference_group(
+                            self.info['referenceable_param_group_list_element']
+                        )
                     ms_level = spectrum.ms_level
                     spectrum.measured_precision = self.ms_precisions[ms_level]
                     spectrum.calling_instance = self
@@ -263,7 +268,7 @@ class Reader(object):
                         'version',
                         '1.1.0'
                     )
-            elif element.tag.endswith('}referenceable_param_group_list'):
+            elif element.tag.endswith('}referenceableParamGroupList'):
                 self.info['referenceable_param_group_list'] = True
                 self.info['referenceable_param_group_list_element'] = element
             elif element.tag.endswith('}spectrumList'):
