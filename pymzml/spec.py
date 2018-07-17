@@ -438,6 +438,7 @@ class Spectrum(MS_Spectrum):
             "internal_precision"
             "noise_level_estimate",
             "selected_precursors"
+            "_id_dict"
         ]
 
         self._centroided_peaks             = None
@@ -466,8 +467,9 @@ class Spectrum(MS_Spectrum):
         self._transformed_peaks            = None
         self.calling_instance              = None
         self.element                       = element
-        self._measured_precision            = measured_precision
+        self._measured_precision           = measured_precision
         self.noise_level_estimate          = {}
+        self._id_dict                      = None
 
         if self.element:
             self.ns = re.match(
@@ -836,6 +838,19 @@ class Spectrum(MS_Spectrum):
             except:
                 pass
         return self._ID
+
+    @property
+    def id_dict(self):
+        if self._id_dict is None:
+            tuples = []
+            captures = regex_patterns.SPECTRUM_PATTERN3.match(
+                self.element.attrib['id']
+            ).captures(1)
+            for k in captures:
+                k = k.strip().split('=')
+                tuples.append(k)
+            self._id_dict = dict(tuples)
+        return self._id_dict
 
     @property
     def ms_level(self):
