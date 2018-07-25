@@ -177,7 +177,7 @@ class MS_Spectrum(object):
                 self._precursors.append(
                     regex_patterns.SPECTRUM_ID_PATTERN.search(
                         spec_ref
-                    ).group(0)
+                    ).group(1)
                 )
         return self._precursors
 
@@ -457,6 +457,7 @@ class Spectrum(MS_Spectrum):
         self._profile                      = None
         self._reprofiled_peaks             = None
         self._scan_time                    = None
+        self._scan_time_unit               = None
         self._t_mass_set                   = None
         self._t_mz_set                     = None
         self._TIC                          = None
@@ -829,7 +830,7 @@ class Spectrum(MS_Spectrum):
         if self._ID is None:
             self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
                 self.element.get('id')
-            ).group(0)
+            ).group(1)
             try:
                 self._ID = int(self._ID)
             except:
@@ -846,7 +847,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._ms_level is None:
             self._ms_level = self.element.find(
-                "./{ns}cvParam[@accession='MS:1000511']".format(
+                ".//{ns}cvParam[@accession='MS:1000511']".format(
                     ns=self.ns
                 )
             ).get('value') # put hardcoded MS tags in minimum.py???
@@ -855,25 +856,47 @@ class Spectrum(MS_Spectrum):
     @property
     def scan_time(self):
         """
-        Property to access the retention time in minutes.
+        Property to access the retention time and retention time unit.
+        Please note, that we do not assume the retention time unit,
+        if it is not correctly defined in the mzML. 
+        It is set to 'unicorns' in this case.
 
         Returns:
             scan_time (float):
+            scan_time_unit (str):
         """
-        if self._scan_time is None:
+        if self._scan_time is None or self._scan_time_unit is None:
             scan_time_ele = self.element.find(
                 ".//*[@accession='MS:1000016']".format(
                     ns=self.ns
                 )
             )
             self._scan_time = float(scan_time_ele.attrib.get('value'))
-            time_unit = scan_time_ele.get('unitName')
-            if time_unit.lower() == 'second':
-                self._scan_time /= 60.0
-            elif time_unit.lower() == 'minute':
-                pass
-            else:
-                raise Exception("Time unit '{0}' unknown".format(time_unit))
+            self._scan_time_unit = scan_time_ele.get('unitName', 'unicorns')
+        return self._scan_time, self._scan_time_unit
+
+    # @property
+    def scan_time_in_minutes(self):
+        """
+        Property to access the retention time in minutes.
+        If the retention time unit is defined within the mzML,
+        the retention time is converted into minutes and returned 
+        without the unit.
+
+        Returns:
+            scan_time (float):
+        """
+
+        self._scan_time, time_unit = self.scan_time
+        if self._scan_time_unit.lower() == 'second':
+            self._scan_time /= 60.0
+        elif self._scan_time_unit.lower() == 'minute':
+            pass
+        elif self._scan_time_unit.lower() == 'hour':
+            self._scan_time *= 60.0
+            pass
+        else:
+            raise Exception("Time unit '{0}' unknown".format(self._scan_time_unit))
         return self._scan_time
 
     @property
@@ -1179,6 +1202,20 @@ class Spectrum(MS_Spectrum):
         """
         return ((mz - PROTON) * charge)
 
+    def _set_params_from_reference_group(self, ref_element):
+        ref = self.element.find('{ns}referenceableParamGroupRef'.format(
+            ns=self.ns
+        ))
+        if ref is not None:
+            ref = ref.get('ref')
+        ele = ref_element.find(".//*[@id='{ref}']".format(
+            ref=ref,
+            ns=self.ns
+        ))
+        if ele is not None and ref == ele.get('id'):
+            for param in ele.getiterator():
+                self.element.append(ele)
+                acc = param.get('accession')
     # Public functions
 
     def reduce(self, mz_range=(None, None)):

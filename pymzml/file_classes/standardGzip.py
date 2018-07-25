@@ -68,7 +68,7 @@ class StandardGzip(object):
             if event == 'end':
                 if element.tag.endswith('}spectrum'):
                     if int(regex_patterns.SPECTRUM_ID_PATTERN.search(
-                            element.get('id')).group(0)) == identifier:
+                            element.get('id')).group(1)) == identifier:
                         self.file_handler.seek(old_pos, 0)
                         return spec.Spectrum(element, measured_precision=5e-6)
                 elif element.tag.endswith('}chromatogram'):

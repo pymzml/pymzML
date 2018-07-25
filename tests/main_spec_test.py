@@ -408,7 +408,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(tic, 9.6721256e07)
 
     def test_scan_time(self):
-        scan_time = self.spec.scan_time
+        scan_time, unit = self.spec.scan_time
         self.assertIsNotNone(scan_time)
         self.assertIsInstance(scan_time, float)
         self.assertEqual(scan_time, 0.023756566)

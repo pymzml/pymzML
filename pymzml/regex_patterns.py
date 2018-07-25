@@ -24,7 +24,7 @@ Regex pattern for SIM index
 
 
 SPECTRUM_ID_PATTERN = re.compile(
-    r'[0-9]*$'
+    r'="{0,1}([0-9]*)"{0,1}>{0,1}$'
 )
 '''
 Simplified spectrum id regex. Greedly catches ints at the end of line
@@ -51,8 +51,17 @@ SPECTRUM_OPEN_PATTERN = re.compile(
 Regex to catch specturm open xml tag with encoded array length
 '''
 
+CHROMO_OPEN_PATTERN = re.compile(
+    b'<chromatogram\s.*?id="(.*?)"'
+)
+
 SPECTRUM_CLOSE_PATTERN = re.compile(
     b'</spectrum>'
+)
+'''Regex to catch spectrum xml close tags'''
+
+CHROMATOGRAM_CLOSE_PATTERN = re.compile(
+    b'</chromatogram>'
 )
 '''Regex to catch spectrum xml close tags'''
 
