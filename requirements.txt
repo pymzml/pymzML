@@ -1,3 +1,2 @@
 nose
 plotly < 2.0
-pyopenms
