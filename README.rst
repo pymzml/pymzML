@@ -128,7 +128,7 @@ of pymzML to assure correct compiling of the C extensions.
 Testing
 =======
 
-To test the package and correct installation:
+To test the package and correct installation::
     
     nosetests tests/*.py
 
