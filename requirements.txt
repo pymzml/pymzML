@@ -4,7 +4,7 @@ plotly < 2.0
 nose >= 1.3.7
 sphinx
 cython
-#-e git+https://github.com/MKoesters/pynumpress.git#egg=pynumpress
-pynumpress
+-e git+https://github.com/MKoesters/pynumpress.git#egg=pynumpress
+#pynumpress
 sphinx_rtd_theme
 

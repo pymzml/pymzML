@@ -57,7 +57,6 @@ def index_gzip(
                     lineID = re.search(
                         regex_patterns.SPECTRUM_TAG_PATTERN, line
                     ).group('index')
-
                     nativeID = int(regex_patterns.SPECTRUM_ID_PATTERN.search(
                         lineID
                     ).group(0))

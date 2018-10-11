@@ -1,6 +1,6 @@
 .. code-block:: python
 
-	#!/usr/bin/env python3.4
+	#!/usr/bin/env python3
 	
 	import sys
 	import os
@@ -18,6 +18,9 @@
 	    """
 	
 	    for mzml_path in glob.glob(os.path.join(folder, '*.mzML')):
+	        if os.path.exists('{0}.gz'.format(mzml_path)):
+	            print('Skipping: {0}'.format(mzml_path))
+	            continue
 	        print('Processing file: {0}'.format(mzml_path))
 	        with open(mzml_path) as fin:
 	            fin.seek(0,2)
