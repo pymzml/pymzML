@@ -451,7 +451,7 @@ class Spectrum(dict):
         """
         isProfile = False
         for k in self.keys():
-            if isinstance(k, str):
+            if isinstance(k, str) or isinstance(k, unicode):
                 if 'profile' in k:
                     isProfile = True
                     break
@@ -1178,7 +1178,6 @@ class Spectrum(dict):
                     target = mz_list[i] + (ISOTOPE_AVERAGE_DIFFERENCE * i_envelope)/ charge
                     #target = last_mz + ISOTOPE_AVERAGE_DIFFERENCE / charge
                     hasPeak_result = self.hasPeak(target)
-
                     if len(hasPeak_result) > 1:
                         print("Found more than one peak. This is not expected")
                         sys.exit(1)
