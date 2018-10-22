@@ -124,5 +124,15 @@ since pynumpress requires numpy to be installed.
 If you use Windows 7 please use the 'SDK7.1 command prompt' for installation
 of pymzML to assure correct compiling of the C extensions.
 
+=======
+Testing
+=======
+
+To test the package and correct installation::
+    
+    nosetests tests/*.py
+
+
+
 
 

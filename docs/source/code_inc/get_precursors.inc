@@ -32,7 +32,9 @@
 	        if spectrum.ms_level == 2:
 	            selected_precursors = spectrum.selected_precursors
 	            if spectrum.selected_precursors is not None:
-	                for precursor_mz, precursor_intensity in selected_precursors:
+	                for precursor_dict in selected_precursors:
+	                    precursor_mz = precursor_dict['mz']
+	                    precursor_i = precursor_dict['i']
 	                    rounded_precursor_mz = round(precursor_mz,3)
 	                    if rounded_precursor_mz not in fragmented_precursors.keys():
 	                        fragmented_precursors[rounded_precursor_mz] = []
