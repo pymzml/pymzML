@@ -59,7 +59,7 @@ def index_gzip(
                     ).group('index')
                     nativeID = int(regex_patterns.SPECTRUM_ID_PATTERN.search(
                         lineID
-                    ).group(0))
+                    ).group(1))
 
                 elif line.strip().startswith('<chromatogram '):
                     data += line
