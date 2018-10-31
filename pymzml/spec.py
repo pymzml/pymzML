@@ -236,7 +236,11 @@ class MS_Spectrum(object):
             "./{ns}binary".format(
                 ns=self.ns
             )
-        ).text.encode("utf-8")
+        ).text
+        if data is not None:
+            data = data.encode("utf-8")
+        else:
+            data = ''
         return (data, d_array_length, f_type, comp)
 
     @property
@@ -267,31 +271,27 @@ class MS_Spectrum(object):
         d_array_length just for compatibility
         """
         out_data = b64dec(data)
-        if 'zlib' in comp or \
-            'zlib compression' in comp:
-            out_data = zlib.decompress(out_data)
-        if 'ms-np-linear' in comp or\
-            'ms-np-pic' in comp or\
-            'ms-np-slof' in comp or\
-            'MS-Numpress linear prediction compression' in comp or\
-            'MS-Numpress short logged float compression' in comp:
+        if len(out_data) != 0:
+            if 'zlib' in comp or \
+                'zlib compression' in comp:
+                out_data = zlib.decompress(out_data)
+            if 'ms-np-linear' in comp or\
+                'ms-np-pic' in comp or\
+                'ms-np-slof' in comp or\
+                'MS-Numpress linear prediction compression' in comp or\
+                'MS-Numpress short logged float compression' in comp:
 
-            out_data = self._decodeNumpress_to_array(out_data, comp)
-        # else:
-        #     print(
-        #         'New data compression ({0}) detected, cant decompress'.format(
-        #             comp
-        #         )
-        #     )
-        #     sys.exit(1)
-        if float_type == '32-bit float':
-            # one character code may be sufficient too (f)
-            f_type = np.float32
-            out_data = np.fromstring(out_data, f_type)
-        elif float_type == '64-bit float':
-            # one character code may be sufficient too (d)
-            f_type = np.float64
-            out_data = np.fromstring(out_data, f_type)
+                out_data = self._decodeNumpress_to_array(out_data, comp)
+            if float_type == '32-bit float':
+                # one character code may be sufficient too (f)
+                f_type = np.float32
+                out_data = np.fromstring(out_data, f_type)
+            elif float_type == '64-bit float':
+                # one character code may be sufficient too (d)
+                f_type = np.float64
+                out_data = np.fromstring(out_data, f_type)
+        else:
+            out_data = np.array([])
         return out_data
 
     def _decode_to_tuple(self, data, d_array_length, float_type, comp):
@@ -304,28 +304,32 @@ class MS_Spectrum(object):
                 raises an exception if data could not be decoded.
         """
         dec_data = b64dec(data)
-        if 'zlib' in comp or\
-           'zlib compression' in comp:
-            dec_data = zlib.decompress(dec_data)
-        if set(['ms-np-linear', 'ms-np-pic', 'ms-np-slof']) & set(comp):
-            self._decodeNumpress(data, comp)
-        # else:
-        #     print(
-        #         'New data compression ({0}) detected, cant decompress'.format(
-        #             comp
-        #         )
-        #     )
-        #     sys.exit(1)
-        if float_type == '32-bit float':
-            f_type = 'f'
-        elif float_type == '64-bit float':
-            f_type = 'd'
-        fmt = "{endian}{array_length}{float_type}".format(
-            endian="<",
-            array_length=d_array_length,
-            float_type=f_type
-        )
-        return unpack(fmt, dec_data)
+        if len(dec_data) != 0:
+            if 'zlib' in comp or\
+               'zlib compression' in comp:
+                dec_data = zlib.decompress(dec_data)
+            if set(['ms-np-linear', 'ms-np-pic', 'ms-np-slof']) & set(comp):
+                self._decodeNumpress(data, comp)
+            # else:
+            #     print(
+            #         'New data compression ({0}) detected, cant decompress'.format(
+            #             comp
+            #         )
+            #     )
+            #     sys.exit(1)
+            if float_type == '32-bit float':
+                f_type = 'f'
+            elif float_type == '64-bit float':
+                f_type = 'd'
+            fmt = "{endian}{array_length}{float_type}".format(
+                endian="<",
+                array_length=d_array_length,
+                float_type=f_type
+            )
+            ret_data = unpack(fmt, dec_data)
+        else:
+            ret_data = []
+        return ret_data
 
     def _decodeNumpress_to_array(self, data, compression):
         """
@@ -858,7 +862,7 @@ class Spectrum(MS_Spectrum):
         """
         Property to access the retention time and retention time unit.
         Please note, that we do not assume the retention time unit,
-        if it is not correctly defined in the mzML. 
+        if it is not correctly defined in the mzML.
         It is set to 'unicorns' in this case.
 
         Returns:
@@ -880,7 +884,7 @@ class Spectrum(MS_Spectrum):
         """
         Property to access the retention time in minutes.
         If the retention time unit is defined within the mzML,
-        the retention time is converted into minutes and returned 
+        the retention time is converted into minutes and returned
         without the unit.
 
         Returns:
