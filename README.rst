@@ -12,6 +12,8 @@ The latest Documentation was generated on: |today|
     :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/v/pymzML.svg
+   :target: https://pypi.org/project/pymzML/
 
 *******************
 General information
