@@ -3,8 +3,6 @@
 Introduction
 ############
 
-The latest Documentation was generated on: |today|
-
 .. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
     :target: https://travis-ci.org/pymzml/pymzML
 
