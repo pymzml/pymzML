@@ -1311,8 +1311,7 @@ class Spectrum(MS_Spectrum):
                 ) / float(len(self.peaks('centroided')))
             else:
                 print(
-                    'Do not understand noise level estimation method call with \
-                    given mode: {0}'.format(
+                    'Do not understand noise level estimation method call with given mode: {0}'.format(
                         mode
                     )
                 )
