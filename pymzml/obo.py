@@ -77,6 +77,7 @@ import sys
 import os
 import re
 import gzip
+import codecs
 
 
 class OboTranslator(object):
@@ -186,10 +187,13 @@ class OboTranslator(object):
                     "The file may be corrupted or not gzipped."
                 )
 
-        with open_func(obo_file, 'rt') as obo:
+        # with codecs.getreader("utf-8")(
+        #         open_func(obo_file, 'rt') errors="replace") as obo:
+        with open_func(obo_file) as obo:
             collections = {}
             collect = False
-            for line in obo:
+            for line_raw in obo:
+                line = line_raw.decode('urf-8')
                 if line.strip() in ('[Term]', ''):
                     collect = True
                     if not collections:
