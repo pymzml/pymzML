@@ -193,7 +193,7 @@ class OboTranslator(object):
             collections = {}
             collect = False
             for line_raw in obo:
-                line = line_raw.decode('urf-8')
+                line = line_raw.decode('utf-8')
                 if line.strip() in ('[Term]', ''):
                     collect = True
                     if not collections:
