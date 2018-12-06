@@ -12,6 +12,10 @@ Introduction
 
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
+   
+.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
+   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
+   :alt: AppVeyor CI status
 
 *******************
 General information
