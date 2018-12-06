@@ -1,0 +1,11 @@
+environment:
+  matrix:
+    - PYTHON: "C:\\Python36-x64"
+
+install:
+  - cmd: "%PYTHON%\\python.exe setup.py install"
+  - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
+  - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
+  - cmd: "%PYTHON%/Scripts/nosetests.exe"
+
+build: off
