@@ -116,6 +116,14 @@ Convert mzML(.gz) to mzML.gz (igzip)
 .. include:: code_inc/gzip_mzml.inc
 
 
+Multi threading conversion of mzML(.gz) to mzML.gz (igzip)
+----------------------------------------------------------
+
+.. autofunction:: multi_threading_file_compression.main
+
+.. include:: code_inc/multi_threading_file_compression.inc
+
+
 Acces run infos
 ---------------
 
