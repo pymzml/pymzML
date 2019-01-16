@@ -23,7 +23,7 @@ def main(mzml_file):
     pf = Factory()
     pf.new_plot()
     pf.add(
-        run['TIC'].peaks,
+        run['TIC'].peaks(),
         color = (0, 0, 0),
         style = 'lines',
         title = mzml_basename

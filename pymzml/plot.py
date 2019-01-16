@@ -510,6 +510,7 @@ class Factory(object):
         )
 
         self.plots[plot_num].append(trace)
+        return trace
 
     def info(self):
         """
