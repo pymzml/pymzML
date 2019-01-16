@@ -1311,7 +1311,9 @@ class Spectrum(MS_Spectrum):
                 ) / float(len(self.peaks('centroided')))
             else:
                 print(
-                    'dont understand noise level estimation method call', mode
+                    'Do not understand noise level estimation method call with given mode: {0}'.format(
+                        mode
+                    )
                 )
             return_value = self.noise_level_estimate[mode]
         return return_value
@@ -1381,20 +1383,29 @@ class Spectrum(MS_Spectrum):
             extrema (tuple) : tuple of minimal and maximum m/z or intensity
 
         """
-        if key not in ['mz', 'i']:
-            print("Dont understand extreme request ")
+        available_extreme_values = ['mz', 'i']
+        if key not in available_extreme_values:
+            print(
+                "Do not understand extreme request: '{0}'; available values are: {1}".format(
+                    key,
+                    available_extreme_values
+                )
+            )
+            exit()
         if self._extreme_values is None:
             self._extreme_values = {}
         try:
             if key == 'mz':
+                all_mz_values = [mz for mz, i in self.peaks('raw')]
                 self._extreme_values['mz'] = (
-                    min([mz for mz, i in self.peaks('raw')]),
-                    max([mz for mz, i in self.peaks('raw')])
+                    min(all_mz_values),
+                    max(all_mz_values)
                 )
             else:
-                self._extreme_values['i']  = (
-                    min([i for mz, i in self.peaks('raw')]),
-                    max([i for mz, i in self.peaks('raw')])
+                all_i_values = [i for mz, i in self.peaks('raw')]
+                self._extreme_values['i'] = (
+                    min(all_i_values),
+                    max(all_i_values)
                 )
         except ValueError:
             # emtpy spectrum
@@ -1483,7 +1494,7 @@ class Spectrum(MS_Spectrum):
             to 1.
         """
         assert isinstance(spec2, Spectrum), \
-            "Spectrum2 is not a pymzML spectrum"
+            "Spectrum 2 is not a pymzML spectrum"
 
         vector1 = ddict(int)
         vector2 = ddict(int)
