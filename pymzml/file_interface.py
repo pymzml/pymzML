@@ -5,7 +5,6 @@ Interface for mzML files
 
 @author: Manuel Koesters
 """
-from __future__ import print_function
 from pymzml.file_classes import indexedGzip
 from pymzml.file_classes import standardGzip
 from pymzml.file_classes import standardMzml
