@@ -12,11 +12,8 @@ Christian Fufezan
 import sys
 import struct
 import math
-try:
-    import numpy as np
-except:
-    pass
-    # raise Exception('Numpy must be installed to import MSNumpress class')
+
+import numpy as np
 
 
 class MSNumpress:

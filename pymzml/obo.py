@@ -72,7 +72,6 @@ OBO file. Please refer to :ref:`example_scripts` for further usage information.
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import print_function
 import sys
 import os
 import re
@@ -241,6 +240,7 @@ class OboTranslator(object):
             return True
         else:
             return False
+
 
 if __name__ == '__main__':
     print(__doc__)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-import pymzml
 import os
+
+import pymzml
 
 
 def main():
@@ -40,7 +40,8 @@ def main():
             spectrum.similarityTo(
                 spectrum_list[0]
             )
-            break      
+            break
+
 
 if __name__ == '__main__':
     main()

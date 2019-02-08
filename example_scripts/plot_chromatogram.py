@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-import sys
-import pymzml
 import os
+import sys
+
+import pymzml
 from pymzml.plot import Factory
 
 

@@ -5,13 +5,14 @@ Interface for uncompressed mzML files.
 
 @author: Manuel Koesters
 """
-from __future__ import print_function
-import codecs
-import pymzml.spec as spec
-import pymzml.regex_patterns as regex_patterns
-from xml.etree.ElementTree import XML, iterparse
-import re
+
 import bisect
+import codecs
+import re
+from xml.etree.ElementTree import XML, iterparse
+
+from .. import spec
+from .. import regex_patterns
 
 
 class StandardMzml(object):
@@ -614,6 +615,7 @@ class StandardMzml(object):
         """
         """
         self.file_handler.close()
+
 
 if __name__ == '__main__':
     print(__doc__)

@@ -31,18 +31,19 @@ Note:
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see
-#    <http://www.gnu.org/licenses/>.from __future__ import print_function
+#    <http://www.gnu.org/licenses/>
 
 
 import re
 import os
-from collections import defaultdict as ddict
 import xml.etree.ElementTree as ElementTree
-from pymzml.file_interface import FileInterface
-import pymzml.spec as spec
-import pymzml.obo as obo
-import pymzml.regex_patterns as regex_patterns
-from pymzml.file_classes.standardMzml import StandardMzml
+from collections import defaultdict as ddict
+
+from . import spec
+from . import obo
+from . import regex_patterns
+from .file_interface import FileInterface
+from .file_classes.standardMzml import StandardMzml
 
 
 class Reader(object):
@@ -206,15 +207,14 @@ class Reader(object):
         """
         mzml_encoding = 'utf-8'
         if os.path.exists(path):
-            sniffer = open(path, 'rb')
-            header = sniffer.readline()
-            encoding_pattern = regex_patterns.FILE_ENCODING_PATTERN
-            match = encoding_pattern.search(header)
-            if match:
-                mzml_encoding = bytes.decode(
-                    match.group('encoding')
-                )
-            sniffer.close()
+            with open(path, 'rb') as sniffer:
+                header = sniffer.readline()
+                encoding_pattern = regex_patterns.FILE_ENCODING_PATTERN
+                match = encoding_pattern.search(header)
+                if match:
+                    mzml_encoding = bytes.decode(
+                        match.group('encoding')
+                    )
         return mzml_encoding
 
     def _init_obo_translator(self):

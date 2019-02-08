@@ -2,15 +2,14 @@
 # -*- coding: utf-8 -*-
 
 
-from __future__ import print_function
-
-from collections import defaultdict
 import argparse
+from collections import defaultdict
 
 import pymzml.obo
 
 
 FIELDNAMES = ['id', 'name', 'def', 'is_a']
+
 
 def main(args):
     '''
@@ -98,4 +97,3 @@ if __name__ == '__main__':
     args = argparser.parse_args()
 
     main(args)
-

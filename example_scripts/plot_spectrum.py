@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-import pymzml
 import os
+
+import pymzml
 
 
 def main():

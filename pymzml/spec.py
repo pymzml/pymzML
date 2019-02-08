@@ -35,35 +35,23 @@ with profile data (time, intensity) in an total ion chromatogram.
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import print_function
-from base64 import b64decode as b64dec
-from collections import defaultdict as ddict
-from operator import itemgetter as itemgetter
-from struct import unpack
+
 import math
-# import pymzml.obo
-from functools import lru_cache
-import pymzml.regex_patterns as regex_patterns
 import re
 import sys
+import warnings
 import xml.etree.ElementTree as ElementTree
 import zlib
+from base64 import b64decode as b64dec
+from collections import defaultdict as ddict
+from functools import lru_cache
+from operator import itemgetter as itemgetter
+from struct import unpack
 
-global __NP
-try:
-    import numpy as np
-    __NP = 'available!'
-except:
-    __NP = None
+import numpy as np
 
-# try:
-#     import pynumpress as PyNump
-# except:
-#     pass
-try:
-    import pynumpress as PyNump
-except:
-    print('Please install pynumpress: pip install pynumpress')
+from . import regex_patterns
+from .decoder import MSDecoder
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
@@ -348,13 +336,11 @@ class MS_Spectrum(object):
         comp_ms_tags = [self.calling_instance.OT[comp]['id'] for comp in compression]
         data = np.frombuffer(data, dtype=np.uint8)
         if 'MS:1002312' in comp_ms_tags:
-            result = PyNump.decode_linear(data)
+            result = MSDecoder.decode_linear(data)
         elif 'MS:1002313' in comp_ms_tags:
-            # PyNump.decodePic(data, result)
-            result  = PyNump.decode_pic(data)
+            result = MSDecoder.decode_pic(data)
         elif 'MS:1002314' in comp_ms_tags:
-            # PyNump.decodeSlof(data, result)
-            result = PyNump.decode_slof(data)
+            result = MSDecoder.decode_slof(data)
         return result
 
     def _median(self, data):
@@ -367,22 +353,7 @@ class MS_Spectrum(object):
         Returns:
             median (float): median of the input data
         """
-        'NEEDS Numpy version'
-        if globals()['__NP'] is not None:
-            median = np.median(data)
-        else:
-            if len(data) == 0:
-                return None
-            data.sort()
-            l = len(data)
-            if not l % 2:
-                median = (
-                    data[int(math.floor(float(l) / float(2)))] \
-                    + data[int(math.ceil(float(l) / float(2)))]
-                ) / float(2.0)
-            else:
-                median = data[int(l / 2)]
-        return median
+        return np.median(data)
 
     def to_string(self, encoding='latin-1', method='xml'):
         """
@@ -478,12 +449,8 @@ class Spectrum(MS_Spectrum):
                 '\{.*\}', element.tag
             ).group(0) if re.match('\{.*\}', element.tag) else ''
 
-        if globals()['__NP'] is None:
-            self._decode = self._decode_to_tuple
-            self._array  = list
-        else:
-            self._decode = self._decode_to_numpy
-            self._array  = np.array
+        self._decode = self._decode_to_numpy
+        self._array  = np.array
 
     def __del__(self):
         """
@@ -558,41 +525,25 @@ class Spectrum(MS_Spectrum):
         """
         assert isinstance(value, (int, float))
         if self._peak_dict['raw'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks(
-                    [(mz, i * float(value)) for mz, i in self.peaks('raw')],
-                    'raw'
-                )
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (self.peaks('raw')[:, 0], self.peaks('raw')[:, 1] * value)
-                    ),
-                    'raw'
-                )
+            self.set_peaks(
+                np.column_stack(
+                    (self.peaks('raw')[:, 0], self.peaks('raw')[:, 1] * value)
+                ),
+                'raw'
+            )
         if self._peak_dict['centroided'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks(
-                    [(mz, i * float(value)) for mz, i in self.centroided_peaks],
-                    'centroided'
-                )
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (
-                            self.centroided_peaks[:, 0],
-                            self.centroided_peaks[:, 1] * value
-                        )
-                    ),
-                    'centroided'
-                )
+            self.set_peaks(
+                np.column_stack(
+                    (
+                        self.centroided_peaks[:, 0],
+                        self.centroided_peaks[:, 1] * value
+                    )
+                ),
+                'centroided'
+            )
         if self._peak_dict['reprofiled'] is not None:
-            if globals()['__NP'] is None:
-                for mz in self._peak_dict['reprofiled'].keys():
-                    self._peak_dict['reprofiled'][mz] *= float(value)
-            else:
-                # TODO more efficient version with numpy
-                pass
+            for mz in self._peak_dict['reprofiled'].keys():
+                self._peak_dict['reprofiled'][mz] *= float(value)
         return self
 
     def __truediv__(self, value):
@@ -608,41 +559,24 @@ class Spectrum(MS_Spectrum):
         """
         assert isinstance(value, (int, float)), ''
         if self._peak_dict['raw'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks([(mz, i / float(value)) for mz, i in self.peaks('raw')], 'raw')
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (
-                            self.peaks('raw')[:, 0],
-                            self.peaks('raw')[:, 1] / float(value)
-                        )
-                    ), 'raw'
-                )
+            self.set_peaks(
+                np.column_stack(
+                    (
+                        self.peaks('raw')[:, 0],
+                        self.peaks('raw')[:, 1] / float(value)
+                    )
+                ), 'raw'
+            )
         if self._peak_dict['centroided'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks(
-                    [
-                        (mz, i / float(value)) for mz, i in self.centroided_peaks
-                    ],
-                    'centroided'
-                )
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (
-                            self.centroided_peaks[:, 0],
-                            self.centroided_peaks[:, 1] / float(value)
-                        )
-                    ),
-                    'centroided'
-                )
+            self.set_peaks(
+                [
+                    (mz, i / float(value)) for mz, i in self.centroided_peaks
+                ],
+                'centroided'
+            )
         if self._peak_dict['reprofiled'] is not None:
-            if globals()['__NP'] is None:
-                for mz in self.peak_dict['reprofiled'].keys():
-                    self.peak_dict['reprofiled'][mz] /= float(value)
-            else:
-                pass
+            for mz in self.peak_dict['reprofiled'].keys():
+                self.peak_dict['reprofiled'][mz] /= float(value)
         return self
 
     def __div__(self, value):
@@ -970,13 +904,9 @@ class Spectrum(MS_Spectrum):
     @mz.setter
     def mz(self, mz_list):
         ''''''
-        if globals()['__NP'] is not None:
-            mz_list = np.array(mz_list, dtype=np.float64)
-            mz_list.sort()
-            self._mz = mz_list
-        else:
-            assert isinstance(mz_list, list)
-            self._mz = sorted(mz_list)
+        mz_list = np.array(mz_list, dtype=np.float64)
+        mz_list.sort()
+        self._mz = mz_list
 
     @property
     def i(self):
@@ -998,11 +928,7 @@ class Spectrum(MS_Spectrum):
 
     @i.setter
     def i(self, intensity_list):
-        if globals()['__NP'] is not None:
-            intensity_list = np.array(intensity_list)
-        else:
-            assert isinstance(intensity_list, list)
-        self._i = intensity_list
+        self._i = np.array(intensity_list)
 
     def peaks(self, peak_type):
         """
@@ -1572,7 +1498,7 @@ class Spectrum(MS_Spectrum):
             'newPlot'             : 'new_plot',
             'centroidedPeaks'     : 'peaks'
         }
-        print(
+        warnings.warn(
             '''
             Function: "{0}" deprecated since version 1.0.0, please use new function: "{1}"
             '''.format(
@@ -1581,7 +1507,8 @@ class Spectrum(MS_Spectrum):
                     function_name,
                     'not_defined_yet'
                 )
-            )
+            ),
+            DeprecationWarning,
         )
 
     def similarityTo(self, spec2, round_precision=0):
@@ -1706,23 +1633,14 @@ class Chromatogram(MS_Spectrum):
             #     'float_type' : "./{ns}cvParam[@accession='{Acc}']"
             # }
 
-        # TODO make everything numpy compatible
-        if globals()['__NP'] is not None:
-            self._decode = self._decode_to_numpy
-            # assign function to create numpy array to list???
-            self._array  = np.array
-        else:
-            self._array  = list
-            self._decode = self._decode_to_tuple
+        self._decode = self._decode_to_numpy
+        # assign function to create numpy array to list???
+        self._array = np.array
 
     def __repr__(self):
-        """
-        """
         return '<__main__.Chromatogram object with native ID {0} at {1}>'.format(self.ID ,hex(id(self)))
 
     def __str__(self):
-        """
-        """
         return '<__main__.Chromatogram object with native ID {0} at {1}>'.format(self.ID ,hex(id(self)))
 
     @property
@@ -1751,9 +1669,7 @@ class Chromatogram(MS_Spectrum):
 
         """
         if self._time is None:
-            params = self._get_encoding_parameters(
-                    'time array'
-                )
+            params = self._get_encoding_parameters('time array')
             self._time = self._decode(*params)
         return self._time
 
@@ -1817,8 +1733,8 @@ class Chromatogram(MS_Spectrum):
         self._time = []
         self._i = []
         for time, i in tuple_list:
-            self._time.append( time )
-            self._i.append( i )
+            self._time.append(time)
+            self._i.append(i)
         self._peaks = tuple_list
         self._reprofiledPeaks = None
         self._centroidedPeaks = None

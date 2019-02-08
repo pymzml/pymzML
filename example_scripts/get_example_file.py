@@ -8,10 +8,10 @@ Just call the function open_example()
 For using the correct output directory just state get_example_file.OUTPUT_DIR
 
 """
-from __future__ import print_function
-import sys
-import os.path
 import hashlib
+import os.path
+import sys
+
 
 SHA256_DICT = {
     'deconvolution.mzML.gz': (
@@ -169,6 +169,7 @@ def download(filename_with_path, url):
         print ('URL Error: Server not available. Please check your internet connection.',
                file=sys.stderr)
         exit(1)
+
 
 if __name__ == '__main__':
     print(__doc__)

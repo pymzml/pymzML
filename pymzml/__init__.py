@@ -31,20 +31,10 @@ version_path = os.path.join(
 with open(version_path, 'r') as version_file:
     __version__ = version_file.read().strip()
 
-# Imports
+# Imports of individual modules
 import pymzml.run
 import pymzml.spec
+from pymzml.spec import MSDecoder
 import pymzml.obo
-# import pymzml.minimum
-import pymzml.utils
 import pymzml.plot
-
-# Global PyNump decoder
-try:
-    # try to import c-accelerated Numpress decoding
-    import PyNumpress
-    MSDecoder = PyNumpress.MSNumpress([])
-except:
-    # fall back to python implementation of numpress decoding
-    import pymzml.ms_numpress
-    MSDecoder = pymzml.ms_numpress.MSNumpress()
+import pymzml.utils
