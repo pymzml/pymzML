@@ -41,6 +41,7 @@ import re
 import sys
 import warnings
 import xml.etree.ElementTree as ElementTree
+from xml.etree.ElementTree import Element
 import zlib
 from base64 import b64decode as b64dec
 from collections import defaultdict as ddict
@@ -183,48 +184,49 @@ class MS_Spectrum(object):
             d_array_length (str) : length of the data array
         """
         numpress_encoding = False
-
-        array_type_accession = self.calling_instance.OT[array_type]['id']
-
-        b_data_string ="./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@accession='{Acc}']/..".format(
-                ns = self.ns, Acc=array_type_accession
+        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@name='{Acc}']/..".format(
+                ns = self.ns, Acc=array_type
         )
-
-        float_type_string = "./{ns}cvParam[@accession='{Acc}']"
-
+        float_type_string = "./{ns}cvParam[@name='{Acc}']"
         b_data_array = self.element.find(b_data_string)
-        comp = []
-        for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns = self.ns)):
-            if 'compression' in cvParam.get('name'):
-                if 'numpress' in cvParam.get('name').lower():
-                    numpress_encoding = True
-                comp.append(cvParam.get('name'))
-            d_array_length = self.element.get('defaultArrayLength')
-        if not numpress_encoding:
-            try:
-                # 32-bit float
-                f_type = b_data_array.find(
-                    float_type_string.format(
-                        ns  = self.ns,
-                        Acc = self.calling_instance.OT['32-bit float']['id']
-                    )
-                ).get('name')
-            except:
-                # 64-bit Float
-                f_type = b_data_array.find(
-                    float_type_string.format(
-                        ns  = self.ns,
-                        Acc = self.calling_instance.OT['64-bit float']['id']
-                    )
-                ).get('name')
+        if b_data_array is not None:
+            comp = []
+            for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns = self.ns)):
+                if 'compression' in cvParam.get('name'):
+                    if 'numpress' in cvParam.get('name').lower():
+                        numpress_encoding = True
+                    comp.append(cvParam.get('name'))
+                d_array_length = self.element.get('defaultArrayLength')
+            if not numpress_encoding:
+                try:
+                    # 32-bit float
+                    f_type = b_data_array.find(
+                        float_type_string.format(
+                            ns=self.ns,
+                            Acc='32-bit float'
+                        )
+                    ).get('name')
+                except AttributeError:
+                    # 64-bit Float
+                    f_type = b_data_array.find(
+                        float_type_string.format(
+                            ns=self.ns,
+                            Acc='64-bit float'
+                        )
+                    ).get('name')
+            else:
+                # compression is numpress, dont need floattype here
+                f_type = None
+            data = b_data_array.find(
+                "./{ns}binary".format(
+                    ns=self.ns
+                )
+            ).text
         else:
-            # compression is numpress, dont need floattype here
-            f_type = None
-        data = b_data_array.find(
-            "./{ns}binary".format(
-                ns=self.ns
-            )
-        ).text
+            data = None
+            comp = []
+            d_array_length = 0
+            f_type = ''
         if data is not None:
             data = data.encode("utf-8")
         else:
@@ -281,43 +283,6 @@ class MS_Spectrum(object):
         else:
             out_data = np.array([])
         return out_data
-
-    def _decode_to_tuple(self, data, d_array_length, float_type, comp):
-        """
-        Decode b64 encoded and packed strings.
-
-        Returns:
-            data (tuple): Returns the unpacked data as a tuple.
-                Returns an empty list if there is no raw data or
-                raises an exception if data could not be decoded.
-        """
-        dec_data = b64dec(data)
-        if len(dec_data) != 0:
-            if 'zlib' in comp or\
-               'zlib compression' in comp:
-                dec_data = zlib.decompress(dec_data)
-            if set(['ms-np-linear', 'ms-np-pic', 'ms-np-slof']) & set(comp):
-                self._decodeNumpress(data, comp)
-            # else:
-            #     print(
-            #         'New data compression ({0}) detected, cant decompress'.format(
-            #             comp
-            #         )
-            #     )
-            #     sys.exit(1)
-            if float_type == '32-bit float':
-                f_type = 'f'
-            elif float_type == '64-bit float':
-                f_type = 'd'
-            fmt = "{endian}{array_length}{float_type}".format(
-                endian="<",
-                array_length=d_array_length,
-                float_type=f_type
-            )
-            ret_data = unpack(fmt, dec_data)
-        else:
-            ret_data = []
-        return ret_data
 
     def _decodeNumpress_to_array(self, data, compression):
         """
@@ -444,10 +409,11 @@ class Spectrum(MS_Spectrum):
         self._measured_precision            = measured_precision
         self.noise_level_estimate          = {}
 
-        if self.element:
-            self.ns = re.match(
-                '\{.*\}', element.tag
-            ).group(0) if re.match('\{.*\}', element.tag) else ''
+        if self.element is None:
+            self.element = Element('<spetrum></spectrum>')
+        self.ns = re.match(
+            '\{.*\}', self.element.tag
+        ).group(0) if re.match('\{.*\}', self.element.tag) else ''
 
         self._decode = self._decode_to_numpy
         self._array  = np.array
@@ -485,11 +451,10 @@ class Spectrum(MS_Spectrum):
         """
         assert isinstance(other_spec, Spectrum)
         if self._peak_dict['reprofiled'] is None:
-            self.set_peaks(self._reprofile_Peaks(), 'reprofiled')
+            reprofiled_peaks = self._reprofile_Peaks()
+            self.set_peaks(reprofiled_peaks, 'reprofiled')
         for mz, i in other_spec.peaks('reprofiled'):
             self._peak_dict['reprofiled'][mz] += i
-        # self.set_peaks(None, 'reprofiled')
-        # self.set_peaks(None, 'reprofiled')
         return self
 
     def __sub__(self, other_spec):
@@ -766,13 +731,13 @@ class Spectrum(MS_Spectrum):
             ID (str): native ID of the spectrum
         """
         if self._ID is None:
-            self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
-                self.element.get('id')
-            ).group(1)
             try:
+                self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
+                    self.element.get('id')
+                ).group(1)
                 self._ID = int(self._ID)
             except:
-                pass
+                self._ID = None
         return self._ID
 
     @property
@@ -947,7 +912,7 @@ class Spectrum(MS_Spectrum):
                 mz_params = self._get_encoding_parameters('m/z array')
                 i_params  = self._get_encoding_parameters('intensity array')
                 mz = self._decode(*mz_params)
-                i  = self._decode(*i_params)
+                i = self._decode(*i_params)
                 # self._peak_dict['raw'] = np.ndarray(len(mz), dtype=tuple)
                 for pos, mz_val in enumerate(mz):
                     self._peak_dict['raw'].append((mz_val, i[pos]))
@@ -990,6 +955,8 @@ class Spectrum(MS_Spectrum):
         elif peak_type == 'reprofiled':
             try:
                 self._peak_dict['reprofiled'] = dict(peaks)
+                self._peak_dict['reprofiled'] = peaks
+
             except TypeError:
                 self._peak_dict['reprofiled'] = None
         else:
@@ -1007,15 +974,15 @@ class Spectrum(MS_Spectrum):
             centroided_peaks (list): list of centroided m/z, i tuples
         """
         try:
-            acc = self.calling_instance.OT['profile spectrum']['id']
-            is_profile = self.element.find(
-                ".//*[@accession='{acc}']".format(
-                    ns=self.ns,
-                    acc=acc
-                )
+            is_profile = self.element.find(".//*[@name='{acc}']".format(
+                acc='profile spectrum')
             )
-        except TypeError as e:
-            is_profile = None
+        except (TypeError, AttributeError):
+            if self.reprofiled is True:
+                is_profile = True
+            else:
+                is_profile = None
+        print(is_profile)
         # is_centroid = self.element.find(
         #     ".//*[@accession='MS:1000127']".format(
         #         ns=self.ns
