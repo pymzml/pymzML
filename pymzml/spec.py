@@ -340,6 +340,56 @@ class MS_Spectrum(object):
             method   = method
         )
 
+    def _set_params_from_reference_group(self, ref_element):
+        ref = self.element.find('{ns}referenceableParamGroupRef'.format(
+            ns=self.ns
+        ))
+        if ref is not None:
+            ref = ref.get('ref')
+        ele = ref_element.find(".//*[@id='{ref}']".format(
+            ref=ref,
+            ns=self.ns
+        ))
+        if ele is not None and ref == ele.get('id'):
+            for param in ele.getiterator():
+                self.element.append(ele)
+                acc = param.get('accession')
+
+    @lru_cache()
+    def __getitem__(self, accession):
+        """
+        Access spectrum XML information by tag name
+
+        Args:
+            accession(str): name of the XML tag
+
+        Returns:
+            value (float or str): value of the XML tag
+        """
+        #  TODO implement cache???
+        if accession == 'id':
+            return_val = self.ID
+        else:
+            if not accession.startswith('MS:'):
+                accession = self.calling_instance.OT[accession]['id']
+            search_string = './/*[@accession="{0}"]'.format(accession)
+
+            elements = []
+            for x in self.element.iterfind(search_string):
+                val = x.attrib.get('value')
+                try:
+                    val = float(val)
+                except:
+                    pass
+                elements.append(val)
+
+            if len(elements) == 0:
+                return_val = None
+            elif len(elements) == 1:
+                return_val = elements[0]
+            else:
+                return_val = elements
+        return return_val
 
 class Spectrum(MS_Spectrum):
     """
@@ -568,41 +618,41 @@ class Spectrum(MS_Spectrum):
             self.ID, hex(id(self))
         )
 
-    @lru_cache()
-    def __getitem__(self, accession):
-        """
-        Access spectrum XML information by tag name
+    # @lru_cache()
+    # def __getitem__(self, accession):
+    #     """
+    #     Access spectrum XML information by tag name
 
-        Args:
-            accession(str): name of the XML tag
+    #     Args:
+    #         accession(str): name of the XML tag
 
-        Returns:
-            value (float or str): value of the XML tag
-        """
-        #  TODO implement cache???
-        if accession == 'id':
-            return_val = self.ID
-        else:
-            if not accession.startswith('MS:'):
-                accession = self.calling_instance.OT[accession]['id']
-            search_string = './/*[@accession="{0}"]'.format(accession)
+    #     Returns:
+    #         value (float or str): value of the XML tag
+    #     """
+    #     #  TODO implement cache???
+    #     if accession == 'id':
+    #         return_val = self.ID
+    #     else:
+    #         if not accession.startswith('MS:'):
+    #             accession = self.calling_instance.OT[accession]['id']
+    #         search_string = './/*[@accession="{0}"]'.format(accession)
 
-            elements = []
-            for x in self.element.iterfind(search_string):
-                val = x.attrib.get('value')
-                try:
-                    val = float(val)
-                except:
-                    pass
-                elements.append(val)
+    #         elements = []
+    #         for x in self.element.iterfind(search_string):
+    #             val = x.attrib.get('value')
+    #             try:
+    #                 val = float(val)
+    #             except:
+    #                 pass
+    #             elements.append(val)
 
-            if len(elements) == 0:
-                return_val = None
-            elif len(elements) == 1:
-                return_val = elements[0]
-            else:
-                return_val = elements
-        return return_val
+    #         if len(elements) == 0:
+    #             return_val = None
+    #         elif len(elements) == 1:
+    #             return_val = elements[0]
+    #         else:
+    #             return_val = elements
+    #     return return_val
 
     def get(self, acc, default=None):
         """Mimic dicts get function.
@@ -1088,20 +1138,6 @@ class Spectrum(MS_Spectrum):
         """
         return ((mz - PROTON) * charge)
 
-    def _set_params_from_reference_group(self, ref_element):
-        ref = self.element.find('{ns}referenceableParamGroupRef'.format(
-            ns=self.ns
-        ))
-        if ref is not None:
-            ref = ref.get('ref')
-        ele = ref_element.find(".//*[@id='{ref}']".format(
-            ref=ref,
-            ns=self.ns
-        ))
-        if ele is not None and ref == ele.get('id'):
-            for param in ele.getiterator():
-                self.element.append(ele)
-                acc = param.get('accession')
     # Public functions
 
     def reduce(self, mz_range=(None, None)):
