@@ -147,6 +147,16 @@ class Reader(object):
                     spectrum.measured_precision = self.ms_precisions[ms_level]
                     spectrum.calling_instance = self
                     return spectrum
+                if element.tag.endswith('}chromatogram'):
+                    spectrum = spec.Chromatogram(element)
+                    if has_ref_group:
+                        spectrum._set_params_from_reference_group(
+                            self.info['referenceable_param_group_list_element']
+                        )
+                    #ms_level = spectrum.ms_level
+                    #spectrum.measured_precision = self.ms_precisions[ms_level]
+                    spectrum.calling_instance = self
+                    return spectrum
             elif event == 'END':
                 raise StopIteration
 
