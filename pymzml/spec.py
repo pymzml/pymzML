@@ -408,6 +408,7 @@ class Spectrum(MS_Spectrum):
         self.element                       = element
         self._measured_precision            = measured_precision
         self.noise_level_estimate          = {}
+        self.reprofiled = False
 
         if self.element is None:
             self.element = Element('<spetrum></spectrum>')
@@ -455,6 +456,7 @@ class Spectrum(MS_Spectrum):
             self.set_peaks(reprofiled_peaks, 'reprofiled')
         for mz, i in other_spec.peaks('reprofiled'):
             self._peak_dict['reprofiled'][mz] += i
+        self._peak_dict['centroided'] = None
         return self
 
     def __sub__(self, other_spec):
@@ -973,24 +975,11 @@ class Spectrum(MS_Spectrum):
         Returns:
             centroided_peaks (list): list of centroided m/z, i tuples
         """
-        try:
-            is_profile = self.element.find(".//*[@name='{acc}']".format(
-                acc='profile spectrum')
-            )
-        except (TypeError, AttributeError):
-            if self.reprofiled is True:
-                is_profile = True
-            else:
-                is_profile = None
-        print(is_profile)
-        # is_centroid = self.element.find(
-        #     ".//*[@accession='MS:1000127']".format(
-        #         ns=self.ns
-        #     )
-        # )
-        # this is OBO dependent :()
-        # .get('value')
-        if is_profile is not None: # check if spec is a profile spec
+        # try:
+        is_profile = self.element.find(".//*[@name='{acc}']".format(
+            acc='profile spectrum')
+        )
+        if is_profile is not None or self.reprofiled is True: # check if spec is a profile spec
             tmp = []
             if self._peak_dict['reprofiled'] is not None:
                 i_array  = [i for mz, i in self.peaks('reprofiled')]
