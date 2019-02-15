@@ -7,4 +7,5 @@ cython
 -e git+https://github.com/MKoesters/pynumpress.git#egg=pynumpress
 #pynumpress
 sphinx_rtd_theme
+regex
 
