@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-from __future__ import print_function
 import pymzml
 import get_example_file
+
 
 def main():
     """
@@ -15,7 +15,7 @@ def main():
         ./polarity.py
 
     """
-    example_file = get_example_file.open_example('small.pwiz.1.1.mzML')    
+    example_file = get_example_file.open_example('small.pwiz.1.1.mzML')
     run = pymzml.run.Reader(
         example_file,
         obo_version = '1.1.0',
@@ -41,7 +41,8 @@ def main():
         )
         exit(1)
 
-    return 
+    return
+
 
 if __name__ == '__main__':
     main()

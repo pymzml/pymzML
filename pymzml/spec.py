@@ -35,35 +35,23 @@ with profile data (time, intensity) in an total ion chromatogram.
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import print_function
-from base64 import b64decode as b64dec
-from collections import defaultdict as ddict
-from operator import itemgetter as itemgetter
-from struct import unpack
+
 import math
-# import pymzml.obo
-from functools import lru_cache
-import pymzml.regex_patterns as regex_patterns
 import re
 import sys
+import warnings
 import xml.etree.ElementTree as ElementTree
 import zlib
+from base64 import b64decode as b64dec
+from collections import defaultdict as ddict
+from functools import lru_cache
+from operator import itemgetter as itemgetter
+from struct import unpack
 
-global __NP
-try:
-    import numpy as np
-    __NP = 'available!'
-except:
-    __NP = None
+import numpy as np
 
-# try:
-#     import pynumpress as PyNump
-# except:
-#     pass
-try:
-    import pynumpress as PyNump
-except:
-    print('Please install pynumpress: pip install pynumpress')
+from . import regex_patterns
+from .decoder import MSDecoder
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
@@ -236,7 +224,11 @@ class MS_Spectrum(object):
             "./{ns}binary".format(
                 ns=self.ns
             )
-        ).text.encode("utf-8")
+        ).text
+        if data is not None:
+            data = data.encode("utf-8")
+        else:
+            data = ''
         return (data, d_array_length, f_type, comp)
 
     @property
@@ -267,31 +259,27 @@ class MS_Spectrum(object):
         d_array_length just for compatibility
         """
         out_data = b64dec(data)
-        if 'zlib' in comp or \
-            'zlib compression' in comp:
-            out_data = zlib.decompress(out_data)
-        if 'ms-np-linear' in comp or\
-            'ms-np-pic' in comp or\
-            'ms-np-slof' in comp or\
-            'MS-Numpress linear prediction compression' in comp or\
-            'MS-Numpress short logged float compression' in comp:
+        if len(out_data) != 0:
+            if 'zlib' in comp or \
+                'zlib compression' in comp:
+                out_data = zlib.decompress(out_data)
+            if 'ms-np-linear' in comp or\
+                'ms-np-pic' in comp or\
+                'ms-np-slof' in comp or\
+                'MS-Numpress linear prediction compression' in comp or\
+                'MS-Numpress short logged float compression' in comp:
 
-            out_data = self._decodeNumpress_to_array(out_data, comp)
-        # else:
-        #     print(
-        #         'New data compression ({0}) detected, cant decompress'.format(
-        #             comp
-        #         )
-        #     )
-        #     sys.exit(1)
-        if float_type == '32-bit float':
-            # one character code may be sufficient too (f)
-            f_type = np.float32
-            out_data = np.fromstring(out_data, f_type)
-        elif float_type == '64-bit float':
-            # one character code may be sufficient too (d)
-            f_type = np.float64
-            out_data = np.fromstring(out_data, f_type)
+                out_data = self._decodeNumpress_to_array(out_data, comp)
+            if float_type == '32-bit float':
+                # one character code may be sufficient too (f)
+                f_type = np.float32
+                out_data = np.fromstring(out_data, f_type)
+            elif float_type == '64-bit float':
+                # one character code may be sufficient too (d)
+                f_type = np.float64
+                out_data = np.fromstring(out_data, f_type)
+        else:
+            out_data = np.array([])
         return out_data
 
     def _decode_to_tuple(self, data, d_array_length, float_type, comp):
@@ -304,28 +292,32 @@ class MS_Spectrum(object):
                 raises an exception if data could not be decoded.
         """
         dec_data = b64dec(data)
-        if 'zlib' in comp or\
-           'zlib compression' in comp:
-            dec_data = zlib.decompress(dec_data)
-        if set(['ms-np-linear', 'ms-np-pic', 'ms-np-slof']) & set(comp):
-            self._decodeNumpress(data, comp)
-        # else:
-        #     print(
-        #         'New data compression ({0}) detected, cant decompress'.format(
-        #             comp
-        #         )
-        #     )
-        #     sys.exit(1)
-        if float_type == '32-bit float':
-            f_type = 'f'
-        elif float_type == '64-bit float':
-            f_type = 'd'
-        fmt = "{endian}{array_length}{float_type}".format(
-            endian="<",
-            array_length=d_array_length,
-            float_type=f_type
-        )
-        return unpack(fmt, dec_data)
+        if len(dec_data) != 0:
+            if 'zlib' in comp or\
+               'zlib compression' in comp:
+                dec_data = zlib.decompress(dec_data)
+            if set(['ms-np-linear', 'ms-np-pic', 'ms-np-slof']) & set(comp):
+                self._decodeNumpress(data, comp)
+            # else:
+            #     print(
+            #         'New data compression ({0}) detected, cant decompress'.format(
+            #             comp
+            #         )
+            #     )
+            #     sys.exit(1)
+            if float_type == '32-bit float':
+                f_type = 'f'
+            elif float_type == '64-bit float':
+                f_type = 'd'
+            fmt = "{endian}{array_length}{float_type}".format(
+                endian="<",
+                array_length=d_array_length,
+                float_type=f_type
+            )
+            ret_data = unpack(fmt, dec_data)
+        else:
+            ret_data = []
+        return ret_data
 
     def _decodeNumpress_to_array(self, data, compression):
         """
@@ -344,13 +336,11 @@ class MS_Spectrum(object):
         comp_ms_tags = [self.calling_instance.OT[comp]['id'] for comp in compression]
         data = np.frombuffer(data, dtype=np.uint8)
         if 'MS:1002312' in comp_ms_tags:
-            result = PyNump.decode_linear(data)
+            result = MSDecoder.decode_linear(data)
         elif 'MS:1002313' in comp_ms_tags:
-            # PyNump.decodePic(data, result)
-            result  = PyNump.decode_pic(data)
+            result = MSDecoder.decode_pic(data)
         elif 'MS:1002314' in comp_ms_tags:
-            # PyNump.decodeSlof(data, result)
-            result = PyNump.decode_slof(data)
+            result = MSDecoder.decode_slof(data)
         return result
 
     def _median(self, data):
@@ -363,22 +353,7 @@ class MS_Spectrum(object):
         Returns:
             median (float): median of the input data
         """
-        'NEEDS Numpy version'
-        if globals()['__NP'] is not None:
-            median = np.median(data)
-        else:
-            if len(data) == 0:
-                return None
-            data.sort()
-            l = len(data)
-            if not l % 2:
-                median = (
-                    data[int(math.floor(float(l) / float(2)))] \
-                    + data[int(math.ceil(float(l) / float(2)))]
-                ) / float(2.0)
-            else:
-                median = data[int(l / 2)]
-        return median
+        return np.median(data)
 
     def to_string(self, encoding='latin-1', method='xml'):
         """
@@ -476,12 +451,8 @@ class Spectrum(MS_Spectrum):
                 '\{.*\}', element.tag
             ).group(0) if re.match('\{.*\}', element.tag) else ''
 
-        if globals()['__NP'] is None:
-            self._decode = self._decode_to_tuple
-            self._array  = list
-        else:
-            self._decode = self._decode_to_numpy
-            self._array  = np.array
+        self._decode = self._decode_to_numpy
+        self._array  = np.array
 
     def __del__(self):
         """
@@ -556,41 +527,25 @@ class Spectrum(MS_Spectrum):
         """
         assert isinstance(value, (int, float))
         if self._peak_dict['raw'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks(
-                    [(mz, i * float(value)) for mz, i in self.peaks('raw')],
-                    'raw'
-                )
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (self.peaks('raw')[:, 0], self.peaks('raw')[:, 1] * value)
-                    ),
-                    'raw'
-                )
+            self.set_peaks(
+                np.column_stack(
+                    (self.peaks('raw')[:, 0], self.peaks('raw')[:, 1] * value)
+                ),
+                'raw'
+            )
         if self._peak_dict['centroided'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks(
-                    [(mz, i * float(value)) for mz, i in self.centroided_peaks],
-                    'centroided'
-                )
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (
-                            self.centroided_peaks[:, 0],
-                            self.centroided_peaks[:, 1] * value
-                        )
-                    ),
-                    'centroided'
-                )
+            self.set_peaks(
+                np.column_stack(
+                    (
+                        self.centroided_peaks[:, 0],
+                        self.centroided_peaks[:, 1] * value
+                    )
+                ),
+                'centroided'
+            )
         if self._peak_dict['reprofiled'] is not None:
-            if globals()['__NP'] is None:
-                for mz in self._peak_dict['reprofiled'].keys():
-                    self._peak_dict['reprofiled'][mz] *= float(value)
-            else:
-                # TODO more efficient version with numpy
-                pass
+            for mz in self._peak_dict['reprofiled'].keys():
+                self._peak_dict['reprofiled'][mz] *= float(value)
         return self
 
     def __truediv__(self, value):
@@ -606,41 +561,24 @@ class Spectrum(MS_Spectrum):
         """
         assert isinstance(value, (int, float)), ''
         if self._peak_dict['raw'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks([(mz, i / float(value)) for mz, i in self.peaks('raw')], 'raw')
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (
-                            self.peaks('raw')[:, 0],
-                            self.peaks('raw')[:, 1] / float(value)
-                        )
-                    ), 'raw'
-                )
+            self.set_peaks(
+                np.column_stack(
+                    (
+                        self.peaks('raw')[:, 0],
+                        self.peaks('raw')[:, 1] / float(value)
+                    )
+                ), 'raw'
+            )
         if self._peak_dict['centroided'] is not None:
-            if globals()['__NP'] is None:
-                self.set_peaks(
-                    [
-                        (mz, i / float(value)) for mz, i in self.centroided_peaks
-                    ],
-                    'centroided'
-                )
-            else:
-                self.set_peaks(
-                    np.column_stack(
-                        (
-                            self.centroided_peaks[:, 0],
-                            self.centroided_peaks[:, 1] / float(value)
-                        )
-                    ),
-                    'centroided'
-                )
+            self.set_peaks(
+                [
+                    (mz, i / float(value)) for mz, i in self.centroided_peaks
+                ],
+                'centroided'
+            )
         if self._peak_dict['reprofiled'] is not None:
-            if globals()['__NP'] is None:
-                for mz in self.peak_dict['reprofiled'].keys():
-                    self.peak_dict['reprofiled'][mz] /= float(value)
-            else:
-                pass
+            for mz in self.peak_dict['reprofiled'].keys():
+                self.peak_dict['reprofiled'][mz] /= float(value)
         return self
 
     def __div__(self, value):
@@ -873,7 +811,7 @@ class Spectrum(MS_Spectrum):
         """
         Property to access the retention time and retention time unit.
         Please note, that we do not assume the retention time unit,
-        if it is not correctly defined in the mzML. 
+        if it is not correctly defined in the mzML.
         It is set to 'unicorns' in this case.
 
         Returns:
@@ -895,7 +833,7 @@ class Spectrum(MS_Spectrum):
         """
         Property to access the retention time in minutes.
         If the retention time unit is defined within the mzML,
-        the retention time is converted into minutes and returned 
+        the retention time is converted into minutes and returned
         without the unit.
 
         Returns:
@@ -981,13 +919,9 @@ class Spectrum(MS_Spectrum):
     @mz.setter
     def mz(self, mz_list):
         ''''''
-        if globals()['__NP'] is not None:
-            mz_list = np.array(mz_list, dtype=np.float64)
-            mz_list.sort()
-            self._mz = mz_list
-        else:
-            assert isinstance(mz_list, list)
-            self._mz = sorted(mz_list)
+        mz_list = np.array(mz_list, dtype=np.float64)
+        mz_list.sort()
+        self._mz = mz_list
 
     @property
     def i(self):
@@ -1009,11 +943,7 @@ class Spectrum(MS_Spectrum):
 
     @i.setter
     def i(self, intensity_list):
-        if globals()['__NP'] is not None:
-            intensity_list = np.array(intensity_list)
-        else:
-            assert isinstance(intensity_list, list)
-        self._i = intensity_list
+        self._i = np.array(intensity_list)
 
     def peaks(self, peak_type):
         """
@@ -1322,7 +1252,9 @@ class Spectrum(MS_Spectrum):
                 ) / float(len(self.peaks('centroided')))
             else:
                 print(
-                    'dont understand noise level estimation method call', mode
+                    'Do not understand noise level estimation method call with given mode: {0}'.format(
+                        mode
+                    )
                 )
             return_value = self.noise_level_estimate[mode]
         return return_value
@@ -1392,20 +1324,29 @@ class Spectrum(MS_Spectrum):
             extrema (tuple) : tuple of minimal and maximum m/z or intensity
 
         """
-        if key not in ['mz', 'i']:
-            print("Dont understand extreme request ")
+        available_extreme_values = ['mz', 'i']
+        if key not in available_extreme_values:
+            print(
+                "Do not understand extreme request: '{0}'; available values are: {1}".format(
+                    key,
+                    available_extreme_values
+                )
+            )
+            exit()
         if self._extreme_values is None:
             self._extreme_values = {}
         try:
             if key == 'mz':
+                all_mz_values = [mz for mz, i in self.peaks('raw')]
                 self._extreme_values['mz'] = (
-                    min([mz for mz, i in self.peaks('raw')]),
-                    max([mz for mz, i in self.peaks('raw')])
+                    min(all_mz_values),
+                    max(all_mz_values)
                 )
             else:
-                self._extreme_values['i']  = (
-                    min([i for mz, i in self.peaks('raw')]),
-                    max([i for mz, i in self.peaks('raw')])
+                all_i_values = [i for mz, i in self.peaks('raw')]
+                self._extreme_values['i'] = (
+                    min(all_i_values),
+                    max(all_i_values)
                 )
         except ValueError:
             # emtpy spectrum
@@ -1494,7 +1435,7 @@ class Spectrum(MS_Spectrum):
             to 1.
         """
         assert isinstance(spec2, Spectrum), \
-            "Spectrum2 is not a pymzML spectrum"
+            "Spectrum 2 is not a pymzML spectrum"
 
         vector1 = ddict(int)
         vector2 = ddict(int)
@@ -1572,7 +1513,7 @@ class Spectrum(MS_Spectrum):
             'newPlot'             : 'new_plot',
             'centroidedPeaks'     : 'peaks'
         }
-        print(
+        warnings.warn(
             '''
             Function: "{0}" deprecated since version 1.0.0, please use new function: "{1}"
             '''.format(
@@ -1581,7 +1522,8 @@ class Spectrum(MS_Spectrum):
                     function_name,
                     'not_defined_yet'
                 )
-            )
+            ),
+            DeprecationWarning,
         )
 
     def similarityTo(self, spec2, round_precision=0):
@@ -1706,23 +1648,14 @@ class Chromatogram(MS_Spectrum):
             #     'float_type' : "./{ns}cvParam[@accession='{Acc}']"
             # }
 
-        # TODO make everything numpy compatible
-        if globals()['__NP'] is not None:
-            self._decode = self._decode_to_numpy
-            # assign function to create numpy array to list???
-            self._array  = np.array
-        else:
-            self._array  = list
-            self._decode = self._decode_to_tuple
+        self._decode = self._decode_to_numpy
+        # assign function to create numpy array to list???
+        self._array = np.array
 
     def __repr__(self):
-        """
-        """
         return '<__main__.Chromatogram object with native ID {0} at {1}>'.format(self.ID ,hex(id(self)))
 
     def __str__(self):
-        """
-        """
         return '<__main__.Chromatogram object with native ID {0} at {1}>'.format(self.ID ,hex(id(self)))
 
     @property
@@ -1751,9 +1684,7 @@ class Chromatogram(MS_Spectrum):
 
         """
         if self._time is None:
-            params = self._get_encoding_parameters(
-                    'time array'
-                )
+            params = self._get_encoding_parameters('time array')
             self._time = self._decode(*params)
         return self._time
 
@@ -1817,8 +1748,8 @@ class Chromatogram(MS_Spectrum):
         self._time = []
         self._i = []
         for time, i in tuple_list:
-            self._time.append( time )
-            self._i.append( i )
+            self._time.append(time)
+            self._i.append(i)
         self._peaks = tuple_list
         self._reprofiledPeaks = None
         self._centroidedPeaks = None

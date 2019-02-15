@@ -1,11 +1,13 @@
-numpy >= 1.8.0 # should also work without numpy, however slower
-coverage >= 4.2
+# Installation
+numpy >= 1.8.0
 plotly < 2.0
+pynumpress >= 0.0.4
+
+# Testing and dev
+cython
+coverage >= 4.2
 nose >= 1.3.7
 sphinx
-cython
--e git+https://github.com/MKoesters/pynumpress.git#egg=pynumpress
-#pynumpress
 sphinx_rtd_theme
 regex
 

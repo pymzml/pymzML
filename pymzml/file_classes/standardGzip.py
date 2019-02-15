@@ -3,16 +3,15 @@
 """
 Interface for gzipped mzML files.
 """
-from __future__ import print_function
 import codecs
-import pymzml.regex_patterns as regex_patterns
 import gzip
-import pymzml.spec as spec
 from xml.etree.ElementTree import iterparse
 
+from .. import regex_patterns
+from .. import spec
+
+
 class StandardGzip(object):
-    """
-    """
     def __init__(self, path, encoding):
         """
         Initalize Wrapper object for gzipped mzML files.
@@ -78,6 +77,7 @@ class StandardGzip(object):
                             element,
                             measured_precision=5e-6
                         )
+
 
 if __name__ == '__main__':
     print(__doc__)

@@ -23,16 +23,21 @@ The data can be visualized as an interactive plotly plot or be exported as JSON.
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import sys
 import math
+import warnings
+
+
+# Fail gracefully if no plotly installed
 try:
     import plotly.offline as plt
     import plotly.graph_objs as go
     from plotly import tools
-except:
-    print('[ pymzML ] Warning: no plotly installed ...')
-import pymzml
+except ImportError:
+    warnings.warn('Plotly is required for plotting support.', ImportWarning)
+
+
+from . import spec
 
 
 class Factory(object):
@@ -102,7 +107,7 @@ class Factory(object):
         # Is this ok, pass the Factory.self to Spectrum class???
         # Id just make deprecation warning a function independent of any class
         # Also, this just looks wrong
-        pymzml.spec.Spectrum.deprecation_warning(
+        spec.Spectrum.deprecation_warning(
             self,
             function_name = sys._getframe().f_code.co_name
         )
@@ -510,6 +515,7 @@ class Factory(object):
         )
 
         self.plots[plot_num].append(trace)
+        return trace
 
     def info(self):
         """
@@ -667,6 +673,7 @@ class Factory(object):
                     self.function_mapper[x](i) if x in self.function_mapper else x for x in trace['y']
                 ]
         return self.plots
+
 
 if __name__ == '__main__':
     print(__doc__)

@@ -5,15 +5,15 @@ Interface for indexed gzipped files
 
 @author: Manuel Koesters
 """
-from __future__ import print_function
 import codecs
 import gzip
-import pymzml.spec as spec
 from xml.etree.ElementTree import XML
-from pymzml.utils.GSGR import GSGR
+
+from .. import spec
+from ..utils.GSGR import GSGR
 
 
-class IndexedGzip(object):
+class IndexedGzip:
     def __init__(self, path, encoding):
         """
         Initialize Wrapper object for indexed gzipped files.
@@ -23,10 +23,8 @@ class IndexedGzip(object):
             encoding (str) : encoding of the file
         """
         self.path         = path
-        self.file_handler = codecs.getreader(encoding)(
-            gzip.open(path)
-        )
-        self.offset_dict   = dict()
+        self.file_handler = codecs.getreader(encoding)(gzip.open(path))
+        self.offset_dict  = dict()
         self._build_index()
 
     def __del__(self):
@@ -61,7 +59,8 @@ class IndexedGzip(object):
         Returns:
             data (str): text associated with the given identifier
         """
-        #TODO more elegant way to add NameSpace (.register_namespace maybe??)
+
+        # TODO more elegant way to add NameSpace (.register_namespace maybe??)
         ns_prefix = '<mzML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://psi.hupo.org/ms/mzml http://psidev.info/files/ms/mzML/xsd/mzML1.1.0.xsd" id="test_Creinhardtii_QE_pH8" version="1.1.0" xmlns="http://psi.hupo.org/ms/mzml">'
         ns_suffix = '</mzML>'
         data     = self.Reader.read_block(identifier)
@@ -75,6 +74,7 @@ class IndexedGzip(object):
         """Close the handlers."""
         self.Reader.close()
         self.file_handler.close()
+
 
 if __name__ == '__main__':
     print(__doc__)

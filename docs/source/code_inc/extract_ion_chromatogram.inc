@@ -14,7 +14,7 @@
 	    """
 	    Demonstration of the extraction of a specific ion chromatogram, i.e. XIC or EIC
 	
-	    All intensities and m/z vlaues for a target m/z are extracted.
+	    All intensities and m/z values for a target m/z are extracted.
 	
 	    usage:
 	
