@@ -22,16 +22,12 @@ def main():
         os.path.dirname(__file__),
         os.pardir,
         'tests',
-        'wiff',
-        'Z_Jevtic_040316_C&Dfractions_01_C2-CTL_01_F2.idx.gz'
+        'data',
+        'BSA1.mzML.gz'
     )
     run = pymzml.run.Reader(example_file)
     fragmented_precursors = {}
     for spectrum in run:
-        # import pprint
-        # pprint.pprint(
-        #     spectrum.id_dict
-        # )
         if spectrum.ms_level == 2:
             selected_precursors = spectrum.selected_precursors
             if spectrum.selected_precursors is not None:
