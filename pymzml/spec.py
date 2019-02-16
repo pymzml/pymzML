@@ -784,9 +784,10 @@ class Spectrum(MS_Spectrum):
             captures = regex_patterns.SPECTRUM_PATTERN3.match(
                 self.element.attrib['id']
             ).captures(1)
-            for k in captures:
-                k = k.strip().split('=')
-                tuples.append(k)
+            for element in captures:
+                k, v = element.strip().split('=')
+                v = int(v)
+                tuples.append([k, v])
             self._id_dict = dict(tuples)
         return self._id_dict
 
@@ -1716,7 +1717,7 @@ class Chromatogram(MS_Spectrum):
         ...     }
         ... )
         >>> for entry in run:
-        ...     if isinstance(entry, Chromatogram):
+        ...     if isinstance(entry, pymzml.spec.Chromatogram):
         ...         for time, intensity in entry.peaks:
         ...             print(time, intensity)
 
