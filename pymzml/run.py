@@ -76,10 +76,12 @@ class Reader(object):
         MS_precisions = None,
         obo_version   = None,
         build_index_from_scratch=False,
+        skip_chromatogram = True,
         **kwargs
     ):
         """Initialize and set required attributes."""
         self.build_index_from_scratch = build_index_from_scratch
+        self.skip_chromatogram = skip_chromatogram
         if MS_precisions is None:
             MS_precisions = {}
             if 'MS1_Precision' in kwargs.keys():
@@ -148,13 +150,13 @@ class Reader(object):
                     spectrum.calling_instance = self
                     return spectrum
                 if element.tag.endswith('}chromatogram'):
+                    if self.skip_chromatogram:
+                        continue
                     spectrum = spec.Chromatogram(element)
-                    if has_ref_group:
-                        spectrum._set_params_from_reference_group(
-                            self.info['referenceable_param_group_list_element']
-                        )
-                    #ms_level = spectrum.ms_level
-                    #spectrum.measured_precision = self.ms_precisions[ms_level]
+                    # if has_ref_group:
+                    #     spectrum._set_params_from_reference_group(
+                    #         self.info['referenceable_param_group_list_element']
+                    #     )
                     spectrum.calling_instance = self
                     return spectrum
             elif event == 'END':

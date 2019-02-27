@@ -397,6 +397,8 @@ class Spectrum(MS_Spectrum):
             "_extreme_values",
             "_i",
             "_ID",
+            "_id_dict",
+            "_index",
             "_measured_precision",
             "_peaks",
             "_precursors",
@@ -420,6 +422,8 @@ class Spectrum(MS_Spectrum):
         self._extreme_values               = None
         self._i                            = None
         self._ID                           = None
+        self._id_dict                      = None
+        self._index                        = None
         self._ms_level                     = None
         self._mz                           = None
         self._peak_dict = {
@@ -441,7 +445,7 @@ class Spectrum(MS_Spectrum):
         self._transformed_peaks            = None
         self.calling_instance              = None
         self.element                       = element
-        self._measured_precision            = measured_precision
+        self._measured_precision           = measured_precision
         self.noise_level_estimate          = {}
 
         if self.element:
@@ -775,6 +779,45 @@ class Spectrum(MS_Spectrum):
                 pass
         return self._ID
 
+    @property
+    def id_dict(self):
+        """
+        Access to all entries stored the id attribute of a spectrum.
+
+        Returns:
+            id_dict (dict): key value pairs for all entries in id attribute of a spectrum
+        """
+        if self._id_dict is None:
+            tuples = []
+            captures = regex_patterns.SPECTRUM_PATTERN3.match(
+                self.element.attrib['id']
+            ).captures(1)
+            for element in captures:
+                k, v = element.strip().split('=')
+                v = int(v)
+                tuples.append([k, v])
+            self._id_dict = dict(tuples)
+        return self._id_dict
+
+    @property
+    def index(self):
+        """
+        Access the index of the spectrum.
+
+        Returns:
+            index (int): index of the spectrum
+
+        Note:
+            This does not necessarily correspond to the native spectrum ID
+        """
+        if self._index is None:
+            self._index = self.element.get('index')
+            try:
+                self._index = int(self._index)
+            except:
+                pass
+        return self._index
+    
     @property
     def ms_level(self):
         """
@@ -1701,7 +1744,7 @@ class Chromatogram(MS_Spectrum):
         ...     }
         ... )
         >>> for entry in run:
-        ...     if isinstance(entry, Chromatogram):
+        ...     if isinstance(entry, pymzml.spec.Chromatogram):
         ...         for time, intensity in entry.peaks:
         ...             print(time, intensity)
 
