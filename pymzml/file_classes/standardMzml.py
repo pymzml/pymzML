@@ -27,18 +27,24 @@ class StandardMzml(object):
             encoding (str) : encoding of the file
         """
         self.path         = path
-        self.file_handler = codecs.open(
-            path,
-            mode     = 'r',
-            encoding = encoding
-        )
+        self.file_handler = self.get_file_handler(encoding)
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
         if build_index_from_scratch is True:
-            seeker = open(path, 'rb')
+            seeker = self.get_binary_file_handler()
             self._build_index_from_scratch(seeker)
             seeker.close()
+
+    def get_binary_file_handler(self):
+        return open(self.path, 'rb')
+    
+    def get_file_handler(self, encoding):
+        return codecs.open(
+            self.path,
+            mode     = 'r',
+            encoding = encoding
+        )
 
     def __getitem__(self, identifier):
         """
@@ -80,7 +86,7 @@ class StandardMzml(object):
         elif identifier in self.offset_dict:
 
             start = self.offset_dict[identifier]
-            with open(self.path, 'rb') as seeker:
+            with self.get_binary_file_handler() as seeker:
                 seeker.seek(start[0])
                 start, end = self._read_to_spec_end(seeker)
             self.file_handler.seek(start, 0)
@@ -122,7 +128,7 @@ class StandardMzml(object):
             seeking to a particular offset for the file.
         """
         # Declare the pre-seeker
-        seeker = open(self.path, 'rb')
+        seeker = self.get_binary_file_handler()
         # Reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
         index_list_offset_pattern = re.compile(
             b'<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>'
@@ -324,7 +330,7 @@ class StandardMzml(object):
 
         """
         # print('target ', target_index)
-        seeker          = open(self.path, 'rb')
+        seeker          = self.get_binary_file_handler()
         seeker.seek(0, 2)
         chunk_size      = chunk_size * 512
         lower_bound     = 0
@@ -424,7 +430,7 @@ class StandardMzml(object):
                 except:
                     key = sorted_keys[pos]
                     spec_start_offset = self.offset_dict[key][0]
-                seeker = open(self.path, 'rb')
+                seeker = self.get_binary_file_handler()
                 seeker.seek(spec_start_offset)
                 spectrum = self._search_linear(seeker, target_index)
                 seeker.close()
@@ -533,7 +539,7 @@ class StandardMzml(object):
                     )
 
     def _search_string_identifier(self, search_string, chunk_size=8):
-        with open(self.path, 'rb') as seeker:
+        with self.get_binary_file_handler() as seeker:
             data = None
             total_chunk_size = chunk_size * 512
             spec_start = None
