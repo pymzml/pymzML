@@ -91,6 +91,7 @@ class Reader(object):
 
         # Parameters
         self.ms_precisions       = {
+            0 : 0.001, #arbitrary prec for UV spectra
             1 : 5e-6,
             2 : 20e-6
         }
