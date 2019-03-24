@@ -88,6 +88,7 @@ class Reader(object):
                 MS_precisions[1] = kwargs['MS1_Precision']
             if 'MSn_Precision' in kwargs.keys():
                 MS_precisions[2] = kwargs['MSn_Precision']
+                MS_precisions[3] = kwargs['MSn_Precision']
 
         # Parameters
         self.ms_precisions       = {
