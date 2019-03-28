@@ -1,25 +1,25 @@
 .. code-block:: python
 
 	#!/usr/bin/env python3
-	
-	from __future__ import print_function
-	import pymzml
+
 	import os
-	
-	
+
+	import pymzml
+
+
 	def main():
 	    """
 	    Testscript to highlight the function name changes in the Spectrum class.
-	
+
 	    Note:
 	        Please adjust any old scripts to the new syntax.
-	
+
 	    usage:
-	
+
 	        ./deprecation_check.py
-	
+
 	    """
-	
+
 	    example_file = os.path.join(
 	        os.path.dirname(__file__),
 	        os.pardir,
@@ -43,6 +43,7 @@
 	                spectrum_list[0]
 	            )
 	            break
-	
+
+
 	if __name__ == '__main__':
 	    main()

@@ -11,7 +11,3 @@ repos:
     hooks:
     - id: black
       language_version: python
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
-    hooks:
-    - id: flake8

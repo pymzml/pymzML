@@ -1,22 +1,21 @@
 .. code-block:: python
 
 	#!/usr/bin/env python
-	
-	from __future__ import print_function
+
 	import pymzml
 	import os
-	
-	
+
+
 	def main():
 	    """
 	    Testscript to demonstrate functionality of function :py:func:`pymzml.spec.Spectrum.has_peak`
-	
+
 	    usage:
-	
+
 	        ./has_peak.py
-	
+
 	    """
-	
+
 	    example_file = os.path.join(
 	        os.path.dirname(__file__),
 	        os.pardir,
@@ -35,6 +34,7 @@
 	                    spectrum.ID
 	                )
 	            )
-	
+
+
 	if __name__ == '__main__':
 	    main()

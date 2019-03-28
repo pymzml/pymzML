@@ -1,27 +1,24 @@
 .. code-block:: python
 
 	#!/usr/bin/env python
-	
-	
-	from __future__ import print_function
-	import sys
-	import pymzml
+
 	import os
-	
-	
-	
+
+	import pymzml
+
+
 	def main():
 	    """
 	    Demonstration of the extraction of a specific ion chromatogram, i.e. XIC or EIC
-	
+
 	    All intensities and m/z values for a target m/z are extracted.
-	
+
 	    usage:
-	
+
 	        ./extract_ion_chromatogram.py
-	
+
 	    """
-	
+
 	    example_file = os.path.join(
 	        os.path.dirname(__file__),
 	        os.pardir,
@@ -33,9 +30,9 @@
 	        example_file
 	    )
 	    time_dependent_intensities = []
-	
+
 	    MZ_2_FOLLOW = 70.06575775
-	
+
 	    for spectrum in run:
 	        if spectrum.ms_level == 1:
 	            has_peak_matches = spectrum.has_peak( MZ_2_FOLLOW )
@@ -58,6 +55,6 @@
 	            )
 	        )
 	    return
-	
+
 	if __name__ == '__main__':
 	    main()

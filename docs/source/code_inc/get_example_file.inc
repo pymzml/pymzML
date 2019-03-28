@@ -1,20 +1,20 @@
 .. code-block:: python
 
 	#!/usr/bin/env python
-	
+
 	"""
-	
+
 	Check for presence of example files and download them.
 	Just call the function open_example()
-	
+
 	For using the correct output directory just state get_example_file.OUTPUT_DIR
-	
+
 	"""
-	from __future__ import print_function
-	import sys
-	import os.path
 	import hashlib
-	
+	import os.path
+	import sys
+
+
 	SHA256_DICT = {
 	    'deconvolution.mzML.gz': (
 	        '19399e4f87d8937cf7be32bab7fd8889700e119cbc2ede215270cbfc9913b394',
@@ -73,10 +73,10 @@
 	        'http://www.uni-muenster.de/hippler/pymzml/example_mzML_files/',
 	    )
 	}
-	
+
 	EXAMPLE_DIR = os.path.join(os.path.dirname(__file__), 'mzML_example_files')
 	OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'output')
-	
+
 	try:
 	    os.makedirs(EXAMPLE_DIR)
 	except OSError:
@@ -85,8 +85,8 @@
 	    os.makedirs(OUTPUT_DIR)
 	except OSError:
 	    pass
-	
-	
+
+
 	def open_example(filename):
 	    """
 	    filename = filename of a file in the example directory
@@ -98,13 +98,13 @@
 	    except KeyError:
 	        print('File "{0}" not available.'.format(filename), file=sys.stderr)
 	        exit(1)
-	
+
 	    filename_with_path = os.path.join(EXAMPLE_DIR, filename)
 	    # check file presence
 	    checked_file = check_file(filename_with_path, filename)
 	    if checked_file:
 	        return filename_with_path
-	
+
 	    # file is not present or corrupt
 	    server_url = SHA256_DICT[filename][1]
 	    url = server_url + filename
@@ -116,10 +116,10 @@
 	            os.remove(filename_with_path)
 	            print("Downloaded file is corrupt. Please try again.", file=sys.stderr)
 	            exit(1)
-	
+
 	        exit(1)
-	
-	
+
+
 	def check_file(filename_with_path, filename):
 	    # check file presence
 	    if os.path.isfile(filename_with_path):
@@ -127,34 +127,34 @@
 	        file = open(filename_with_path, 'rb')
 	        if check_sha256(file, filename):
 	            return True
-	
-	
+
+
 	def check_sha256(file, filename):
 	    sha256_sum = SHA256_DICT[filename][0]
-	
+
 	    if hashlib.sha256(file.read()).hexdigest() == sha256_sum:
 	        return True
 	    else:
 	        return False
-	
-	
+
+
 	def calc_sha256(file):
 	    file = open(file, 'rb')
 	    return hashlib.sha256(file.read()).hexdigest()
-	
-	
+
+
 	def download(filename_with_path, url):
 	    """
 	    filename_with_path = path and filename, where to save downloaded file
 	    url = url to download
 	    Path with filename is returned.
 	    """
-	
+
 	    if sys.version_info[0] < 3:
 	        from urllib2 import Request, urlopen, URLError, HTTPError
 	    else:
 	        from urllib.request import Request, urlopen, URLError, HTTPError
-	
+
 	    print("Downloading file ...", end="\r", file=sys.stderr)
 	    req = Request(url)
 	    print("Downloading file completed.", file=sys.stderr)
@@ -171,6 +171,7 @@
 	        print ('URL Error: Server not available. Please check your internet connection.',
 	               file=sys.stderr)
 	        exit(1)
-	
+
+
 	if __name__ == '__main__':
 	    print(__doc__)
