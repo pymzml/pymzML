@@ -61,6 +61,7 @@ class MS_Spectrum(object):
     """
     General spectrum class for data handling.
     """
+
     # __slots__ = [
     #     # '_read_accessions',
     #     # 'get_element_by_name',
@@ -81,11 +82,11 @@ class MS_Spectrum(object):
         """Set all required variables for this spectrum."""
         self.accessions = {}
         for element in self.element.getiterator():
-            accession = element.get('accession')
-            name      = element.get('name')
+            accession = element.get("accession")
+            name = element.get("name")
             if accession is not None:
                 self.accessions[name] = accession
-        if 'profile spectrum' in self.accessions.keys():
+        if "profile spectrum" in self.accessions.keys():
             self._profile = True
 
     def get_element_by_name(self, name):
@@ -102,7 +103,7 @@ class MS_Spectrum(object):
         iterator = self.element.getiterator()
         return_ele = None
         for ele in iterator:
-            if ele.get('name', default=None) == name:
+            if ele.get("name", default=None) == name:
                 return_ele = ele
                 break
         return return_ele
@@ -128,24 +129,24 @@ class MS_Spectrum(object):
         """
         return_ele = None
         if len(hooks) > 0:
-            path_array = ['.']
+            path_array = ["."]
             for hook in hooks:
-                path_array.append('{ns}{hook}'.format(ns=self.ns, hook=hook))
-            path = '/'.join(path_array)
+                path_array.append("{ns}{hook}".format(ns=self.ns, hook=hook))
+            path = "/".join(path_array)
             return_ele = self.element.findall(path)
 
         return return_ele
 
     def _register(self, decoded_tuple):
         d_type, array = decoded_tuple
-        if d_type == 'mz':
+        if d_type == "mz":
             self._mz = array
-        elif d_type == 'i':
+        elif d_type == "i":
             self._i = array
-        elif d_type == 'time':
+        elif d_type == "time":
             self._time = array
         else:
-            raise Exception('Unknown data Type ({0})'.format(d_type))
+            raise Exception("Unknown data Type ({0})".format(d_type))
 
     @property
     def precursors(self):
@@ -157,15 +158,13 @@ class MS_Spectrum(object):
         """
         if self._precursors is None:
             precursors = self.element.findall(
-                './{ns}precursorList/{ns}precursor'.format(ns=self.ns)
+                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
             self._precursors = []
             for prec in precursors:
-                spec_ref = prec.get('spectrumRef')
+                spec_ref = prec.get("spectrumRef")
                 self._precursors.append(
-                    regex_patterns.SPECTRUM_ID_PATTERN.search(
-                        spec_ref
-                    ).group(1)
+                    regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
                 )
         return self._precursors
 
@@ -184,51 +183,45 @@ class MS_Spectrum(object):
         """
         numpress_encoding = False
 
-        array_type_accession = self.calling_instance.OT[array_type]['id']
+        array_type_accession = self.calling_instance.OT[array_type]["id"]
 
-        b_data_string ="./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@accession='{Acc}']/..".format(
-                ns = self.ns, Acc=array_type_accession
+        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@accession='{Acc}']/..".format(
+            ns=self.ns, Acc=array_type_accession
         )
 
         float_type_string = "./{ns}cvParam[@accession='{Acc}']"
 
         b_data_array = self.element.find(b_data_string)
         comp = []
-        for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns = self.ns)):
-            if 'compression' in cvParam.get('name'):
-                if 'numpress' in cvParam.get('name').lower():
+        for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns=self.ns)):
+            if "compression" in cvParam.get("name"):
+                if "numpress" in cvParam.get("name").lower():
                     numpress_encoding = True
-                comp.append(cvParam.get('name'))
-            d_array_length = self.element.get('defaultArrayLength')
+                comp.append(cvParam.get("name"))
+            d_array_length = self.element.get("defaultArrayLength")
         if not numpress_encoding:
             try:
                 # 32-bit float
                 f_type = b_data_array.find(
                     float_type_string.format(
-                        ns  = self.ns,
-                        Acc = self.calling_instance.OT['32-bit float']['id']
+                        ns=self.ns, Acc=self.calling_instance.OT["32-bit float"]["id"]
                     )
-                ).get('name')
+                ).get("name")
             except:
                 # 64-bit Float
                 f_type = b_data_array.find(
                     float_type_string.format(
-                        ns  = self.ns,
-                        Acc = self.calling_instance.OT['64-bit float']['id']
+                        ns=self.ns, Acc=self.calling_instance.OT["64-bit float"]["id"]
                     )
-                ).get('name')
+                ).get("name")
         else:
             # compression is numpress, dont need floattype here
             f_type = None
-        data = b_data_array.find(
-            "./{ns}binary".format(
-                ns=self.ns
-            )
-        ).text
+        data = b_data_array.find("./{ns}binary".format(ns=self.ns)).text
         if data is not None:
             data = data.encode("utf-8")
         else:
-            data = ''
+            data = ""
         return (data, d_array_length, f_type, comp)
 
     @property
@@ -244,7 +237,7 @@ class MS_Spectrum(object):
     @measured_precision.setter
     def measured_precision(self, value):
         self._measured_precision = value
-        self.internal_precision  = int(round(50000.0 / (value * 1e6)))
+        self.internal_precision = int(round(50000.0 / (value * 1e6)))
         return
 
     def _decode_to_numpy(self, data, d_array_length, float_type, comp):
@@ -260,21 +253,22 @@ class MS_Spectrum(object):
         """
         out_data = b64dec(data)
         if len(out_data) != 0:
-            if 'zlib' in comp or \
-                'zlib compression' in comp:
+            if "zlib" in comp or "zlib compression" in comp:
                 out_data = zlib.decompress(out_data)
-            if 'ms-np-linear' in comp or\
-                'ms-np-pic' in comp or\
-                'ms-np-slof' in comp or\
-                'MS-Numpress linear prediction compression' in comp or\
-                'MS-Numpress short logged float compression' in comp:
+            if (
+                "ms-np-linear" in comp
+                or "ms-np-pic" in comp
+                or "ms-np-slof" in comp
+                or "MS-Numpress linear prediction compression" in comp
+                or "MS-Numpress short logged float compression" in comp
+            ):
 
                 out_data = self._decodeNumpress_to_array(out_data, comp)
-            if float_type == '32-bit float':
+            if float_type == "32-bit float":
                 # one character code may be sufficient too (f)
                 f_type = np.float32
                 out_data = np.fromstring(out_data, f_type)
-            elif float_type == '64-bit float':
+            elif float_type == "64-bit float":
                 # one character code may be sufficient too (d)
                 f_type = np.float64
                 out_data = np.fromstring(out_data, f_type)
@@ -293,10 +287,9 @@ class MS_Spectrum(object):
         """
         dec_data = b64dec(data)
         if len(dec_data) != 0:
-            if 'zlib' in comp or\
-               'zlib compression' in comp:
+            if "zlib" in comp or "zlib compression" in comp:
                 dec_data = zlib.decompress(dec_data)
-            if set(['ms-np-linear', 'ms-np-pic', 'ms-np-slof']) & set(comp):
+            if set(["ms-np-linear", "ms-np-pic", "ms-np-slof"]) & set(comp):
                 self._decodeNumpress(data, comp)
             # else:
             #     print(
@@ -305,14 +298,12 @@ class MS_Spectrum(object):
             #         )
             #     )
             #     sys.exit(1)
-            if float_type == '32-bit float':
-                f_type = 'f'
-            elif float_type == '64-bit float':
-                f_type = 'd'
+            if float_type == "32-bit float":
+                f_type = "f"
+            elif float_type == "64-bit float":
+                f_type = "d"
             fmt = "{endian}{array_length}{float_type}".format(
-                endian="<",
-                array_length=d_array_length,
-                float_type=f_type
+                endian="<", array_length=d_array_length, float_type=f_type
             )
             ret_data = unpack(fmt, dec_data)
         else:
@@ -333,13 +324,13 @@ class MS_Spectrum(object):
 
         """
         result = []
-        comp_ms_tags = [self.calling_instance.OT[comp]['id'] for comp in compression]
+        comp_ms_tags = [self.calling_instance.OT[comp]["id"] for comp in compression]
         data = np.frombuffer(data, dtype=np.uint8)
-        if 'MS:1002312' in comp_ms_tags:
+        if "MS:1002312" in comp_ms_tags:
             result = MSDecoder.decode_linear(data)
-        elif 'MS:1002313' in comp_ms_tags:
+        elif "MS:1002313" in comp_ms_tags:
             result = MSDecoder.decode_pic(data)
-        elif 'MS:1002314' in comp_ms_tags:
+        elif "MS:1002314" in comp_ms_tags:
             result = MSDecoder.decode_slof(data)
         return result
 
@@ -355,7 +346,7 @@ class MS_Spectrum(object):
         """
         return np.median(data)
 
-    def to_string(self, encoding='latin-1', method='xml'):
+    def to_string(self, encoding="latin-1", method="xml"):
         """
         Return string representation of the xml element the
         spectrum was initialized with.
@@ -369,11 +360,7 @@ class MS_Spectrum(object):
         Returns:
             element (str)  : xml string representation of the spectrum.
         """
-        return ElementTree.tostring(
-            self.element,
-            encoding = encoding,
-            method   = method
-        )
+        return ElementTree.tostring(self.element, encoding=encoding, method=method)
 
 
 class Spectrum(MS_Spectrum):
@@ -387,10 +374,10 @@ class Spectrum(MS_Spectrum):
         measured_precision (float): in ppm, i.e. 5e-6 equals to 5 ppm.
 
     """
-    def __init__(self, element = None, measured_precision = 5e-6):
+
+    def __init__(self, element=None, measured_precision=5e-6):
 
         __slots__ = [
-
             "_centroided_peaks",
             "_centroided_peaks_sorted_by_i",
             "_deconvoluted_peaks",
@@ -409,52 +396,51 @@ class Spectrum(MS_Spectrum):
             "_time",
             "_transformed_mass_with_error",
             "_transformed_mz_with_error",
-            "_transformed_peaks"
-            "calling_instance"
-            "element",
-            "internal_precision"
-            "noise_level_estimate",
-            "selected_precursors"
+            "_transformed_peaks" "calling_instance" "element",
+            "internal_precision" "noise_level_estimate",
+            "selected_precursors",
         ]
 
-        self._centroided_peaks             = None
+        self._centroided_peaks = None
         self._centroided_peaks_sorted_by_i = None
-        self._extreme_values               = None
-        self._i                            = None
-        self._ID                           = None
-        self._id_dict                      = None
-        self._index                        = None
-        self._ms_level                     = None
-        self._mz                           = None
+        self._extreme_values = None
+        self._i = None
+        self._ID = None
+        self._id_dict = None
+        self._index = None
+        self._ms_level = None
+        self._mz = None
         self._peak_dict = {
-            'raw'          : None,
-            'centroided'   : None,
-            'reprofiled'   : None,
-            'deconvoluted' : None
+            "raw": None,
+            "centroided": None,
+            "reprofiled": None,
+            "deconvoluted": None,
         }
-        self._selected_precursors          = None
-        self._profile                      = None
-        self._reprofiled_peaks             = None
-        self._scan_time                    = None
-        self._scan_time_unit               = None
-        self._t_mass_set                   = None
-        self._t_mz_set                     = None
-        self._TIC                          = None
-        self._transformed_mass_with_error  = None
-        self._transformed_mz_with_error    = None
-        self._transformed_peaks            = None
-        self.calling_instance              = None
-        self.element                       = element
-        self._measured_precision           = measured_precision
-        self.noise_level_estimate          = {}
+        self._selected_precursors = None
+        self._profile = None
+        self._reprofiled_peaks = None
+        self._scan_time = None
+        self._scan_time_unit = None
+        self._t_mass_set = None
+        self._t_mz_set = None
+        self._TIC = None
+        self._transformed_mass_with_error = None
+        self._transformed_mz_with_error = None
+        self._transformed_peaks = None
+        self.calling_instance = None
+        self.element = element
+        self._measured_precision = measured_precision
+        self.noise_level_estimate = {}
 
         if self.element:
-            self.ns = re.match(
-                '\{.*\}', element.tag
-            ).group(0) if re.match('\{.*\}', element.tag) else ''
+            self.ns = (
+                re.match("\{.*\}", element.tag).group(0)
+                if re.match("\{.*\}", element.tag)
+                else ""
+            )
 
         self._decode = self._decode_to_numpy
-        self._array  = np.array
+        self._array = np.array
 
     def __del__(self):
         """
@@ -488,10 +474,10 @@ class Spectrum(MS_Spectrum):
 
         """
         assert isinstance(other_spec, Spectrum)
-        if self._peak_dict['reprofiled'] is None:
-            self.set_peaks(self._reprofile_Peaks(), 'reprofiled')
-        for mz, i in other_spec.peaks('reprofiled'):
-            self._peak_dict['reprofiled'][mz] += i
+        if self._peak_dict["reprofiled"] is None:
+            self.set_peaks(self._reprofile_Peaks(), "reprofiled")
+        for mz, i in other_spec.peaks("reprofiled"):
+            self._peak_dict["reprofiled"][mz] += i
         # self.set_peaks(None, 'reprofiled')
         # self.set_peaks(None, 'reprofiled')
         return self
@@ -508,12 +494,12 @@ class Spectrum(MS_Spectrum):
             self (spec.Spectrum): returns self after other_spec was subtracted
         """
         assert isinstance(other_spec, Spectrum)
-        if self._peak_dict['reprofiled'] is None:
-            self.set_peaks(self._reprofile_Peaks(), 'reprofiled')
-        for mz, i in other_spec.peaks('reprofiled'):
-            self._peak_dict['reprofiled'][mz] -= i
-        self.set_peaks(None, 'centroided')
-        self.set_peaks(None, 'raw')
+        if self._peak_dict["reprofiled"] is None:
+            self.set_peaks(self._reprofile_Peaks(), "reprofiled")
+        for mz, i in other_spec.peaks("reprofiled"):
+            self._peak_dict["reprofiled"][mz] -= i
+        self.set_peaks(None, "centroided")
+        self.set_peaks(None, "raw")
         return self
 
     def __mul__(self, value):
@@ -528,26 +514,23 @@ class Spectrum(MS_Spectrum):
                 by value
         """
         assert isinstance(value, (int, float))
-        if self._peak_dict['raw'] is not None:
+        if self._peak_dict["raw"] is not None:
             self.set_peaks(
                 np.column_stack(
-                    (self.peaks('raw')[:, 0], self.peaks('raw')[:, 1] * value)
+                    (self.peaks("raw")[:, 0], self.peaks("raw")[:, 1] * value)
                 ),
-                'raw'
+                "raw",
             )
-        if self._peak_dict['centroided'] is not None:
+        if self._peak_dict["centroided"] is not None:
             self.set_peaks(
                 np.column_stack(
-                    (
-                        self.centroided_peaks[:, 0],
-                        self.centroided_peaks[:, 1] * value
-                    )
+                    (self.centroided_peaks[:, 0], self.centroided_peaks[:, 1] * value)
                 ),
-                'centroided'
+                "centroided",
             )
-        if self._peak_dict['reprofiled'] is not None:
-            for mz in self._peak_dict['reprofiled'].keys():
-                self._peak_dict['reprofiled'][mz] *= float(value)
+        if self._peak_dict["reprofiled"] is not None:
+            for mz in self._peak_dict["reprofiled"].keys():
+                self._peak_dict["reprofiled"][mz] *= float(value)
         return self
 
     def __truediv__(self, value):
@@ -561,26 +544,22 @@ class Spectrum(MS_Spectrum):
             self (spec.Spectrum): returns self after intensities were scaled
                 by value.
         """
-        assert isinstance(value, (int, float)), ''
-        if self._peak_dict['raw'] is not None:
+        assert isinstance(value, (int, float)), ""
+        if self._peak_dict["raw"] is not None:
             self.set_peaks(
                 np.column_stack(
-                    (
-                        self.peaks('raw')[:, 0],
-                        self.peaks('raw')[:, 1] / float(value)
-                    )
-                ), 'raw'
+                    (self.peaks("raw")[:, 0], self.peaks("raw")[:, 1] / float(value))
+                ),
+                "raw",
             )
-        if self._peak_dict['centroided'] is not None:
+        if self._peak_dict["centroided"] is not None:
             self.set_peaks(
-                [
-                    (mz, i / float(value)) for mz, i in self.centroided_peaks
-                ],
-                'centroided'
+                [(mz, i / float(value)) for mz, i in self.centroided_peaks],
+                "centroided",
             )
-        if self._peak_dict['reprofiled'] is not None:
-            for mz in self.peak_dict['reprofiled'].keys():
-                self.peak_dict['reprofiled'][mz] /= float(value)
+        if self._peak_dict["reprofiled"] is not None:
+            for mz in self.peak_dict["reprofiled"].keys():
+                self.peak_dict["reprofiled"][mz] /= float(value)
         return self
 
     def __div__(self, value):
@@ -593,7 +572,7 @@ class Spectrum(MS_Spectrum):
         """
         Returns representative string for a spectrum object class
         """
-        return '<__main__.Spectrum object with native ID {0} at {1}>'.format(
+        return "<__main__.Spectrum object with native ID {0} at {1}>".format(
             self.ID, hex(id(self))
         )
 
@@ -601,7 +580,7 @@ class Spectrum(MS_Spectrum):
         """
         Returns representative string for a spectrum object class
         """
-        return '<__main__.Spectrum object with native ID {0} at {1}>'.format(
+        return "<__main__.Spectrum object with native ID {0} at {1}>".format(
             self.ID, hex(id(self))
         )
 
@@ -617,16 +596,16 @@ class Spectrum(MS_Spectrum):
             value (float or str): value of the XML tag
         """
         #  TODO implement cache???
-        if accession == 'id':
+        if accession == "id":
             return_val = self.ID
         else:
-            if not accession.startswith('MS:'):
-                accession = self.calling_instance.OT[accession]['id']
+            if not accession.startswith("MS:"):
+                accession = self.calling_instance.OT[accession]["id"]
             search_string = './/*[@accession="{0}"]'.format(accession)
 
             elements = []
             for x in self.element.iterfind(search_string):
-                val = x.attrib.get('value')
+                val = x.attrib.get("value")
                 try:
                     val = float(val)
                 except:
@@ -680,7 +659,7 @@ class Spectrum(MS_Spectrum):
     @measured_precision.setter
     def measured_precision(self, value):
         self._measured_precision = value
-        self.internal_precision  = int(round(50000.0 / (value * 1e6)))
+        self.internal_precision = int(round(50000.0 / (value * 1e6)))
         return
 
     @property
@@ -695,14 +674,23 @@ class Spectrum(MS_Spectrum):
         """
         if self._t_mz_set is None:
             self._t_mz_set = set()
-            for mz, i in self.peaks('centroided'):
+            for mz, i in self.peaks("centroided"):
                 self._t_mz_set |= set(
                     range(
-                        int(round(
-                            (mz - (mz * self.measured_precision)) * self.internal_precision
-                        )),
-                        int(round(
-                            (mz + (mz * self.measured_precision)) * self.internal_precision)) + 1)
+                        int(
+                            round(
+                                (mz - (mz * self.measured_precision))
+                                * self.internal_precision
+                            )
+                        ),
+                        int(
+                            round(
+                                (mz + (mz * self.measured_precision))
+                                * self.internal_precision
+                            )
+                        )
+                        + 1,
+                    )
                 )
         return self._t_mz_set
 
@@ -719,10 +707,22 @@ class Spectrum(MS_Spectrum):
         """
         if self._transformed_mz_with_error is None:
             self._transformed_mz_with_error = ddict(list)
-            for mz, i in self.peaks('centroided'):
+            for mz, i in self.peaks("centroided"):
                 for t_mz_with_error in range(
-                    int(round((mz - (mz * self.measured_precision)) * self.internal_precision)),
-                                             int(round((mz + (mz * self.measured_precision)) * self.internal_precision)) + 1):
+                    int(
+                        round(
+                            (mz - (mz * self.measured_precision))
+                            * self.internal_precision
+                        )
+                    ),
+                    int(
+                        round(
+                            (mz + (mz * self.measured_precision))
+                            * self.internal_precision
+                        )
+                    )
+                    + 1,
+                ):
                     self._transformed_mz_with_error[t_mz_with_error].append((mz, i))
         return self._transformed_mz_with_error
 
@@ -739,7 +739,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._transformed_peaks is None:
             self._transformed_peaks = [
-                (self.transform_mz(mz), i) for mz, i in self.peaks('centroided')
+                (self.transform_mz(mz), i) for mz, i in self.peaks("centroided")
             ]
         return self._transformed_peaks
 
@@ -754,11 +754,9 @@ class Spectrum(MS_Spectrum):
         if self._TIC is None:
             self._TIC = float(
                 self.element.find(
-                    "./{ns}cvParam[@accession='MS:1000285']".format(
-                        ns=self.ns
-                    )
-                ).get('value')
-            )# put hardcoded MS tags in minimum.py???
+                    "./{ns}cvParam[@accession='MS:1000285']".format(ns=self.ns)
+                ).get("value")
+            )  # put hardcoded MS tags in minimum.py???
         return self._TIC
 
     @property
@@ -771,7 +769,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._ID is None:
             self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
-                self.element.get('id')
+                self.element.get("id")
             ).group(1)
             try:
                 self._ID = int(self._ID)
@@ -790,10 +788,10 @@ class Spectrum(MS_Spectrum):
         if self._id_dict is None:
             tuples = []
             captures = regex_patterns.SPECTRUM_PATTERN3.match(
-                self.element.attrib['id']
+                self.element.attrib["id"]
             ).captures(1)
             for element in captures:
-                k, v = element.strip().split('=')
+                k, v = element.strip().split("=")
                 v = int(v)
                 tuples.append([k, v])
             self._id_dict = dict(tuples)
@@ -811,13 +809,13 @@ class Spectrum(MS_Spectrum):
             This does not necessarily correspond to the native spectrum ID
         """
         if self._index is None:
-            self._index = self.element.get('index')
+            self._index = self.element.get("index")
             try:
                 self._index = int(self._index)
             except:
                 pass
         return self._index
-    
+
     @property
     def ms_level(self):
         """
@@ -828,10 +826,10 @@ class Spectrum(MS_Spectrum):
         """
         if self._ms_level is None:
             self._ms_level = self.element.find(
-                ".//{ns}cvParam[@accession='MS:1000511']".format(
-                    ns=self.ns
-                )
-            ).get('value') # put hardcoded MS tags in minimum.py???
+                ".//{ns}cvParam[@accession='MS:1000511']".format(ns=self.ns)
+            ).get(
+                "value"
+            )  # put hardcoded MS tags in minimum.py???
         return int(self._ms_level)
 
     @property
@@ -848,12 +846,10 @@ class Spectrum(MS_Spectrum):
         """
         if self._scan_time is None or self._scan_time_unit is None:
             scan_time_ele = self.element.find(
-                ".//*[@accession='MS:1000016']".format(
-                    ns=self.ns
-                )
+                ".//*[@accession='MS:1000016']".format(ns=self.ns)
             )
-            self._scan_time = float(scan_time_ele.attrib.get('value'))
-            self._scan_time_unit = scan_time_ele.get('unitName', 'unicorns')
+            self._scan_time = float(scan_time_ele.attrib.get("value"))
+            self._scan_time_unit = scan_time_ele.get("unitName", "unicorns")
         return self._scan_time, self._scan_time_unit
 
     # @property
@@ -869,11 +865,11 @@ class Spectrum(MS_Spectrum):
         """
 
         self._scan_time, time_unit = self.scan_time
-        if self._scan_time_unit.lower() == 'second':
+        if self._scan_time_unit.lower() == "second":
             self._scan_time /= 60.0
-        elif self._scan_time_unit.lower() == 'minute':
+        elif self._scan_time_unit.lower() == "minute":
             pass
-        elif self._scan_time_unit.lower() == 'hour':
+        elif self._scan_time_unit.lower() == "hour":
             self._scan_time *= 60.0
             pass
         else:
@@ -902,23 +898,21 @@ class Spectrum(MS_Spectrum):
             )
 
             mz_values = []
-            i_values  = []
-            charges   = []
+            i_values = []
+            charges = []
             for obj in selected_precursor_mzs:
-                mz = obj.get('value')
+                mz = obj.get("value")
                 mz_values.append(float(mz))
             for obj in selected_precursor_is:
-                i = obj.get('value')
+                i = obj.get("value")
                 i_values.append(float(i))
             for obj in selected_precursor_cs:
-                c = obj.get('value')
+                c = obj.get("value")
                 charges.append(int(c))
             self._selected_precursors = []
             for pos, mz in enumerate(mz_values):
-                dict_2_save = {
-                    'mz' : mz
-                }
-                for key, list_of_values in [('i', i_values), ('charge', charges)]:
+                dict_2_save = {"mz": mz}
+                for key, list_of_values in [("i", i_values), ("charge", charges)]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
                     except:
@@ -940,13 +934,13 @@ class Spectrum(MS_Spectrum):
             mz (list): list of m/z values of spectrum.
         """
         if self._mz is None:
-            params = self._get_encoding_parameters('m/z array')
+            params = self._get_encoding_parameters("m/z array")
             self._mz = self._decode(*params)
         return self._mz
 
     @mz.setter
     def mz(self, mz_list):
-        ''''''
+        """"""
         mz_list = np.array(mz_list, dtype=np.float64)
         mz_list.sort()
         self._mz = mz_list
@@ -965,7 +959,7 @@ class Spectrum(MS_Spectrum):
             i (list): list of intensity values from the analyzed spectrum
         """
         if self._i is None:
-            params = self._get_encoding_parameters('intensity array')
+            params = self._get_encoding_parameters("intensity array")
             self._i = self._decode(*params)
         return self._i
 
@@ -985,29 +979,29 @@ class Spectrum(MS_Spectrum):
             peaks (list or ndarray): list or numpy array of mz/i tuples or arrays
         """
         if self._peak_dict[peak_type] is None:
-            if self._peak_dict['raw'] is None:
-                self._peak_dict['raw'] = []
-                mz_params = self._get_encoding_parameters('m/z array')
-                i_params  = self._get_encoding_parameters('intensity array')
+            if self._peak_dict["raw"] is None:
+                self._peak_dict["raw"] = []
+                mz_params = self._get_encoding_parameters("m/z array")
+                i_params = self._get_encoding_parameters("intensity array")
                 mz = self._decode(*mz_params)
-                i  = self._decode(*i_params)
+                i = self._decode(*i_params)
                 # self._peak_dict['raw'] = np.ndarray(len(mz), dtype=tuple)
                 for pos, mz_val in enumerate(mz):
-                    self._peak_dict['raw'].append((mz_val, i[pos]))
+                    self._peak_dict["raw"].append((mz_val, i[pos]))
                     # self._peak_dict['raw'][pos] = [mz, 1]
-            if peak_type is 'raw':
+            if peak_type is "raw":
                 pass
-            elif peak_type is 'centroided':
-                self._peak_dict['centroided'] = self._centroid_peaks()
-            elif peak_type is 'reprofiled':
-                self._peak_dict['reprofiled'] = self._reprofile_Peaks()
-            elif peak_type is 'deconvoluted':
-                self._peak_dict['deconvoluted'] = self._deconvolute_peaks()
+            elif peak_type is "centroided":
+                self._peak_dict["centroided"] = self._centroid_peaks()
+            elif peak_type is "reprofiled":
+                self._peak_dict["reprofiled"] = self._reprofile_Peaks()
+            elif peak_type is "deconvoluted":
+                self._peak_dict["deconvoluted"] = self._deconvolute_peaks()
             else:
                 raise KeyError
 
         peaks = self._array(self._peak_dict[peak_type])
-        if peak_type is 'reprofiled':
+        if peak_type is "reprofiled":
             peaks = list(self._peak_dict[peak_type].items())
             peaks.sort(key=itemgetter(0))
         return peaks
@@ -1022,22 +1016,22 @@ class Spectrum(MS_Spectrum):
 
         """
         peak_type = peak_type.lower()
-        if peak_type == 'raw':
-            self._peak_dict['raw'] = peaks
-            self._mz = [mz for mz, i in self.peaks('raw')]
-            self._i  = [i for mz, i in self.peaks('raw')]
-        elif peak_type == 'centroided':
-            self._peak_dict['centroided'] = peaks
-            self._mz = [mz for mz, i in self.peaks('raw')]
-            self._i  = [i for mz, i in self.peaks('raw')]
-        elif peak_type == 'reprofiled':
+        if peak_type == "raw":
+            self._peak_dict["raw"] = peaks
+            self._mz = [mz for mz, i in self.peaks("raw")]
+            self._i = [i for mz, i in self.peaks("raw")]
+        elif peak_type == "centroided":
+            self._peak_dict["centroided"] = peaks
+            self._mz = [mz for mz, i in self.peaks("raw")]
+            self._i = [i for mz, i in self.peaks("raw")]
+        elif peak_type == "reprofiled":
             try:
-                self._peak_dict['reprofiled'] = dict(peaks)
+                self._peak_dict["reprofiled"] = dict(peaks)
             except TypeError:
-                self._peak_dict['reprofiled'] = None
+                self._peak_dict["reprofiled"] = None
         else:
             raise Exception(
-                'Peak type is not suppported\n'
+                "Peak type is not suppported\n"
                 'Choose either "raw", "centroided" or "reprofiled"'
             )
 
@@ -1050,12 +1044,9 @@ class Spectrum(MS_Spectrum):
             centroided_peaks (list): list of centroided m/z, i tuples
         """
         try:
-            acc = self.calling_instance.OT['profile spectrum']['id']
+            acc = self.calling_instance.OT["profile spectrum"]["id"]
             is_profile = self.element.find(
-                ".//*[@accession='{acc}']".format(
-                    ns=self.ns,
-                    acc=acc
-                )
+                ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
             )
         except TypeError as e:
             is_profile = None
@@ -1066,11 +1057,11 @@ class Spectrum(MS_Spectrum):
         # )
         # this is OBO dependent :()
         # .get('value')
-        if is_profile is not None: # check if spec is a profile spec
+        if is_profile is not None:  # check if spec is a profile spec
             tmp = []
-            if self._peak_dict['reprofiled'] is not None:
-                i_array  = [i for mz, i in self.peaks('reprofiled')]
-                mz_array = [mz for mz, i in self.peaks('reprofiled')]
+            if self._peak_dict["reprofiled"] is not None:
+                i_array = [i for mz, i in self.peaks("reprofiled")]
+                mz_array = [mz for mz, i in self.peaks("reprofiled")]
             else:
                 i_array = self.i
                 mz_array = self.mz
@@ -1109,20 +1100,19 @@ class Spectrum(MS_Spectrum):
                                 before += 1
                     try:
                         double_log = math.log(y2 / y1) / math.log(y3 / y1)
-                        mue = (double_log * (x1 * x1 - x3 * x3) - x1 * x1 + x2\
-                               * x2) / (2 * (x2 - x1) - 2 * double_log * \
-                                        (x3 - x1))
-                        c_squarred = (x2 * x2 - x1 * x1 - 2 * x2 * mue \
-                                      + 2 * x1 * mue) / (2 * math.log(y1 / y2)
+                        mue = (double_log * (x1 * x1 - x3 * x3) - x1 * x1 + x2 * x2) / (
+                            2 * (x2 - x1) - 2 * double_log * (x3 - x1)
                         )
-                        A = y1 * math.exp((x1 - mue) * (x1 - mue) \
-                                          / (2 * c_squarred))
+                        c_squarred = (
+                            x2 * x2 - x1 * x1 - 2 * x2 * mue + 2 * x1 * mue
+                        ) / (2 * math.log(y1 / y2))
+                        A = y1 * math.exp((x1 - mue) * (x1 - mue) / (2 * c_squarred))
                     except:
                         continue
                     tmp.append((mue, A))
             return tmp
         else:
-            return self.peaks('raw')
+            return self.peaks("raw")
 
     def _reprofile_Peaks(self):
         """
@@ -1132,13 +1122,13 @@ class Spectrum(MS_Spectrum):
             reprofiled_peaks (list): list of reprofiled m/z, i tuples
         """
         tmp = ddict(int)
-        for mz, i in self.peaks('centroided'):
+        for mz, i in self.peaks("centroided"):
             # Let the measured precision be 2 sigma of the signal width
             # When using normal distribution
             # FWHM = 2 sqt(2 * ln(2)) sigma = 2.3548 sigma
-            s = mz * self.measured_precision * 2 # in before 2
+            s = mz * self.measured_precision * 2  # in before 2
             s2 = s * s
-            floor  = mz - 5.0 * s   # Gauss curve +- 3 sigma
+            floor = mz - 5.0 * s  # Gauss curve +- 3 sigma
             ceil = mz + 5.0 * s
             ip = self.internal_precision / 4
             # more spacing, i.e. less points describing the gauss curve
@@ -1146,21 +1136,21 @@ class Spectrum(MS_Spectrum):
             for _ in range(int(round(floor * ip)), int(round(ceil * ip)) + 1):
                 if _ % int(5) == 0:
                     a = float(_) / float(ip)
-                    y = i * math.exp(-1 * ((mz - a) * (mz - a))  / (2 * s2))
+                    y = i * math.exp(-1 * ((mz - a) * (mz - a)) / (2 * s2))
                     tmp[a] += y
         self.reprofiled = True
         return tmp
 
     def _register(self, decoded_tuple):
         d_type, array = decoded_tuple
-        if d_type == 'mz':
+        if d_type == "mz":
             self._mz = array
-        elif d_type == 'i':
+        elif d_type == "i":
             self._i = array
-        elif d_type == 'time':
+        elif d_type == "time":
             self._time = array
         else:
-            raise Exception('Unknown data Type ({0})'.format(d_type))
+            raise Exception("Unknown data Type ({0})".format(d_type))
 
     def _mz_2_mass(self, mz, charge):
         """
@@ -1173,22 +1163,18 @@ class Spectrum(MS_Spectrum):
         Returns:
             mass (float): Returns mass of a given m/z value
         """
-        return ((mz - PROTON) * charge)
+        return (mz - PROTON) * charge
 
     def _set_params_from_reference_group(self, ref_element):
-        ref = self.element.find('{ns}referenceableParamGroupRef'.format(
-            ns=self.ns
-        ))
+        ref = self.element.find("{ns}referenceableParamGroupRef".format(ns=self.ns))
         if ref is not None:
-            ref = ref.get('ref')
-        ele = ref_element.find(".//*[@id='{ref}']".format(
-            ref=ref,
-            ns=self.ns
-        ))
-        if ele is not None and ref == ele.get('id'):
+            ref = ref.get("ref")
+        ele = ref_element.find(".//*[@id='{ref}']".format(ref=ref, ns=self.ns))
+        if ele is not None and ref == ele.get("id"):
             for param in ele.getiterator():
                 self.element.append(ele)
-                acc = param.get('accession')
+                acc = param.get("accession")
+
     # Public functions
 
     def reduce(self, mz_range=(None, None)):
@@ -1201,21 +1187,22 @@ class Spectrum(MS_Spectrum):
         Returns:
             peaks (list): list of mz, i tuples in the given range.
         """
-        assert isinstance(mz_range, tuple), \
-            "Require tuple of (min,max) mz range to reduce spectrum"
+        assert isinstance(
+            mz_range, tuple
+        ), "Require tuple of (min,max) mz range to reduce spectrum"
         if mz_range != (None, None):
             tmp_peaks = []
-            for mz, i in self.peaks( 'raw' ):
+            for mz, i in self.peaks("raw"):
                 if mz < mz_range[0]:
                     continue
                 elif mz > mz_range[1]:
                     break
                 else:
                     tmp_peaks.append((mz, i))
-            self.set_peaks(tmp_peaks, 'raw')
-        return self.peaks( 'raw' )
+            self.set_peaks(tmp_peaks, "raw")
+        return self.peaks("raw")
 
-    def remove_noise(self, mode='median', noise_level=None):
+    def remove_noise(self, mode="median", noise_level=None):
         """
         Function to remove noise from peaks, centroided peaks and reprofiled
         peaks.
@@ -1231,20 +1218,22 @@ class Spectrum(MS_Spectrum):
 
         """
         # Thanks to JD Hogan for pointing it out!
-        callPeaks     = self.peaks('raw')
-        callcentPeaks = self.peaks('centroided')
+        callPeaks = self.peaks("raw")
+        callcentPeaks = self.peaks("centroided")
         if noise_level is None:
             noise_level = self.estimated_noise_level(mode=mode)
-        if self._peak_dict['centroided'] is not None:
-            self._peak_dict['centroided'] = [
-                (mz, i) for mz, i in self.peaks('centroided') if i >= noise_level
+        if self._peak_dict["centroided"] is not None:
+            self._peak_dict["centroided"] = [
+                (mz, i) for mz, i in self.peaks("centroided") if i >= noise_level
             ]
-        if self._peak_dict['raw'] is not None:
-            self._peak_dict['raw'] = [(mz, i) for mz, i in self.peaks('raw') if i >= noise_level]
-        self._peak_dict['reprofiled'] = None
+        if self._peak_dict["raw"] is not None:
+            self._peak_dict["raw"] = [
+                (mz, i) for mz, i in self.peaks("raw") if i >= noise_level
+            ]
+        self._peak_dict["reprofiled"] = None
         return self
 
-    def estimated_noise_level(self, mode='median'):
+    def estimated_noise_level(self, mode="median"):
         """
         Calculates noise threshold for function remove_noise.
 
@@ -1259,28 +1248,27 @@ class Spectrum(MS_Spectrum):
 
 
         """
-        if self.peaks('centroided') == []:  # or is None?
+        if self.peaks("centroided") == []:  # or is None?
             return_value = 0
 
         self.noise_level_estimate = {}
         if mode not in self.noise_level_estimate.keys():
-            if mode == 'median':
-                self.noise_level_estimate['median'] = self._median(
-                    [ i for mz, i in self.peaks('centroided')]
+            if mode == "median":
+                self.noise_level_estimate["median"] = self._median(
+                    [i for mz, i in self.peaks("centroided")]
                 )
-            elif mode == 'mad':
-                median = self.estimated_noise_level(mode='median')
-                self.noise_level_estimate['mad'] = self._median(
-                    sorted(
-                        [abs(i - median) for mz, i in self.peaks('centroided')])
+            elif mode == "mad":
+                median = self.estimated_noise_level(mode="median")
+                self.noise_level_estimate["mad"] = self._median(
+                    sorted([abs(i - median) for mz, i in self.peaks("centroided")])
                 )
-            elif mode == 'mean':
-                self.noise_level_estimate['mean'] = sum(
-                    [i for mz, i in self.peaks('centroided')]
-                ) / float(len(self.peaks('centroided')))
+            elif mode == "mean":
+                self.noise_level_estimate["mean"] = sum(
+                    [i for mz, i in self.peaks("centroided")]
+                ) / float(len(self.peaks("centroided")))
             else:
                 print(
-                    'Do not understand noise level estimation method call with given mode: {0}'.format(
+                    "Do not understand noise level estimation method call with given mode: {0}".format(
                         mode
                     )
                 )
@@ -1315,7 +1303,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._centroided_peaks_sorted_by_i is None:
             self._centroided_peaks_sorted_by_i = sorted(
-                self.peaks('centroided'), key=itemgetter(1)
+                self.peaks("centroided"), key=itemgetter(1)
             )
         return self._centroided_peaks_sorted_by_i[-n:]
 
@@ -1352,30 +1340,23 @@ class Spectrum(MS_Spectrum):
             extrema (tuple) : tuple of minimal and maximum m/z or intensity
 
         """
-        available_extreme_values = ['mz', 'i']
+        available_extreme_values = ["mz", "i"]
         if key not in available_extreme_values:
             print(
                 "Do not understand extreme request: '{0}'; available values are: {1}".format(
-                    key,
-                    available_extreme_values
+                    key, available_extreme_values
                 )
             )
             exit()
         if self._extreme_values is None:
             self._extreme_values = {}
         try:
-            if key == 'mz':
-                all_mz_values = [mz for mz, i in self.peaks('raw')]
-                self._extreme_values['mz'] = (
-                    min(all_mz_values),
-                    max(all_mz_values)
-                )
+            if key == "mz":
+                all_mz_values = [mz for mz, i in self.peaks("raw")]
+                self._extreme_values["mz"] = (min(all_mz_values), max(all_mz_values))
             else:
-                all_i_values = [i for mz, i in self.peaks('raw')]
-                self._extreme_values['i'] = (
-                    min(all_i_values),
-                    max(all_i_values)
-                )
+                all_i_values = [i for mz, i in self.peaks("raw")]
+                self._extreme_values["i"] = (min(all_i_values), max(all_i_values))
         except ValueError:
             # emtpy spectrum
             self._extreme_values[key] = ()
@@ -1431,9 +1412,7 @@ class Spectrum(MS_Spectrum):
             otherwise ``False``
         """
         for minus_or_plus in [-1, 1]:
-            target = self.ppm2abs(
-                mz, self.measured_precision, minus_or_plus, 1
-            )
+            target = self.ppm2abs(mz, self.measured_precision, minus_or_plus, 1)
             temp = self.has_peak(self.ppm2abs(mz, self.measured_precision))
             if temp and len(temp) > 1:
                 return True
@@ -1462,16 +1441,15 @@ class Spectrum(MS_Spectrum):
             vectors. The more similar the specs are, the closer the value is
             to 1.
         """
-        assert isinstance(spec2, Spectrum), \
-            "Spectrum 2 is not a pymzML spectrum"
+        assert isinstance(spec2, Spectrum), "Spectrum 2 is not a pymzML spectrum"
 
         vector1 = ddict(int)
         vector2 = ddict(int)
         mzs = set()
-        for mz, i in self.peaks('raw'):
+        for mz, i in self.peaks("raw"):
             vector1[round(mz, round_precision)] += i
             mzs.add(round(mz, round_precision))
-        for mz, i in spec2.peaks('raw'):
+        for mz, i in spec2.peaks("raw"):
             vector2[round(mz, round_precision)] += i
             mzs.add(round(mz, round_precision))
 
@@ -1530,72 +1508,69 @@ class Spectrum(MS_Spectrum):
 
     def deprecation_warning(self, function_name):
         deprecation_lookup = {
-            'similarityTo'        : 'similarity_to',
-            'hasPeak'             : 'has_peak',
-            'extremeValues'       : 'extreme_values',
-            'transformMZ'         : 'transform_mz',
-            'hasOverlappingPeak'  : 'has_overlapping_peak',
-            'highestPeaks'        : 'highest_peaks',
-            'estimatedNoiseLevel' : 'estimated_noise_level',
-            'removeNoise'         : 'remove_noise',
-            'newPlot'             : 'new_plot',
-            'centroidedPeaks'     : 'peaks'
+            "similarityTo": "similarity_to",
+            "hasPeak": "has_peak",
+            "extremeValues": "extreme_values",
+            "transformMZ": "transform_mz",
+            "hasOverlappingPeak": "has_overlapping_peak",
+            "highestPeaks": "highest_peaks",
+            "estimatedNoiseLevel": "estimated_noise_level",
+            "removeNoise": "remove_noise",
+            "newPlot": "new_plot",
+            "centroidedPeaks": "peaks",
         }
         warnings.warn(
-            '''
+            """
             Function: "{0}" deprecated since version 1.0.0, please use new function: "{1}"
-            '''.format(
-                function_name,
-                deprecation_lookup.get(
-                    function_name,
-                    'not_defined_yet'
-                )
+            """.format(
+                function_name, deprecation_lookup.get(function_name, "not_defined_yet")
             ),
             DeprecationWarning,
         )
 
     def similarityTo(self, spec2, round_precision=0):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.similarity_to( spec2, round_precision = round_precision)
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.similarity_to(spec2, round_precision=round_precision)
 
     def hasPeak(self, mz):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.has_peak( mz )
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.has_peak(mz)
 
     def extremeValues(self, key):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.extreme_values( key )
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.extreme_values(key)
 
     def transformMZ(self, value):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.transform_mz( value )
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.transform_mz(value)
 
     def hasOverlappingPeak(self, mz):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.has_overlapping_peak( mz )
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.has_overlapping_peak(mz)
 
-    def highestPeaks(self,n):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
+    def highestPeaks(self, n):
+        self.deprecation_warning(sys._getframe().f_code.co_name)
         return self.highest_peaks(n)
 
-    def estimatedNoiseLevel(self, mode = 'median'):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.estimated_noise_level( mode = mode )
+    def estimatedNoiseLevel(self, mode="median"):
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.estimated_noise_level(mode=mode)
 
-    def removeNoise(self, mode = 'median', noiseLevel = None):
-        self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.remove_noise( mode = mode, noise_level = noiseLevel )
+    def removeNoise(self, mode="median", noiseLevel=None):
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        return self.remove_noise(mode=mode, noise_level=noiseLevel)
 
     @property
     def centroidedPeaks(self):
         # self.deprecation_warning( sys._getframe().f_code.co_name )
-        return self.peaks('centroided')
+        return self.peaks("centroided")
 
 
 class Chromatogram(MS_Spectrum):
     """
     Class for Chromatogram access and handling.
     """
+
     def __init__(self, element, measured_precision=5e-6, param=None):
         """
         Arguments:
@@ -1625,35 +1600,37 @@ class Chromatogram(MS_Spectrum):
             "_transformed_mass_with_error",
             "_precursors",
             "_ID",
-            "internal_precision"
+            "internal_precision",
         ]
 
-        self._measured_precision            = measured_precision
-        self.element                       = element
-        self.noise_level_estimate          = {}
+        self._measured_precision = measured_precision
+        self.element = element
+        self.noise_level_estimate = {}
         # Property variables
-        self._time                         = None
-        self._ms_level                     = None
-        self._i                            = None
-        self._t_mass_set                   = None
-        self._peaks                        = None
-        self._t_mz_set                     = None
-        self._centroided_peaks             = None
-        self._reprofiled_peaks             = None
-        self._deconvoluted_peaks           = None
-        self._profile                      = None
-        self._extreme_values               = None
+        self._time = None
+        self._ms_level = None
+        self._i = None
+        self._t_mass_set = None
+        self._peaks = None
+        self._t_mz_set = None
+        self._centroided_peaks = None
+        self._reprofiled_peaks = None
+        self._deconvoluted_peaks = None
+        self._profile = None
+        self._extreme_values = None
         self._centroided_peaks_sorted_by_i = None
-        self._transformed_mz_with_error    = None
-        self._transformed_mass_with_error  = None
-        self._precursors                   = None
-        self._ID                           = None
+        self._transformed_mz_with_error = None
+        self._transformed_mass_with_error = None
+        self._precursors = None
+        self._ID = None
 
         if self.element:
             # self._read_accessions()
-            self.ns = re.match(
-                '\{.*\}', element.tag
-            ).group(0) if re.match('\{.*\}', element.tag) else ''
+            self.ns = (
+                re.match("\{.*\}", element.tag).group(0)
+                if re.match("\{.*\}", element.tag)
+                else ""
+            )
             # self._ns_paths            = {
             #     'mz'      : "{ns}binaryDataArrayList/" \
             #                 "{ns}binaryDataArray/" \
@@ -1681,21 +1658,25 @@ class Chromatogram(MS_Spectrum):
         self._array = np.array
 
     def __repr__(self):
-        return '<__main__.Chromatogram object with native ID {0} at {1}>'.format(self.ID ,hex(id(self)))
+        return "<__main__.Chromatogram object with native ID {0} at {1}>".format(
+            self.ID, hex(id(self))
+        )
 
     def __str__(self):
-        return '<__main__.Chromatogram object with native ID {0} at {1}>'.format(self.ID ,hex(id(self)))
+        return "<__main__.Chromatogram object with native ID {0} at {1}>".format(
+            self.ID, hex(id(self))
+        )
 
     @property
     def ID(self):
         if self._ID is None:
-            self._ID = self.element.get('id')
+            self._ID = self.element.get("id")
         return self._ID
 
     @property
     def mz(self):
-        ''''''
-        print('Chromatogram has no property mz.\nReturn retention time instead')
+        """"""
+        print("Chromatogram has no property mz.\nReturn retention time instead")
         return self.time
 
     @property
@@ -1712,16 +1693,14 @@ class Chromatogram(MS_Spectrum):
 
         """
         if self._time is None:
-            params = self._get_encoding_parameters('time array')
+            params = self._get_encoding_parameters("time array")
             self._time = self._decode(*params)
         return self._time
 
     @property
     def i(self):
         if self._i is None:
-            params = self._get_encoding_parameters(
-                'intensity array'
-            )
+            params = self._get_encoding_parameters("intensity array")
             self._i = self._decode(*params)
         return self._i
 
