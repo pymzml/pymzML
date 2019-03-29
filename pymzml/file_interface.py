@@ -24,9 +24,9 @@ class FileInterface(object):
 
         """
         self.build_index_from_scratch = build_index_from_scratch
-        self.encoding     = encoding
+        self.encoding = encoding
         self.file_handler = self._open(path)
-        self.offset_dict  = self.file_handler.offset_dict
+        self.offset_dict = self.file_handler.offset_dict
 
     def close(self):
         """Close the internal file handler."""
@@ -46,22 +46,14 @@ class FileInterface(object):
             :py:class:`~pymzml.file_classes.standardMzml.StandardMzml`,
             based on the file ending of 'path'
         """
-        if path.endswith('.gz'):
+        if path.endswith(".gz"):
             if self._indexed_gzip(path):
-                file_handler = indexedGzip.IndexedGzip(
-                    path,
-                    self.encoding
-                )
+                file_handler = indexedGzip.IndexedGzip(path, self.encoding)
             else:
-                file_handler = standardGzip.StandardGzip(
-                    path,
-                    self.encoding
-                )
+                file_handler = standardGzip.StandardGzip(path, self.encoding)
         else:
             file_handler = standardMzml.StandardMzml(
-                path,
-                self.encoding,
-                self.build_index_from_scratch,
+                path, self.encoding, self.build_index_from_scratch
             )
         return file_handler
 
@@ -106,5 +98,6 @@ class FileInterface(object):
         #     self.offset_dict.update(self.file_handler.offset_dict)
         return self.file_handler[identifier]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(__doc__)
