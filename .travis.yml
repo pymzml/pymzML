@@ -29,6 +29,8 @@ matrix:
       env: TOXENV=format
     - python: 3.6
       env: TOXENV=coverage
+    - python: 3.6
+      env: TOXENV=example_scripts
 
 script:
   - tox
