@@ -13,79 +13,88 @@ import test_file_paths
 class runTest(unittest.TestCase):
     """
     """
+
     def setUp(self):
         """
         """
         paths = test_file_paths.paths
 
-        file_compressed_indexed     = paths[2]
-        file_compressed_unindexed   = paths[1]
-        file_uncompressed_indexed   = paths[0]
+        file_compressed_indexed = paths[2]
+        file_compressed_unindexed = paths[1]
+        file_uncompressed_indexed = paths[0]
         file_uncompressed_unindexed = paths[0]
-        self.reader_compressed_indexed     = run.Reader(file_compressed_indexed)
-        self.reader_compressed_unindexed   = run.Reader(file_compressed_unindexed)
-        self.reader_uncompressed_indexed   = run.Reader(file_uncompressed_indexed)
+        self.reader_compressed_indexed = run.Reader(file_compressed_indexed)
+        self.reader_compressed_unindexed = run.Reader(file_compressed_unindexed)
+        self.reader_uncompressed_indexed = run.Reader(file_uncompressed_indexed)
         self.reader_uncompressed_unindexed = run.Reader(file_uncompressed_unindexed)
 
     def test_determine_file_encoding(self):
         """
         """
-        encoding = self.reader_compressed_indexed._determine_file_encoding(self.reader_compressed_indexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
-        encoding = self.reader_compressed_unindexed._determine_file_encoding(self.reader_compressed_unindexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
-        encoding = self.reader_uncompressed_indexed._determine_file_encoding(self.reader_uncompressed_indexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
-        encoding = self.reader_uncompressed_unindexed._determine_file_encoding(self.reader_uncompressed_unindexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
+        encoding = self.reader_compressed_indexed._determine_file_encoding(
+            self.reader_compressed_indexed.info["encoding"]
+        )
+        self.assertEqual(encoding, "utf-8")
+        encoding = self.reader_compressed_unindexed._determine_file_encoding(
+            self.reader_compressed_unindexed.info["encoding"]
+        )
+        self.assertEqual(encoding, "utf-8")
+        encoding = self.reader_uncompressed_indexed._determine_file_encoding(
+            self.reader_uncompressed_indexed.info["encoding"]
+        )
+        self.assertEqual(encoding, "utf-8")
+        encoding = self.reader_uncompressed_unindexed._determine_file_encoding(
+            self.reader_uncompressed_unindexed.info["encoding"]
+        )
+        self.assertEqual(encoding, "utf-8")
 
     def test_init_iter(self):
         """
         """
-        mzml_version = self.reader_compressed_indexed.info['mzml_version']
-        obo_version  = self.reader_compressed_indexed.info['obo_version']
-        spec_count   = self.reader_compressed_indexed.info['spectrum_count']
-        run_id       = self.reader_uncompressed_unindexed.info['run_id']
-        start_time   = self.reader_uncompressed_unindexed.info['start_time']
-        self.assertEqual(mzml_version, '1.1.0')
-        self.assertEqual(obo_version, '3.25.0')
+        mzml_version = self.reader_compressed_indexed.info["mzml_version"]
+        obo_version = self.reader_compressed_indexed.info["obo_version"]
+        spec_count = self.reader_compressed_indexed.info["spectrum_count"]
+        run_id = self.reader_uncompressed_unindexed.info["run_id"]
+        start_time = self.reader_uncompressed_unindexed.info["start_time"]
+        self.assertEqual(mzml_version, "1.1.0")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
-        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
-        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
+        self.assertEqual(run_id, "exp105-01-ds5562-Pos")
+        self.assertEqual(start_time, "2013-09-10T10:31:08Z")
 
-        mzml_version = self.reader_compressed_unindexed.info['mzml_version']
-        obo_version  = self.reader_compressed_unindexed.info['obo_version']
-        spec_count   = self.reader_compressed_unindexed.info['spectrum_count']
-        run_id       = self.reader_uncompressed_unindexed.info['run_id']
-        start_time   = self.reader_uncompressed_unindexed.info['start_time']
-        self.assertEqual(mzml_version, '1.1.0')
-        self.assertEqual(obo_version, '3.25.0')
+        mzml_version = self.reader_compressed_unindexed.info["mzml_version"]
+        obo_version = self.reader_compressed_unindexed.info["obo_version"]
+        spec_count = self.reader_compressed_unindexed.info["spectrum_count"]
+        run_id = self.reader_uncompressed_unindexed.info["run_id"]
+        start_time = self.reader_uncompressed_unindexed.info["start_time"]
+        self.assertEqual(mzml_version, "1.1.0")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
-        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
-        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
+        self.assertEqual(run_id, "exp105-01-ds5562-Pos")
+        self.assertEqual(start_time, "2013-09-10T10:31:08Z")
 
-        mzml_version = self.reader_uncompressed_indexed.info['mzml_version']
-        obo_version  = self.reader_uncompressed_indexed.info['obo_version']
-        spec_count   = self.reader_uncompressed_indexed.info['spectrum_count']
-        run_id       = self.reader_uncompressed_unindexed.info['run_id']
-        start_time   = self.reader_uncompressed_unindexed.info['start_time']
-        self.assertEqual(mzml_version, '1.1.0')
-        self.assertEqual(obo_version, '3.25.0')
+        mzml_version = self.reader_uncompressed_indexed.info["mzml_version"]
+        obo_version = self.reader_uncompressed_indexed.info["obo_version"]
+        spec_count = self.reader_uncompressed_indexed.info["spectrum_count"]
+        run_id = self.reader_uncompressed_unindexed.info["run_id"]
+        start_time = self.reader_uncompressed_unindexed.info["start_time"]
+        self.assertEqual(mzml_version, "1.1.0")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
-        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
-        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
+        self.assertEqual(run_id, "exp105-01-ds5562-Pos")
+        self.assertEqual(start_time, "2013-09-10T10:31:08Z")
 
-        mzml_version = self.reader_uncompressed_unindexed.info['mzml_version']
-        obo_version  = self.reader_uncompressed_unindexed.info['obo_version']
-        spec_count   = self.reader_uncompressed_unindexed.info['spectrum_count']
-        run_id       = self.reader_uncompressed_unindexed.info['run_id']
-        start_time   = self.reader_uncompressed_unindexed.info['start_time']
+        mzml_version = self.reader_uncompressed_unindexed.info["mzml_version"]
+        obo_version = self.reader_uncompressed_unindexed.info["obo_version"]
+        spec_count = self.reader_uncompressed_unindexed.info["spectrum_count"]
+        run_id = self.reader_uncompressed_unindexed.info["run_id"]
+        start_time = self.reader_uncompressed_unindexed.info["start_time"]
 
-        self.assertEqual(mzml_version, '1.1.0')
-        self.assertEqual(obo_version, '3.25.0')
+        self.assertEqual(mzml_version, "1.1.0")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
-        self.assertEqual(run_id, 'exp105-01-ds5562-Pos')
-        self.assertEqual(start_time, '2013-09-10T10:31:08Z')
+        self.assertEqual(run_id, "exp105-01-ds5562-Pos")
+        self.assertEqual(start_time, "2013-09-10T10:31:08Z")
 
     def test_next(self):
         """
@@ -116,5 +125,6 @@ class runTest(unittest.TestCase):
         """
         pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)

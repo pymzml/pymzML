@@ -9,14 +9,16 @@ import unittest
 from pymzml.spec import Spectrum, Chromatogram
 import test_file_paths
 
+
 class StandardMzmlTest(unittest.TestCase):
     """
     """
+
     def setUp(self):
         """
         """
         paths = test_file_paths.paths
-        self.standard_mzml = StandardMzml(paths[0], 'latin-1')
+        self.standard_mzml = StandardMzml(paths[0], "latin-1")
 
     def tearDown(self):
         """
@@ -32,8 +34,8 @@ class StandardMzmlTest(unittest.TestCase):
         target_ID = spec.ID
         self.assertEqual(ID, target_ID)
 
-        ID = 'TIC'
-        chrom = self.standard_mzml[ ID ]
+        ID = "TIC"
+        chrom = self.standard_mzml[ID]
         self.assertIsInstance(chrom, Chromatogram)
         self.assertEqual(ID, chrom.ID)
 
@@ -43,5 +45,6 @@ class StandardMzmlTest(unittest.TestCase):
         spec = self.standard_mzml._interpol_search(5)
         self.assertIsInstance(spec, Spectrum)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)

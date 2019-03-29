@@ -16,9 +16,10 @@ import test_file_paths
 class IndexedGzipTest(unittest.TestCase):
     """
     """
+
     def setUp(self):
         paths = test_file_paths.paths
-        self.File = IndexedGzip(paths[2], 'latin-1')
+        self.File = IndexedGzip(paths[2], "latin-1")
 
     def tearDown(self):
         """
@@ -38,12 +39,13 @@ class IndexedGzipTest(unittest.TestCase):
         spec = self.File[ID]
         self.assertIsInstance(spec, Spectrum)
         self.assertEqual(spec.ID, ID)
-        
+
     def test_getitem_tic(self):
-        ID = 'TIC'
+        ID = "TIC"
         chrom = self.File[ID]
         self.assertIsInstance(chrom, Chromatogram)
         self.assertEqual(chrom.ID, ID)
-        
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)
