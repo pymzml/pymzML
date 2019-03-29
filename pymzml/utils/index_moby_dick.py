@@ -10,12 +10,13 @@ import re
 from GSGW import GSGW
 import pymzml.regex_patterns as regex_patterns
 
-moby_dick_url = \
-    "http://faculty.washington.edu/stepp/courses/" \
+moby_dick_url = (
+    "http://faculty.washington.edu/stepp/courses/"
     "2004autumn/tcss143/lectures/files/2004-11-08/mobydick.txt"
+)
 
 response = urllib.request.urlopen(moby_dick_url)
-moby_dick_txt = response.read().decode('utf-8').split('\n')
+moby_dick_txt = response.read().decode("utf-8").split("\n")
 
 
 def index_by_chapter(txt):
@@ -27,42 +28,33 @@ def index_by_chapter(txt):
     """
     chapter_start = regex_patterns.MOBY_DICK_CHAPTER_PATTERN
     general_seekable_gzip_writer = GSGW(
-        file        = 'Moby_Dick_indexed.gz',
-        max_idx     = 42,
-        max_idx_len = 9,
+        file="Moby_Dick_indexed.gz",
+        max_idx=42,
+        max_idx_len=9,
         max_offset_len=6,
-        output_path = './Moby_Dick_indexed.gz'
+        output_path="./Moby_Dick_indexed.gz",
     )
 
     with general_seekable_gzip_writer as index_writer:
-        current_chapter = ''
+        current_chapter = ""
         for line in txt:
             if re.match(chapter_start, line):
                 match = re.match(chapter_start, line)
                 current_chapter_number = int(match.group(1)) - 1
-                print(
-                    'indexing chapter {0}'.format(
-                        current_chapter_number
-                    ),
-                    end='\r',
-                )
-                index = 'Chapter{0}'.format(current_chapter_number)
+                print("indexing chapter {0}".format(current_chapter_number), end="\r")
+                index = "Chapter{0}".format(current_chapter_number)
                 index_writer.add_data(current_chapter, index)
-                current_chapter = ''
+                current_chapter = ""
             else:
                 current_chapter += line
-        current_chapter_number  += 1
+        current_chapter_number += 1
 
-        index = 'Chapter{0}'.format(current_chapter_number)
+        index = "Chapter{0}".format(current_chapter_number)
         index_writer.add_data(current_chapter, index)
-        print(
-            'index chapter {0} '.format(
-                index
-            ),
-            end='\r'
-        )
+        print("index chapter {0} ".format(index), end="\r")
         index_writer.write_index()
-        print('Indexed {0} chapters'.format(current_chapter_number))
+        print("Indexed {0} chapters".format(current_chapter_number))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     index_by_chapter(moby_dick_txt)

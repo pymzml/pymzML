@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-import sys
-import pymzml
 import os
+import sys
+
+import pymzml
 from pymzml.plot import Factory
 
 
@@ -23,7 +23,7 @@ def main(mzml_file):
     pf = Factory()
     pf.new_plot()
     pf.add(
-        run['TIC'].peaks,
+        run['TIC'].peaks(),
         color = (0, 0, 0),
         style = 'lines',
         title = mzml_basename

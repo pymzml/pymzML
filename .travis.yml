@@ -1,14 +1,41 @@
 language: python
 python:
-      - "3.4"
-      - "3.5"
       - "3.6"
 sudo: false
 
-before_install: pip install codecov
-after_success:  codecov
+branches:
+   only:
+     - master
 
-install:
-    - pip install -r requirements.txt
+env:
+  global:
+    - TWINE_USERNAME=MKoesters
+    # Note: TWINE_PASSWORD is set in Travis settings
 
-script: nosetests --with-coverage
+matrix:
+  include:
+    - python: 3.4
+      env: TOXENV=py34
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.7
+      env: TOXENV=py37
+      dist: xenial
+    - python: 3.6
+      env: TOXENV=docu
+    - python: 3.6
+      env: TOXENV=format
+    - python: 3.6
+      env: TOXENV=coverage
+
+script:
+  - tox
+  - |
+    if [[ $TRAVIS_TAG ]]; then
+      python3 setup.py sdist
+      python3 setup.py bdist_wheel --universal
+      pip3 install twine
+      twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    fi

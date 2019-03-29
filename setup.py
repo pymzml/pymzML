@@ -21,11 +21,18 @@ setup(
             'obo/*.obo.gz'
         ]
     },
+    python_requires  = '>=3.4.0',
     install_requires = [
-        'numpy',
-        #'pynumpress',
-        'plotly'
+        'numpy >= 1.8.0',
     ],
+    extras_require   = {
+        'full': [
+            'plotly < 2.0',
+            'pynumpress>=0.0.4',
+        ],
+        'plot': ['plotly < 2.0'],
+        'pynumpress': ['pynumpress>=0.0.4'],
+    },
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
     author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi, M. Hippler and C. Fufezan',

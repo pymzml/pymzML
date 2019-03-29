@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from argparse import ArgumentParser
 import os
 import re
-import subprocess
-import tempfile
 import shutil
+import subprocess
 import sys
+import tempfile
+from argparse import ArgumentParser
 
 '''Download all versions of the psidev OBO for mzML files'''
 

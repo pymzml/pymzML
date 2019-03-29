@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-import pymzml
-import os
 import copy
+import os
+
+import pymzml
+
+
 def main():
     """
     This script shows how to plot multiple spectra in one plot and
@@ -54,7 +56,7 @@ def main():
         'data',
         'BSA1.mzML.gz'
     )
-    
+
     # Define different precisions for MS1 and MS2
     run = pymzml.run.Reader(
         example_file,
@@ -83,7 +85,7 @@ def main():
     )
 
     # The label for the precursor ion is added as a seperate trace.
-    # Note that triangle.MS_precision is used here as a label. 
+    # Note that triangle.MS_precision is used here as a label.
     # By zooming in at this peak one can therefore check if the measured
     # peak fits into defined the mass accuracy range.
     precursor_mz_calc = 435.9102
@@ -99,7 +101,7 @@ def main():
     # The x- and y-axes of subplots are numbered, starting at 1.
     for axis in layout.keys():
         plot_layout['{0}1'.format(axis)] = copy.copy(layout[axis])
-    
+
     # Now we can add a second plot, the same way as above but as a zoom-in.
     # Therefore, we define a mz_range
     p.new_plot(
@@ -123,7 +125,7 @@ def main():
         style = 'label.triangle.MS_precision',
         name = 'theoretical precursor plot 2'
     )
-    
+
     # The mz_range can be included in the layout as well.
     # In contrast to mz_range in the add() function, which limits the included
     # datapoints, the layout range only defines the area that is depicted (i.e. the zoom)
@@ -227,6 +229,7 @@ def main():
         layout = plot_layout
     )
     print('Plotted file: {0}'.format(filename))
-    
+
+
 if __name__ == '__main__':
     main()

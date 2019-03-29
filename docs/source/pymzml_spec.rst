@@ -16,7 +16,11 @@ Spectrum
     :members:
     :exclude-members: __repr__, __str__
 
-    .. automethod:: __getitem__, __add__, __sub__, __mul__, __truediv__
+    .. automethod:: __getitem__
+    .. automethod:: __add__
+    .. automethod:: __sub__
+    .. automethod:: __mul__
+    .. automethod:: __truediv__
 
 Chromatogram
 ------------
