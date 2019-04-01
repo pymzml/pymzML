@@ -24,6 +24,7 @@ setup(
     python_requires  = '>=3.4.0',
     install_requires = [
         'numpy >= 1.8.0',
+        'regex'
     ],
     extras_require   = {
         'full': [
