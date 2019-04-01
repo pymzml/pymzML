@@ -38,6 +38,7 @@ import re
 import os
 import xml.etree.ElementTree as ElementTree
 from collections import defaultdict as ddict
+from io import BytesIO
 
 from . import spec
 from . import obo
@@ -72,7 +73,7 @@ class Reader(object):
 
     def __init__(
         self,
-        path,
+        path_or_file,
         MS_precisions = None,
         obo_version   = None,
         build_index_from_scratch=False,
@@ -100,21 +101,13 @@ class Reader(object):
 
         # File info
         self.info                = ddict()
-        self.info['file_name']   = path
-        self.info['encoding']    = self._determine_file_encoding(path)
-        self.info['file_object'] = self._open_file(self.info['file_name'])
-        # if build_index_from_scratch is True:
-        #     print(isinstance(self.info['file_object'], StandardMzml))
-        #     print(type(self.info['file_object']))
-        #     if isinstance(self.info['file_object'], StandardMzml):
-        #         self.info['offset_dict'] = \
-        #             self.info['file_object']._build_index_from_scratch()
-        #     else:
-        #         raise Exception(
-        #             'Can only build index from scratch '
-        #             'for standard mzML files.'
-        #         )
-        # else:
+        if isinstance(path_or_file, str):
+            self.info['file_name']   = path_or_file
+            self.info['encoding']    = self._determine_file_encoding(path_or_file)
+        else:
+            self.info['encoding']    = self._guess_encoding(path_or_file)
+            
+        self.info['file_object'] = self._open_file(path_or_file)
         self.info['offset_dict'] = self.info['file_object'].offset_dict
         self.info['obo_version'] = obo_version
 
@@ -192,7 +185,7 @@ class Reader(object):
         """Return file object in use."""
         return type(self.info['file_object'].file_handler)
 
-    def _open_file(self, path):
+    def _open_file(self, path_or_file):
         """
         Open the path using the FileInterface class as a wrapper.
 
@@ -204,10 +197,26 @@ class Reader(object):
                 mzml files
         """
         return FileInterface(
-            path,
+            path_or_file,
             self.info['encoding'],
             build_index_from_scratch=self.build_index_from_scratch
         )
+
+    def _guess_encoding(self, mzml_file):
+        """
+        Determine the encoding used for the file.
+
+        Arguments:
+            mzml_file (IOBase): an mzml file
+
+        Returns:
+            mzml_encoding (str): encoding type of the file
+        """
+        match = regex_patterns.FILE_ENCODING_PATTERN.search(mzml_file.readline())
+        if match:
+            return bytes.decode(match.group('encoding'))
+        else:
+            return 'utf-8'
 
     def _determine_file_encoding(self, path):
         """
@@ -219,17 +228,15 @@ class Reader(object):
         Returns:
             mzml_encoding (str): encoding type of the file
         """
-        mzml_encoding = 'utf-8'
         if os.path.exists(path):
-            with open(path, 'rb') as sniffer:
-                header = sniffer.readline()
-                encoding_pattern = regex_patterns.FILE_ENCODING_PATTERN
-                match = encoding_pattern.search(header)
-                if match:
-                    mzml_encoding = bytes.decode(
-                        match.group('encoding')
-                    )
-        return mzml_encoding
+            print(path)
+            if path.endswith('.gz') or path.endswith('.igz'):
+                import gzip
+                _open = gzip.open
+            else:
+                _open = open
+            with _open(path, 'rb') as sniffer:
+                return self._guess_encoding(sniffer)
 
     def _init_obo_translator(self):
         """

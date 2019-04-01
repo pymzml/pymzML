@@ -5,9 +5,8 @@ Interface for mzML files
 
 @author: Manuel Koesters
 """
-from pymzml.file_classes import indexedGzip
-from pymzml.file_classes import standardGzip
-from pymzml.file_classes import standardMzml
+from io import BytesIO
+from pymzml.file_classes import indexedGzip, standardGzip, standardMzml, bytesMzml
 from pymzml.utils import GSGR
 
 
@@ -32,7 +31,7 @@ class FileInterface(object):
         """Close the internal file handler."""
         self.file_handler.close()
 
-    def _open(self, path):
+    def _open(self, path_or_file):
         """
         Open a file like object resp. a wrapper for a file like object.
 
@@ -46,24 +45,18 @@ class FileInterface(object):
             :py:class:`~pymzml.file_classes.standardMzml.StandardMzml`,
             based on the file ending of 'path'
         """
-        if path.endswith('.gz'):
-            if self._indexed_gzip(path):
-                file_handler = indexedGzip.IndexedGzip(
-                    path,
-                    self.encoding
-                )
+        if isinstance(path_or_file, BytesIO):
+            return bytesMzml.BytesMzml(path_or_file, self.encoding, self.build_index_from_scratch)
+        if path_or_file.endswith('.gz'):
+            if self._indexed_gzip(path_or_file):
+                return indexedGzip.IndexedGzip(path_or_file, self.encoding)
             else:
-                file_handler = standardGzip.StandardGzip(
-                    path,
-                    self.encoding
-                )
-        else:
-            file_handler = standardMzml.StandardMzml(
-                path,
+                return standardGzip.StandardGzip(path_or_file, self.encoding)
+        return standardMzml.StandardMzml(
+                path_or_file,
                 self.encoding,
                 self.build_index_from_scratch,
             )
-        return file_handler
 
     def _indexed_gzip(self, path):
         """
