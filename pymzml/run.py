@@ -226,9 +226,14 @@ class Reader(object):
         Returns:
             mzml_encoding (str): encoding type of the file
         """
-        mzml_encoding = 'utf-8'
         if os.path.exists(path):
-            with open(path, 'rb') as sniffer:
+            print(path)
+            if path.endswith('.gz') or path.endswith('.igz'):
+                import gzip
+                _open = gzip.open
+            else:
+                _open = open
+            with _open(path, 'rb') as sniffer:
                 return self._guess_encoding(sniffer)
 
     def _init_obo_translator(self):

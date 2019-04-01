@@ -16,12 +16,12 @@ class runTest(unittest.TestCase):
     def setUp(self):
         """
         """
-        paths = test_file_paths.paths
+        self.paths = test_file_paths.paths
 
-        file_compressed_indexed     = paths[2]
-        file_compressed_unindexed   = paths[1]
-        file_uncompressed_indexed   = paths[0]
-        file_uncompressed_unindexed = paths[0]
+        file_compressed_indexed     = self.paths[2]
+        file_compressed_unindexed   = self.paths[1]
+        file_uncompressed_indexed   = self.paths[0]
+        file_uncompressed_unindexed = self.paths[0]
         self.reader_compressed_indexed     = run.Reader(file_compressed_indexed)
         self.reader_compressed_unindexed   = run.Reader(file_compressed_unindexed)
         self.reader_uncompressed_indexed   = run.Reader(file_uncompressed_indexed)
@@ -30,14 +30,14 @@ class runTest(unittest.TestCase):
     def test_determine_file_encoding(self):
         """
         """
-        encoding = self.reader_compressed_indexed._determine_file_encoding(self.reader_compressed_indexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
-        encoding = self.reader_compressed_unindexed._determine_file_encoding(self.reader_compressed_unindexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
-        encoding = self.reader_uncompressed_indexed._determine_file_encoding(self.reader_uncompressed_indexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
-        encoding = self.reader_uncompressed_unindexed._determine_file_encoding(self.reader_uncompressed_unindexed.info['encoding'])
-        self.assertEqual(encoding, 'utf-8')
+        encoding = self.reader_compressed_indexed._determine_file_encoding(self.paths[2])
+        self.assertEqual(encoding, 'ISO-8859-1')
+        encoding = self.reader_compressed_unindexed._determine_file_encoding(self.paths[1])
+        self.assertEqual(encoding, 'ISO-8859-1')
+        encoding = self.reader_uncompressed_indexed._determine_file_encoding(self.paths[3])
+        self.assertEqual(encoding, 'ISO-8859-1')
+        encoding = self.reader_uncompressed_unindexed._determine_file_encoding(self.paths[0])
+        self.assertEqual(encoding, 'ISO-8859-1')
 
     def test_init_iter(self):
         """
