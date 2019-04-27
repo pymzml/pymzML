@@ -99,7 +99,7 @@ class MS_Spectrum(object):
             obo_version (str, optional): obo version number.
 
         """
-        iterator = self.element.getiterator()
+        iterator = self.element.iter()
         return_ele = None
         for ele in iterator:
             if ele.get('name', default=None) == name:
@@ -273,11 +273,11 @@ class MS_Spectrum(object):
             if float_type == '32-bit float':
                 # one character code may be sufficient too (f)
                 f_type = np.float32
-                out_data = np.fromstring(out_data, f_type)
+                out_data = np.frombuffer(out_data, f_type)
             elif float_type == '64-bit float':
                 # one character code may be sufficient too (d)
                 f_type = np.float64
-                out_data = np.fromstring(out_data, f_type)
+                out_data = np.frombuffer(out_data, f_type)
         else:
             out_data = np.array([])
         return out_data
@@ -450,8 +450,8 @@ class Spectrum(MS_Spectrum):
 
         if self.element:
             self.ns = re.match(
-                '\{.*\}', element.tag
-            ).group(0) if re.match('\{.*\}', element.tag) else ''
+                r'\{.*\}', element.tag
+            ).group(0) if re.match(r'\{.*\}', element.tag) else ''
 
         self._decode = self._decode_to_numpy
         self._array  = np.array
@@ -1259,7 +1259,7 @@ class Spectrum(MS_Spectrum):
 
 
         """
-        if self.peaks('centroided') == []:  # or is None?
+        if len(self.peaks('centroided')) == 0:  # or is None?
             return_value = 0
 
         self.noise_level_estimate = {}
@@ -1652,8 +1652,8 @@ class Chromatogram(MS_Spectrum):
         if self.element:
             # self._read_accessions()
             self.ns = re.match(
-                '\{.*\}', element.tag
-            ).group(0) if re.match('\{.*\}', element.tag) else ''
+                r'\{.*\}', element.tag
+            ).group(0) if re.match(r'\{.*\}', element.tag) else ''
             # self._ns_paths            = {
             #     'mz'      : "{ns}binaryDataArrayList/" \
             #                 "{ns}binaryDataArray/" \

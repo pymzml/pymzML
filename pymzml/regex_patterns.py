@@ -54,7 +54,7 @@ Regex to catch specturm open xml tag with encoded array length
 '''
 
 CHROMO_OPEN_PATTERN = re.compile(
-    b'<chromatogram\s.*?id="(.*?)"'
+    b'<chromatogram\\s.*?id="(.*?)"'
 )
 
 SPECTRUM_CLOSE_PATTERN = re.compile(

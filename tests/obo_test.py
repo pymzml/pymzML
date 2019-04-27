@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath('.'))
 import unittest
 import gzip
 
-class TestRound(object):
+class TestRound(unittest.TestCase):
   def _check_rounding(self, test, expected):
     assert round(test) == expected
 
@@ -20,12 +20,12 @@ class TestRound(object):
                  (1.9, 2)]:
       yield self._check_rounding, x, y
 
-class TestOboVersion(object):
+class TestOboVersion(unittest.TestCase):
     """
     Test that all obo filenames match the version contained
 
     """
-    def __init__(self):
+    def setUp(self):
         self.obodir = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir, 'pymzml', 'obo')
         self.obo_files = [f for f in os.listdir(self.obodir) if f.startswith('psi-ms')]
 

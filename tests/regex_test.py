@@ -44,7 +44,7 @@ class RegexTest(unittest.TestCase):
 
     def test_spectrum_id_patter(self):
         for tag in self.spec_tags.values():
-            self.assertRegexpMatches(
+            self.assertRegex(
                 tag.decode('utf-8'),
                 rp.SPECTRUM_ID_PATTERN
             )
@@ -52,14 +52,14 @@ class RegexTest(unittest.TestCase):
     # def test_spectrum_open_patter(self):
     #     for tag in self.spec_tags.values():
     #         print('tag', tag, rp.SPECTRUM_OPEN_PATTERN)
-    #         self.assertRegexpMatches(
+    #         self.assertRegex(
     #             tag,
     #             rp.SPECTRUM_OPEN_PATTERN
     #         )
 
     def test_spectrum_tag_patter(self):
         for tag in self.spec_tags.values():
-            self.assertRegexpMatches(
+            self.assertRegex(
                 tag.decode('utf-8'),
                 rp.SPECTRUM_TAG_PATTERN
             )

@@ -18,7 +18,7 @@ import test_file_paths
 class ChromatogramTest(unittest.TestCase):
 
     def assertPeaksIdentical(self, peaks1, peaks2, msg=None):
-        self.assertEquals(len(peaks1), len(peaks2))#, msg='List have different number of peaks!')
+        self.assertEqual(len(peaks1), len(peaks2))#, msg='List have different number of peaks!')
         for x in range(len(peaks1)):
             self.assertCountEqual(peaks1[x], peaks2[x], msg=msg)
 
