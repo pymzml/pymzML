@@ -283,7 +283,7 @@ class SpectrumTest(unittest.TestCase):
         run_idx_mzml = run.Reader(idx_mzml)
         spec = run_idx_mzml[11]
         self.assertIsInstance(spec, Spectrum)
-        self.assertEquals(spec.ID, 11)
+        self.assertEqual(spec.ID, 11)
 
     def test_getitem_index_mzml_double(self):
         idx_mzml    = self.paths[0]
@@ -392,7 +392,7 @@ class SpectrumTest(unittest.TestCase):
         spec = self.Run[6]
         tmzs = spec.t_mz_set
         self.assertIsInstance(tmzs, set)
-        self.assertEquals(len(tmzs), 23081)
+        self.assertEqual(len(tmzs), 23081)
 
     # def test_precursosr(self):
     #     ms2_spec = self.Run[3]
