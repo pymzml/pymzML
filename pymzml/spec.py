@@ -1093,7 +1093,7 @@ class Spectrum(MS_Spectrum):
                         )
                         A = y1 * math.exp((x1 - mue) * (x1 - mue) \
                                           / (2 * c_squarred))
-                    except ZeroDivision:
+                    except ZeroDivisionError:
                         continue
                     tmp.append((mue, A))
             return tmp
