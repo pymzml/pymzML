@@ -13,3 +13,8 @@ test.dat
 *.html
 dist
 *.log
+.coverage
+.scannerwork
+.tox
+pymzml.egg-info
+

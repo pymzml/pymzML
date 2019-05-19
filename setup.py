@@ -7,6 +7,7 @@ version_path = os.path.join(
     'pymzml',
     'version.txt'
 )
+
 with open(version_path, 'r') as version_file:
     pymzml_version = version_file.read().strip()
 
@@ -24,6 +25,7 @@ setup(
     python_requires  = '>=3.4.0',
     install_requires = [
         'numpy >= 1.8.0',
+        'regex>2019.4.14'
     ],
     extras_require   = {
         'full': [

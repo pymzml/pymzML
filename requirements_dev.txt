@@ -1,7 +1,5 @@
-# Installation
-numpy >= 1.8.0
-plotly < 2.0
-pynumpress >= 0.0.4
+# install requirements
+-r requirements.txt
 
 # Testing and Development
 cython
@@ -9,8 +7,4 @@ coverage >= 4.2
 codecov
 pytest
 tox
-sphinx
-sphinx_rtd_theme
 regex
-pre-commit
-black
