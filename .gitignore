@@ -17,4 +17,4 @@ dist
 .scannerwork
 .tox
 pymzml.egg-info
-
+docs/source/code_inc/
