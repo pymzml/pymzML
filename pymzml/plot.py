@@ -462,7 +462,7 @@ class Factory(object):
 
             elif style[0] == "points":
                 mode = "markers"
-                shape = " linear"
+                shape = "linear"
                 x_values = x_vals
                 y_values = y_vals
 
@@ -482,12 +482,12 @@ class Factory(object):
             {
                 "x": x_values,
                 "y": y_values,
-                "xaxis": {"range": mz_range, "autorange": False},
-                "yaxis": {"range": int_range, "autorange": False},
+                # "xaxis": {"range": mz_range, "autorange": False},
+                # "yaxis": {"range": int_range, "autorange": False},
                 "text": txt,
                 "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
                 "textposition": "top center",
-                "visible": "True",
+                "visible": True,
                 "marker": {
                     "size": 10,
                     "color": "rgba" + str((color[0], color[1], color[2], opacity)),
@@ -501,10 +501,7 @@ class Factory(object):
                     "dash": dash,
                 },
                 "fill": filling,
-                "fillcolor": {
-                    "color": "rgba" + str((color[0], color[1], color[2], opacity)),
-                    "opacity": opacity,
-                },
+                "fillcolor": "rgba" + str((color[0], color[1], color[2], opacity)),
                 "opacity": opacity,
             }
         )
@@ -607,10 +604,10 @@ class Factory(object):
             my_figure["layout"][xaxis_key].update(title="m/z ")
             my_figure["layout"][yaxis_key].update(title="Intensity")
             my_figure["layout"][xaxis_key].update(
-                titlefont={"color": "#000000", "family": "Helvetica", "size": "18"}
+                titlefont={"color": "#000000", "family": "Helvetica", "size": 18}
             )
             my_figure["layout"][yaxis_key].update(
-                titlefont={"color": "#000000", "family": "Helvetica", "size": "18"}
+                titlefont={"color": "#000000", "family": "Helvetica", "size": 18}
             )
 
         my_figure["layout"]["legend"].update(font={"size": 10, "color": "#FF0000"})
