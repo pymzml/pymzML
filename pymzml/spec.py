@@ -100,7 +100,7 @@ class MS_Spectrum(object):
             obo_version (str, optional): obo version number.
 
         """
-        iterator = self.element.getiterator()
+        iterator = self.element.iter()
         return_ele = None
         for ele in iterator:
             if ele.get("name", default=None) == name:
@@ -267,11 +267,11 @@ class MS_Spectrum(object):
             if float_type == "32-bit float":
                 # one character code may be sufficient too (f)
                 f_type = np.float32
-                out_data = np.fromstring(out_data, f_type)
-            elif float_type == "64-bit float":
+                out_data = np.frombuffer(out_data, f_type)
+            elif float_type == '64-bit float':
                 # one character code may be sufficient too (d)
                 f_type = np.float64
-                out_data = np.fromstring(out_data, f_type)
+                out_data = np.frombuffer(out_data, f_type)
         else:
             out_data = np.array([])
         return out_data
@@ -1050,14 +1050,8 @@ class Spectrum(MS_Spectrum):
             )
         except TypeError as e:
             is_profile = None
-        # is_centroid = self.element.find(
-        #     ".//*[@accession='MS:1000127']".format(
-        #         ns=self.ns
-        #     )
-        # )
-        # this is OBO dependent :()
-        # .get('value')
-        if is_profile is not None:  # check if spec is a profile spec
+
+        if is_profile is not None: # check if spec is a profile spec
             tmp = []
             if self._peak_dict["reprofiled"] is not None:
                 i_array = [i for mz, i in self.peaks("reprofiled")]
@@ -1069,8 +1063,8 @@ class Spectrum(MS_Spectrum):
                 if pos <= 1:
                     continue
                 if 0 < i_array[pos - 1] < i > i_array[pos + 1] > 0:
-                    x1 = float(mz_array[pos - 1])
-                    y1 = float(i_array[pos - 1])
+                    x1 = float(mz_array[pos - 1]) 
+                    y1 = float(i_array[pos - 1]) 
                     x2 = float(mz_array[pos])
                     y2 = float(i_array[pos])
                     x3 = float(mz_array[pos + 1])
@@ -1078,36 +1072,16 @@ class Spectrum(MS_Spectrum):
                     if x2 - x1 > (x3 - x2) * 10 or (x2 - x1) * 10 < x3 - x2:
                         continue
                     if y3 == y1:
-                        before = 3
-                        after = 4
-                        while y1 == y3 and after < 10:  # we dont want to go too far
-                            if pos - before < 0:
-                                lower_pos = 0
-                            else:
-                                lower_pos = pos - before
-                            if pos + after >= len(mz_array):
-                                upper_pos = len(mz_array) - 1
-                            else:
-                                upper_pos = pos + after
-                            x1 = mz_array[lower_pos]
-                            y1 = i_array[lower_pos]
-                            x3 = mz_array[upper_pos]
-                            y3 = i_array[upper_pos]
+                        y3 += 0.01 * y1
 
-                            if before % 2 == 0:
-                                after += 1
-                            else:
-                                before += 1
                     try:
                         double_log = math.log(y2 / y1) / math.log(y3 / y1)
                         mue = (double_log * (x1 * x1 - x3 * x3) - x1 * x1 + x2 * x2) / (
                             2 * (x2 - x1) - 2 * double_log * (x3 - x1)
                         )
-                        c_squarred = (
-                            x2 * x2 - x1 * x1 - 2 * x2 * mue + 2 * x1 * mue
-                        ) / (2 * math.log(y1 / y2))
-                        A = y1 * math.exp((x1 - mue) * (x1 - mue) / (2 * c_squarred))
-                    except:
+                        A = y1 * math.exp((x1 - mue) * (x1 - mue) \
+                                          / (2 * c_squarred))
+                    except ZeroDivisionError:
                         continue
                     tmp.append((mue, A))
             return tmp
@@ -1248,7 +1222,7 @@ class Spectrum(MS_Spectrum):
 
 
         """
-        if self.peaks("centroided") == []:  # or is None?
+        if len(self.peaks('centroided')) == 0:  # or is None?
             return_value = 0
 
         self.noise_level_estimate = {}
