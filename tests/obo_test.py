@@ -6,19 +6,10 @@ Part of pymzml test cases
 
 import sys
 import os
-
-sys.path.append(os.path.abspath("."))
 import unittest
 import gzip
 
-
-class TestRound(object):
-    def _check_rounding(self, test, expected):
-        assert round(test) == expected
-
-    def test_rounding(self):
-        for x, y in [(1, 1), (1.9, 2)]:
-            yield self._check_rounding, x, y
+sys.path.append(os.path.abspath("."))
 
 
 class TestOboVersion(unittest.TestCase):
