@@ -118,4 +118,4 @@ before_test:
   - ps: 'ls %PYTHON_HOME%\Scripts'
 
 test_script:
-  - '%PYTHON_HOME%\Scripts\tox -e %TOXENV%'
+  - '%PYTHON_HOME%\Scripts\tox.exe -e %TOXENV%'
