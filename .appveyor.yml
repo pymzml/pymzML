@@ -105,9 +105,9 @@ install:
   # Check that we have the expected version and architecture for Python
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
-  - cmd: "%PYTHON%\\python.exe setup.py install"
-  - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
-  - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
+  # - cmd: "%PYTHON%\\python.exe setup.py install"
+  # - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
+  # - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
   # - ps: "ls %PYTHON_HOME%/Scripts/"
 
 
@@ -119,4 +119,4 @@ before_test:
 
 test_script:
   # - '%PYTHON_HOME%\Scripts\tox.exe -e %TOXENV%'
-  - "python -m tox"
+  - cmd: "%PYTHON%\\python.exe -m tox"
