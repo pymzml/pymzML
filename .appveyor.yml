@@ -96,6 +96,10 @@ install:
   # Check that we have the expected version and architecture for Python
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - cmd: "%PYTHON%\\python.exe setup.py install"
+  - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
+  - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
+
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
