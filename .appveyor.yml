@@ -79,6 +79,10 @@ environment:
       PYTHON_ARCH: '64'
 
 
+init:
+  - ps: echo $env:TOXENV
+  - ps: ls C:\Python*
+
 install:
   # Download setup scripts and unzip
   - ps: "wget https://github.com/cloudify-cosmo/appveyor-utils/archive/master.zip -OutFile ./master.zip"
@@ -107,4 +111,4 @@ before_test:
   - "%CMD_IN_ENV% pip install tox"
 
 test_script:
-  - "%CMD_IN_ENV% tox"
+  - '%PYTHON_HOME%\Scripts\tox -e %TOXENV%'
