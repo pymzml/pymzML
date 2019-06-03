@@ -54,26 +54,30 @@ environment:
 
   matrix:
     - PYTHON: "C:\\Python35-x64"
+      PYTHON_HOME: C:\Python35
       TOXENV: "py35"
       PYTHON_VERSION: '3.5'
       PYTHON_ARCH: '64'
 
     - PYTHON: "C:\\Python36-x64"
+      PYTHON_HOME: C:\Python36
       TOXENV: "py36"
       PYTHON_VERSION: '3.6'
       PYTHON_ARCH: '64'
 
     - PYTHON: "C:\\Python37-x64"
+      PYTHON_HOME: C:\Python37
       TOXENV: "py37"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
 
-    - PYTHON: "C:\\Python37-x64"
-      TOXENV: "docu"
-      PYTHON_VERSION: '3.7'
-      PYTHON_ARCH: '64'
+    # - PYTHON: "C:\\Python37-x64"
+    #   TOXENV: "docu"
+    #   PYTHON_VERSION: '3.7'
+    #   PYTHON_ARCH: '64'
 
     - PYTHON: "C:\\Python37-x64"
+      PYTHON_HOME: C:\Python37
       TOXENV: "example_scripts"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
@@ -81,6 +85,7 @@ environment:
 
 init:
   - ps: echo $env:TOXENV
+  - ps: echo $env:PYTHON_HOME
   - ps: ls C:\Python*
 
 install:
