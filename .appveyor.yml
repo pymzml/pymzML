@@ -115,7 +115,8 @@ build: false  # Not a C# project, build stuff at the test step instead.
 
 before_test:
   - "%CMD_IN_ENV% pip install tox"
-  # - ps: 'ls %PYTHON_HOME%\Scripts'
+  - ps: 'ls C:\Python35\Scripts'
 
 test_script:
   - '%PYTHON_HOME%\Scripts\tox.exe -e %TOXENV%'
+  - "python -m tox"
