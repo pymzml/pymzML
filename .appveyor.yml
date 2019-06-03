@@ -93,7 +93,7 @@ init:
   - ps: ls C:\Python*
 
 install:
-  - python -u ci\appveyor-bootstrap.py
+  # - python -u ci\appveyor-bootstrap.py
   # Download setup scripts and unzip
   - ps: "wget https://github.com/cloudify-cosmo/appveyor-utils/archive/master.zip -OutFile ./master.zip"
   - "7z e master.zip */appveyor/* -oappveyor"
