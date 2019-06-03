@@ -26,11 +26,19 @@ matrix:
     - python: 3.6
       env: TOXENV=docu
     - python: 3.6
-      env: TOXENV=format
-    - python: 3.6
       env: TOXENV=coverage
     - python: 3.6
       env: TOXENV=example_scripts
+
+# deploy:
+#   provider: pypi
+#   user: $PYPI_USER
+#   password: $PYPI_PASSWORD
+#   distributions: "sdist bdist_wheel bdist_egg"
+#   on:
+#     branch: master
+#     tags: true
+
 
 script:
   - tox
@@ -40,4 +48,5 @@ script:
       python3 setup.py bdist_wheel --universal
       pip3 install twine
       twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+      twine upload dist/*
     fi
