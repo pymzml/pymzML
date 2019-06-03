@@ -108,13 +108,14 @@ install:
   - cmd: "%PYTHON%\\python.exe setup.py install"
   - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
   - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
-  - ps: "ls %PYTHON_HOME%/Scripts/"
+  # - ps: "ls %PYTHON_HOME%/Scripts/"
 
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
 before_test:
   - "%CMD_IN_ENV% pip install tox"
+  - "ls %PYTHON_HOME%\Scripts"
 
 test_script:
   - '%PYTHON_HOME%\Scripts\tox -e %TOXENV%'
