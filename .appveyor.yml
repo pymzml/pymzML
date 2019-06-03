@@ -58,18 +58,21 @@ environment:
       TOXENV: "py35"
       PYTHON_VERSION: '3.5'
       PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python35-x64\python.exe
 
     - PYTHON: "C:\\Python36-x64"
       PYTHON_HOME: C:\Python36
       TOXENV: "py36"
       PYTHON_VERSION: '3.6'
       PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python36-x64\python.exe
 
     - PYTHON: "C:\\Python37-x64"
       PYTHON_HOME: C:\Python37
       TOXENV: "py37"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python37-x64\python.exe
 
     # - PYTHON: "C:\\Python37-x64"
     #   TOXENV: "docu"
@@ -81,6 +84,7 @@ environment:
       TOXENV: "example_scripts"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python37-x64\python.exe
 
 
 init:
@@ -89,6 +93,7 @@ init:
   - ps: ls C:\Python*
 
 install:
+  - python -u ci\appveyor-bootstrap.py
   # Download setup scripts and unzip
   - ps: "wget https://github.com/cloudify-cosmo/appveyor-utils/archive/master.zip -OutFile ./master.zip"
   - "7z e master.zip */appveyor/* -oappveyor"
@@ -119,4 +124,11 @@ before_test:
 
 test_script:
   # - '%PYTHON_HOME%\Scripts\tox.exe -e %TOXENV%'
-  - cmd: "%PYTHON%\\python.exe -m tox"
+  - "%CMD_IN_ENV% %PYTHON%\\python.exe -m tox"
+
+on_failure:
+  - ps: dir "env:"
+  - ps: get-content .tox\*\log\*
+
+artifacts:
+  - path: dist\*
