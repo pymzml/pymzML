@@ -118,5 +118,5 @@ before_test:
   - ps: 'ls C:\Python35\Scripts'
 
 test_script:
-  - '%PYTHON_HOME%\Scripts\tox.exe -e %TOXENV%'
+  # - '%PYTHON_HOME%\Scripts\tox.exe -e %TOXENV%'
   - "python -m tox"
