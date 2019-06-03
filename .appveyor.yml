@@ -108,6 +108,7 @@ install:
   - cmd: "%PYTHON%\\python.exe setup.py install"
   - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
   - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
+  - ps: ls %PYTHON%/Scripts/
 
 
 build: false  # Not a C# project, build stuff at the test step instead.
