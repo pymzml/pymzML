@@ -103,4 +103,4 @@ before_test:
   - "%CMD_IN_ENV% pip install tox"
 
 test_script:
-  - "%CMD_IN_ENV% tox
+  - "%CMD_IN_ENV% tox"
