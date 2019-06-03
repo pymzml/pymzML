@@ -2,14 +2,38 @@ environment:
   matrix:
     - PYTHON: "C:\\Python35-x64"
       TOXENV: "py35"
+      PYTHON_HOME: C:/Python35
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python35\python.exe
+
     - PYTHON: "C:\\Python36-x64"
       TOXENV: "py36"
+      PYTHON_HOME: C:/Python36
+      PYTHON_VERSION: '3.6'
+      PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python36\python.exe
+
     - PYTHON: "C:\\Python37-x64"
       TOXENV: "py37"
+      PYTHON_HOME: C:/Python37
+      PYTHON_VERSION: '3.7'
+      PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python37\python.exe
+
     - PYTHON: "C:\\Python37-x64"
       TOXENV: "docu"
+      PYTHON_HOME: C:/Python37
+      PYTHON_VERSION: '3.7'
+      PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python37\python.exe
+
     - PYTHON: "C:\\Python37-x64"
       TOXENV: "example_scripts"
+      PYTHON_HOME: C:/Python37
+      PYTHON_VERSION: '3.7'
+      PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python37\python.exe
 
 install:
   - cmd: "%PYTHON%\\python.exe setup.py install"
