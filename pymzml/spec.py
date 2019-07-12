@@ -184,51 +184,50 @@ class MS_Spectrum(object):
         """
         numpress_encoding = False
 
-        array_type_accession = self.calling_instance.OT[array_type]['id']
+        array_type_accession = self.calling_instance.OT[array_type]["id"]
 
-        b_data_string ="./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@accession='{Acc}']/..".format(
-                ns = self.ns, Acc=array_type_accession
+        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@accession='{Acc}']/..".format(
+            ns=self.ns, Acc=array_type_accession
         )
 
         float_type_string = "./{ns}cvParam[@accession='{Acc}']"
 
         b_data_array = self.element.find(b_data_string)
         comp = []
-        for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns = self.ns)):
-            if 'compression' in cvParam.get('name'):
-                if 'numpress' in cvParam.get('name').lower():
-                    numpress_encoding = True
-                comp.append(cvParam.get('name'))
-            d_array_length = self.element.get('defaultArrayLength')
-        if not numpress_encoding:
-            try:
-                # 32-bit float
-                f_type = b_data_array.find(
-                    float_type_string.format(
-                        ns  = self.ns,
-                        Acc = self.calling_instance.OT['32-bit float']['id']
-                    )
-                ).get('name')
-            except:
-                # 64-bit Float
-                f_type = b_data_array.find(
-                    float_type_string.format(
-                        ns  = self.ns,
-                        Acc = self.calling_instance.OT['64-bit float']['id']
-                    )
-                ).get('name')
+        if b_data_array:
+            for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns=self.ns)):
+                if "compression" in cvParam.get("name"):
+                    if "numpress" in cvParam.get("name").lower():
+                        numpress_encoding = True
+                    comp.append(cvParam.get("name"))
+                d_array_length = self.element.get("defaultArrayLength")
+            if not numpress_encoding:
+                try:
+                    # 32-bit float
+                    f_type = b_data_array.find(
+                        float_type_string.format(
+                            ns=self.ns, Acc=self.calling_instance.OT["32-bit float"]["id"]
+                        )
+                    ).get("name")
+                except:
+                    # 64-bit Float
+                    f_type = b_data_array.find(
+                        float_type_string.format(
+                            ns=self.ns, Acc=self.calling_instance.OT["64-bit float"]["id"]
+                        )
+                    ).get("name")
+            else:
+                # compression is numpress, dont need floattype here
+                f_type = None
+            data = b_data_array.find("./{ns}binary".format(ns=self.ns)).text
         else:
-            # compression is numpress, dont need floattype here
-            f_type = None
-        data = b_data_array.find(
-            "./{ns}binary".format(
-                ns=self.ns
-            )
-        ).text
+            data = None
+            d_array_length = 0
+            f_type = '64-bit float'
         if data is not None:
             data = data.encode("utf-8")
         else:
-            data = ''
+            data = ""
         return (data, d_array_length, f_type, comp)
 
     @property
