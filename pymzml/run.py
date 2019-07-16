@@ -72,13 +72,13 @@ class Reader(object):
     """
 
     def __init__(
-        self,
-        path_or_file,
-        MS_precisions = None,
-        obo_version   = None,
-        build_index_from_scratch=False,
-        skip_chromatogram = True,
-        **kwargs
+            self,
+            path_or_file,
+            MS_precisions=None,
+            obo_version=None,
+            build_index_from_scratch=False,
+            skip_chromatogram=True,
+            **kwargs
     ):
         """Initialize and set required attributes."""
         self.build_index_from_scratch = build_index_from_scratch
@@ -92,27 +92,31 @@ class Reader(object):
                 MS_precisions[3] = kwargs['MSn_Precision']
 
         # Parameters
-        self.ms_precisions       = {
-            0 : 0.001, #arbitrary prec for UV spectra
-            1 : 5e-6,
-            2 : 20e-6
+        self.ms_precisions = {
+            0: 0.001,  # arbitrary prec for UV spectra
+            1: 5e-6,
+            2: 20e-6
         }
         self.ms_precisions.update(MS_precisions)
 
         # File info
-        self.info                = ddict()
+        self.info = ddict()
         if isinstance(path_or_file, str):
-            self.info['file_name']   = path_or_file
-            self.info['encoding']    = self._determine_file_encoding(path_or_file)
+            self.info['file_name'] = path_or_file
+            self.info['encoding'] = self._determine_file_encoding(path_or_file)
         else:
-            self.info['encoding']    = self._guess_encoding(path_or_file)
-            
+            self.info['encoding'] = self._guess_encoding(path_or_file)
+
         self.info['file_object'] = self._open_file(path_or_file)
         self.info['offset_dict'] = self.info['file_object'].offset_dict
-        self.info['obo_version'] = obo_version
+        if obo_version:
+            self.info['obo_version'] = self._obo_version_validator(obo_version)
+        else:
+            # obo version not specified -> try to identify from mzML by self._init_iter
+            self.info['obo_version'] = None
 
-        self.iter                = self._init_iter()
-        self.OT                  = self._init_obo_translator()
+        self.iter = self._init_iter()
+        self.OT = self._init_obo_translator()
 
     def __next__(self):
         """
@@ -238,6 +242,67 @@ class Reader(object):
             with _open(path, 'rb') as sniffer:
                 return self._guess_encoding(sniffer)
 
+    @staticmethod
+    def _obo_version_validator(version):
+
+        """
+        The obo version should fit file names in the obo folder.
+        However, some software generate mzML with built in obo version string like:
+        '23:06:2017' or even newer version that not in obo folder yet.
+        This is to check obo version and try to fit the best obo version
+        to the obo version in the mzML file.
+
+        :param version: obo version number as string
+        :return:
+        """
+
+        obo_rgx = re.compile(r'(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?')
+        obo_years_rgx = re.compile(r'20\d\d')
+        obo_year_version_dct = {
+            2012: '3.40.0', 2013: '3.50.0', 2014: '3.60.0',
+            2015: '3.75.0', 2016: '4.0.1', 2017: '4.1.0',
+            2018: '4.1.10', 2019: '4.1.22',
+        }
+        version_fixed = None
+        if obo_rgx.match(version):
+            version_fixed = version
+        else:
+            if obo_years_rgx.search(version):
+                years_found = obo_years_rgx.search(version)
+                if years_found:
+                    try:
+                        year = int(years_found[0])
+                    except ValueError:
+                        year = 2000
+
+                    if year in obo_year_version_dct:
+                        version_fixed = obo_year_version_dct[year]
+                    else:
+                        if year > 2019:
+                            version_fixed = '4.1.0'
+
+        if version_fixed:
+            # Check if the corresponding obo file existed in obo folder
+            obo_root = os.path.dirname(__file__)
+            obo_file = os.path.join(
+                obo_root, 'obo',
+                'psi-ms{0}.obo'.format('-' + version_fixed if version_fixed else '')
+            )
+            if os.path.exists(obo_file) or os.path.exists(obo_file + '.gz'):
+                pass
+            else:
+                print('Could not find obo file {obo} or {obo_gz}'
+                      .format(obo=obo_file, obo_gz=obo_file + '.gz'))
+                version_fixed = '1.1.0'
+        else:
+            version_fixed = '1.1.0'
+
+        if version != version_fixed:
+            print('WARNING: invalid obo_version: {0}'.format(version))
+            print('INFO: try to use obo version {0} ...'.format(version_fixed))
+
+        return version_fixed
+
     def _init_obo_translator(self):
         """
         Initialize the obo translator with the minimum requirement
@@ -285,10 +350,10 @@ class Reader(object):
             elif element.tag.endswith('}cv'):
                 if not self.info['obo_version'] \
                         and element.attrib.get('id', None) == 'MS':
-                    self.info['obo_version'] = element.attrib.get(
-                        'version',
-                        '1.1.0'
-                    )
+                    obo_in_mzml = element.attrib.get('version', '1.1.0')
+                    print('obo_in_mzml', obo_in_mzml)
+                    self.info['obo_version'] = self._obo_version_validator(obo_in_mzml)
+
             elif element.tag.endswith('}referenceableParamGroupList'):
                 self.info['referenceable_param_group_list'] = True
                 self.info['referenceable_param_group_list_element'] = element
