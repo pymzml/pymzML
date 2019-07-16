@@ -266,9 +266,7 @@ class Reader(object):
         version_fixed = None
         if obo_rgx.match(version):
             version_fixed = version
-            print('obo_version{0}'.format(version))
         else:
-            print('WARNING invalid obo_version{0}'.format(version))
             if obo_years_rgx.search(version):
                 years_found = obo_years_rgx.search(version)
                 if years_found:
@@ -282,12 +280,13 @@ class Reader(object):
                     else:
                         if year > 2019:
                             version_fixed = '4.1.0'
+
         if version_fixed:
             # Check if the corresponding obo file existed in obo folder
             obo_root = os.path.dirname(__file__)
             obo_file = os.path.join(
                 obo_root, 'obo',
-                'psi-ms{0}.obo'.format('-' + version if version else '')
+                'psi-ms{0}.obo'.format('-' + version_fixed if version_fixed else '')
             )
             if os.path.exists(obo_file) or os.path.exists(obo_file + '.gz'):
                 pass
@@ -297,6 +296,10 @@ class Reader(object):
                 version_fixed = '1.1.0'
         else:
             version_fixed = '1.1.0'
+
+        if version != version_fixed:
+            print('WARNING: invalid obo_version: {0}'.format(version))
+            print('INFO: try to use obo version {0} ...'.format(version_fixed))
 
         return version_fixed
 
