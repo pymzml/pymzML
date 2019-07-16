@@ -252,10 +252,12 @@ class Reader(object):
         This is to check obo version and try to fit the best obo version
         to the obo version in the mzML file.
 
-        :param version: obo version number as string
-        :return:
-        """
+        Arguments:
+            version (str): The original version to check.
 
+        Returns:
+            version_fixed (str): The checked obo version.
+        """
         obo_rgx = re.compile(r'(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?')
         obo_years_rgx = re.compile(r'20\d\d')
         obo_year_version_dct = {
@@ -291,15 +293,9 @@ class Reader(object):
             if os.path.exists(obo_file) or os.path.exists(obo_file + '.gz'):
                 pass
             else:
-                print('Could not find obo file {obo} or {obo_gz}'
-                      .format(obo=obo_file, obo_gz=obo_file + '.gz'))
                 version_fixed = '1.1.0'
         else:
             version_fixed = '1.1.0'
-
-        if version != version_fixed:
-            print('WARNING: invalid obo_version: {0}'.format(version))
-            print('INFO: try to use obo version {0} ...'.format(version_fixed))
 
         return version_fixed
 
@@ -351,7 +347,6 @@ class Reader(object):
                 if not self.info['obo_version'] \
                         and element.attrib.get('id', None) == 'MS':
                     obo_in_mzml = element.attrib.get('version', '1.1.0')
-                    print('obo_in_mzml', obo_in_mzml)
                     self.info['obo_version'] = self._obo_version_validator(obo_in_mzml)
 
             elif element.tag.endswith('}referenceableParamGroupList'):
