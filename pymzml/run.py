@@ -252,10 +252,12 @@ class Reader(object):
         This is to check obo version and try to fit the best obo version
         to the obo version in the mzML file.
 
-        :param version: obo version number as string
-        :return:
-        """
+        Arguments:
+            version (str): The original version to check.
 
+        Returns:
+            version_fixed (str): The checked obo version.
+        """
         obo_rgx = re.compile(r'(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?')
         obo_years_rgx = re.compile(r'20\d\d')
         obo_year_version_dct = {
@@ -296,10 +298,6 @@ class Reader(object):
                 version_fixed = '1.1.0'
         else:
             version_fixed = '1.1.0'
-
-        if version != version_fixed:
-            print('WARNING: invalid obo_version: {0}'.format(version))
-            print('INFO: try to use obo version {0} ...'.format(version_fixed))
 
         return version_fixed
 
