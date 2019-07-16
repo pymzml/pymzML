@@ -17,7 +17,8 @@ DATA_FILES = [
     'mini_numpress.chrom.mzML.gz',
     'mini_numpress.chrom.mzML.idx.gz',
     'BSA1.mzML.gz',
-    'example_invalid_obo_version.mzML'
+    'example_invalid_obo_version.mzML',
+    'example_no_obo_version.mzML'
 ]
 
 paths = [

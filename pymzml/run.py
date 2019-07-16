@@ -293,8 +293,6 @@ class Reader(object):
             if os.path.exists(obo_file) or os.path.exists(obo_file + '.gz'):
                 pass
             else:
-                print('Could not find obo file {obo} or {obo_gz}'
-                      .format(obo=obo_file, obo_gz=obo_file + '.gz'))
                 version_fixed = '1.1.0'
         else:
             version_fixed = '1.1.0'
@@ -349,7 +347,6 @@ class Reader(object):
                 if not self.info['obo_version'] \
                         and element.attrib.get('id', None) == 'MS':
                     obo_in_mzml = element.attrib.get('version', '1.1.0')
-                    print('obo_in_mzml', obo_in_mzml)
                     self.info['obo_version'] = self._obo_version_validator(obo_in_mzml)
 
             elif element.tag.endswith('}referenceableParamGroupList'):
