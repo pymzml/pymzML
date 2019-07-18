@@ -1,20 +1,82 @@
 environment:
+  # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+  # /E:ON and /V:ON options are not enabled in the batch script intepreter
+  # See: http://stackoverflow.com/a/13751649/163740
+  CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+  # TOX_ENV: "pywin"
+
   matrix:
     - PYTHON: "C:\\Python35-x64"
-      TOXENV: "py35"
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '64'
+      # PYTHON_HOME: C:\Python35
+      # TOXENV: "py35"
+      # TOXPYTHON: C:\Python35-x64\python.exe
+
     - PYTHON: "C:\\Python36-x64"
-      TOXENV: "py36"
+      PYTHON_VERSION: '3.6'
+      PYTHON_ARCH: '64'
+      # PYTHON_HOME: C:\Python36
+      # TOXENV: "py36"
+      # TOXPYTHON: C:\Python36-x64\python.exe
+
     - PYTHON: "C:\\Python37-x64"
-      TOXENV: "py37"
+      PYTHON_VERSION: '3.7'
+      PYTHON_ARCH: '64'
+      # PYTHON_HOME: C:\Python37
+      # TOXENV: "py37"
+      # TOXPYTHON: C:\Python37-x64\python.exe
+
     - PYTHON: "C:\\Python37-x64"
-      TOXENV: "docu"
+      PYTHON_VERSION: '3.7'
+      PYTHON_ARCH: '64'
+    #   TOXENV: "docu"
+
     - PYTHON: "C:\\Python37-x64"
-      TOXENV: "example_scripts"
+      PYTHON_VERSION: '3.7'
+      PYTHON_ARCH: '64'
+      # PYTHON_HOME: C:\Python37
+      # TOXENV: "example_scripts"
+      # TOXPYTHON: C:\Python37-x64\python.exe
+
+
+init:
+  - ps: echo $env:TOXENV
+  - ps: echo $env:PYTHON_HOME
+  - ps: ls C:\Python*
 
 install:
-  - cmd: "%PYTHON%\\python.exe setup.py install"
-  - cmd: "%PYTHON%/Scripts/pip.exe install numpy"
-  - cmd: "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
-  - cmd: "%PYTHON%/Scripts/tox.exe"
+  # - python -u ci\appveyor-bootstrap.py
+  # Download setup scripts and unzip
+  - ps: "wget https://github.com/cloudify-cosmo/appveyor-utils/archive/master.zip -OutFile ./master.zip"
+  - "7z e master.zip */appveyor/* -oappveyor"
 
-build: off
+  # Install Python (from the official .msi of http://python.org) and pip when
+  # not already installed.
+  - "powershell ./appveyor/install.ps1"
+
+  # Prepend newly installed Python to the PATH of this build (this cannot be
+  # done from inside the powershell script as it would require to restart
+  # the parent CMD process).
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+
+  # Check that we have the expected version and architecture for Python
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+
+
+build: false  # Not a C# project, build stuff at the test step instead.
+
+before_test:
+  - "%CMD_IN_ENV% pip install tox"
+  - ps: 'ls C:\Python35\Scripts'
+
+test_script:
+  - "%CMD_IN_ENV% tox -e %TOX_ENV%"
+
+# on_failure:
+#   - ps: dir "env:"
+#   - ps: get-content .tox\*\log\*
+
+artifacts:
+  - path: dist\*
