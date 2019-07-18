@@ -9,34 +9,34 @@ environment:
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: '3.5'
       PYTHON_ARCH: '64'
+      TOXENV: "py35"
       # PYTHON_HOME: C:\Python35
-      # TOXENV: "py35"
       # TOXPYTHON: C:\Python35-x64\python.exe
 
     - PYTHON: "C:\\Python36-x64"
       PYTHON_VERSION: '3.6'
       PYTHON_ARCH: '64'
+      TOXENV: "py36"
       # PYTHON_HOME: C:\Python36
-      # TOXENV: "py36"
       # TOXPYTHON: C:\Python36-x64\python.exe
 
     - PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
+      TOXENV: "py37"
       # PYTHON_HOME: C:\Python37
-      # TOXENV: "py37"
       # TOXPYTHON: C:\Python37-x64\python.exe
 
     - PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
-    #   TOXENV: "docu"
+      TOXENV: "docu"
 
     - PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: '3.7'
       PYTHON_ARCH: '64'
+      TOXENV: "example_scripts"
       # PYTHON_HOME: C:\Python37
-      # TOXENV: "example_scripts"
       # TOXPYTHON: C:\Python37-x64\python.exe
 
 
