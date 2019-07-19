@@ -6,19 +6,19 @@ environment:
   # TOX_ENV: "pywin"
 
   matrix:
-    - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: '3.5'
-      PYTHON_ARCH: '64'
-      TOXENV: "py35"
-      # PYTHON_HOME: C:\Python35
-      # TOXPYTHON: C:\Python35-x64\python.exe
+    # - PYTHON: "C:\\Python35-x64"
+    #   PYTHON_VERSION: '3.5'
+    #   PYTHON_ARCH: '64'
+    #   TOXENV: "py35"
+    #   # PYTHON_HOME: C:\Python35
+    #   # TOXPYTHON: C:\Python35-x64\python.exe
 
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: '3.6'
-      PYTHON_ARCH: '64'
-      TOXENV: "py36"
-      # PYTHON_HOME: C:\Python36
-      # TOXPYTHON: C:\Python36-x64\python.exe
+    # - PYTHON: "C:\\Python36-x64"
+    #   PYTHON_VERSION: '3.6'
+    #   PYTHON_ARCH: '64'
+    #   TOXENV: "py36"
+    #   # PYTHON_HOME: C:\Python36
+    #   # TOXPYTHON: C:\Python36-x64\python.exe
 
     - PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: '3.7'
@@ -72,7 +72,7 @@ before_test:
   - ps: 'ls C:\Python35\Scripts'
 
 test_script:
-  - "%CMD_IN_ENV% tox -e %TOX_ENV%"
+  - "%CMD_IN_ENV% tox -e %TOXENV%"
 
 # on_failure:
 #   - ps: dir "env:"
