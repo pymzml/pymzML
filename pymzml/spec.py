@@ -1025,7 +1025,6 @@ class Spectrum(MS_Spectrum):
         dpeaks_mat = np.zeros((len(dpeaks), 3), dtype=float)
         for i, dp in enumerate(dpeaks):
             dpeaks_mat[i, :] = dp.neutral_mass, dp.intensity, dp.charge
-        print(f'took {time.time() - start} seconds')
         return dpeaks_mat
 
     def set_peaks(self, peaks, peak_type):
