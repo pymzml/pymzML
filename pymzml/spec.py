@@ -1,3 +1,4 @@
+import time
 #!usr/bin/env python3
 # -*- coding: latin-1 -*-
 """
@@ -1011,6 +1012,22 @@ class Spectrum(MS_Spectrum):
             peaks.sort(key=itemgetter(0))
         return peaks
 
+    def _deconvolute_peaks(self, *args, **kwargs):
+        start = time.time()
+        from ms_deisotope.deconvolution import deconvolute_peaks
+        from ms_peak_picker import simple_peak
+        peaks = self.peaks("centroided")
+        # pack peak matrix into expected structure
+        peaks = [simple_peak(p[0], p[1], 0.01) for p in peaks]
+        decon_result = deconvolute_peaks(peaks, *args, **kwargs)
+        dpeaks = decon_result.peak_set
+        # pack deconvoluted peak list into matrix structure
+        dpeaks_mat = np.zeros((len(dpeaks), 3), dtype=float)
+        for i, dp in enumerate(dpeaks):
+            dpeaks_mat[i, :] = dp.neutral_mass, dp.intensity, dp.charge
+        print(f'took {time.time() - start} seconds')
+        return dpeaks_mat
+
     def set_peaks(self, peaks, peak_type):
         """
         Assign a custom peak array of type peak_type
@@ -1034,6 +1051,10 @@ class Spectrum(MS_Spectrum):
                 self._peak_dict['reprofiled'] = dict(peaks)
             except TypeError:
                 self._peak_dict['reprofiled'] = None
+        elif peak_type == 'deconvoluted':
+            self._peak_dict['deconvoluted'] = peaks
+            self._mz = self.peaks('raw')[:,0]
+            self._i = self.peaks('raw')
         else:
             raise Exception(
                 'Peak type is not suppported\n'

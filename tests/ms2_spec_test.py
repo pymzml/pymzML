@@ -1,10 +1,11 @@
 import sys
 import os
 sys.path.append(os.path.abspath('.'))
+from pymzml.spec import PROTON
 import pymzml.run as run
 import unittest
 import test_file_paths
-
+import numpy as np
 
 class SpectrumMS2Test(unittest.TestCase):
     """
@@ -48,6 +49,21 @@ class SpectrumMS2Test(unittest.TestCase):
                 'charge': 2,
             }]
         )
+
+    def test_deconvolute_peaks(self):
+        charge = 3
+        test_mz = 430.313
+        arr = np.array([(test_mz, 100), (test_mz + PROTON/charge, 49)])
+        spec = self.Run[2548]
+        print(spec.ms_level)
+        spec.set_peaks(arr, 'centroided')
+        decon = spec.peaks('deconvoluted')
+        self.assertEqual(len(decon), 1)
+        print(decon)
+        decon_mz = (test_mz * charge) - charge * PROTON
+        self.assertEqual(decon[0][0], decon_mz)
+        self.assertEqual(decon[0][1], 149) # 149 since itensities are 100 and 49
+        self.assertEqual(decon[0][2], 3)
 
 if __name__ == '__main__':
     unittest.main(verbosity=3)
