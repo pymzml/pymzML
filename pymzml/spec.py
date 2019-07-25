@@ -1,4 +1,3 @@
-import time
 #!usr/bin/env python3
 # -*- coding: latin-1 -*-
 """
@@ -50,6 +49,8 @@ from operator import itemgetter as itemgetter
 from struct import unpack
 
 import numpy as np
+from ms_deisotope.deconvolution import deconvolute_peaks
+from ms_peak_picker import simple_peak
 
 from . import regex_patterns
 from .decoder import MSDecoder
@@ -1013,9 +1014,6 @@ class Spectrum(MS_Spectrum):
         return peaks
 
     def _deconvolute_peaks(self, *args, **kwargs):
-        start = time.time()
-        from ms_deisotope.deconvolution import deconvolute_peaks
-        from ms_peak_picker import simple_peak
         peaks = self.peaks("centroided")
         # pack peak matrix into expected structure
         peaks = [simple_peak(p[0], p[1], 0.01) for p in peaks]
