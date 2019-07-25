@@ -563,8 +563,8 @@ class Spectrum(MS_Spectrum):
                 "centroided",
             )
         if self._peak_dict["reprofiled"] is not None:
-            for mz in self.peak_dict["reprofiled"].keys():
-                self.peak_dict["reprofiled"][mz] /= float(value)
+            for mz in self._peak_dict["reprofiled"].keys():
+                self._peak_dict["reprofiled"][mz] /= float(value)
         return self
 
     def __div__(self, value):
@@ -1031,7 +1031,7 @@ class Spectrum(MS_Spectrum):
             self._i = [i for mz, i in self.peaks("raw")]
         elif peak_type == "reprofiled":
             try:
-                self._peak_dict["reprofiled"] = dict(peaks)
+                self._peak_dict["reprofiled"] = peaks
             except TypeError:
                 self._peak_dict["reprofiled"] = None
         else:
@@ -1100,6 +1100,7 @@ class Spectrum(MS_Spectrum):
         Returns:
             reprofiled_peaks (list): list of reprofiled m/z, i tuples
         """
+        print('reprofile!!!')
         tmp = ddict(int)
         for mz, i in self.peaks("centroided"):
             # Let the measured precision be 2 sigma of the signal width
