@@ -434,7 +434,7 @@ class Spectrum(MS_Spectrum):
         self._transformed_peaks = None
         self.calling_instance = None
         self.element = element
-        self._measured_precision = measured_precision
+        self.measured_precision = measured_precision
         self.noise_level_estimate = {}
 
         if self.element:
@@ -773,13 +773,16 @@ class Spectrum(MS_Spectrum):
             ID (str): native ID of the spectrum
         """
         if self._ID is None:
-            self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
-                self.element.get("id")
-            ).group(1)
-            try:
-                self._ID = int(self._ID)
-            except:
-                pass
+            if self.element:
+                self._ID = regex_patterns.SPECTRUM_ID_PATTERN.search(
+                    self.element.get("id", None)
+                )
+                try:
+                    self._ID = int(self._ID.group(1))
+                except AttributeError:
+                    self._ID = None
+            else:
+                self._ID = None
         return self._ID
 
     @property
@@ -1053,7 +1056,7 @@ class Spectrum(MS_Spectrum):
             is_profile = self.element.find(
                 ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
             )
-        except TypeError as e:
+        except (TypeError, AttributeError) as e:
             is_profile = None
 
         if is_profile is not None: # check if spec is a profile spec
@@ -1100,7 +1103,6 @@ class Spectrum(MS_Spectrum):
         Returns:
             reprofiled_peaks (list): list of reprofiled m/z, i tuples
         """
-        print('reprofile!!!')
         tmp = ddict(int)
         for mz, i in self.peaks("centroided"):
             # Let the measured precision be 2 sigma of the signal width
