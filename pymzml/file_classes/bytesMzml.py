@@ -20,7 +20,7 @@ class BytesMzml(StandardMzml):
             path (str)     : path to the file
             encoding (str) : encoding of the file
         """
-        self.binary       = binary
+        self.binary = binary
         self.file_handler = self.get_file_handler(encoding)
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
@@ -33,6 +33,6 @@ class BytesMzml(StandardMzml):
     def get_binary_file_handler(self):
         self.binary.seek(0)
         return self.binary
-    
+
     def get_file_handler(self, encoding):
         return TextIOWrapper(self.binary, encoding=encoding)
