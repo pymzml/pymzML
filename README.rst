@@ -137,6 +137,17 @@ To test the package and correct installation::
     nosetests tests/*.py
 
 
+*************
+Contributing
+*************
+
+Please read the contribution guidelines before contributing `here </CONTRIBUTING.md>`_
 
 
+****************
+Code of Conduct
+****************
 
+Since pymzML is an open source project maintained by the community, we established a code of conduct
+in order to facilitate an inclusive environment for all users, contributors and project memebers.
+Before contributing to pymzML, please read the code of conduct `here </CODE_OF_CONDUCT.md>`_
