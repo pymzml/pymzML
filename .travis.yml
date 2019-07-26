@@ -1,49 +1,30 @@
 language: python
 python:
-      - "3.6"
+- '3.6'
 sudo: false
-
 branches:
-   only:
-     - master
-
-env:
-  global:
-    - TWINE_USERNAME=MKoesters
-    # Note: TWINE_PASSWORD is set in Travis settings
-
+  only:
+  - master
 matrix:
   include:
-    - python: 3.5
-      env: TOXENV=py35
-    - python: 3.6
-      env: TOXENV=py36
-    - python: 3.7
-      env: TOXENV=py37
-      dist: xenial
-    - python: 3.6
-      env: TOXENV=docu
-    - python: 3.6
-      env: TOXENV=coverage
-    - python: 3.6
-      env: TOXENV=example_scripts
-
-# deploy:
-#   provider: pypi
-#   user: $PYPI_USER
-#   password: $PYPI_PASSWORD
-#   distributions: "sdist bdist_wheel bdist_egg"
-#   on:
-#     branch: master
-#     tags: true
-
-
-script:
-  - tox
-  - |
-    if [[ $TRAVIS_TAG ]]; then
-      python3 setup.py sdist
-      python3 setup.py bdist_wheel --universal
-      pip3 install twine
-      twine upload --repository-url https://test.pypi.org/legacy/ dist/* && twine upload dist/*
-    fi
+  - python: 3.5
+    env: TOXENV=py35
+  - python: 3.6
+    env: TOXENV=py36
+  - python: 3.7
+    env: TOXENV=py37
+    dist: xenial
+  - python: 3.6
+    env: TOXENV=docu
+  - python: 3.6
+    env: TOXENV=coverage
+  - python: 3.6
+    env: TOXENV=example_scripts
+deploy:
+  provider: pypi
+  user: pyratez
+  password:
+    secure: HKI1+vjzjYohYeLFC9BmlZGmpG5Y0zbBiwHjTvTI4Uy6g3KrmP+Lkj2Ean+r9LVrzghcLWu7ze4mN+33jR4ke2DLpryFSQCP3+V1GLBuNk4SYfFmE9VKcGhSmPrHWEgClj1BK6jV5Fiun2dqGcj3oCFXMXiqPLuqlzmYh1MtSG3OefRMUAb1jFz2griQYDVa+qmU7LSHj9oCzJqo6NID1pt/V9vXXl2J+F1zY7Ag7dWbcKFbiPT30rIo2BLvPCQl9XjEvOudixbsvaOPAvD9Cdl5xU9BtieHhBJEBhV+oUiT0fuee0hbEW1mVLg/N8vSpbWxbXoSosZoVCVRzYzl1o+33y85zCjdTECPkiTyEVjhJ8HlWWQie5CKFT04jLypA3RgR9ms+SEmx4v49tvuorVZCosJrF5J0JCD29PBu1gKOL0Mpy3ysUf4veytaYhgJMqBldJTk0LHwfR/hCHX+kFQbZPY/Ge5TyA3NXdfSYeJA5tBqVcXAQprKvGJmKcjyEPUhO5JgX/A0kMussyNyvguTE4oW7CSoErSEQcOgwPkej7DhurqLaYI/C6unFpGBT/YBbR6Isv4YOD8KSzyxpJqmTsRgZohn/Wnn5IfeoxqVoVTSdEW/qQ3LJMRMpUvwcDLQGtW/2X3eaXZI54BNO5zdXWniSuxaPHUBBiv2DE=
+  distributions: sdist bdist_wheel bdist_egg
+  on:
+    tags: true
