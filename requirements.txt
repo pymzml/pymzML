@@ -3,7 +3,7 @@ numpy >= 1.8.0
 plotly < 2.0
 pynumpress >= 0.0.4
 regex
-git+https://github.com/mobiusklein/ms_deisotope.git
+git+https://github.com/mobiusklein/ms_deisotope.git#90263474a0d0afcd3f4b79b732841599a803455e
 
 # Testing and dev
 cython
