@@ -20,6 +20,8 @@ matrix:
     env: TOXENV=coverage
   - python: 3.6
     env: TOXENV=example_scripts
+script:
+  echo
 deploy:
   provider: pypi
   user: pyratez
