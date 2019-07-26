@@ -141,7 +141,7 @@ To test the package and correct installation::
 Contributing
 *************
 
-Please read the contribution guidelines before contributing `here </CONTRIBUTING.md>`_
+Please read the contribution guidelines before contributing `here </CONTRIBUTING.rst>`_
 
 
 ****************
