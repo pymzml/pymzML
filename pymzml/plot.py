@@ -457,7 +457,7 @@ class Factory(object):
 
             elif style[0] == 'points':
                 mode = 'markers'
-                shape = ' linear'
+                shape = 'linear'
                 x_values = x_vals
                 y_values = y_vals
 
@@ -477,14 +477,6 @@ class Factory(object):
             {
                 'x': x_values,
                 'y': y_values,
-                'xaxis': {
-                    'range': mz_range,
-                    'autorange':False,
-                },
-                'yaxis': {
-                    'range': int_range,
-                    'autorange':False,
-                },
                 'text': txt,
                 'textfont': {
                     'family': 'Helvetica',
@@ -492,7 +484,7 @@ class Factory(object):
                     'color': '#000000'
                 },
                 'textposition': 'top center',
-                'visible': 'True',
+                'visible': True,
                 'marker': {
                     'size'  : 10,
                     'color' : 'rgba'+str((color[0], color[1], color[2], opacity)),
@@ -506,10 +498,7 @@ class Factory(object):
                     'dash'  : dash,
                 },
                 'fill': filling,
-                'fillcolor': {
-                    'color' : 'rgba' + str((color[0], color[1], color[2], opacity)),
-                    'opacity' : opacity,
-                },
+                'fillcolor': 'rgba' + str((color[0], color[1], color[2], opacity)),
                 'opacity': opacity,
             }
         )
@@ -623,7 +612,7 @@ class Factory(object):
                 {
                     'color': '#000000',
                     'family': 'Helvetica',
-                    'size': '18'
+                    'size': 18
                 }
             )
             my_figure['layout'][yaxis_key].update(
@@ -631,7 +620,7 @@ class Factory(object):
                 {
                     'color': '#000000',
                     'family': 'Helvetica',
-                    'size': '18'
+                    'size': 18
                 }
             )
 
