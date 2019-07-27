@@ -21,7 +21,7 @@ matrix:
   - python: 3.6
     env: TOXENV=example_scripts
 script:
-  echo
+  tox
 deploy:
   provider: pypi
   user: pyratez
