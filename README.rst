@@ -12,10 +12,15 @@ Introduction
 
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
-   
+
 .. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
    :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
    :alt: AppVeyor CI status
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: As long it is black
+
 
 *******************
 General information
@@ -49,9 +54,9 @@ Please refer to:
     | Cellzome GmbH
     | R&D Platform Technology & Science
     | GSK
-    | Germany 
+    | Germany
     | eMail: christian@fufezan.net
-    | 
+    |
     | http:// <in transition >
 
 
@@ -72,7 +77,7 @@ Implementation
 
 pymzML requires Python3.4+.
 The module is freely available on pymzml.github.com or pypi,
-published under GPL and requires no additional modules to be installed, but can 
+published under GPL and requires no additional modules to be installed, but can
 optionally use numpy.
 
 
@@ -103,7 +108,7 @@ pymzML requires `Python`_ 3.4 or higher.
 
 .. note::
 
-    Consider to use a Python virtual environment for easy installation and use. 
+    Consider to use a Python virtual environment for easy installation and use.
     Further, usage of python3.4+ is recommended.
 
 
@@ -133,7 +138,7 @@ Testing
 =======
 
 To test the package and correct installation::
-    
+
     nosetests tests/*.py
 
 

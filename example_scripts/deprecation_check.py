@@ -19,29 +19,23 @@ def main():
     """
 
     example_file = os.path.join(
-        os.path.dirname(__file__),
-        os.pardir,
-        'tests',
-        'data',
-        'example.mzML'
+        os.path.dirname(__file__), os.pardir, "tests", "data", "example.mzML"
     )
-    run = pymzml.run.Reader(example_file,)
-    spectrum_list = [ ]
+    run = pymzml.run.Reader(example_file)
+    spectrum_list = []
     for pos, spectrum in enumerate(run):
         spectrum_list.append(spectrum)
-        spectrum.hasPeak( ( 813.19073486 ) )
-        spectrum.extremeValues( 'mz' )
-        spectrum.hasOverlappingPeak( 813.19073486  )
-        spectrum.highestPeaks( 1 )
+        spectrum.hasPeak((813.19073486))
+        spectrum.extremeValues("mz")
+        spectrum.hasOverlappingPeak(813.19073486)
+        spectrum.highestPeaks(1)
         spectrum.estimatedNoiseLevel()
         spectrum.removeNoise()
-        spectrum.transformMZ( 813.19073486 )
+        spectrum.transformMZ(813.19073486)
         if pos == 1:
-            spectrum.similarityTo(
-                spectrum_list[0]
-            )
+            spectrum.similarityTo(spectrum_list[0])
             break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

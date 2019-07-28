@@ -20,15 +20,9 @@
 	
 	    """
 	    example_file = os.path.join(
-	        os.path.dirname(__file__),
-	        os.pardir,
-	        'tests',
-	        'data',
-	        'example.mzML'
+	        os.path.dirname(__file__), os.pardir, "tests", "data", "example.mzML"
 	    )
-	    run = pymzml.run.Reader(
-	        example_file
-	    )
+	    run = pymzml.run.Reader(example_file)
 	    highest_i_dict = ddict(list)
 	
 	    number_of_peaks_to_extract = 2
@@ -37,16 +31,15 @@
 	        # print( spectrum.ID )
 	        if spectrum.ms_level == 1:
 	            for mz, i in spectrum.highest_peaks(number_of_peaks_to_extract):
-	                highest_i_dict[ spectrum.ID ].append(i)
+	                highest_i_dict[spectrum.ID].append(i)
 	    for spectrum_id, highest_peak_list in highest_i_dict.items():
 	        assert len(highest_peak_list) == number_of_peaks_to_extract
 	        print(
-	            'Spectrum {0}; highest intensities: {1}'.format(
-	                spectrum_id,
-	                highest_peak_list
+	            "Spectrum {0}; highest intensities: {1}".format(
+	                spectrum_id, highest_peak_list
 	            )
 	        )
 	
 	
-	if __name__ == '__main__':
+	if __name__ == "__main__":
 	    main()
