@@ -1,6 +1,5 @@
 import sys
 import os
-
 sys.path.append(os.path.abspath("."))
 import pymzml.run as run
 from pymzml.spec import Spectrum, Chromatogram
@@ -103,9 +102,7 @@ class SpectrumTest(unittest.TestCase):
         """
         """
         self.spec.set_peaks([(1, 10), (2, 20), (3, 30), (4, 40)], "centroided")
-        print(self.spec._peak_dict)
         c_peaks = self.spec.peaks("centroided")
-        print(c_peaks[:4])
         self.assertPeaksIdentical(c_peaks, [(1, 10), (2, 20), (3, 30), (4, 40)])
 
     def test_centroid_peaks_for_real(self):
@@ -134,10 +131,8 @@ class SpectrumTest(unittest.TestCase):
         """
         spec = self.Run[6]
         p1 = spec.peaks("reprofiled")
-        print(p1[:5])
         spec += spec
         p2 = spec.peaks("reprofiled")
-        print(p2[:5])
         self.assertPeaksIdentical(
             p1, p2, mult=2
         )  # , msg='List 1 : {0}\nList 2:{1}'.format(p1, p2))
@@ -169,6 +164,66 @@ class SpectrumTest(unittest.TestCase):
         self.spec / 2
         self.assertCountEqual(self.spec.peaks("raw")[0], (1, 5))
         self.assertCountEqual(self.spec.peaks("raw")[1], (2, 10))
+
+    def test_add_specs_to_empty_spec(self):
+        spec1 = Spectrum()
+        spec2 = Spectrum()
+        spec2.set_peaks([(100, 200)], 'raw')
+        spec1 += spec2
+        centroided_mz = spec1.peaks('centroided')[:,0]
+        centroided_i  = spec1.peaks('centroided')[:,1]
+        assert np.allclose(
+            centroided_mz,
+            [100],
+            rtol=5e-6
+        )
+        assert np.allclose(
+            centroided_i,
+            [200],
+            atol=0.002
+        )
+
+    def test_add_tow_custom_specs(self):
+        spec1 = Spectrum()
+        spec2 = Spectrum()
+        spec1.set_peaks([(100, 200)], 'raw')
+        spec2.set_peaks([(100, 200), (200, 300)], 'raw')
+        spec1 += spec2
+        centroided_mz = spec1.peaks('centroided')[:,0]
+        centroided_i  = spec1.peaks('centroided')[:,1]
+        assert np.allclose(
+            centroided_mz,
+            [100, 200],
+            rtol=5e-6
+        )
+        assert np.allclose(
+            centroided_i,
+            [400, 300],
+            atol=0.002
+        )
+
+    def test_average_spectra(self):
+        spec0 = Spectrum()
+        spec1 = Spectrum()
+        spec2 = Spectrum()
+
+        spec1.set_peaks(np.array([(100, 200)]), 'centroided')
+        spec2.set_peaks(np.array([(100, 200), (200, 300)]), 'centroided')
+
+        spec0 += (spec1 / spec1.peaks('centroided')[:,1].sum())
+        spec0 += (spec2 / spec2.peaks('centroided')[:,1].sum())
+
+        centroided_peaks = spec0.peaks('centroided')
+        assert np.allclose(
+            centroided_peaks[:,0],
+            [100, 200]
+        )
+        assert np.allclose(
+            centroided_peaks[:,1],
+            [1.4, 0.6],
+            atol=0.0001
+        )
+
 
     def test_reduce(self):
         """
