@@ -6,16 +6,20 @@ Introduction
 .. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
     :target: https://travis-ci.org/pymzml/pymzML
 
+.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
+   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
+   :alt: AppVeyor CI status
+
 .. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
     :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://codecov.io/gh/pymzml/pymzml/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/pymzml/pymzml
+    :alt: Code Coverage
+
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
-
-.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
-   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
-   :alt: AppVeyor CI status
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
