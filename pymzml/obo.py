@@ -86,6 +86,7 @@ class OboTranslator(object):
     Args:
         version (str): obo version
     """
+
     def __init__(self, version=None):
         self.version = self.__normalize_version(version)
         self.all_dicts = []
@@ -93,15 +94,13 @@ class OboTranslator(object):
         self.name = {}
         self.definition = {}
         self.lookups = [self.id, self.name, self.definition]
-        self.MS_tag_regex = re.compile(r'MS:[0-9]*')
+        self.MS_tag_regex = re.compile(r"MS:[0-9]*")
 
         # Only parse the OBO when necessary, not upon object construction
         self.__obo_parsed = False
 
     def __setitem__(self, key, value):
-        raise TypeError(
-            "OBO translator dictionaries only support assignment via .add"
-        )
+        raise TypeError("OBO translator dictionaries only support assignment via .add")
 
     def __getitem__(self, key):
         if not self.__obo_parsed:
@@ -111,7 +110,7 @@ class OboTranslator(object):
             if key in lookup:
                 if self.MS_tag_regex.match(key):
                     try:
-                        return lookup[key]['name']
+                        return lookup[key]["name"]
                     except:
                         pass
                 return lookup[key]
@@ -131,11 +130,11 @@ class OboTranslator(object):
                 parts.
         """
         if version is not None:
-            parts = version.split('.')
+            parts = version.split(".")
 
             missing_parts = 3 - len(parts)
             if missing_parts > 0:
-                version = '.'.join(parts + ['0'] * missing_parts)
+                version = ".".join(parts + ["0"] * missing_parts)
 
         return version
 
@@ -155,29 +154,29 @@ class OboTranslator(object):
         #       and only download one at will on demand.
 
         # Modify the root for cx_freeze
-        if getattr(sys, 'frozen', False):
+        if getattr(sys, "frozen", False):
             obo_root = os.path.dirname(sys.executable)
         else:
             obo_root = os.path.dirname(__file__)
 
         obo_file = os.path.join(
             obo_root,
-            'obo',
-            "psi-ms{0}.obo".format('-' + self.version if self.version else '')
+            "obo",
+            "psi-ms{0}.obo".format("-" + self.version if self.version else ""),
         )
 
         if os.path.exists(obo_file):
             pass
-        elif os.path.exists(obo_file + '.gz'):
-            obo_file = obo_file + '.gz'
+        elif os.path.exists(obo_file + ".gz"):
+            obo_file = obo_file + ".gz"
         else:
             raise IOError("Could not find obo file {0}".format(obo_file))
 
-        with open(obo_file, 'rb') as fin:
+        with open(obo_file, "rb") as fin:
             # never rely on file extensions!
             first_two_bytes = fin.read(2)
             # check if file is gzipped by magic bytes
-            if first_two_bytes == b'\x1f\x8b':
+            if first_two_bytes == b"\x1f\x8b":
                 open_func = gzip.open
             else:
                 raise Exception(
@@ -185,20 +184,20 @@ class OboTranslator(object):
                     "The file may be corrupted or not gzipped."
                 )
 
-        with open_func(obo_file, 'rt') as obo:
+        with open_func(obo_file, "rt") as obo:
             collections = {}
             collect = False
             for line in obo:
-                if line.strip() in ('[Term]', ''):
+                if line.strip() in ("[Term]", ""):
                     collect = True
                     if not collections:
                         continue
                     self.add(collections)
                     collections = {}
                 else:
-                    if line.strip() != '' and collect is True:
+                    if line.strip() != "" and collect is True:
                         k = line.find(":")
-                        collections[line[:k]] = line[k + 1:].strip()
+                        collections[line[:k]] = line[k + 1 :].strip()
         return
 
     def add(self, collection_dict):
@@ -213,12 +212,12 @@ class OboTranslator(object):
             self.parseOBO()
 
         self.all_dicts.append(collection_dict)
-        if 'id' in collection_dict.keys():
-            self.id[collection_dict['id']] = self.all_dicts[-1]
-        if 'name' in collection_dict.keys():
-            self.name[collection_dict['name']] = self.all_dicts[-1]
-        if 'def' in collection_dict.keys():
-            self.definition[collection_dict['def']] = self.all_dicts[-1]
+        if "id" in collection_dict.keys():
+            self.id[collection_dict["id"]] = self.all_dicts[-1]
+        if "name" in collection_dict.keys():
+            self.name[collection_dict["name"]] = self.all_dicts[-1]
+        if "def" in collection_dict.keys():
+            self.definition[collection_dict["def"]] = self.all_dicts[-1]
 
         return
 
@@ -236,11 +235,11 @@ class OboTranslator(object):
         if not self.__obo_parsed:
             self.parseOBO()
 
-        if self.id[idTag]['name'] == name:
+        if self.id[idTag]["name"] == name:
             return True
         else:
             return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(__doc__)

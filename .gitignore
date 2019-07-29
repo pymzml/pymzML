@@ -13,3 +13,4 @@ test.dat
 *.html
 dist
 *.log
+docs/source/code_inc

@@ -2,7 +2,6 @@
 
 	#!/usr/bin/env python
 	
-	from __future__ import print_function
 	import pymzml
 	import os
 	
@@ -18,23 +17,15 @@
 	    """
 	
 	    example_file = os.path.join(
-	        os.path.dirname(__file__),
-	        os.pardir,
-	        'tests',
-	        'data',
-	        'example.mzML'
+	        os.path.dirname(__file__), os.pardir, "tests", "data", "example.mzML"
 	    )
 	    mz_to_find = 820.7711792
-	    run = pymzml.run.Reader(example_file,)
+	    run = pymzml.run.Reader(example_file)
 	    for spectrum in run:
 	        found_peaks = spectrum.has_peak(mz_to_find)
 	        if found_peaks != []:
-	            print(
-	                'Found peaks: {0} in spectrum {1}'.format(
-	                    found_peaks,
-	                    spectrum.ID
-	                )
-	            )
+	            print("Found peaks: {0} in spectrum {1}".format(found_peaks, spectrum.ID))
 	
-	if __name__ == '__main__':
+	
+	if __name__ == "__main__":
 	    main()

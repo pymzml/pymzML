@@ -23,9 +23,9 @@ class FileInterface(object):
 
         """
         self.build_index_from_scratch = build_index_from_scratch
-        self.encoding     = encoding
+        self.encoding = encoding
         self.file_handler = self._open(path)
-        self.offset_dict  = self.file_handler.offset_dict
+        self.offset_dict = self.file_handler.offset_dict
 
     def close(self):
         """Close the internal file handler."""
@@ -46,17 +46,17 @@ class FileInterface(object):
             based on the file ending of 'path'
         """
         if isinstance(path_or_file, BytesIO):
-            return bytesMzml.BytesMzml(path_or_file, self.encoding, self.build_index_from_scratch)
-        if path_or_file.endswith('.gz'):
+            return bytesMzml.BytesMzml(
+                path_or_file, self.encoding, self.build_index_from_scratch
+            )
+        if path_or_file.endswith(".gz"):
             if self._indexed_gzip(path_or_file):
                 return indexedGzip.IndexedGzip(path_or_file, self.encoding)
             else:
                 return standardGzip.StandardGzip(path_or_file, self.encoding)
         return standardMzml.StandardMzml(
-                path_or_file,
-                self.encoding,
-                self.build_index_from_scratch,
-            )
+            path_or_file, self.encoding, self.build_index_from_scratch
+        )
 
     def _indexed_gzip(self, path):
         """
@@ -99,5 +99,6 @@ class FileInterface(object):
         #     self.offset_dict.update(self.file_handler.offset_dict)
         return self.file_handler[identifier]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(__doc__)

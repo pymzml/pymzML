@@ -5,8 +5,8 @@ from pymzml.run import Reader
 
 
 def create_database_from_file(db_name, file_path):
-    conn = sqlite3.connect(db_name + '.db')
-    Run = Reader('./tests/data/example.mzML')
+    conn = sqlite3.connect(db_name + ".db")
+    Run = Reader("./tests/data/example.mzML")
     with conn:
         cursor = conn.cursor()
         cursor.execute("CREATE TABLE Spectra(ID INT, xml TEXT)")
@@ -25,6 +25,7 @@ class SQLiteDatabase(object):
     We initialize with a path to a database and implement
     a custom __getitem__ function to retrieve the spectra
     """
+
     def __init__(self, path):
         """
         """
@@ -39,13 +40,13 @@ class SQLiteDatabase(object):
             key (str or int): unique identifier for the given spectrum in the
             database
         """
-        self.cursor.execute('SELECT * FROM spectra WHERE id=?', key)
+        self.cursor.execute("SELECT * FROM spectra WHERE id=?", key)
         ID, element = self.cursor.fetchone()
 
         element = et.XML(element)
-        if 'spectrum' in element.tag:
+        if "spectrum" in element.tag:
             spectrum = spec.Spectrum(element)
-        elif 'chromatogram' in element.tag:
+        elif "chromatogram" in element.tag:
             spectrum = spec.Chromatogram(element)
         return spectrum
 
@@ -60,15 +61,15 @@ class SQLiteDatabase(object):
 
         return '<spectrum index="0" id="controllerType=0 controllerNumber=1 scan=1" defaultArrayLength="917"></spectrum>\n'
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # This is what the Reader class does
-    my_iter = iter(et.iterparse(SQLiteDatabase('test.db')))
+    my_iter = iter(et.iterparse(SQLiteDatabase("test.db")))
     # Now you can iter your database
     for x in my_iter:
         print(x)
 
     # Retrieve a specific spectrum from your database
-    db = SQLiteDatabase('test.db')
+    db = SQLiteDatabase("test.db")
     unique_id = 5
     my_spec = db[unique_id]
-

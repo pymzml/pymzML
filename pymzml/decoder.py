@@ -16,12 +16,14 @@ import numpy as np
 try:
     # try to import c-accelerated Numpress decoding
     import pynumpress
+
     MSDecoder = pynumpress
 except ImportError:
     # fall back to python-only implementation of numpress decoding
     import pymzml.ms_numpress
+
     warnings.warn(
-        'Cython PyNumpress is not installed; falling back to slower, python-only version',
+        "Cython PyNumpress is not installed; falling back to slower, python-only version",
         ImportWarning,
     )
     MSDecoder = pymzml.ms_numpress.MSNumpress()
@@ -42,32 +44,36 @@ def _decode(data, comp, d_array_length, f_type, d_type):
         result (tuple(str, list)): tuple containing the datatype and the
         decompressed data list.
     """
-    if f_type == '32-bit float':
+    if f_type == "32-bit float":
         f_type = np.float32
-    elif f_type == '64-bit float':
+    elif f_type == "64-bit float":
         f_type = np.float64
     else:
         f_type = None
 
     decoded_data = b64dec(data)
-    if 'zlib' in comp or \
-            'zlib compression'in comp:
+    if "zlib" in comp or "zlib compression" in comp:
         decoded_data = zlib.decompress(decoded_data)
 
-    if 'ms-np-linear' in comp \
-            or 'ms-np-pic' in comp \
-            or 'ms-np-slof' in comp \
-            or 'MS-Numpress linear prediction compression' in comp \
-            or 'MS-Numpress short logged float compression' in comp:
+    if (
+        "ms-np-linear" in comp
+        or "ms-np-pic" in comp
+        or "ms-np-slof" in comp
+        or "MS-Numpress linear prediction compression" in comp
+        or "MS-Numpress short logged float compression" in comp
+    ):
         result = []
         # start ms numpress decoder globally?
-        if 'ms-np-linear' in comp \
-                or 'MS-Numpress linear prediction compression' in comp:
+        if (
+            "ms-np-linear" in comp
+            or "MS-Numpress linear prediction compression" in comp
+        ):
             result = MSDecoder.decodeLinear(decoded_data)
-        elif 'ms-np-pic' in comp:
+        elif "ms-np-pic" in comp:
             result = MSDecoder.decode_pic(decoded_data)
-        elif 'ms-np-slof' in comp \
-                or 'MS-Numpress short logged float compression' in comp:
+        elif (
+            "ms-np-slof" in comp or "MS-Numpress short logged float compression" in comp
+        ):
             result = MSDecoder.decode_slof(decoded_data)
         return (d_type, result)
 
@@ -82,11 +88,12 @@ class Decoder:
     Keyword Args:
         nb_worker(int): number of pool workers to use. Defaults to 2.
     """
+
     def __init__(self, nb_workers=2):
         """
         """
         self._mz = None
-        self._i  = None
+        self._i = None
 
     # @profile
     def pool_decode(self, data, callback):
@@ -102,16 +109,13 @@ class Decoder:
         """
         ZE_POOL = Pool(processes=2)
 
-        ZE_POOL.starmap(
-            _decode,
-            data
-        )
+        ZE_POOL.starmap(_decode, data)
 
     def _error_callback(self, result):
         """
         """
-        raise Exception('Failed with error:\n{0}'.format(result))
+        raise Exception("Failed with error:\n{0}".format(result))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(__doc__)
