@@ -1,10 +1,7 @@
 import sys
 import os
-sys.path.append(
-    os.path.abspath(
-        os.path.dirname(__file__)
-    )
-)
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 import pymzml.run as run
 
@@ -15,22 +12,24 @@ except:
 import unittest
 import test_file_paths
 
-class ChromatogramTest(unittest.TestCase):
 
+class ChromatogramTest(unittest.TestCase):
     def assertPeaksIdentical(self, peaks1, peaks2, msg=None):
-        self.assertEqual(len(peaks1), len(peaks2))#, msg='List have different number of peaks!')
+        self.assertEqual(
+            len(peaks1), len(peaks2)
+        )  # , msg='List have different number of peaks!')
         for x in range(len(peaks1)):
             self.assertCountEqual(peaks1[x], peaks2[x], msg=msg)
 
     def setUp(self):
         self.paths = test_file_paths.paths
-        path  = self.paths[2]
-        self.Run_np  = run.Reader(path)
-        self.chrom  = self.Run_np['TIC']
+        path = self.paths[2]
+        self.Run_np = run.Reader(path)
+        self.chrom = self.Run_np["TIC"]
 
     def test_time(self):
-        time      = self.chrom.time
-        mz      = self.chrom.mz
+        time = self.chrom.time
+        mz = self.chrom.mz
         self.assertCountEqual(time, mz)
         intensity = self.chrom.i
 
@@ -48,5 +47,6 @@ class ChromatogramTest(unittest.TestCase):
         else:
             self.assertIsInstance(profile, list)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)

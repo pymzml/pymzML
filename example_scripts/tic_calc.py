@@ -2,8 +2,9 @@
 import sys
 import pymzml
 
+
 def main(mzml_file):
-    '''
+    """
     Basic example script to demonstrate the usage of pymzML. Requires a mzML 
     file as first argument.
 
@@ -19,29 +20,24 @@ def main(mzml_file):
         (Spectrum['ms level'])
 
 
-    '''
+    """
     i = 0
     run = pymzml.run.Reader(mzml_file)
-    for n, spec in enumerate( run ):
+    for n, spec in enumerate(run):
         print(
-            'Spectrum {0}, MS level {ms_level}'.format(
-                spec['id'],
-                ms_level = spec['ms level'],
-                #scan_time = spec['scan_time']
+            "Spectrum {0}, MS level {ms_level}".format(
+                spec["id"],
+                ms_level=spec["ms level"],
+                # scan_time = spec['scan_time']
             ),
-            end='\r'
+            end="\r",
         )
         i = sum(spec.i)
-    print(
-        'Parsed {0} spectra from file {1}'.format(
-            n,
-            mzml_file
-        )
-    )
+    print("Parsed {0} spectra from file {1}".format(n, mzml_file))
     print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(main.__doc__)
         exit()
