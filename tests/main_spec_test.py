@@ -103,9 +103,7 @@ class SpectrumTest(unittest.TestCase):
         """
         """
         self.spec.set_peaks([(1, 10), (2, 20), (3, 30), (4, 40)], "centroided")
-        print(self.spec._peak_dict)
         c_peaks = self.spec.peaks("centroided")
-        print(c_peaks[:4])
         self.assertPeaksIdentical(c_peaks, [(1, 10), (2, 20), (3, 30), (4, 40)])
 
     def test_centroid_peaks_for_real(self):
@@ -134,10 +132,8 @@ class SpectrumTest(unittest.TestCase):
         """
         spec = self.Run[6]
         p1 = spec.peaks("reprofiled")
-        print(p1[:5])
         spec += spec
         p2 = spec.peaks("reprofiled")
-        print(p2[:5])
         self.assertPeaksIdentical(
             p1, p2, mult=2
         )  # , msg='List 1 : {0}\nList 2:{1}'.format(p1, p2))

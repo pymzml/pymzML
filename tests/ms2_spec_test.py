@@ -51,11 +51,9 @@ class SpectrumMS2Test(unittest.TestCase):
         test_mz = 430.313
         arr = np.array([(test_mz, 100), (test_mz + PROTON/charge, 49)])
         spec = self.Run[2548]
-        print(spec.ms_level)
         spec.set_peaks(arr, 'centroided')
         decon = spec.peaks('deconvoluted')
         self.assertEqual(len(decon), 1)
-        print(decon)
         decon_mz = (test_mz * charge) - charge * PROTON
         self.assertEqual(decon[0][0], decon_mz)
         self.assertEqual(decon[0][1], 149) # 149 since itensities are 100 and 49
