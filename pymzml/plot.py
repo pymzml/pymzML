@@ -460,9 +460,9 @@ class Factory(object):
                     x_values.append(x[0])
                     y_values.append(x[1])
 
-            elif style[0] == 'points':
-                mode = 'markers'
-                shape = 'linear'
+            elif style[0] == "points":
+                mode = "markers"
+                shape = "linear"
                 x_values = x_vals
                 y_values = y_vals
 
