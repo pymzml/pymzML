@@ -1051,7 +1051,7 @@ class Spectrum(MS_Spectrum):
         elif peak_type == 'deconvoluted':
             self._peak_dict['deconvoluted'] = peaks
             self._mz = self.peaks('raw')[:,0]
-            self._i = self.peaks('raw')
+            self._i = self.peaks('raw')[:,1]
         else:
             raise Exception(
                 'Peak type is not suppported\n'
