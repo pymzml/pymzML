@@ -21,6 +21,9 @@ Introduction
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
 
+.. image:: https://pepy.tech/badge/pymzml
+   :target: https://pepy.tech/project/pymzml
+
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: As long it is black
