@@ -72,48 +72,48 @@ class Reader(object):
     """
 
     def __init__(
-            self,
-            path_or_file,
-            MS_precisions=None,
-            obo_version=None,
-            build_index_from_scratch=False,
-            skip_chromatogram=True,
-            **kwargs
+        self,
+        path_or_file,
+        MS_precisions=None,
+        obo_version=None,
+        build_index_from_scratch=False,
+        skip_chromatogram=True,
+        **kwargs
     ):
         """Initialize and set required attributes."""
         self.build_index_from_scratch = build_index_from_scratch
         self.skip_chromatogram = skip_chromatogram
         if MS_precisions is None:
             MS_precisions = {}
-            if 'MS1_Precision' in kwargs.keys():
-                MS_precisions[1] = kwargs['MS1_Precision']
-            if 'MSn_Precision' in kwargs.keys():
-                MS_precisions[2] = kwargs['MSn_Precision']
-                MS_precisions[3] = kwargs['MSn_Precision']
+            if "MS1_Precision" in kwargs.keys():
+                MS_precisions[1] = kwargs["MS1_Precision"]
+            if "MSn_Precision" in kwargs.keys():
+                MS_precisions[2] = kwargs["MSn_Precision"]
+                MS_precisions[3] = kwargs["MSn_Precision"]
 
         # Parameters
         self.ms_precisions = {
             0: 0.001,  # arbitrary prec for UV spectra
             1: 5e-6,
-            2: 20e-6
+            2: 20e-6,
         }
         self.ms_precisions.update(MS_precisions)
 
         # File info
         self.info = ddict()
         if isinstance(path_or_file, str):
-            self.info['file_name'] = path_or_file
-            self.info['encoding'] = self._determine_file_encoding(path_or_file)
+            self.info["file_name"] = path_or_file
+            self.info["encoding"] = self._determine_file_encoding(path_or_file)
         else:
-            self.info['encoding'] = self._guess_encoding(path_or_file)
+            self.info["encoding"] = self._guess_encoding(path_or_file)
 
-        self.info['file_object'] = self._open_file(path_or_file)
-        self.info['offset_dict'] = self.info['file_object'].offset_dict
+        self.info["file_object"] = self._open_file(path_or_file)
+        self.info["offset_dict"] = self.info["file_object"].offset_dict
         if obo_version:
-            self.info['obo_version'] = self._obo_version_validator(obo_version)
+            self.info["obo_version"] = self._obo_version_validator(obo_version)
         else:
             # obo version not specified -> try to identify from mzML by self._init_iter
-            self.info['obo_version'] = None
+            self.info["obo_version"] = None
 
         self.iter = self._init_iter()
         self.OT = self._init_obo_translator()
@@ -134,21 +134,21 @@ class Reader(object):
         ...     print(spectrum.mz, end='\\r')
 
         """
-        has_ref_group = self.info.get('referenceable_param_group_list', False)
+        has_ref_group = self.info.get("referenceable_param_group_list", False)
         while True:
-            event, element = next(self.iter, ('END', 'END'))
-            if event == 'end':
-                if element.tag.endswith('}spectrum'):
+            event, element = next(self.iter, ("END", "END"))
+            if event == "end":
+                if element.tag.endswith("}spectrum"):
                     spectrum = spec.Spectrum(element)
                     if has_ref_group:
                         spectrum._set_params_from_reference_group(
-                            self.info['referenceable_param_group_list_element']
+                            self.info["referenceable_param_group_list_element"]
                         )
                     ms_level = spectrum.ms_level
                     spectrum.measured_precision = self.ms_precisions[ms_level]
                     spectrum.calling_instance = self
                     return spectrum
-                if element.tag.endswith('}chromatogram'):
+                if element.tag.endswith("}chromatogram"):
                     if self.skip_chromatogram:
                         continue
                     spectrum = spec.Chromatogram(element)
@@ -158,7 +158,7 @@ class Reader(object):
                     #     )
                     spectrum.calling_instance = self
                     return spectrum
-            elif event == 'END':
+            elif event == "END":
                 raise StopIteration
 
     def __getitem__(self, identifier):
@@ -175,10 +175,10 @@ class Reader(object):
         """
         try:
             if int(identifier) > self.get_spectrum_count():
-                raise Exception('Requested identifier is out of range')
+                raise Exception("Requested identifier is out of range")
         except:
             pass
-        spectrum = self.info['file_object'][identifier]
+        spectrum = self.info["file_object"][identifier]
         spectrum.calling_instance = self
         if isinstance(spectrum, spec.Spectrum):
             spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
@@ -187,7 +187,7 @@ class Reader(object):
     @property
     def file_class(self):
         """Return file object in use."""
-        return type(self.info['file_object'].file_handler)
+        return type(self.info["file_object"].file_handler)
 
     def _open_file(self, path_or_file):
         """
@@ -202,8 +202,8 @@ class Reader(object):
         """
         return FileInterface(
             path_or_file,
-            self.info['encoding'],
-            build_index_from_scratch=self.build_index_from_scratch
+            self.info["encoding"],
+            build_index_from_scratch=self.build_index_from_scratch,
         )
 
     def _guess_encoding(self, mzml_file):
@@ -218,9 +218,9 @@ class Reader(object):
         """
         match = regex_patterns.FILE_ENCODING_PATTERN.search(mzml_file.readline())
         if match:
-            return bytes.decode(match.group('encoding'))
+            return bytes.decode(match.group("encoding"))
         else:
-            return 'utf-8'
+            return "utf-8"
 
     def _determine_file_encoding(self, path):
         """
@@ -234,12 +234,13 @@ class Reader(object):
         """
         if os.path.exists(path):
             print(path)
-            if path.endswith('.gz') or path.endswith('.igz'):
+            if path.endswith(".gz") or path.endswith(".igz"):
                 import gzip
+
                 _open = gzip.open
             else:
                 _open = open
-            with _open(path, 'rb') as sniffer:
+            with _open(path, "rb") as sniffer:
                 return self._guess_encoding(sniffer)
 
     @staticmethod
@@ -258,12 +259,17 @@ class Reader(object):
         Returns:
             version_fixed (str): The checked obo version.
         """
-        obo_rgx = re.compile(r'(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?')
-        obo_years_rgx = re.compile(r'20\d\d')
+        obo_rgx = re.compile(r"(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?")
+        obo_years_rgx = re.compile(r"20\d\d")
         obo_year_version_dct = {
-            2012: '3.40.0', 2013: '3.50.0', 2014: '3.60.0',
-            2015: '3.75.0', 2016: '4.0.1', 2017: '4.1.0',
-            2018: '4.1.10', 2019: '4.1.22',
+            2012: "3.40.0",
+            2013: "3.50.0",
+            2014: "3.60.0",
+            2015: "3.75.0",
+            2016: "4.0.1",
+            2017: "4.1.0",
+            2018: "4.1.10",
+            2019: "4.1.22",
         }
         version_fixed = None
         if obo_rgx.match(version):
@@ -273,7 +279,7 @@ class Reader(object):
                 years_found = obo_years_rgx.search(version)
                 if years_found:
                     try:
-                        year = int(years_found[0])
+                        year = int(years_found.group(0))
                     except ValueError:
                         year = 2000
 
@@ -281,21 +287,22 @@ class Reader(object):
                         version_fixed = obo_year_version_dct[year]
                     else:
                         if year > 2019:
-                            version_fixed = '4.1.0'
+                            version_fixed = "4.1.0"
 
         if version_fixed:
             # Check if the corresponding obo file existed in obo folder
             obo_root = os.path.dirname(__file__)
             obo_file = os.path.join(
-                obo_root, 'obo',
-                'psi-ms{0}.obo'.format('-' + version_fixed if version_fixed else '')
+                obo_root,
+                "obo",
+                "psi-ms{0}.obo".format("-" + version_fixed if version_fixed else ""),
             )
-            if os.path.exists(obo_file) or os.path.exists(obo_file + '.gz'):
+            if os.path.exists(obo_file) or os.path.exists(obo_file + ".gz"):
                 pass
             else:
-                version_fixed = '1.1.0'
+                version_fixed = "1.1.0"
         else:
-            version_fixed = '1.1.0'
+            version_fixed = "1.1.0"
 
         return version_fixed
 
@@ -310,9 +317,9 @@ class Reader(object):
         """
         # parse obo, check MS tags and if they are ok in minimum.py (minimum
         # required) ...
-        if self.info.get('obo_version', None) is None:
-            self.info['obo_version'] = '1.1.0'
-        obo_translator = obo.OboTranslator(version=self.info['obo_version'])
+        if self.info.get("obo_version", None) is None:
+            self.info["obo_version"] = "1.1.0"
+        obo_translator = obo.OboTranslator(version=self.info["obo_version"])
 
         return obo_translator
 
@@ -325,49 +332,49 @@ class Reader(object):
             mzml_iter (xml.etree.ElementTree._IterParseIterator): Iterator over
                 all element in the file starting with the first spectrum
         """
-        mzml_iter = iter(ElementTree.iterparse(
-            self.info['file_object'],
-            events=('end', 'start')
-        ))  # NOTE: end might be sufficient
+        mzml_iter = iter(
+            ElementTree.iterparse(self.info["file_object"], events=("end", "start"))
+        )  # NOTE: end might be sufficient
         _, self.root = next(mzml_iter)
         while True:
-            event, element = next(mzml_iter, ('END', 'END'))
-            if element.tag.endswith('}mzML'):
-                if 'version' in element.attrib \
-                        and len(element.attrib['version']) > 0:
-                    self.info['mzml_version'] = element.attrib['version']
+            event, element = next(mzml_iter, ("END", "END"))
+            if element.tag.endswith("}mzML"):
+                if "version" in element.attrib and len(element.attrib["version"]) > 0:
+                    self.info["mzml_version"] = element.attrib["version"]
                 else:
                     s = element.attrib[
-                        '{http://www.w3.org/2001/XMLSchema-instance}'
-                        'schemaLocation'
+                        "{http://www.w3.org/2001/XMLSchema-instance}" "schemaLocation"
                     ]
-                    self.info['mzml_version'] = re.search(
-                        r'[0-9]*\.[0-9]*\.[0-9]*', s).group()
-            elif element.tag.endswith('}cv'):
-                if not self.info['obo_version'] \
-                        and element.attrib.get('id', None) == 'MS':
-                    obo_in_mzml = element.attrib.get('version', '1.1.0')
-                    self.info['obo_version'] = self._obo_version_validator(obo_in_mzml)
+                    self.info["mzml_version"] = re.search(
+                        r"[0-9]*\.[0-9]*\.[0-9]*", s
+                    ).group()
+            elif element.tag.endswith("}cv"):
+                if (
+                    not self.info["obo_version"]
+                    and element.attrib.get("id", None) == "MS"
+                ):
+                    obo_in_mzml = element.attrib.get("version", "1.1.0")
+                    self.info["obo_version"] = self._obo_version_validator(obo_in_mzml)
 
-            elif element.tag.endswith('}referenceableParamGroupList'):
-                self.info['referenceable_param_group_list'] = True
-                self.info['referenceable_param_group_list_element'] = element
-            elif element.tag.endswith('}spectrumList'):
-                spec_cnt = element.attrib.get('count')
-                self.info['spectrum_count'] = int(spec_cnt) if spec_cnt else None
+            elif element.tag.endswith("}referenceableParamGroupList"):
+                self.info["referenceable_param_group_list"] = True
+                self.info["referenceable_param_group_list_element"] = element
+            elif element.tag.endswith("}spectrumList"):
+                spec_cnt = element.attrib.get("count")
+                self.info["spectrum_count"] = int(spec_cnt) if spec_cnt else None
                 break
-            elif element.tag.endswith('}chromatogramList'):
-                chrom_cnt = element.attrib.get('count', None)
+            elif element.tag.endswith("}chromatogramList"):
+                chrom_cnt = element.attrib.get("count", None)
                 if chrom_cnt is None:
-                    self.info['chromatogram_count'] = None
+                    self.info["chromatogram_count"] = None
                 else:
-                    self.info['chromatogram_count'] = int(chrom_cnt)
+                    self.info["chromatogram_count"] = int(chrom_cnt)
                 break
-            elif element.tag.endswith('}run'):
-                run_id = element.attrib.get('id')
-                start_time = element.attrib.get('startTimeStamp')
-                self.info['run_id'] = run_id
-                self.info['start_time'] = start_time
+            elif element.tag.endswith("}run"):
+                run_id = element.attrib.get("id")
+                start_time = element.attrib.get("startTimeStamp")
+                self.info["run_id"] = run_id
+                self.info["start_time"] = start_time
             else:
                 pass
         self.root.clear()
@@ -388,7 +395,7 @@ class Reader(object):
         Returns:
             spectrum count (int): Number of spectra in file.
         """
-        return self.info['spectrum_count']
+        return self.info["spectrum_count"]
 
     def get_chromatogram_count(self):
         """
@@ -397,8 +404,8 @@ class Reader(object):
         Returns:
             chromatogram count (int): Number of chromatograms in file.
         """
-        return self.info['chromatogram_count']
+        return self.info["chromatogram_count"]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(__doc__)

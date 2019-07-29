@@ -60,46 +60,34 @@ class Factory(object):
             This should go into example_script/plot_spectrum.py
 
         """
-        self.filename        = filename
-        self.plots           = []
-        self.titles          = []
-        self.lookup          = dict()
-        self.y_max           = []
-        self.x_max           = []
-        self.offset          = 1
-        self.precisions      = []
-        self.styles          = ['sticks', 'triangle', 'spline', 'linear']
-        self.widths          = ['small', 'medium', 'big']
+        self.filename = filename
+        self.plots = []
+        self.titles = []
+        self.lookup = dict()
+        self.y_max = []
+        self.x_max = []
+        self.offset = 1
+        self.precisions = []
+        self.styles = ["sticks", "triangle", "spline", "linear"]
+        self.widths = ["small", "medium", "big"]
         self.style_parameters = {
-            'sticks'   : {
-                'mode'     : 'lines+text',
-                'shape'    : 'linear',
-                'filling'  : 'tozeroy',
-                'width'    : lambda n : self.precisions[n]
+            "sticks": {
+                "mode": "lines+text",
+                "shape": "linear",
+                "filling": "tozeroy",
+                "width": lambda n: self.precisions[n],
             },
-            'triangle' : {
-                'mode'     : 'lines+text',
-                'shape'    : 'linear',
-                'filling'  : 'tozeroy',
-                'width'    : lambda n : self.scalings[n]
+            "triangle": {
+                "mode": "lines+text",
+                "shape": "linear",
+                "filling": "tozeroy",
+                "width": lambda n: self.scalings[n],
             },
-            'lines' : {
-                'mode'     : 'lines+text',
-                'shape'    : 'spline',
-                'filling'  : None
-            },
-            'points': {
-                'mode'     : 'markers',
-                'shape'    : 'linear',
-                'filling'  : None
-            }
+            "lines": {"mode": "lines+text", "shape": "spline", "filling": None},
+            "points": {"mode": "markers", "shape": "linear", "filling": None},
         }
 
-    def new_plot(
-        self,
-        precision='5e-6',
-        title=None
-    ):
+    def new_plot(self, precision="5e-6", title=None):
         """
         Add new plot to the plotting Factory.
 
@@ -119,12 +107,12 @@ class Factory(object):
         self,
         data,
         color=(0, 0, 0),
-        style='sticks',
+        style="sticks",
         mz_range=None,
         opacity=0.8,
         name=None,
         plot_num=-1,
-        title=None
+        title=None,
     ):
         """
         Add data to the graph.
@@ -146,36 +134,46 @@ class Factory(object):
             plot_num (int): Add data to plot[plot_num]\n
 
         """
-        style_attribs  = style.split('.')
-        assert len(style_attribs) == 3, 'Style must set datatype, plotting style and width:\n{0}'.format(style_attribs)
+        style_attribs = style.split(".")
+        assert (
+            len(style_attribs) == 3
+        ), "Style must set datatype, plotting style and width:\n{0}".format(
+            style_attribs
+        )
 
         if len(self.plots) == 0:
             self.new_plot(title=title)
 
         precision = float(self.precisions[plot_num])
 
-        if style_attribs[0] == 'label':
+        if style_attribs[0] == "label":
             as_anno = True
-        elif style_attribs[0] == 'data':
+        elif style_attribs[0] == "data":
             as_anno = False
         else:
-            raise Exception('Style must be declare trace as data or annotation')
+            raise Exception("Style must be declare trace as data or annotation")
 
         # use numpy arrays
-        x_values   = []
-        y_values   = []
+        x_values = []
+        y_values = []
         txt_values = []
 
         if as_anno:
             for vars in data:
-                mz, i  = vars[0], vars[1]
-                txt    = vars[2]
+                mz, i = vars[0], vars[1]
+                txt = vars[2]
                 x_values.extend(
                     [
-                        mz - (mz * precision),  # self.style_parameters[style_attribs[1]]['width'])(plot_num)
+                        mz
+                        - (
+                            mz * precision
+                        ),  # self.style_parameters[style_attribs[1]]['width'])(plot_num)
                         mz,
-                        mz + (mz * precision),  # self.style_parameters[style_attribs[1]]['width'])(plot_num)
-                        None
+                        mz
+                        + (
+                            mz * precision
+                        ),  # self.style_parameters[style_attribs[1]]['width'])(plot_num)
+                        None,
                     ]
                 )
                 y_values.extend(
@@ -183,61 +181,40 @@ class Factory(object):
                         0,  # y pos for spline, offset for linear, also via dict grab
                         i,  # offset for linear
                         0,  # ypos for spline, offset for linear, also via dict grab
-                        None
+                        None,
                     ]
                 )
-                txt_values.extend(
-                    [
-                        None,
-                        txt,
-                        None,
-                        None
-                    ]
-                )
+                txt_values.extend([None, txt, None, None])
         else:
             for mz, i in data:
                 x_values.extend(
-                    [
-                        mz - (mz * precision),
-                        mz,
-                        mz + (mz * precision),
-                        None
-                    ]
+                    [mz - (mz * precision), mz, mz + (mz * precision), None]
                 )
-                y_values.extend(
-                    [
-                        .0,
-                        i,
-                        .0,
-                        None
-                    ]
-                )
+                y_values.extend([0.0, i, 0.0, None])
 
-        data = go.Scatter({
-            'x': x_values,
-            'y': y_values,
-            'text': txt_values,
-            'textfont': {
-                'family': 'Helvetica',
-                'size': 10,
-                'color': '#000000'
-            },
-            'textposition': 'top center',
-            'visible': 'True',
-            'marker': {'size': 10},
-            'mode': self.style_parameters[style_attribs[1]]['mode'],
-            'name': name,
-            'line': {
-                'color': 'rgb' + str(color),
-                'width': 1,
-                'shape': self.style_parameters[style_attribs[1]]['shape']
-            },
-            'fill': self.style_parameters[style_attribs[1]]['filling'],
-            'fillcolor': {
-                'color': 'rgba' + str((color[0], color[1], color[2], opacity))
-            },
-            'opacity': opacity
-        })
+        data = go.Scatter(
+            {
+                "x": x_values,
+                "y": y_values,
+                "text": txt_values,
+                "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
+                "textposition": "top center",
+                "visible": "True",
+                "marker": {"size": 10},
+                "mode": self.style_parameters[style_attribs[1]]["mode"],
+                "name": name,
+                "line": {
+                    "color": "rgb" + str(color),
+                    "width": 1,
+                    "shape": self.style_parameters[style_attribs[1]]["shape"],
+                },
+                "fill": self.style_parameters[style_attribs[1]]["filling"],
+                "fillcolor": {
+                    "color": "rgba" + str((color[0], color[1], color[2], opacity))
+                },
+                "opacity": opacity,
+            }
+        )
 
         self.plots[plot_num].append(data)
         return
@@ -247,20 +224,20 @@ class Factory(object):
         Prints summary about the plotting factory, i.e.how many plots and how
         many datasets per plot.
         """
-        print("""
-        Factory holds {0} unique plots""".format(len(self.plots)))
-        for i, plot in enumerate(self.plots):
-            print(
-                "\t\tPlot {0} holds {1} unique datasets".format(
-                    i,
-                    len(plot)
-                )
+        print(
+            """
+        Factory holds {0} unique plots""".format(
+                len(self.plots)
             )
+        )
+        for i, plot in enumerate(self.plots):
+            print("\t\tPlot {0} holds {1} unique datasets".format(i, len(plot)))
             for j, dataset in enumerate(plot):
-                print("\t\t\tDataset {0} holds {1} datapoints".format(
-                    j,
-                    len(dataset['x'])
-                ))
+                print(
+                    "\t\t\tDataset {0} holds {1} datapoints".format(
+                        j, len(dataset["x"])
+                    )
+                )
 
         print()
         return
@@ -274,8 +251,9 @@ class Factory(object):
         """
         for i, plot in enumerate(self.plots):
             for j, trace in enumerate(plot):
-                self.plots[i][j]['y'] = [
-                    self.function_mapper[x](i) if x in self.function_mapper else x for x in trace['y']
+                self.plots[i][j]["y"] = [
+                    self.function_mapper[x](i) if x in self.function_mapper else x
+                    for x in trace["y"]
                 ]
         return self.plots
 
@@ -299,51 +277,32 @@ class Factory(object):
             )
         else:
             specs = [[{}, {}] for x in range(rows - 1)]
-            specs.append([{'colspan': 2}, None])
+            specs.append([{"colspan": 2}, None])
             my_figure = tools.make_subplots(
                 rows=rows,
                 cols=cols,
                 vertical_spacing=0.6 / rows,
                 specs=specs,
-                subplot_titles=self.titles
+                subplot_titles=self.titles,
             )
 
         for i, plot in enumerate(self.plots):
             for j, trace in enumerate(plot):
-                my_figure.append_trace(
-                    trace,
-                    int(math.floor((i / 2) + 1)),
-                    (i % 2) + 1
-                )
+                my_figure.append_trace(trace, int(math.floor((i / 2) + 1)), (i % 2) + 1)
 
         for i in range(plot_number):
             if xLimits:
-                my_figure['layout']['xaxis' + str(i + 1)].update(
-                    range=xLimits[i]
-                )
-            my_figure['layout']['xaxis' + str(i + 1)].update(title='m/z ')
-            my_figure['layout']['yaxis' + str(i + 1)].update(title='Intensity')
-            my_figure['layout']['xaxis' + str(i + 1)].update(
-                titlefont={
-                    'color': '#000000',
-                    'family': 'Helvetica',
-                    'size': '18'
-                }
+                my_figure["layout"]["xaxis" + str(i + 1)].update(range=xLimits[i])
+            my_figure["layout"]["xaxis" + str(i + 1)].update(title="m/z ")
+            my_figure["layout"]["yaxis" + str(i + 1)].update(title="Intensity")
+            my_figure["layout"]["xaxis" + str(i + 1)].update(
+                titlefont={"color": "#000000", "family": "Helvetica", "size": "18"}
             )
-            my_figure['layout']['yaxis' + str(i + 1)].update(
-                titlefont={
-                    'color': '#000000',
-                    'family': 'Helvetica',
-                    'size': '18'
-                }
+            my_figure["layout"]["yaxis" + str(i + 1)].update(
+                titlefont={"color": "#000000", "family": "Helvetica", "size": "18"}
             )
 
-        my_figure['layout']['legend'].update(
-            font={
-                'size': 10,
-                'color': '#FF0000'
-            }
-        )
+        my_figure["layout"]["legend"].update(font={"size": 10, "color": "#FF0000"})
 
         if self.filename is None:
             _filename = "spectrum_plot.html"
@@ -357,16 +316,17 @@ class Factory(object):
         plt.plot(my_figure, filename=_filename, auto_open=False)
         return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     data = [(1, 10), (2, 20)]
-    anno = [(1, 10, 'blub'), (2, 20, 'bla')]
+    anno = [(1, 10, "blub"), (2, 20, "bla")]
     Fac = Factory()
 
     print("'style='data.sticks.medium'")
-    Fac.add(data, style='data.sticks.medium')
+    Fac.add(data, style="data.sticks.medium")
     print()
     print("style='data.triangle.small'")
-    Fac.add(data, style='data.triangle.small')
+    Fac.add(data, style="data.triangle.small")
     print()
-    Fac.add(anno, style='label.sticks.medium')
-    Fac.save(filename='tmp.html')
+    Fac.add(anno, style="label.sticks.medium")
+    Fac.save(filename="tmp.html")

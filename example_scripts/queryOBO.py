@@ -8,11 +8,11 @@ from collections import defaultdict
 import pymzml.obo
 
 
-FIELDNAMES = ['id', 'name', 'def', 'is_a']
+FIELDNAMES = ["id", "name", "def", "is_a"]
 
 
 def main(args):
-    '''
+    """
     Use this script to interrogate the OBO database files.
 
     usage:
@@ -36,24 +36,24 @@ def main(args):
         MS:1000503 ! scan attribute
 
 
-    '''
+    """
     obo = pymzml.obo.OboTranslator(version=args.version)
     obo.parseOBO()
     if args.query.isdigit():
         print(search_by_id(obo, args.query))
     else:
         for ix, match in enumerate(search_by_name(obo, args.query)):
-            print('#{0}'.format(ix))
+            print("#{0}".format(ix))
 
-            for fieldname in ('id', 'name', 'def'):
+            for fieldname in ("id", "name", "def"):
                 print(match[fieldname])
 
-            if 'is_a' in match:
-                print('Is a:', match['is_a'])
+            if "is_a" in match:
+                print("Is a:", match["is_a"])
 
 
 def search_by_name(obo, name):
-    print('Searching for {0}'.format(name.lower()))
+    print("Searching for {0}".format(name.lower()))
     matches = []
     for lookup in obo.lookups:
         for key in lookup.keys():
@@ -70,28 +70,30 @@ def search_by_name(obo, name):
 
 
 def search_by_id(obo, id):
-    key = 'MS:{0}'.format(id)
-    return_value = ''
+    key = "MS:{0}".format(id)
+    return_value = ""
     for lookup in obo.lookups:
         if key in lookup:
             if obo.MS_tag_regex.match(key):
                 for fn in FIELDNAMES:
                     if fn in lookup[key].keys():
-                        return_value += '{0}\n'.format(lookup[key][fn])
+                        return_value += "{0}\n".format(lookup[key][fn])
     return return_value
 
 
-if __name__ == '__main__':
-    argparser = argparse.ArgumentParser(
-        usage=__doc__,
-    )
-    argparser.add_argument('query', help='an accession or part of an OBO term name to look for')
+if __name__ == "__main__":
+    argparser = argparse.ArgumentParser(usage=__doc__)
     argparser.add_argument(
-        '-v', '--version', default='1.1.0',
-        help='''
+        "query", help="an accession or part of an OBO term name to look for"
+    )
+    argparser.add_argument(
+        "-v",
+        "--version",
+        default="1.1.0",
+        help="""
             the version of the OBO to use; valid options are 1.0.0, 1.1.0, and 1.2,
             default is 1.1.0
-        ''',
+        """,
     )
 
     args = argparser.parse_args()

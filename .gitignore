@@ -13,3 +13,9 @@ test.dat
 *.html
 dist
 *.log
+<<<<<<< HEAD
+.coverage
+.scannerwork
+.tox
+pymzml.egg-info
+docs/source/code_inc/

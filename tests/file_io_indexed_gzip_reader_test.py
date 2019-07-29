@@ -8,9 +8,11 @@ from pymzml.utils.GSGR import GSGR
 import unittest
 import test_file_paths
 
+
 class GSGRTest(unittest.TestCase):
-    '''
-    '''
+    """
+    """
+
     def setUp(self):
         paths = test_file_paths.paths
         self.Reader = GSGR(paths[2])
@@ -41,5 +43,7 @@ class GSGRTest(unittest.TestCase):
         self.assertEqual(self.Reader.idx_len, 6)
         self.assertEqual(self.Reader.offset_len, 6)
         self.assertIsNotNone(self.Reader.index)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)
