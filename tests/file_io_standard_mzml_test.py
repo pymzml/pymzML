@@ -17,8 +17,8 @@ class StandardMzmlTest(unittest.TestCase):
     def setUp(self):
         """
         """
-        paths = test_file_paths.paths
-        self.standard_mzml = StandardMzml(paths[0], "latin-1")
+        self.paths = test_file_paths.paths
+        self.standard_mzml = StandardMzml(self.paths[0], "latin-1")
 
     def tearDown(self):
         """
@@ -44,6 +44,15 @@ class StandardMzmlTest(unittest.TestCase):
         """
         spec = self.standard_mzml._interpol_search(5)
         self.assertIsInstance(spec, Spectrum)
+
+    def test_build_index_from_scratch(self):
+        standard_mzml = StandardMzml(
+            self.paths[0], "latin-1", build_index_from_scratch=True
+        )
+        assert len(standard_mzml.offset_dict) == 12
+        for x in range(1, 11):
+            assert x in standard_mzml.offset_dict
+        assert standard_mzml.offset_dict["TIC"] == None
 
 
 if __name__ == "__main__":

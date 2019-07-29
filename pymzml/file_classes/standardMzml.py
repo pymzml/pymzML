@@ -32,10 +32,9 @@ class StandardMzml(object):
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
-        if build_index_from_scratch is True:
-            seeker = self.get_binary_file_handler()
-            self._build_index_from_scratch(seeker)
-            seeker.close()
+        seeker = self.get_binary_file_handler()
+        self._build_index(from_scratch=build_index_from_scratch)
+        seeker.close()
 
     def get_binary_file_handler(self):
         return open(self.path, "rb")
@@ -64,7 +63,6 @@ class StandardMzml(object):
 
         spectrum = None
         if str(identifier).upper() == "TIC":
-            # print(str(identifier).upper())
             found = False
             mzmliter = iter(iterparse(self.file_handler, events=["end"]))
             while found is False:
@@ -153,9 +151,6 @@ class StandardMzml(object):
                 match = index_list_offset_pattern.search(line)
                 if match:
                     index_found = True
-                    # print(int(match.group('indexListOffset').decode('utf-8')))
-                    # print(line)
-                    # exit(1)
                     index_list_offset = int(
                         match.group("indexListOffset").decode("utf-8")
                     )
@@ -242,8 +237,15 @@ class StandardMzml(object):
                 for m in chromexp.finditer(chunk):
                     chrom_positions[m.group(1).decode("utf-8")] = offset + m.start()
                 for m in specexp.finditer(chunk):
-                    spec_positions[m.group(1).decode("utf-8")] = offset + m.start()
-
+                    id_match = regex_patterns.SPECTRUM_PATTERN3_BYTE.match(m.group(1))
+                    if id_match:
+                        ids = {
+                            kv.split(b"=")[0]
+                            .decode("utf-8"): kv.split(b"=")[1]
+                            .decode("utf-8")
+                            for kv in id_match.captures(1)
+                        }
+                    spec_positions[int(ids["scan"])] = offset + m.start()
                 # also look for the total count of chromatograms and spectra
                 # -> must be the same as the content of our dict!
                 m = chromcntexp.search(chunk)

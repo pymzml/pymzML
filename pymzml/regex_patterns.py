@@ -23,6 +23,7 @@ SIM_INDEX_PATTERN = re.compile(
 Regex pattern for SIM index
 """
 SPECTRUM_PATTERN3 = regex.compile(r"((\w+)=(\w+\s*))+")
+SPECTRUM_PATTERN3_BYTE = regex.compile(b"((\w+)=(\w+\s*))+")
 SPECTRUM_ID_PATTERN = re.compile(r'="{0,1}([0-9]*)"{0,1}>{0,1}$')
 """
 Simplified spectrum id regex. Greedly catches ints at the end of line
