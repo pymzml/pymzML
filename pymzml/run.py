@@ -279,7 +279,7 @@ class Reader(object):
                 years_found = obo_years_rgx.search(version)
                 if years_found:
                     try:
-                        year = int(years_found[0])
+                        year = int(years_found.group(0))
                     except ValueError:
                         year = 2000
 
