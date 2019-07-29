@@ -6,7 +6,7 @@
 	
 	
 	def main(mzml_file):
-	    '''
+	    """
 	    Basic example script to access basic run info of an mzML file. Requires a
 	    mzML file as first command line argument.
 	
@@ -26,21 +26,21 @@
 	                 'start_time': '2009-08-09T22:32:31'
 	             }
 	
-	    '''
+	    """
 	    run = pymzml.run.Reader(mzml_file)
 	    print(
-	        '''
+	        """
 	Summary for mzML file:
 	    {file_name}
 	Run was measured on {start_time} using obo version {obo_version}
 	File contains {spectrum_count} spectra
-	        '''.format(
+	        """.format(
 	            **run.info
 	        )
 	    )
 	
 	
-	if __name__ == '__main__':
+	if __name__ == "__main__":
 	    if len(sys.argv) < 2:
 	        print(main.__doc__)
 	        exit()

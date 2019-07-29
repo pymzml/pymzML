@@ -13,16 +13,15 @@ import struct
 import test_file_paths
 
 
-
-
 class StandardGzipTest(unittest.TestCase):
     """"
     """
+
     def setUp(self):
         """
         """
         paths = test_file_paths.paths
-        self.File = StandardGzip(paths[1], 'latin-1')
+        self.File = StandardGzip(paths[1], "latin-1")
 
     def tearDown(self):
         """
@@ -36,12 +35,13 @@ class StandardGzipTest(unittest.TestCase):
         spec = self.File[ID]
         self.assertIsInstance(spec, Spectrum)
         self.assertEqual(spec.ID, ID)
-        
+
     def test_getitem_tic(self):
-        ID = 'TIC'
+        ID = "TIC"
         chrom = self.File[ID]
         self.assertIsInstance(chrom, Chromatogram)
         self.assertEqual(chrom.ID, ID)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)

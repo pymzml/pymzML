@@ -1,6 +1,7 @@
 import unittest
 import struct
 import math
+
 try:
     import numpy as np
 except:
@@ -8,7 +9,8 @@ except:
 
 from pymzml.ms_numpress import MSNumpress
 
-@unittest.skipIf(np is None, 'Numpy is required for this test.')
+
+@unittest.skipIf(np is None, "Numpy is required for this test.")
 class test_MSNumpress(unittest.TestCase):
 
     """
@@ -33,10 +35,10 @@ class test_MSNumpress(unittest.TestCase):
         self.assertEqual(encoded_integer[0], 0x06)
 
     def test_enc_int_leading_ones(self):
-        bytearray(b'\x08\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x07')
-        encoded_integer = self.Decoder._encodeInt((2**31)-1)
+        bytearray(b"\x08\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x07")
+        encoded_integer = self.Decoder._encodeInt((2 ** 31) - 1)
         self.assertEqual(encoded_integer[0], 0x08)
-        self.assertEqual(encoded_integer[1], 0x0f)
+        self.assertEqual(encoded_integer[1], 0x0F)
 
     def test_encodeInt_negative(self):
         """
@@ -44,13 +46,12 @@ class test_MSNumpress(unittest.TestCase):
         negative_integer = -1
         encoded_integer = self.Decoder._encodeInt(negative_integer)
         # print('encoded', encoded_integer)
-        self.assertEqual(encoded_integer[0], 0xf)
-        self.assertEqual(encoded_integer[1], 0xf)
+        self.assertEqual(encoded_integer[0], 0xF)
+        self.assertEqual(encoded_integer[1], 0xF)
 
     def test_encodeInt_0(self):
         encoded_integer = self.Decoder._encodeInt(0)
-        self.assertEqual(
-            len(encoded_integer), 1, msg='{}'.format(encoded_integer))
+        self.assertEqual(len(encoded_integer), 1, msg="{}".format(encoded_integer))
         self.assertEqual(encoded_integer[0], 0x08)
 
     def test_encodeInt_256(self):
@@ -83,19 +84,17 @@ class test_MSNumpress(unittest.TestCase):
 
     def test_dec_int_leading_ones(self):
 
-        encoded_integer = bytearray(b'\x08\n\x03\x04\x01\x05\x03\x07\x07')
+        encoded_integer = bytearray(b"\x08\n\x03\x04\x01\x05\x03\x07\x07")
         decoded_integer = self.Decoder._decodeInt(encoded_integer)
         # print(decoded_integer)
         self.assertEqual(
             decoded_integer,
             1999967290,
-            msg='result: {}\nexpected: {}'.format(
-                decoded_integer, hex(1999967290)
-            )
+            msg="result: {}\nexpected: {}".format(decoded_integer, hex(1999967290)),
         )
 
     def test_dec_int_negative(self):
-        encoded_negative_int = bytearray([0x0f, 0x0f])
+        encoded_negative_int = bytearray([0x0F, 0x0F])
         decoded_negative_int = self.Decoder._decodeInt(encoded_negative_int)
         self.assertEqual(decoded_negative_int, -1)
 
@@ -106,26 +105,36 @@ class test_MSNumpress(unittest.TestCase):
         self.assertEqual(len(encoded_array), 14)
 
         self.assertEqual(encoded_array[0], 0x40)
-        self.assertEqual(encoded_array[1], 0xe3)
-        self.assertEqual(encoded_array[2], 0xe1)
-        self.assertEqual(encoded_array[3], 0xe0)
+        self.assertEqual(encoded_array[1], 0xE3)
+        self.assertEqual(encoded_array[2], 0xE1)
+        self.assertEqual(encoded_array[3], 0xE0)
         self.assertEqual(encoded_array[4], 0x0)
         self.assertEqual(encoded_array[5], 0x0)
         self.assertEqual(encoded_array[6], 0x0)
         self.assertEqual(encoded_array[7], 0x0)
         self.assertEqual(encoded_array[8], 0x40)
-        self.assertEqual(encoded_array[9], 0x6e)
-        self.assertEqual(encoded_array[10], 0xbe)
-        self.assertEqual(encoded_array[11], 0xae)
-        self.assertEqual(encoded_array[12], 0xff)
-        self.assertEqual(encoded_array[13], 0xff)
+        self.assertEqual(encoded_array[9], 0x6E)
+        self.assertEqual(encoded_array[10], 0xBE)
+        self.assertEqual(encoded_array[11], 0xAE)
+        self.assertEqual(encoded_array[12], 0xFF)
+        self.assertEqual(encoded_array[13], 0xFF)
 
     def test_decode_slof(self):
         test_array = [
-            0x40, 0xc3, 0x88, 0x0,
-            0x0, 0x0, 0x0, 0x0,
-            0x13, 0x1b, 0xea, 0x2a,
-            0xde, 0x3e
+            0x40,
+            0xC3,
+            0x88,
+            0x0,
+            0x0,
+            0x0,
+            0x0,
+            0x0,
+            0x13,
+            0x1B,
+            0xEA,
+            0x2A,
+            0xDE,
+            0x3E,
         ]
         test_array = bytearray(test_array)
         self.Decoder.encoded_data = test_array
@@ -148,34 +157,40 @@ class test_MSNumpress(unittest.TestCase):
         encoded_array = self.Decoder.encode_pic()
 
         self.assertEqual(
-            len(encoded_array),
-            14,
-            msg='{}'.format(
-                [hex(x) for x in encoded_array]
-            )
+            len(encoded_array), 14, msg="{}".format([hex(x) for x in encoded_array])
         )
 
         self.assertEqual(encoded_array[0], 0x20)
-        self.assertEqual(encoded_array[1], 0x4b)
-        self.assertEqual(encoded_array[2], 0x4c)
+        self.assertEqual(encoded_array[1], 0x4B)
+        self.assertEqual(encoded_array[2], 0x4C)
         self.assertEqual(encoded_array[3], 0x43)
         self.assertEqual(encoded_array[4], 0x1)
-        self.assertEqual(encoded_array[5], 0xbe)
+        self.assertEqual(encoded_array[5], 0xBE)
         self.assertEqual(encoded_array[6], 0x92)
         self.assertEqual(encoded_array[7], 0x8)
         self.assertEqual(encoded_array[8], 0x48)
-        self.assertEqual(encoded_array[9], 0xe1)
+        self.assertEqual(encoded_array[9], 0xE1)
         self.assertEqual(encoded_array[10], 0x20)
-        self.assertEqual(encoded_array[11], 0xb)
+        self.assertEqual(encoded_array[11], 0xB)
         self.assertEqual(encoded_array[12], 0x17)
-        self.assertEqual(encoded_array[13], 0xb0)
+        self.assertEqual(encoded_array[13], 0xB0)
 
     def test_decode_pic_i_data(self):
         test_array = [
-            0x20, 0x4b, 0x4c, 0x43,
-            0x1, 0xbe, 0x92, 0x8,
-            0x48, 0xe1, 0x20, 0xb,
-            0x17, 0xb0
+            0x20,
+            0x4B,
+            0x4C,
+            0x43,
+            0x1,
+            0xBE,
+            0x92,
+            0x8,
+            0x48,
+            0xE1,
+            0x20,
+            0xB,
+            0x17,
+            0xB0,
         ]
         test_array = bytearray(test_array)
         self.Decoder.encoded_data = test_array
@@ -183,10 +198,7 @@ class test_MSNumpress(unittest.TestCase):
         self.assertCountEqual(
             decoded_array,
             self.i_data,
-            msg='{}\n{}'.format(
-                [x for x in decoded_array],
-                [x for x in self.i_data]
-            )
+            msg="{}\n{}".format([x for x in decoded_array], [x for x in self.i_data]),
         )
 
     def test_encode_decode_pic(self):
@@ -198,10 +210,8 @@ class test_MSNumpress(unittest.TestCase):
         self.assertCountEqual(self.i_slof_data, decoded_array)
 
     def test_encode_decode_fixed_point(self):
-        encoded_fixed_point = self.Decoder._encode_fixed_point(
-            self.fixed_point)
-        decoded_fixed_point = self.Decoder._decode_fixed_point(
-            encoded_fixed_point)
+        encoded_fixed_point = self.Decoder._encode_fixed_point(self.fixed_point)
+        decoded_fixed_point = self.Decoder._decode_fixed_point(encoded_fixed_point)
         self.assertEqual(self.fixed_point, decoded_fixed_point)
 
     # def test_encode_linear(self):
@@ -412,7 +422,7 @@ class test_MSNumpress(unittest.TestCase):
             112.01231,
             112.0141,
             112.01589,
-            112.01768
+            112.01768,
         ]
         self.Decoder.decoded_data = test_array
         self.Decoder.encode_linear()
@@ -422,8 +432,9 @@ class test_MSNumpress(unittest.TestCase):
                 decoded_array[i],
                 test_array[i],
                 places=4,
-                msg='error at pos {0}'.format(i)
+                msg="error at pos {0}".format(i),
             )
+
     def test_encode_decode_self_mz(self):
         self.Decoder.decoded_data = self.mz_data
         self.Decoder.encode_linear()
@@ -433,7 +444,9 @@ class test_MSNumpress(unittest.TestCase):
                 decoded_array[i],
                 self.mz_data[i],
                 places=4,
-                msg='error at pos {0}'.format(i)
+                msg="error at pos {0}".format(i),
             )
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main(verbosity=3)

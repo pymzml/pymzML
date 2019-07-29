@@ -71,7 +71,9 @@ this style in your docstrings
 Other rules and cosiderations
 *****************************
 
-None so far.
+Please focus on contributing mainly source code and refrain from adding large files (e.g. obo files).
+For such files, please contact the pymzML team so they can be committed by our labbot, which allows us
+to keep the overview of code contributions neat and clean.
 
 Merge/pull requests
 *******************

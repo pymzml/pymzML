@@ -125,5 +125,5 @@ Part of pymzml test cases
 #         print(t1, t2)
 #         assert t1 < t2
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=3)
