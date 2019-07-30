@@ -24,15 +24,17 @@ setup(
     python_requires  = '>=3.4.0',
     install_requires = [
         'numpy >= 1.8.0',
-        'regex'
+        'regex',
     ],
     extras_require   = {
         'full': [
             'plotly < 2.0',
             'pynumpress>=0.0.4',
+            'ms_deisotope',
         ],
         'plot': ['plotly < 2.0'],
         'pynumpress': ['pynumpress>=0.0.4'],
+        'deconvolution': ['ms_deisotope'] 
     },
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
