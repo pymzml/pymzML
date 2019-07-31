@@ -29,3 +29,5 @@ deploy:
     tags: true
      # all branches must be set to true, see https://github.com/travis-ci/travis-ci/issues/1675
     all_branches: true
+    skip_existing: true
+    skip_cleanup: true
