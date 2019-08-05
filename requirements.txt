@@ -3,5 +3,5 @@ numpy
 plotly
 pynumpress >= 0.0.4
 regex
-git+https://github.com/mobiusklein/ms_deisotope.git#90263474a0d0afcd3f4b79b732841599a803455e
+ms_deisotope == 0.0.9
 tox
