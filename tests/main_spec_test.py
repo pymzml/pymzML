@@ -473,18 +473,46 @@ class SpectrumTest(unittest.TestCase):
         self.assertIsInstance(tmzs, set)
         self.assertEqual(len(tmzs), 23081)
 
-    # def test_precursosr(self):
-    #     ms2_spec = self.Run[3]
-    #     prec =ms2_spec.precursors
-    #     self.assertIsNotNone(len(prec))
-    #     self.assertIsInstance(prec, list)
-    #     self.assertEqual(prec, ['199'])
-
     def test_TIC(self):
         tic = self.spec.TIC
         self.assertIsNotNone(tic)
         self.assertIsInstance(tic, float)
         self.assertEqual(tic, 9.6721256e07)
+
+    def test_get_name(self):
+        spec = self.Run[6]
+        self.assertEqual(spec["base peak m/z"], 74.09702765)       
+
+    def test_get_ms_tag(self):
+        spec = self.Run[6]
+        self.assertEqual(spec["MS:1000504"], 74.09702765)
+
+    def test_contains(self):
+        spec = self.Run[6]
+        self.assertEqual("MS:1000504" in spec, True) 
+
+    def test_id_dict(self):
+        spec = self.Run[6]
+        id_dict = spec.id_dict
+        "controllerType=0 controllerNumber=1 scan=6"
+        exp_ids = {
+            "controllerType":0,
+            "controllerNumber": 1,
+            "scan": 6,
+        }
+        self.assertEqual(id_dict, exp_ids)
+
+    def test_index_prop(self):
+        spec = self.Run[6]
+        self.assertEqual(spec.index, 5)
+
+    def test_get_default(self):
+        spec = self.Run[6]
+        self.assertEqual(spec.get("MS:BLABLA"), None)
+
+    def test_get_success(self):
+        spec = self.Run[6]
+        self.assertEqual(spec.get("MS:1000504"), 74.09702765)
 
     def test_scan_time(self):
         scan_time, unit = self.spec.scan_time

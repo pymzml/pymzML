@@ -144,37 +144,6 @@ class MS_Spectrum(object):
 
         return return_ele
 
-    def _register(self, decoded_tuple):
-        d_type, array = decoded_tuple
-        if d_type == "mz":
-            self._mz = array
-        elif d_type == "i":
-            self._i = array
-        elif d_type == "time":
-            self._time = array
-        else:
-            raise Exception("Unknown data Type ({0})".format(d_type))
-
-    @property
-    def precursors(self):
-        """
-        List the precursor information of this spectrum, if available.
-
-        Returns:
-            precursor(list): list of precursor ids for this spectrum.
-        """
-        if self._precursors is None:
-            precursors = self.element.findall(
-                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
-            )
-            self._precursors = []
-            for prec in precursors:
-                spec_ref = prec.get("spectrumRef")
-                self._precursors.append(
-                    regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
-                )
-        return self._precursors
-
     def _get_encoding_parameters(self, array_type):
         """
         Find the correct parameter for decoding and return them as tuple.
@@ -1160,16 +1129,6 @@ class Spectrum(MS_Spectrum):
         self.set_peaks(None, "centroided")
         return tmp
 
-    def _register(self, decoded_tuple):
-        d_type, array = decoded_tuple
-        if d_type == "mz":
-            self._mz = array
-        elif d_type == "i":
-            self._i = array
-        elif d_type == "time":
-            self._time = array
-        else:
-            raise Exception("Unknown data Type ({0})".format(d_type))
 
     def _mz_2_mass(self, mz, charge):
         """

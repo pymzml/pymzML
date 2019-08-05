@@ -121,7 +121,7 @@ class StandardMzml(object):
         chromatogram_offset_pattern = re.compile(
             b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset'
         )
-        self.offset_dict["TIC"] = None
+        # self.offset_dict["TIC"] = None
         seeker.seek(0, 2)
         index_found = False
 
@@ -157,7 +157,7 @@ class StandardMzml(object):
                     )
                     # break
 
-            if index_found is True and self.offset_dict["TIC"] is not None:
+            if index_found is True:# and self.offset_dict["TIC"] is not None:
                 break
 
         if index_found is True:

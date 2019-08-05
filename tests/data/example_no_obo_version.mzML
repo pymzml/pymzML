@@ -526,23 +526,5 @@
       </chromatogramList>
     </run>
   </mzML>
-  <indexList count="2">
-    <index name="spectrum">
-      <offset idRef="controllerType=0 controllerNumber=1 scan=1">4026</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=2">16851</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=3">29873</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=4">45699</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=5">60404</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=6">75194</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=7">89360</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=8">103569</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=9">118117</offset>
-      <offset idRef="controllerType=0 controllerNumber=1 scan=10">132417</offset>
-    </index>
-    <index name="chromatogram">
-      <offset idRef="TIC" info="just any number since not existent, ja">132417</offset>
-    </index>
-  </indexList>
-  <indexListOffset>210679</indexListOffset>
   <fileChecksum>MZMLDemoFile</fileChecksum>
 </indexedmzML>
