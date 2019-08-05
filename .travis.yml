@@ -2,9 +2,6 @@ language: python
 python:
 - '3.6'
 sudo: false
-branches:
-  only:
-  - master
 matrix:
   include:
   - python: 3.5
@@ -20,13 +17,15 @@ matrix:
     env: TOXENV=coverage
   - python: 3.6
     env: TOXENV=example_scripts
-script:
-  echo
+script: tox
 deploy:
   provider: pypi
   user: pyratez
   password:
-    secure: HKI1+vjzjYohYeLFC9BmlZGmpG5Y0zbBiwHjTvTI4Uy6g3KrmP+Lkj2Ean+r9LVrzghcLWu7ze4mN+33jR4ke2DLpryFSQCP3+V1GLBuNk4SYfFmE9VKcGhSmPrHWEgClj1BK6jV5Fiun2dqGcj3oCFXMXiqPLuqlzmYh1MtSG3OefRMUAb1jFz2griQYDVa+qmU7LSHj9oCzJqo6NID1pt/V9vXXl2J+F1zY7Ag7dWbcKFbiPT30rIo2BLvPCQl9XjEvOudixbsvaOPAvD9Cdl5xU9BtieHhBJEBhV+oUiT0fuee0hbEW1mVLg/N8vSpbWxbXoSosZoVCVRzYzl1o+33y85zCjdTECPkiTyEVjhJ8HlWWQie5CKFT04jLypA3RgR9ms+SEmx4v49tvuorVZCosJrF5J0JCD29PBu1gKOL0Mpy3ysUf4veytaYhgJMqBldJTk0LHwfR/hCHX+kFQbZPY/Ge5TyA3NXdfSYeJA5tBqVcXAQprKvGJmKcjyEPUhO5JgX/A0kMussyNyvguTE4oW7CSoErSEQcOgwPkej7DhurqLaYI/C6unFpGBT/YBbR6Isv4YOD8KSzyxpJqmTsRgZohn/Wnn5IfeoxqVoVTSdEW/qQ3LJMRMpUvwcDLQGtW/2X3eaXZI54BNO5zdXWniSuxaPHUBBiv2DE=
+    secure: "eBvuZ6jAkLVxwHFRJbagVv80l8ssdMDwwpVpfGFsSuhhLWy49HKxspheCr0Tnd4xvlddG+1BXvrUVSmBHmeclEboM5/ddVBJSRp3WIBuR7Z6JirKdFRizamQH/Z0uisuwJyJ0mj5o6qjJFLz6ri7dXaO0epOGuadlaTyTMeTEEqvUpMA4XP1LQqUMAkAaRoURmuBwH2Y3ocQXPLSNYTu0u5+3LLgf4UZ1ZxX/Bv5abBwHyq0TkPnUVkAu2GJ5xhR9ZHJZY8aA5y08sAE9pC9pwyidiiBgK+kmPCX9Owd47SgLzF4K5f5po2fuBtRC8cA5/lf1ykeKwJCHtzcHBJ6jgmg8WFlmri6/Hda72hDZPVhpzYKYqzGUOdIxgT2TwE3L27aL7jR9y2hXLjnM7KvEWCOD9AbylZz9yoe1r3jV1Y97J5nAp7eG3rrzvZJyhhpyQ0PJ0OEvYYqGSrthP40AnVdUyMtcTFCQoWe4G0oA5Z4it3/VZFWNAFwaRV++HdIWOf522PIbk6AsZYlkxCncVD+8oV9RqaiCpZXV5bLDTAW2spfJt+LDeTxVgMc6+DUS5Lul1DPD4PkPc09NW8vs4rEEutoMzzncKAJZtuRfW5JZcJTixOxYN0Eaqb4NNS9uYgFCERdp5BLwihG2Tyiruc3729OeD4uueU/GsVm7Xs="
   distributions: sdist bdist_wheel bdist_egg
   on:
     tags: true
+    all_branches: true
+    skip_existing: true
+    skip_cleanup: true

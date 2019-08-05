@@ -46,17 +46,17 @@ class FileInterface(object):
             based on the file ending of 'path'
         """
         if isinstance(path_or_file, BytesIO):
-            return bytesMzml.BytesMzml(path_or_file, self.encoding, self.build_index_from_scratch)
-        if path_or_file.endswith('.gz'):
+            return bytesMzml.BytesMzml(
+                path_or_file, self.encoding, self.build_index_from_scratch
+            )
+        if path_or_file.endswith(".gz"):
             if self._indexed_gzip(path_or_file):
                 return indexedGzip.IndexedGzip(path_or_file, self.encoding)
             else:
                 return standardGzip.StandardGzip(path_or_file, self.encoding)
         return standardMzml.StandardMzml(
-                path_or_file,
-                self.encoding,
-                self.build_index_from_scratch,
-            )
+            path_or_file, self.encoding, self.build_index_from_scratch
+        )
 
     def _indexed_gzip(self, path):
         """

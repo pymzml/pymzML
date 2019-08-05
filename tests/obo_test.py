@@ -9,7 +9,7 @@ import os
 import unittest
 import gzip
 
-sys.path.append(os.path.abspath("."))
+
 
 
 class TestOboVersion(unittest.TestCase):

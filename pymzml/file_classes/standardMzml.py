@@ -27,7 +27,7 @@ class StandardMzml(object):
             path (str)     : path to the file
             encoding (str) : encoding of the file
         """
-        self.path         = path
+        self.path = path
         self.file_handler = self.get_file_handler(encoding)
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
@@ -38,14 +38,10 @@ class StandardMzml(object):
             seeker.close()
 
     def get_binary_file_handler(self):
-        return open(self.path, 'rb')
-    
+        return open(self.path, "rb")
+
     def get_file_handler(self, encoding):
-        return codecs.open(
-            self.path,
-            mode     = 'r',
-            encoding = encoding
-        )
+        return codecs.open(self.path, mode="r", encoding=encoding)
 
     def __getitem__(self, identifier):
         """
@@ -313,7 +309,7 @@ class StandardMzml(object):
 
         """
         # print('target ', target_index)
-        seeker          = self.get_binary_file_handler()
+        seeker = self.get_binary_file_handler()
         seeker.seek(0, 2)
         chunk_size = chunk_size * 512
         lower_bound = 0

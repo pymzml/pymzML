@@ -72,13 +72,13 @@ class Reader(object):
     """
 
     def __init__(
-            self,
-            path_or_file,
-            MS_precisions=None,
-            obo_version=None,
-            build_index_from_scratch=False,
-            skip_chromatogram=True,
-            **kwargs
+        self,
+        path_or_file,
+        MS_precisions=None,
+        obo_version=None,
+        build_index_from_scratch=False,
+        skip_chromatogram=True,
+        **kwargs
     ):
         """Initialize and set required attributes."""
         self.build_index_from_scratch = build_index_from_scratch
@@ -95,25 +95,25 @@ class Reader(object):
         self.ms_precisions = {
             0: 0.001,  # arbitrary prec for UV spectra
             1: 5e-6,
-            2: 20e-6
+            2: 20e-6,
         }
         self.ms_precisions.update(MS_precisions)
 
         # File info
         self.info = ddict()
         if isinstance(path_or_file, str):
-            self.info['file_name'] = path_or_file
-            self.info['encoding'] = self._determine_file_encoding(path_or_file)
+            self.info["file_name"] = path_or_file
+            self.info["encoding"] = self._determine_file_encoding(path_or_file)
         else:
-            self.info['encoding'] = self._guess_encoding(path_or_file)
+            self.info["encoding"] = self._guess_encoding(path_or_file)
 
-        self.info['file_object'] = self._open_file(path_or_file)
-        self.info['offset_dict'] = self.info['file_object'].offset_dict
+        self.info["file_object"] = self._open_file(path_or_file)
+        self.info["offset_dict"] = self.info["file_object"].offset_dict
         if obo_version:
-            self.info['obo_version'] = self._obo_version_validator(obo_version)
+            self.info["obo_version"] = self._obo_version_validator(obo_version)
         else:
             # obo version not specified -> try to identify from mzML by self._init_iter
-            self.info['obo_version'] = None
+            self.info["obo_version"] = None
 
         self.iter = self._init_iter()
         self.OT = self._init_obo_translator()
@@ -173,6 +173,9 @@ class Reader(object):
             spectrum (Spectrum or Chromatogram): spectrum/chromatogram object
             with native id 'identifier'
         """
+        # This would not work with truncated files (e.g. our test file :))
+        # if int(identifier) > self.get_spectrum_count():
+        #     raise Exception("Requested identifier is out of range")
         spectrum = self.info["file_object"][identifier]
         spectrum.calling_instance = self
         if isinstance(spectrum, spec.Spectrum):
@@ -197,8 +200,8 @@ class Reader(object):
         """
         return FileInterface(
             path_or_file,
-            self.info['encoding'],
-            build_index_from_scratch=self.build_index_from_scratch
+            self.info["encoding"],
+            build_index_from_scratch=self.build_index_from_scratch,
         )
 
     def _guess_encoding(self, mzml_file):
@@ -213,9 +216,9 @@ class Reader(object):
         """
         match = regex_patterns.FILE_ENCODING_PATTERN.search(mzml_file.readline())
         if match:
-            return bytes.decode(match.group('encoding'))
+            return bytes.decode(match.group("encoding"))
         else:
-            return 'utf-8'
+            return "utf-8"
 
     def _determine_file_encoding(self, path):
         """
@@ -229,12 +232,13 @@ class Reader(object):
         """
         if os.path.exists(path):
             print(path)
-            if path.endswith('.gz') or path.endswith('.igz'):
+            if path.endswith(".gz") or path.endswith(".igz"):
                 import gzip
+
                 _open = gzip.open
             else:
                 _open = open
-            with _open(path, 'rb') as sniffer:
+            with _open(path, "rb") as sniffer:
                 return self._guess_encoding(sniffer)
 
     @staticmethod
@@ -253,12 +257,17 @@ class Reader(object):
         Returns:
             version_fixed (str): The checked obo version.
         """
-        obo_rgx = re.compile(r'(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?')
-        obo_years_rgx = re.compile(r'20\d\d')
+        obo_rgx = re.compile(r"(\d\.\d{1,2}\.\d{1,2})(_[rR][cC]\d{0,2})?")
+        obo_years_rgx = re.compile(r"20\d\d")
         obo_year_version_dct = {
-            2012: '3.40.0', 2013: '3.50.0', 2014: '3.60.0',
-            2015: '3.75.0', 2016: '4.0.1', 2017: '4.1.0',
-            2018: '4.1.10', 2019: '4.1.22',
+            2012: "3.40.0",
+            2013: "3.50.0",
+            2014: "3.60.0",
+            2015: "3.75.0",
+            2016: "4.0.1",
+            2017: "4.1.0",
+            2018: "4.1.10",
+            2019: "4.1.22",
         }
         version_fixed = None
         if obo_rgx.match(version):
@@ -268,7 +277,7 @@ class Reader(object):
                 years_found = obo_years_rgx.search(version)
                 if years_found:
                     try:
-                        year = int(years_found.group())
+                        year = int(years_found.group(0))
                     except ValueError:
                         year = 2000
 
@@ -276,21 +285,22 @@ class Reader(object):
                         version_fixed = obo_year_version_dct[year]
                     else:
                         if year > 2019:
-                            version_fixed = '4.1.0'
+                            version_fixed = "4.1.0"
 
         if version_fixed:
             # Check if the corresponding obo file existed in obo folder
             obo_root = os.path.dirname(__file__)
             obo_file = os.path.join(
-                obo_root, 'obo',
-                'psi-ms{0}.obo'.format('-' + version_fixed if version_fixed else '')
+                obo_root,
+                "obo",
+                "psi-ms{0}.obo".format("-" + version_fixed if version_fixed else ""),
             )
-            if os.path.exists(obo_file) or os.path.exists(obo_file + '.gz'):
+            if os.path.exists(obo_file) or os.path.exists(obo_file + ".gz"):
                 pass
             else:
-                version_fixed = '1.1.0'
+                version_fixed = "1.1.0"
         else:
-            version_fixed = '1.1.0'
+            version_fixed = "1.1.0"
 
         return version_fixed
 
@@ -333,20 +343,23 @@ class Reader(object):
                     s = element.attrib[
                         "{http://www.w3.org/2001/XMLSchema-instance}" "schemaLocation"
                     ]
-                    self.info['mzml_version'] = re.search(
-                        r'[0-9]*\.[0-9]*\.[0-9]*', s).group()
-            elif element.tag.endswith('}cv'):
-                if not self.info['obo_version'] \
-                        and element.attrib.get('id', None) == 'MS':
-                    obo_in_mzml = element.attrib.get('version', '1.1.0')
-                    self.info['obo_version'] = self._obo_version_validator(obo_in_mzml)
+                    self.info["mzml_version"] = re.search(
+                        r"[0-9]*\.[0-9]*\.[0-9]*", s
+                    ).group()
+            elif element.tag.endswith("}cv"):
+                if (
+                    not self.info["obo_version"]
+                    and element.attrib.get("id", None) == "MS"
+                ):
+                    obo_in_mzml = element.attrib.get("version", "1.1.0")
+                    self.info["obo_version"] = self._obo_version_validator(obo_in_mzml)
 
-            elif element.tag.endswith('}referenceableParamGroupList'):
-                self.info['referenceable_param_group_list'] = True
-                self.info['referenceable_param_group_list_element'] = element
-            elif element.tag.endswith('}spectrumList'):
-                spec_cnt = element.attrib.get('count')
-                self.info['spectrum_count'] = int(spec_cnt) if spec_cnt else None
+            elif element.tag.endswith("}referenceableParamGroupList"):
+                self.info["referenceable_param_group_list"] = True
+                self.info["referenceable_param_group_list_element"] = element
+            elif element.tag.endswith("}spectrumList"):
+                spec_cnt = element.attrib.get("count")
+                self.info["spectrum_count"] = int(spec_cnt) if spec_cnt else None
                 break
             elif element.tag.endswith("}chromatogramList"):
                 chrom_cnt = element.attrib.get("count", None)

@@ -482,8 +482,6 @@ class Factory(object):
             {
                 "x": x_values,
                 "y": y_values,
-                # "xaxis": {"range": mz_range, "autorange": False},
-                # "yaxis": {"range": int_range, "autorange": False},
                 "text": txt,
                 "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
                 "textposition": "top center",
