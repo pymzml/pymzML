@@ -32,10 +32,7 @@ class StandardMzml(object):
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
-        if build_index_from_scratch is True:
-            seeker = self.get_binary_file_handler()
-            self._build_index_from_scratch(seeker)
-            seeker.close()
+        self._build_index(from_scratch=build_index_from_scratch)
 
     def get_binary_file_handler(self):
         return open(self.path, "rb")
@@ -80,7 +77,6 @@ class StandardMzml(object):
                     raise StopIteration
 
         elif identifier in self.offset_dict:
-
             start = self.offset_dict[identifier]
             with self.get_binary_file_handler() as seeker:
                 seeker.seek(start[0])
@@ -195,6 +191,9 @@ class StandardMzml(object):
                         # so use the whole string as ID
                         pass
                     self.offset_dict[native_id] = (offset,)
+        elif from_scratch:
+            print('No index found, building from scratch')
+            self._build_index_from_scratch(seeker)
         seeker.close()
 
     def _build_index_from_scratch(self, seeker):
@@ -242,7 +241,15 @@ class StandardMzml(object):
                 for m in chromexp.finditer(chunk):
                     chrom_positions[m.group(1).decode("utf-8")] = offset + m.start()
                 for m in specexp.finditer(chunk):
-                    spec_positions[m.group(1).decode("utf-8")] = offset + m.start()
+                    id_match = regex_patterns.SPECTRUM_PATTERN3.match(m.group(1).decode('utf-8'))
+                    if id_match:
+                        ids = {
+                            kv.split("=")[0]: kv.split("=")[1]
+                            for kv in id_match.captures(1)
+                        }
+                        spec_positions[int(ids["scan"])] = offset + m.start()
+                    else:
+                        spec_positions[m.group(1).decode("utf-8")] = offset + m.start()
 
                 # also look for the total count of chromatograms and spectra
                 # -> must be the same as the content of our dict!
@@ -424,7 +431,7 @@ class StandardMzml(object):
         chunk_size = 512 * chunks_to_read
         end_found = False
         start_pos = seeker.tell()
-        data_chunk = seeker.read(chunk_size)
+        # data_chunk = seeker.read(chunk_size)
         while end_found is False:
             chunk_offset = seeker.tell()
             data_chunk = seeker.read(chunk_size)
