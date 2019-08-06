@@ -367,9 +367,7 @@ class Reader(object):
                 break
             elif element.tag.endswith("}chromatogramList"):
                 chrom_cnt = element.attrib.get("count", None)
-                if chrom_cnt is None:
-                    self.info["chromatogram_count"] = None
-                else:
+                if chrom_cnt:
                     self.info["chromatogram_count"] = int(chrom_cnt)
                 break
             elif element.tag.endswith("}run"):
