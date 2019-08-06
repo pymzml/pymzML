@@ -58,7 +58,7 @@ except ImportError:
     print('[Warning] ms_deisotope is not installed, spectrum deconvolution is not possible.')
     print('To enable deconvolution, please use pip install ms_deisotope.')
 from . import regex_patterns
-from .decoder import MSDecoder
+# from .decoder import MSDecoder
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002

@@ -31,7 +31,7 @@ with open(version_path, "r") as version_file:
 # Imports of individual modules
 import pymzml.run
 import pymzml.spec
-from pymzml.spec import MSDecoder
+# from pymzml.spec import MSDecoder
 import pymzml.obo
 import pymzml.plot
 import pymzml.utils
