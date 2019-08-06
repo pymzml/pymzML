@@ -3,4 +3,4 @@ numpy
 plotly
 pynumpress >= 0.0.4
 regex
-tox
+ms_deisotope == 0.0.9

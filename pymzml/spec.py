@@ -49,7 +49,14 @@ from operator import itemgetter as itemgetter
 from struct import unpack
 
 import numpy as np
-
+try:
+    DECON_DEP = True
+    from ms_deisotope.deconvolution import deconvolute_peaks
+    from ms_peak_picker import simple_peak
+except ImportError:
+    DECON_DEP = True
+    print('[Warning] ms_deisotope is not installed, spectrum deconvolution is not possible.')
+    print('To enable deconvolution, please use pip install ms_deisotope.')
 from . import regex_patterns
 from .decoder import MSDecoder
 
@@ -1018,6 +1025,21 @@ class Spectrum(MS_Spectrum):
             peaks.sort(key=itemgetter(0))
         return peaks
 
+    def _deconvolute_peaks(self, *args, **kwargs):
+        if DECON_DEP:
+            peaks = self.peaks("centroided")
+            # pack peak matrix into expected structure
+            peaks = [simple_peak(p[0], p[1], 0.01) for p in peaks]
+            decon_result = deconvolute_peaks(peaks, *args, **kwargs)
+            dpeaks = decon_result.peak_set
+            # pack deconvoluted peak list into matrix structure
+            dpeaks_mat = np.zeros((len(dpeaks), 3), dtype=float)
+            for i, dp in enumerate(dpeaks):
+                dpeaks_mat[i, :] = dp.neutral_mass, dp.intensity, dp.charge
+            return dpeaks_mat
+        else:
+            print('ms_deisotope is missing, please install using pip install ms_deisotope')
+
     def set_peaks(self, peaks, peak_type):
         """
         Assign a custom peak array of type peak_type
@@ -1045,6 +1067,10 @@ class Spectrum(MS_Spectrum):
                 self._peak_dict["reprofiled"] = peaks
             except TypeError:
                 self._peak_dict["reprofiled"] = None
+        elif peak_type == "deconvoluted":
+            self._peak_dict["deconvoluted"] = peaks
+            self._mz = self.peaks("raw")[:, 0]
+            self._i = self.peaks("raw")[:, 1]
         else:
             raise Exception(
                 "Peak type is not suppported\n"
