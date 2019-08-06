@@ -187,13 +187,19 @@ class runTest(unittest.TestCase):
 
     def test_get_spec_count(self):
         self.assertEqual(self.reader_compressed_indexed.get_spectrum_count(), 2918)
-        # self.assertEqual(self.reader_compressed_indexed.getChromatogramCount(), 1) # Failing
         self.assertEqual(self.reader_compressed_unindexed.get_spectrum_count(), 2918)
-        # self.assertEqual(self.reader_compressed_unindexed.getChromatogramCount, 1) # Failing
         self.assertEqual(self.reader_uncompressed_unindexed.get_spectrum_count(), 2918)
-        # self.assertEqual(self.reader_uncompressed_unindexed.getChromatogramCount(), 1) # Failing
         self.assertEqual(self.reader_uncompressed_unindexed.get_spectrum_count(), 2918)
-        # self.assertEqual(self.reader_uncompressed_ununindexed.getChromatogramCount(), 1) # Failing
+
+    def test_get_chrom_count_chrom_file(self):
+        reader = run.Reader(self.paths[3])
+        self.assertEqual(reader.get_chromatogram_count(), 3)
+
+    def test_get_chrom_count_chrom_file(self):
+        reader = run.Reader(self.paths[1])
+        # should stop after spectrum list to avoid parsing whole file just to get chrom count
+        self.assertEqual(reader.get_chromatogram_count(), None)
+
 
     def test_readers_remeber_spawned_spectra(self):
         """
