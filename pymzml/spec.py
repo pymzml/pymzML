@@ -54,9 +54,7 @@ try:
     from ms_deisotope.deconvolution import deconvolute_peaks
     from ms_peak_picker import simple_peak
 except ImportError:
-    DECON_DEP = True
-    print('[Warning] ms_deisotope is not installed, spectrum deconvolution is not possible.')
-    print('To enable deconvolution, please use pip install ms_deisotope.')
+    pass
 from . import regex_patterns
 from .decoder import MSDecoder
 
@@ -457,6 +455,7 @@ class Spectrum(MS_Spectrum):
 
         self._decode = self._decode_to_numpy
         self._array = np.array
+        self._ms_deisotop_warning_printed = False
 
     def __del__(self):
         """
@@ -1038,7 +1037,9 @@ class Spectrum(MS_Spectrum):
                 dpeaks_mat[i, :] = dp.neutral_mass, dp.intensity, dp.charge
             return dpeaks_mat
         else:
-            print('ms_deisotope is missing, please install using pip install ms_deisotope')
+            if self._ms_deisotop_warning_printed is False:
+                print('ms_deisotope is missing, please install using pip install ms_deisotope')
+                self._ms_deisotop_warning_printed = True
 
     def set_peaks(self, peaks, peak_type):
         """
