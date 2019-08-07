@@ -11,4 +11,4 @@ repos:
     hooks:
     - id: black
       language_version: python
-      exclude: ^docs/, ^tests/
+      exclude: ^docs/

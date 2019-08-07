@@ -8,3 +8,4 @@ codecov
 pytest
 tox
 regex
+pre-commit==1.18.0
