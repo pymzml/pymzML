@@ -37,13 +37,14 @@ Since this a collaborative project, you will encounter different coding styles.
 Despite the fact that we know that diversity is beautiful, we need to keep some
 common line on how to code (This list may be further extended). We generally use
 PEP8 style (https://www.python.org/dev/peps/pep-0008/) with the exception of
-E203 (whitespaces before : in order to align values in dicts). Additionally 
+E203 (whitespaces before : in order to align values in dicts). Additionally
 this list will give you some things to think about:
 
   | Re-think naming of variables at least twice
   | Re-check deleting of own debug code before sending Pull requests
   | Re-check own files created by nosetests and add it into '.gitignore' before sending Pull requests
-  
+  | install pre-commit and use the pre-commit and pre-push hook
+
 ---
 **NOTE**
 

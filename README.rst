@@ -146,7 +146,7 @@ Testing
 
 To test the package and correct installation::
 
-    nosetests tests/*.py
+    tox
 
 
 *************
