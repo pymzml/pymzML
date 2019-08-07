@@ -49,6 +49,7 @@ from operator import itemgetter as itemgetter
 from struct import unpack
 
 import numpy as np
+
 try:
     DECON_DEP = True
     from ms_deisotope.deconvolution import deconvolute_peaks
@@ -561,19 +562,22 @@ class Spectrum(MS_Spectrum):
         for mz, i in self.peaks("reprofiled"):
             self._peak_dict["reprofiled"][mz] /= float(value)
         if self._peak_dict["raw"] is not None:
-            if len(self._peak_dict['raw']) != 0:
+            if len(self._peak_dict["raw"]) != 0:
                 self.set_peaks(
                     np.column_stack(
-                        (self.peaks("raw")[:, 0], self.peaks("raw")[:, 1] / float(value))
+                        (
+                            self.peaks("raw")[:, 0],
+                            self.peaks("raw")[:, 1] / float(value),
+                        )
                     ),
                     "raw",
                 )
         if self._peak_dict["centroided"] is not None:
-            peaks = self._peak_dict['centroided']
-            scaled_peaks = peaks[:,1] / value
-            peaks[:,1] = scaled_peaks
+            peaks = self._peak_dict["centroided"]
+            scaled_peaks = peaks[:, 1] / value
+            peaks[:, 1] = scaled_peaks
             # self.set_peaks(peaks, "centroided")
-            self._peak_dict['centroided'] = peaks
+            self._peak_dict["centroided"] = peaks
         return self
 
     def __div__(self, value):
@@ -1038,7 +1042,9 @@ class Spectrum(MS_Spectrum):
             return dpeaks_mat
         else:
             if self._ms_deisotop_warning_printed is False:
-                print('ms_deisotope is missing, please install using pip install ms_deisotope')
+                print(
+                    "ms_deisotope is missing, please install using pip install ms_deisotope"
+                )
                 self._ms_deisotop_warning_printed = True
 
     def set_peaks(self, peaks, peak_type):
@@ -1197,7 +1203,7 @@ class Spectrum(MS_Spectrum):
 
     # Public functions
 
-    def reduce(self, mz_range=(None, None)):
+    def reduce(self, peak_type="raw", mz_range=(None, None)):
         """
         Remove all m/z values outside the given range.
 
@@ -1207,20 +1213,12 @@ class Spectrum(MS_Spectrum):
         Returns:
             peaks (list): list of mz, i tuples in the given range.
         """
-        assert isinstance(
-            mz_range, tuple
-        ), "Require tuple of (min,max) mz range to reduce spectrum"
-        if mz_range != (None, None):
-            tmp_peaks = []
-            for mz, i in self.peaks("raw"):
-                if mz < mz_range[0]:
-                    continue
-                elif mz > mz_range[1]:
-                    break
-                else:
-                    tmp_peaks.append((mz, i))
-            self.set_peaks(tmp_peaks, "raw")
-        return self.peaks("raw")
+        arr = self.peaks(peak_type)
+        peaks = arr[
+            np.where(np.logical_and(arr[:, 0] >= mz_range[0], arr[:, 0] <= mz_range[1]))
+        ]
+        self.set_peaks(peaks, peak_type)
+        return peaks
 
     def remove_noise(self, mode="median", noise_level=None):
         """
@@ -1243,12 +1241,12 @@ class Spectrum(MS_Spectrum):
         if noise_level is None:
             noise_level = self.estimated_noise_level(mode=mode)
         if self._peak_dict["centroided"] is not None:
-            self._peak_dict["centroided"] = [
-                (mz, i) for mz, i in self.peaks("centroided") if i >= noise_level
+            self._peak_dict["centroided"] = self.peaks("centroided")[
+                self.peaks("centroided")[:, 1] >= noise_level
             ]
         if self._peak_dict["raw"] is not None:
-            self._peak_dict["raw"] = [
-                (mz, i) for mz, i in self.peaks("raw") if i >= noise_level
+            self._peak_dict["raw"] = self.peaks("raw")[
+                self.peaks("raw")[:, 1] >= noise_level
             ]
         self._peak_dict["reprofiled"] = None
         return self
@@ -1274,17 +1272,17 @@ class Spectrum(MS_Spectrum):
         self.noise_level_estimate = {}
         if mode not in self.noise_level_estimate.keys():
             if mode == "median":
-                self.noise_level_estimate["median"] = self._median(
-                    [i for mz, i in self.peaks("centroided")]
+                self.noise_level_estimate["median"] = np.median(
+                    self.peaks("centroided")[:, 1]
                 )
             elif mode == "mad":
                 median = self.estimated_noise_level(mode="median")
-                self.noise_level_estimate["mad"] = self._median(
-                    sorted([abs(i - median) for mz, i in self.peaks("centroided")])
+                self.noise_level_estimate["mad"] = np.median(
+                    abs(self.peaks("centroided")[:, 1] - median)
                 )
             elif mode == "mean":
                 self.noise_level_estimate["mean"] = sum(
-                    [i for mz, i in self.peaks("centroided")]
+                    self.peaks("centroided")[:, 1]
                 ) / float(len(self.peaks("centroided")))
             else:
                 print(
@@ -1322,9 +1320,9 @@ class Spectrum(MS_Spectrum):
 
         """
         if self._centroided_peaks_sorted_by_i is None:
-            self._centroided_peaks_sorted_by_i = sorted(
-                self.peaks("centroided"), key=itemgetter(1)
-            )
+            self._centroided_peaks_sorted_by_i = self.peaks("centroided")[
+                self.peaks("centroided")[:, 1].argsort()
+            ]
         return self._centroided_peaks_sorted_by_i[-n:]
 
     def ppm2abs(self, value, ppm_value, direction=1, factor=1):
@@ -1374,9 +1372,16 @@ class Spectrum(MS_Spectrum):
             if key == "mz":
                 all_mz_values = [mz for mz, i in self.peaks("raw")]
                 self._extreme_values["mz"] = (min(all_mz_values), max(all_mz_values))
+                self._extreme_values["mz"] = (
+                    min(self.peaks("raw")[:, 0]),
+                    max(self.peaks("raw")[:, 0]),
+                )
             else:
                 all_i_values = [i for mz, i in self.peaks("raw")]
-                self._extreme_values["i"] = (min(all_i_values), max(all_i_values))
+                self._extreme_values["i"] = (
+                    min(self.peaks("raw")[:, 1]),
+                    max(self.peaks("raw")[:, 1]),
+                )
         except ValueError:
             # emtpy spectrum
             self._extreme_values[key] = ()
