@@ -49,6 +49,7 @@ from operator import itemgetter as itemgetter
 from struct import unpack
 
 import numpy as np
+
 try:
     DECON_DEP = True
     from ms_deisotope.deconvolution import deconvolute_peaks
@@ -561,19 +562,22 @@ class Spectrum(MS_Spectrum):
         for mz, i in self.peaks("reprofiled"):
             self._peak_dict["reprofiled"][mz] /= float(value)
         if self._peak_dict["raw"] is not None:
-            if len(self._peak_dict['raw']) != 0:
+            if len(self._peak_dict["raw"]) != 0:
                 self.set_peaks(
                     np.column_stack(
-                        (self.peaks("raw")[:, 0], self.peaks("raw")[:, 1] / float(value))
+                        (
+                            self.peaks("raw")[:, 0],
+                            self.peaks("raw")[:, 1] / float(value),
+                        )
                     ),
                     "raw",
                 )
         if self._peak_dict["centroided"] is not None:
-            peaks = self._peak_dict['centroided']
-            scaled_peaks = peaks[:,1] / value
-            peaks[:,1] = scaled_peaks
+            peaks = self._peak_dict["centroided"]
+            scaled_peaks = peaks[:, 1] / value
+            peaks[:, 1] = scaled_peaks
             # self.set_peaks(peaks, "centroided")
-            self._peak_dict['centroided'] = peaks
+            self._peak_dict["centroided"] = peaks
         return self
 
     def __div__(self, value):
@@ -1038,7 +1042,9 @@ class Spectrum(MS_Spectrum):
             return dpeaks_mat
         else:
             if self._ms_deisotop_warning_printed is False:
-                print('ms_deisotope is missing, please install using pip install ms_deisotope')
+                print(
+                    "ms_deisotope is missing, please install using pip install ms_deisotope"
+                )
                 self._ms_deisotop_warning_printed = True
 
     def set_peaks(self, peaks, peak_type):
@@ -1092,9 +1098,9 @@ class Spectrum(MS_Spectrum):
                 ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
             )
         except (TypeError, AttributeError) as e:
-            is_profile = False
+            is_profile = None
 
-        if is_profile or self.reprofiled:  # check if spec is a profile spec
+        if is_profile is not None or self.reprofiled:  # check if spec is a profile spec
             tmp = []
             if self._peak_dict["reprofiled"] is not None:
                 i_array = [i for mz, i in self.peaks("reprofiled")]
