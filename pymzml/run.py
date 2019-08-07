@@ -336,6 +336,8 @@ class Reader(object):
             ElementTree.iterparse(self.info["file_object"], events=("end", "start"))
         )  # NOTE: end might be sufficient
         _, self.root = next(mzml_iter)
+        self.info["chromatogram_count"] = None
+        self.info["spectrum_count"] = None
         while True:
             event, element = next(mzml_iter, ("END", "END"))
             if element.tag.endswith("}mzML"):
@@ -365,9 +367,7 @@ class Reader(object):
                 break
             elif element.tag.endswith("}chromatogramList"):
                 chrom_cnt = element.attrib.get("count", None)
-                if chrom_cnt is None:
-                    self.info["chromatogram_count"] = None
-                else:
+                if chrom_cnt:
                     self.info["chromatogram_count"] = int(chrom_cnt)
                 break
             elif element.tag.endswith("}run"):
