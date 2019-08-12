@@ -559,8 +559,9 @@ class Spectrum(MS_Spectrum):
             self (spec.Spectrum): returns self after intensities were scaled
                 by value.
         """
-        for mz, i in self.peaks("reprofiled"):
-            self._peak_dict["reprofiled"][mz] /= float(value)
+        if self._peak_dict["reprofiled"] is not None:
+            for mz, i in self.peaks("reprofiled"):
+                self._peak_dict["reprofiled"][mz] /= float(value)
         if self._peak_dict["raw"] is not None:
             if len(self._peak_dict["raw"]) != 0:
                 self.set_peaks(
@@ -576,7 +577,6 @@ class Spectrum(MS_Spectrum):
             peaks = self._peak_dict["centroided"]
             scaled_peaks = peaks[:, 1] / value
             peaks[:, 1] = scaled_peaks
-            # self.set_peaks(peaks, "centroided")
             self._peak_dict["centroided"] = peaks
         return self
 
@@ -987,7 +987,7 @@ class Spectrum(MS_Spectrum):
 
     @i.setter
     def i(self, intensity_list):
-        self._i = np.array(intensity_list)
+        self._i = intensity_list
 
     def peaks(self, peak_type):
         """
@@ -1061,14 +1061,24 @@ class Spectrum(MS_Spectrum):
             # if not isinstance(peaks, np.ndarray):
             #     peaks = np.array(peaks)
             self._peak_dict["raw"] = peaks
-            self._mz = [mz for mz, i in self.peaks("raw")]
-            self._i = [i for mz, i in self.peaks("raw")]
+            try:
+                self._mz = self.peaks("raw")[:, 0]
+                self._i = self.peaks("raw")[:, 1]
+            except IndexError:
+                self._mz = np.array([])
+                self._i = np.array([])
+
         elif peak_type == "centroided":
             # if not isinstance(peaks, np.ndarray):
             #     peaks = np.array(peaks)
             self._peak_dict["centroided"] = peaks
-            self._mz = [mz for mz, i in self.peaks("raw")]
-            self._i = [i for mz, i in self.peaks("raw")]
+            try:
+                self._mz = self.peaks("raw")[:, 0]
+                self._i = self.peaks("raw")[:, 1]
+            except IndexError:
+                self._mz = np.array([])
+                self._i = np.array([])
+
         elif peak_type == "reprofiled":
             try:
                 self._peak_dict["reprofiled"] = peaks
@@ -1076,8 +1086,11 @@ class Spectrum(MS_Spectrum):
                 self._peak_dict["reprofiled"] = None
         elif peak_type == "deconvoluted":
             self._peak_dict["deconvoluted"] = peaks
-            self._mz = self.peaks("raw")[:, 0]
-            self._i = self.peaks("raw")[:, 1]
+            try:
+                self._mz = self.peaks("raw")[:, 0]
+                self._i = self.peaks("raw")[:, 1]
+            except IndexError:
+                self._mz = np.array([])
         else:
             raise Exception(
                 "Peak type is not suppported\n"
@@ -1237,7 +1250,7 @@ class Spectrum(MS_Spectrum):
         """
         # Thanks to JD Hogan for pointing it out!
         callPeaks = self.peaks("raw")
-        callcentPeaks = self.peaks("centroided")
+        # callcentPeaks = self.peaks("centroided")
         if noise_level is None:
             noise_level = self.estimated_noise_level(mode=mode)
         if self._peak_dict["centroided"] is not None:
