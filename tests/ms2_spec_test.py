@@ -14,7 +14,7 @@ class SpectrumMS2Test(unittest.TestCase):
     """
         BSA test file
 
-    Peptide @ 
+    Peptide @
     Scan: 2548
     RT [min] 28.96722412109367
     Selected_precursor [(443.711242675781, 0.0)]
@@ -59,6 +59,21 @@ class SpectrumMS2Test(unittest.TestCase):
         self.assertEqual(decon[0][0], decon_mz)
         self.assertEqual(decon[0][1], 149)  # 149 since itensities are 100 and 49
         self.assertEqual(decon[0][2], 3)
+
+    def test_remove_precursor_peak(self):
+        # breakpoint()
+        # breakpoint()
+        test_mz = 443.71124268  # precursor peak
+        self.spec.set_peaks(np.array([(test_mz, 200)]), "centroided")
+        self.spec.set_peaks(np.array([(test_mz, 200)]), "raw")
+        print(self.spec.peaks("raw"))
+        print(self.spec.peaks("centroided"))
+        assert self.spec.has_peak(test_mz)
+        self.spec._transformed_mz_with_error = None
+        new_peaks = self.spec.remove_precursor_peak()
+        print(new_peaks)
+        found_peaks = self.spec.has_peak(test_mz)
+        assert len(found_peaks) == 0
 
 
 if __name__ == "__main__":

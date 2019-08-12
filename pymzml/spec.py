@@ -943,6 +943,18 @@ class Spectrum(MS_Spectrum):
 
         return self._selected_precursors
 
+    def remove_precursor_peak(self):
+        peaks = self.peaks("centroided")
+        for precursor in self.selected_precursors:
+            mz = precursor["mz"]
+            hp = self.has_peak(mz)
+            if hp:
+                for p in hp:
+                    peaks = peaks[(peaks[:, 0] != p[0])]
+        self.set_peaks(peaks, "centroided")
+        self.set_peaks(peaks, "raw")
+        return peaks
+
     @property
     def mz(self):
         """
@@ -1057,6 +1069,9 @@ class Spectrum(MS_Spectrum):
 
         """
         peak_type = peak_type.lower()
+        # reset after changing peaks
+        self._transformed_mass_with_error = None
+        self._transformed_mz_with_error = None
         if peak_type == "raw":
             # if not isinstance(peaks, np.ndarray):
             #     peaks = np.array(peaks)
