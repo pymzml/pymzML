@@ -1398,17 +1398,17 @@ class Spectrum(MS_Spectrum):
             self._extreme_values = {}
         try:
             if key == "mz":
-                all_mz_values = [mz for mz, i in self.peaks("raw")]
-                self._extreme_values["mz"] = (min(all_mz_values), max(all_mz_values))
+                all_mz_values = self.peaks("raw")[:, 0]
+                self._extreme_values["mz"] = (all_mz_values.min(), all_mz_values.max())
                 self._extreme_values["mz"] = (
-                    min(self.peaks("raw")[:, 0]),
-                    max(self.peaks("raw")[:, 0]),
+                    self.peaks("raw")[:, 0].min(),
+                    self.peaks("raw")[:, 0].max(),
                 )
             else:
-                all_i_values = [i for mz, i in self.peaks("raw")]
+                all_i_values = self.peaks("raw")[:, 1]
                 self._extreme_values["i"] = (
-                    min(self.peaks("raw")[:, 1]),
-                    max(self.peaks("raw")[:, 1]),
+                    self.peaks("raw")[:, 1].min(),
+                    self.peaks("raw")[:, 1].max(),
                 )
         except ValueError:
             # emtpy spectrum
