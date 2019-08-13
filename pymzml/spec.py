@@ -1126,9 +1126,9 @@ class Spectrum(MS_Spectrum):
                 ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
             )
         except (TypeError, AttributeError) as e:
-            is_profile = False
+            is_profile = None
 
-        if is_profile or self.reprofiled:  # check if spec is a profile spec
+        if is_profile is not None or self.reprofiled:  # check if spec is a profile spec
             tmp = []
             if self._peak_dict["reprofiled"] is not None:
                 i_array = [i for mz, i in self.peaks("reprofiled")]
