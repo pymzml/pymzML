@@ -66,12 +66,9 @@ class SpectrumMS2Test(unittest.TestCase):
         test_mz = 443.71124268  # precursor peak
         self.spec.set_peaks(np.array([(test_mz, 200)]), "centroided")
         self.spec.set_peaks(np.array([(test_mz, 200)]), "raw")
-        print(self.spec.peaks("raw"))
-        print(self.spec.peaks("centroided"))
         assert self.spec.has_peak(test_mz)
         self.spec._transformed_mz_with_error = None
         new_peaks = self.spec.remove_precursor_peak()
-        print(new_peaks)
         found_peaks = self.spec.has_peak(test_mz)
         assert len(found_peaks) == 0
 
