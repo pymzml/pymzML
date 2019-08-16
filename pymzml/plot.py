@@ -488,18 +488,33 @@ class Factory(object):
                 "visible": True,
                 "marker": {
                     "size": 10,
-                    "color": "rgba" + str((color[0], color[1], color[2], opacity)),
+                    "color": "rgba({0},{1},{2},{3})".format(
+                        color[0],
+                        color[1],
+                        color[2],
+                        opacity
+                    ),
                 },
                 "mode": mode,
                 "name": name,
                 "line": {
-                    "color": "rgba" + str((color[0], color[1], color[2], opacity)),
+                    "color": "rgba({0},{1},{2},{3})".format(
+                        color[0],
+                        color[1],
+                        color[2],
+                        opacity
+                    ),
                     "width": self.style_options["line.width"],
                     "shape": shape,
                     "dash": dash,
                 },
                 "fill": filling,
-                "fillcolor": "rgba" + str((color[0], color[1], color[2], opacity)),
+                "fillcolor": "rgba({0},{1},{2},{3})".format(
+                    color[0],
+                    color[1],
+                    color[2],
+                    opacity
+                ),
                 "opacity": opacity,
             }
         )

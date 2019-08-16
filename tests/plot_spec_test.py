@@ -173,7 +173,7 @@ class PlotTest(unittest.TestCase):
 
             self.assertEqual(
                 self.pf.plots[plotnumber][-1]["line"]["color"],
-                "rgba({0}, {1}, {2}, {3})".format(
+                "rgba({0},{1},{2},{3})".format(
                     color[0], color[1], color[2], opacity
                 ),
             )
