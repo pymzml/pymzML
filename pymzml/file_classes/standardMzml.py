@@ -43,8 +43,8 @@ class StandardMzml(object):
     def get_file_handler(self, encoding):
         try:
             from django.core.files.uploadedfile import UploadedFile
-            if isinstance(mzml_file, UploadedFile):
-                return
+            if isinstance(self.path, UploadedFile):
+                return self.path
         except ImportError:
             pass
         return codecs.open(self.path, mode="r", encoding=encoding)
