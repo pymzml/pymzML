@@ -49,6 +49,16 @@ class FileInterface(object):
             return bytesMzml.BytesMzml(
                 path_or_file, self.encoding, self.build_index_from_scratch
             )
+
+        try: 
+            from django.core.files.uploadedfile import UploadedFile
+            if isinstance(path_or_file, UploadedFile):
+                return standardMzml.StandardMzml(
+                    path_or_file, self.encoding, self.build_index_from_scratch
+                )
+        except ImportError:
+            pass 
+
         if path_or_file.endswith(".gz"):
             if self._indexed_gzip(path_or_file):
                 return indexedGzip.IndexedGzip(path_or_file, self.encoding)
