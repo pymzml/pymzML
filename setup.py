@@ -41,7 +41,7 @@ setup(
     author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi, M. Hippler and C. Fufezan',
     author_email     = 'christian@fufezan.net',
     url              = 'http://pymzml.github.com',
-    license          = 'GNU General Public License (GPL)',
+    license          = 'The MIT license',
     platforms        = 'any that supports python 3.4',
     classifiers      = [
         'Development Status :: 4 - Beta',
@@ -49,7 +49,7 @@ setup(
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: MIT',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
