@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-
 import sys
 import os
 
@@ -17,6 +15,15 @@ import dash_html_components as html
 print('loading run...')
 run = pymzml.run.Reader(sys.argv[1])
 
+all_ids = []
+for spec_id, offset in run.info['offset_dict'].items():
+    try:
+        all_ids.append(int(spec_id))
+    except:
+        continue
+FIRST_SPECTRUM_ID = min(all_ids)
+LAST_SPECTRUM_ID = max(all_ids)
+
 p = pymzml.plot.Factory()
 p.new_plot()
 
@@ -27,9 +34,7 @@ for x,y in run['TIC'].peaks():
     tic_y.append(y)
 max_tic = max(tic_y)
 
-
 app = dash.Dash(__name__)
-
 
 app.layout = html.Div([
     dcc.Graph(
@@ -46,7 +51,7 @@ app.layout = html.Div([
     ),
     dcc.Input(
         id='spectrum-input-field',
-        value=1,
+        value=FIRST_SPECTRUM_ID,
         type='text',
         style={
             'width': '20%',
@@ -64,15 +69,20 @@ app.layout = html.Div([
     ),
 ])
 
-spectra_buffer = {}
 
 def get_spectrum(spectrum_id):
-    if spectrum_id not in spectra_buffer.keys():
-        spectrum  = run[spectrum_id]
-        spectra_buffer[spectrum_id] = spectrum
+    return run[spectrum_id]
+
+def sanitize_id(spectrum_id_from_input):
+    if spectrum_id_from_input not in [None, '']:
+        spectrum_id  = int(spectrum_id_from_input)
     else:
-        spectrum = spectra_buffer[spectrum_id]
-    return spectrum
+        spectrum_id = FIRST_SPECTRUM_ID
+    if spectrum_id < FIRST_SPECTRUM_ID:
+        spectrum_id = FIRST_SPECTRUM_ID
+    if spectrum_id > LAST_SPECTRUM_ID:
+        spectrum_id = LAST_SPECTRUM_ID
+    return spectrum_id
 
 
 @app.callback(
@@ -82,12 +92,7 @@ def get_spectrum(spectrum_id):
     ]
 )
 def update_TIC(spectrum_id_from_input=None):
-    if spectrum_id_from_input not in [None, '']:
-        spectrum_id  = int(spectrum_id_from_input)
-    else:
-        spectrum_id = 1
-    if spectrum_id > run.info['spectrum_count']:
-        spectrum_id = run.info['spectrum_count']
+    spectrum_id = sanitize_id(spectrum_id_from_input)
     spectrum = get_spectrum(spectrum_id)
     rt = spectrum.scan_time[0]
     figure = {
@@ -125,17 +130,10 @@ def update_TIC(spectrum_id_from_input=None):
         dash.dependencies.Input('spectrum-input-field', 'value'),
     ]
 )
-def trigger_new_spec_from_slider( spectrum_id_from_input=None):
-    if spectrum_id_from_input not in [None, '']:
-        spectrum_id  = int(spectrum_id_from_input)
-    else:
-        spectrum_id = 1
-    # print(type(spectrum_id))
-    if spectrum_id > run.info['spectrum_count']:
-        spectrum_id = run.info['spectrum_count']
+def trigger_new_spec_from_input( spectrum_id_from_input=None):
+    spectrum_id = sanitize_id(spectrum_id_from_input)
     spectrum = get_spectrum(spectrum_id)
     return update_figure(spectrum)
-
 
 
 def update_figure(spectrum):
