@@ -1122,9 +1122,10 @@ class Spectrum(MS_Spectrum):
         """
         try:
             acc = self.calling_instance.OT["profile spectrum"]["id"]
-            is_profile = self.element.find(
+            is_profile =  True if self.element.find(
                 ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
-            )
+            ) is not None else None
+
         except (TypeError, AttributeError) as e:
             is_profile = None
 
