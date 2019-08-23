@@ -34,6 +34,16 @@ for x,y in run['TIC'].peaks():
     tic_y.append(y)
 max_tic = max(tic_y)
 
+tic_annotation = []
+
+for n, RT in enumerate(tic_x):
+    tic_annotation.append(
+        'RT: {0:1.3f}<br>ID: {1}'.format(
+            RT,
+            all_ids[n]
+        )
+    )
+
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
@@ -97,7 +107,12 @@ def update_TIC(spectrum_id_from_input=None):
     rt = spectrum.scan_time[0]
     figure = {
         'data':[
-            {'x':tic_x, 'y':tic_y, 'line':{'color':'black'}},
+            {
+                'x':tic_x,
+                'y':tic_y,
+                'line':{'color':'black'},
+                'text':tic_annotation
+            },
             {
                 'x':[rt, rt],
                 'y':[0,max_tic],
@@ -155,9 +170,12 @@ def update_figure(spectrum):
         os.path.basename(sys.argv[1])
     )
     if spectrum.ms_level == 2:
-        title += '<br> Precursor m/z: {mz} (intensity {i:1.2e}, charge: {charge})'.format(
-            **spectrum.selected_precursors[0]
-        )
+        tmp_selected_precursors = spectrum.selected_precursors[0]
+        format_str_template = '<br>'
+        for key, format_template in [ ('mz',' Precursor m/z: {0}'), ('i', '; intensity {0:1.2e}'), ('charge','; charge: {0}') ]:
+            if key in tmp_selected_precursors.keys():
+                format_str_template += format_template.format(tmp_selected_precursors[key])
+        title += format_str_template
     return {
         'data': [new_spectrum_plot],
         'layout': go.Layout(
