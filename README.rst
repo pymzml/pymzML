@@ -84,7 +84,7 @@ Implementation
 
 pymzML requires Python3.4+.
 The module is freely available on pymzml.github.com or pypi,
-published under GPL and requires no additional modules to be installed, but can
+published under MIT license and requires no additional modules to be installed, but can
 optionally use numpy.
 
 
