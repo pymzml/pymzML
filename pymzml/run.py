@@ -237,7 +237,6 @@ class Reader(object):
             mzml_encoding (str): encoding type of the file
         """
         if os.path.exists(path):
-            print(path)
             if path.endswith(".gz") or path.endswith(".igz"):
                 import gzip
 
@@ -410,6 +409,8 @@ class Reader(object):
         """
         return self.info["chromatogram_count"]
 
+    def close(self):
+        self.info['file_object'].close()
 
 if __name__ == "__main__":
     print(__doc__)
