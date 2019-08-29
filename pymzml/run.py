@@ -410,6 +410,8 @@ class Reader(object):
         """
         return self.info["chromatogram_count"]
 
+    def close(self):
+        self.info['file_object'].close()
 
 if __name__ == "__main__":
     print(__doc__)
