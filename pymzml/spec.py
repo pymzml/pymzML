@@ -19,8 +19,8 @@ Similar to the spectrum class, the chromatogram class allows interrogation
 with profile data (time, intensity) in an total ion chromatogram.
 """
 
-#Python mzML module - pymzml
-#Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 #     The MIT License (MIT)
 
 #     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1019,15 +1019,12 @@ class Spectrum(MS_Spectrum):
         """
         if self._peak_dict[peak_type] is None:
             if self._peak_dict["raw"] is None:
-                self._peak_dict["raw"] = []
                 mz_params = self._get_encoding_parameters("m/z array")
                 i_params = self._get_encoding_parameters("intensity array")
                 mz = self._decode(*mz_params)
                 i = self._decode(*i_params)
-                # self._peak_dict['raw'] = np.ndarray(len(mz), dtype=tuple)
-                for pos, mz_val in enumerate(mz):
-                    self._peak_dict["raw"].append((mz_val, i[pos]))
-                    # self._peak_dict['raw'][pos] = [mz, 1]
+                arr = np.stack((mz, i), axis=-1)
+                self._peak_dict[peak_type] = arr
             if peak_type is "raw":
                 pass
             elif peak_type is "centroided":
@@ -1039,7 +1036,10 @@ class Spectrum(MS_Spectrum):
             else:
                 raise KeyError
 
-        peaks = self._array(self._peak_dict[peak_type])
+        if not isinstance(self._peak_dict[peak_type], np.ndarray):
+            peaks = self._array(self._peak_dict[peak_type])
+        else:
+            peaks = self._peak_dict[peak_type]
         if peak_type is "reprofiled":
             peaks = list(self._peak_dict[peak_type].items())
             peaks.sort(key=itemgetter(0))
@@ -1127,9 +1127,14 @@ class Spectrum(MS_Spectrum):
         """
         try:
             acc = self.calling_instance.OT["profile spectrum"]["id"]
-            is_profile =  True if self.element.find(
-                ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
-            ) is not None else None
+            is_profile = (
+                True
+                if self.element.find(
+                    ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
+                )
+                is not None
+                else None
+            )
 
         except (TypeError, AttributeError) as e:
             is_profile = None
