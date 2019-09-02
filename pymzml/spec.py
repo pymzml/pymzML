@@ -1019,15 +1019,12 @@ class Spectrum(MS_Spectrum):
         """
         if self._peak_dict[peak_type] is None:
             if self._peak_dict["raw"] is None:
-                self._peak_dict["raw"] = []
                 mz_params = self._get_encoding_parameters("m/z array")
                 i_params = self._get_encoding_parameters("intensity array")
                 mz = self._decode(*mz_params)
                 i = self._decode(*i_params)
-                # self._peak_dict['raw'] = np.ndarray(len(mz), dtype=tuple)
-                for pos, mz_val in enumerate(mz):
-                    self._peak_dict["raw"].append((mz_val, i[pos]))
-                    # self._peak_dict['raw'][pos] = [mz, 1]
+                arr = np.stack((mz, i), axis=-1)
+                self._peak_dict[peak_type] = arr
             if peak_type is "raw":
                 pass
             elif peak_type is "centroided":
@@ -1039,7 +1036,10 @@ class Spectrum(MS_Spectrum):
             else:
                 raise KeyError
 
-        peaks = self._array(self._peak_dict[peak_type])
+        if not isinstance(self._peak_dict[peak_type], np.ndarray):
+            peaks = self._array(self._peak_dict[peak_type])
+        else:
+            peaks = self._peak_dict[peak_type]
         if peak_type is "reprofiled":
             peaks = list(self._peak_dict[peak_type].items())
             peaks.sort(key=itemgetter(0))
