@@ -15,8 +15,8 @@ Note:
 
 """
 
-#Python mzML module - pymzml
-#Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 #     The MIT License (MIT)
 
 #     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -408,6 +408,9 @@ class Reader(object):
             chromatogram count (int): Number of chromatograms in file.
         """
         return self.info["chromatogram_count"]
+
+    def close(self):
+        self.info["file_object"].close()
 
 
 if __name__ == "__main__":

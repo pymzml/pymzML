@@ -57,8 +57,8 @@ OBO file. Please refer to :ref:`example_scripts` for further usage information.
 """
 
 
-#Python mzML module - pymzml
-#Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 #     The MIT License (MIT)
 
 #     Permission is hereby granted, free of charge, to any person obtaining a copy
