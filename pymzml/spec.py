@@ -19,8 +19,8 @@ Similar to the spectrum class, the chromatogram class allows interrogation
 with profile data (time, intensity) in an total ion chromatogram.
 """
 
-#Python mzML module - pymzml
-#Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 #     The MIT License (MIT)
 
 #     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1127,9 +1127,14 @@ class Spectrum(MS_Spectrum):
         """
         try:
             acc = self.calling_instance.OT["profile spectrum"]["id"]
-            is_profile =  True if self.element.find(
-                ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
-            ) is not None else None
+            is_profile = (
+                True
+                if self.element.find(
+                    ".//*[@accession='{acc}']".format(ns=self.ns, acc=acc)
+                )
+                is not None
+                else None
+            )
 
         except (TypeError, AttributeError) as e:
             is_profile = None

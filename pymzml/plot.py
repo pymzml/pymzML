@@ -6,8 +6,8 @@ The Factory object can hold several plots with several data traces each.
 The data can be visualized as an interactive plotly plot or be exported as JSON.
 """
 
-#Python mzML module - pymzml
-#Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 #     The MIT License (MIT)
 
 #     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -494,20 +494,14 @@ class Factory(object):
                 "marker": {
                     "size": 10,
                     "color": "rgba({0},{1},{2},{3})".format(
-                        color[0],
-                        color[1],
-                        color[2],
-                        opacity
+                        color[0], color[1], color[2], opacity
                     ),
                 },
                 "mode": mode,
                 "name": name,
                 "line": {
                     "color": "rgba({0},{1},{2},{3})".format(
-                        color[0],
-                        color[1],
-                        color[2],
-                        opacity
+                        color[0], color[1], color[2], opacity
                     ),
                     "width": self.style_options["line.width"],
                     "shape": shape,
@@ -515,10 +509,7 @@ class Factory(object):
                 },
                 "fill": filling,
                 "fillcolor": "rgba({0},{1},{2},{3})".format(
-                    color[0],
-                    color[1],
-                    color[2],
-                    opacity
+                    color[0], color[1], color[2], opacity
                 ),
                 "opacity": opacity,
             }

@@ -6,8 +6,8 @@ Interface for indexed gzipped files
 @author: Manuel Koesters
 """
 
-#Python mzML module - pymzml
-#Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 #     The MIT License (MIT)
 
 #     Permission is hereby granted, free of charge, to any person obtaining a copy
