@@ -4,4 +4,4 @@ plotly==4.1.1
 pynumpress==0.0.5
 regex
 ms_deisotope==0.0.9
-dash==1.1.1
+dash==1.2.0
