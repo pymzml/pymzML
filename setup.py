@@ -32,7 +32,7 @@ setup(
             'pynumpress>=0.0.4',
             'ms_deisotope',
         ],
-        'plot': ['plotly < 2.0'],
+        'plot': ['plotly<5.0'],
         'pynumpress': ['pynumpress>=0.0.4'],
         'deconvolution': ['ms_deisotope'] 
     },
