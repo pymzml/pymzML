@@ -28,7 +28,7 @@ setup(
     ],
     extras_require   = {
         'full': [
-            'plotly < 2.0',
+            'plotly<5.0',
             'pynumpress>=0.0.4',
             'ms_deisotope',
         ],
