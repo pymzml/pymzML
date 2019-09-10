@@ -214,9 +214,11 @@ class StandardMzml(object):
                         # so use the whole string as ID
                         pass
                     self.offset_dict[native_id] = (offset,)
-        else:
+        elif from_scratch is True:
             seeker.seek(0)
             self._build_index_from_scratch(seeker)
+        else:
+            print('[Warning] Not index found and build_index_from_scratch is False')
         seeker.close()
 
     def _build_index_from_scratch(self, seeker):
