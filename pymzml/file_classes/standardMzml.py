@@ -54,10 +54,7 @@ class StandardMzml(object):
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
-        if build_index_from_scratch is True:
-            seeker = self.get_binary_file_handler()
-            self._build_index_from_scratch(seeker)
-            seeker.close()
+        self._build_index(from_scratch=build_index_from_scratch)
 
     def get_binary_file_handler(self):
         return open(self.path, "rb")
@@ -108,7 +105,7 @@ class StandardMzml(object):
                 seeker.seek(start[0])
                 start, end = self._read_to_spec_end(seeker)
             self.file_handler.seek(start, 0)
-            data = self.file_handler.read(end - start)
+            data = self.file_handler.read(end)
             if data.startswith("<spectrum"):
                 spectrum = spec.Spectrum(XML(data), measured_precision=5e-6)
             elif data.startswith("<chromatogram"):
@@ -217,6 +214,11 @@ class StandardMzml(object):
                         # so use the whole string as ID
                         pass
                     self.offset_dict[native_id] = (offset,)
+        elif from_scratch is True:
+            seeker.seek(0)
+            self._build_index_from_scratch(seeker)
+        else:
+            print('[Warning] Not index found and build_index_from_scratch is False')
         seeker.close()
 
     def _build_index_from_scratch(self, seeker):
@@ -449,13 +451,14 @@ class StandardMzml(object):
         data_chunk = seeker.read(chunk_size)
         while end_found is False:
             chunk_offset = seeker.tell()
-            data_chunk = seeker.read(chunk_size)
+            data_chunk += seeker.read(chunk_size)
             tag_end, seeker = self._read_until_tag_end(seeker)
             data_chunk += tag_end
             if regex_patterns.SPECTRUM_CLOSE_PATTERN.search(data_chunk):
                 match = regex_patterns.SPECTRUM_CLOSE_PATTERN.search(data_chunk)
                 relative_pos_in_chunk = match.end()
                 end_pos = chunk_offset + relative_pos_in_chunk
+                end_pos = match.end()
                 end_found = True
             elif regex_patterns.CHROMATOGRAM_CLOSE_PATTERN.search(data_chunk):
                 match = regex_patterns.CHROMATOGRAM_CLOSE_PATTERN.search(data_chunk)
@@ -554,7 +557,7 @@ class StandardMzml(object):
                         seeker.seek(spec_start_offset)
                         start, end = self._read_to_spec_end(seeker)
                         seeker.seek(start)
-                        spec_string = seeker.read(end - start)
+                        spec_string = seeker.read(end)
                         xml_string = XML(spec_string)
                         return spec.Spectrum(xml_string, measured_precision=5e-6)
                 elif chrom_start:
@@ -563,7 +566,7 @@ class StandardMzml(object):
                         seeker.seek(chrom_start_offset)
                         start, end = self._read_to_spec_end(seeker)
                         seeker.seek(start)
-                        chrom_string = seeker.read(end - start)
+                        chrom_string = seeker.read(end)
                         xml_string = XML(chrom_string)
                         return spec.Chromatogram(xml_string)
                 elif len(data) == 0:
