@@ -101,9 +101,11 @@ class StandardMzml(object):
         elif identifier in self.offset_dict:
 
             start = self.offset_dict[identifier]
-            with self.get_binary_file_handler() as seeker:
-                seeker.seek(start[0])
-                start, end = self._read_to_spec_end(seeker)
+            # with self.get_binary_file_handler() as seeker:
+
+            seeker = self.get_binary_file_handler()
+            seeker.seek(start[0])
+            start, end = self._read_to_spec_end(seeker)
             self.file_handler.seek(start, 0)
             data = self.file_handler.read(end)
             if data.startswith("<spectrum"):
@@ -219,7 +221,7 @@ class StandardMzml(object):
             self._build_index_from_scratch(seeker)
         else:
             print('[Warning] Not index found and build_index_from_scratch is False')
-        seeker.close()
+        # seeker.close()
 
     def _build_index_from_scratch(self, seeker):
         """Build an index of spectra/chromatogram data with offsets by parsing the file."""
@@ -369,7 +371,7 @@ class StandardMzml(object):
                 dist = current_index - target_index
                 if dist < -1 and dist > -(fallback_cutoff):
                     spectrum = self._search_linear(seeker, target_index)
-                    seeker.close()
+                    # seeker.close()
                     spectrum_found = True
                     break
                 elif dist > 0 and dist < fallback_cutoff:
@@ -386,7 +388,7 @@ class StandardMzml(object):
                             )
                     seeker.seek(current_position)
                     spectrum = self._search_linear(seeker, target_index)
-                    seeker.close()
+                    # seeker.close()
                     spectrum_found = True
                     break
 
@@ -397,7 +399,7 @@ class StandardMzml(object):
                     seeker.seek(start)
                     self.offset_dict[current_index] = (start, end)
                     xml_string = seeker.read(end - start)
-                    seeker.close()
+                    # seeker.close()
                     spectrum = spec.Spectrum(XML(xml_string), measured_precision=5e-6)
                     spectrum_found = True
                     break
@@ -427,7 +429,7 @@ class StandardMzml(object):
                 seeker = self.get_binary_file_handler()
                 seeker.seek(spec_start_offset)
                 spectrum = self._search_linear(seeker, target_index)
-                seeker.close()
+                # seeker.close()
                 spectrum_found = True
                 break
 
@@ -523,7 +525,7 @@ class StandardMzml(object):
                         spec_end_offset,
                     )
                     xml_string = XML(spec_string)
-                    seeker.close()
+                    # seeker.close()
                     return spec.Spectrum(xml_string, measured_precision=5e-6)
 
     def _search_string_identifier(self, search_string, chunk_size=8):
@@ -609,6 +611,7 @@ class StandardMzml(object):
         """
         """
         self.file_handler.close()
+
 
 
 if __name__ == "__main__":
