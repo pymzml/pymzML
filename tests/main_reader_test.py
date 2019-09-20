@@ -41,6 +41,11 @@ class runTest(unittest.TestCase):
         )
         self.reader_set_no_obo_version = run.Reader(file_no_obo_version)
 
+    def test_with_context(self):
+        with run.Reader(self.paths[0]) as reader:
+            reader[2]
+
+
     def test_determine_file_encoding(self):
         """
         """
