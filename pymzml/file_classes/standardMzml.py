@@ -117,6 +117,7 @@ class StandardMzml(object):
         elif identifier in self.offset_dict:
 
             start = self.offset_dict[identifier]
+            # print(start, '<<<<<')
             with self.get_binary_file_handler() as seeker:
                 seeker.seek(start[0])
                 start, end = self._read_to_spec_end(seeker)
@@ -186,8 +187,8 @@ class StandardMzml(object):
                     # print(f"jump {jump}")
                     # print(f"insert_pos {insert_position}")
                     # print(f"average_spec_between_m1_p1 {average_spec_between_m1_p1}")
-                    # print(f"diff target to m1 {spec_offset_m1}")
-                    # print(f"diff target to p1 {spec_offset_p1}")
+                    # print(f"diff target to m1 / spec_offset_m1 {spec_offset_m1}")
+                    # print(f"diff target to p1 / spec_offset_p1 {spec_offset_p1}")
 
                     # which side are we closer to ...
                     if spec_offset_m1 < spec_offset_p1:
@@ -213,6 +214,7 @@ class StandardMzml(object):
                     byte_offset = int(byte_offset)
                     # print(f"jump_history {jump_history}")
                     # print(f"bytes offset {byte_offset}")
+                    # print(f"offset_scale {offset_scale}")
                     # print(f"seek_list: {min(self.seek_list)} - {max(self.seek_list)} .. n: {len(self.seek_list)}")
                     # print(f"seek_list[:-10]: {self.seek_list[:10]}")
                     found_scan = False
@@ -224,25 +226,28 @@ class StandardMzml(object):
                             max([os.SEEK_SET + byte_offset + x * chunk_size, 1])
                         )
                         chunk += seeker.read(chunk_size)
+                    # print(f'read {len(chunk)}')
                     matches = re.finditer(regex_patterns.SPECTRUM_OPEN_PATTERN, chunk)
-                    for match in matches:
+                    for _match_number, match in enumerate(matches):
                         if match is not None:
                             scan = int(re.search(b"[0-9]*$", match.group("id")).group())
+                            # print(">>", _match_number, scan)
                             if jump_direction == 'forwards':
                                 if scan > target_index:
                                     # we went to far ...
-                                    offset_scale = 0.2
-                                    jump_history['forwards'] = 1
+                                    offset_scale = 0.1
+                                    jump_history['forwards'] = 0
                                 else:
                                     offset_scale = 1
                             if jump_direction == 'backwards':
                                 if scan < target_index:
-                                    offset_scale = 0.2
-                                    jump_history['backwards'] = 1
+                                    offset_scale = 0.1
+                                    jump_history['backwards'] = 0
                                 else:
                                     offset_scale = 1
 
                             if scan in self.offset_dict.keys():
+                                # print("Have seen this scan {scan} already")
                                 continue
                             found_scan = True
                             new_entry = (
@@ -252,7 +257,7 @@ class StandardMzml(object):
                             new_pos = bisect.bisect_left(self.seek_list, new_entry)
                             self.seek_list.insert(new_pos, new_entry)
                             self.offset_dict[scan] = (
-                                byte_offset + match.start()
+                                byte_offset + match.start(),
                             )
                             if int(scan) == int(target_index):
                                 # maybe jump from other boarder
@@ -260,23 +265,23 @@ class StandardMzml(object):
                                 break
                     if break_outer:
                         break
-
-                    # if found_scan:
-                    #     offset_scale = 1
-                    # else:
-                    #     offset_scale += 1
-
-                    if int(scan) == int(target_index):
+                        if found_scan:
+                            offset_scale = 1
+                        else:
+                            offset_scale += 1
+                    if int(target_index) in self.offset_dict.keys():
                         break
 
             start = self.offset_dict[target_index]
-            seeker.seek(start)
+            # print(f"reading spec at pos {start}")
+            seeker.seek(start[0])
             match = None
             data = b""
             while b"</spectrum>" not in data:
+                # print("reading to end")
                 data += seeker.read(chunk_size)
             end = data.find(b"</spectrum>")
-            seeker.seek(start)
+            seeker.seek(start[0])
             spec_string = seeker.read(end + len("</spectrum>"))
             spec_string = spec_string.decode("utf-8")
             spectrum = spec.Spectrum(XML(spec_string), measured_precision=5e-6)
