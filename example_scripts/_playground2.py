@@ -45,6 +45,7 @@ def main(input_files, shuffle, suffix=''):
                 #spec = reader[i]
                 try:
                     spec = reader[i]
+                    # 100 / 0
                 except Exception as e:
                     fails += 1
                     fout.write(f'{os.path.basename(file)}\t{i}\n')
@@ -52,6 +53,7 @@ def main(input_files, shuffle, suffix=''):
                     pprint.pprint(reader.info["file_object"].file_handler.offset_dict)
                     pprint.pprint(reader.info["file_object"].file_handler.seek_list)
                     exit(1)
+                break
             perc = fails / len(indices) * 100
             print(f'{fails} of {len(indices)} spectra could not be accessed ({perc}%)')
             print('\n\n')

@@ -57,6 +57,7 @@ class StandardMzml(object):
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
         self.seek_list = self._read_extremes()
+        # print(f"seek_list: {self.seek_list}")
         if len(self.seek_list) > 1:
             self._average_bytes_per_spec = round(
                 int(
@@ -69,7 +70,7 @@ class StandardMzml(object):
         else:
             self._average_bytes_per_spec = 100
 
-        self._build_index(from_scratch=build_index_from_scratch)
+        # self._build_index(from_scratch=build_index_from_scratch)
 
     def get_binary_file_handler(self):
         return open(self.path, "rb")
@@ -147,17 +148,16 @@ class StandardMzml(object):
         """
         chunk_size = 12800
         offset_scale = 1
+        jump_history = {'forwards': 0, 'backwards': 0}
         # This will be used if no spec was found at all during a jump
         # self._average_bytes_per_spec *= 10
         with open(self.path, "rb") as seeker:
             if target_index not in self.offset_dict.keys():
                 for jump in range(20):
                     scan = None
-                    # print(f"jump {jump}")
                     insert_position = bisect.bisect_left(
                         self.seek_list, (target_index, 0)
                     )
-
                     if (
                         target_index < self.seek_list[0][0]
                         or target_index > self.seek_list[-1][0]
@@ -181,21 +181,35 @@ class StandardMzml(object):
                     average_spec_between_m1_p1 = int(
                         round(byte_diff_m1_p1 / scan_diff_m1_p1)
                     )
+                    # print("\n------------")
+                    # print(f"jump {jump}")
+                    # print(f"insert_pos {insert_position}")
+                    # print(f"average_spec_between_m1_p1 {average_spec_between_m1_p1}")
+                    # print(f"diff target to m1 {spec_offset_m1}")
+                    # print(f"diff target to p1 {spec_offset_p1}")
 
                     # which side are we closer to ...
                     if spec_offset_m1 < spec_offset_p1:
-                        byte_offset = element_before[1] + offset_scale * (
-                            average_spec_between_m1_p1 * spec_offset_m1
+                        # print("Closer to m1 - jumping forward")
+                        jump_history['backwards'] = 0
+                        jump_history['forwards'] += 1
+                        byte_offset = element_before[1] + jump_history['forwards'] * (
+                            offset_scale * average_spec_between_m1_p1 * spec_offset_m1
                         )
                         if (target_index - element_before[0]) < 10:
                             # quite close to target, stat at element before
                             # and read chunks until found
                             byte_offset = element_before[1]
                     else:
-                        byte_offset = element_after[1] - offset_scale * (
-                            average_spec_between_m1_p1 * spec_offset_p1
+                        # print("Closer to p1 - jumping backwards")
+                        jump_history['forwards'] = 0
+                        jump_history['backwards'] += 1
+                        byte_offset = element_after[1] - jump_history['backwards'] * (
+                            offset_scale * average_spec_between_m1_p1 * spec_offset_p1
                         )
-
+                    # print(f"jump_history {jump_history}")
+                    # print(f"bytes offset {byte_offset}")
+                    # print(f"seek_list: {self.seek_list}")
                     found_scan = False
                     chunk = b""
                     break_outer = False
@@ -226,9 +240,9 @@ class StandardMzml(object):
                             )
                             if int(scan) == int(target_index):
                                 # maybe jump from other boarder
-                                BREAK_OUTER = True
+                                break_outer = True
                                 break
-                    if BREAK_OUTER:
+                    if break_outer:
                         break
 
                     if found_scan:
