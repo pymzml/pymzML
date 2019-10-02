@@ -41,7 +41,7 @@ def main(input_files, shuffle, suffix=''):
                 # reader.info["file_object"].file_handler.offset_dict = basic_off_set_dict.copy()
                 # reader.info["file_object"].file_handler.seek_list = basic_seek_list.copy()
                 current_precentage = 100 * float(pos) / float(number_of_specs)
-                print(f"[{current_precentage:0>3.1f}%] Access spectrum {i}".format(), end='\r')
+                print(f"[{current_precentage:0>3.1f}%] Access spectrum {i:<10}".format(), end='\r')
                 #spec = reader[i]
                 try:
                     spec = reader[i]
