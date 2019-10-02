@@ -151,9 +151,10 @@ class StandardMzml(object):
         jump_history = {'forwards': 0, 'backwards': 0}
         # This will be used if no spec was found at all during a jump
         # self._average_bytes_per_spec *= 10
+        # print(f"self.seek_list : {self.seek_list}")
         with open(self.path, "rb") as seeker:
             if target_index not in self.offset_dict.keys():
-                for jump in range(20):
+                for jump in range(40):
                     scan = None
                     insert_position = bisect.bisect_left(
                         self.seek_list, (target_index, 0)
@@ -191,6 +192,7 @@ class StandardMzml(object):
                     # which side are we closer to ...
                     if spec_offset_m1 < spec_offset_p1:
                         # print("Closer to m1 - jumping forward")
+                        jump_direction = 'forwards'
                         jump_history['backwards'] = 0
                         jump_history['forwards'] += 1
                         byte_offset = element_before[1] + jump_history['forwards'] * (
@@ -202,14 +204,17 @@ class StandardMzml(object):
                             byte_offset = element_before[1]
                     else:
                         # print("Closer to p1 - jumping backwards")
+                        jump_direction = 'backwards'
                         jump_history['forwards'] = 0
                         jump_history['backwards'] += 1
                         byte_offset = element_after[1] - jump_history['backwards'] * (
                             offset_scale * average_spec_between_m1_p1 * spec_offset_p1
                         )
+                    byte_offset = int(byte_offset)
                     # print(f"jump_history {jump_history}")
                     # print(f"bytes offset {byte_offset}")
-                    # print(f"seek_list: {self.seek_list}")
+                    # print(f"seek_list: {min(self.seek_list)} - {max(self.seek_list)} .. n: {len(self.seek_list)}")
+                    # print(f"seek_list[:-10]: {self.seek_list[:10]}")
                     found_scan = False
                     chunk = b""
                     break_outer = False
@@ -223,9 +228,20 @@ class StandardMzml(object):
                     for match in matches:
                         if match is not None:
                             scan = int(re.search(b"[0-9]*$", match.group("id")).group())
-                            if scan > target_index:
-                                # we went to far ...
-                                pass
+                            if jump_direction == 'forwards':
+                                if scan > target_index:
+                                    # we went to far ...
+                                    offset_scale = 0.2
+                                    jump_history['forwards'] = 1
+                                else:
+                                    offset_scale = 1
+                            if jump_direction == 'backwards':
+                                if scan < target_index:
+                                    offset_scale = 0.2
+                                    jump_history['backwards'] = 1
+                                else:
+                                    offset_scale = 1
+
                             if scan in self.offset_dict.keys():
                                 continue
                             found_scan = True
@@ -245,10 +261,10 @@ class StandardMzml(object):
                     if break_outer:
                         break
 
-                    if found_scan:
-                        offset_scale = 1
-                    else:
-                        offset_scale += 1
+                    # if found_scan:
+                    #     offset_scale = 1
+                    # else:
+                    #     offset_scale += 1
 
                     if int(scan) == int(target_index):
                         break
