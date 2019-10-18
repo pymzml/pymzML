@@ -188,6 +188,12 @@ class Reader(object):
             spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
         return spectrum
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+
     @property
     def file_class(self):
         """Return file object in use."""

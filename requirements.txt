@@ -1,7 +1,7 @@
 # Installation
 numpy
-plotly == 4.1.0
-pynumpress >= 0.0.4
+plotly==4.2.0
+pynumpress==0.0.5
 regex
-ms_deisotope == 0.0.9
-dash == 1.1.1
+ms_deisotope==0.0.9
+dash==1.4.1
