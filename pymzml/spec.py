@@ -1259,7 +1259,7 @@ class Spectrum(MS_Spectrum):
         self.set_peaks(peaks, peak_type)
         return peaks
 
-    def remove_noise(self, mode="median", noise_level=None):
+    def remove_noise(self, mode="median", noise_level=None, signal_to_noise_threshold=1.0):
         """
         Function to remove noise from peaks, centroided peaks and reprofiled
         peaks.
@@ -1268,6 +1268,7 @@ class Spectrum(MS_Spectrum):
                 mode (str): define mode for removing noise. Default = "median"
                 (other modes: "mean", "mad")
             noise_level (float): noise threshold
+            signal_to_noise_threshold (float): S/N threshold for a peak to be accepted
 
         Returns:
             reprofiled peaks (list): Returns a list with tuples of
@@ -1281,11 +1282,11 @@ class Spectrum(MS_Spectrum):
             noise_level = self.estimated_noise_level(mode=mode)
         if self._peak_dict["centroided"] is not None:
             self._peak_dict["centroided"] = self.peaks("centroided")[
-                self.peaks("centroided")[:, 1] >= noise_level
+                self.peaks("centroided")[:, 1]/noise_level >= signal_to_noise_threshold
             ]
         if self._peak_dict["raw"] is not None:
             self._peak_dict["raw"] = self.peaks("raw")[
-                self.peaks("raw")[:, 1] >= noise_level
+                self.peaks("raw")[:, 1]/noise_level >= signal_to_noise_threshold
             ]
         self._peak_dict["reprofiled"] = None
         return self
