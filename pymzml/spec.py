@@ -59,7 +59,8 @@ try:
     DECON_DEP = True
     from ms_deisotope.deconvolution import deconvolute_peaks
     from ms_peak_picker import simple_peak
-except ImportError:
+except (ImportError, ModuleNotFoundError) as e:
+    DECON_DEP = False
     pass
 from . import regex_patterns
 from .decoder import MSDecoder
@@ -1046,7 +1047,7 @@ class Spectrum(MS_Spectrum):
         return peaks
 
     def _deconvolute_peaks(self, *args, **kwargs):
-        if DECON_DEP:
+        if DECON_DEP is True:
             peaks = self.peaks("centroided")
             # pack peak matrix into expected structure
             peaks = [simple_peak(p[0], p[1], 0.01) for p in peaks]

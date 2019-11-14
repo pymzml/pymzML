@@ -1,11 +1,12 @@
 import sys
 import os
+import unittest
 
 sys.path.append(os.path.abspath("."))
-from pymzml.spec import PROTON
 
+import pymzml
+from pymzml.spec import PROTON
 import pymzml.run as run
-import unittest
 import test_file_paths
 import numpy as np
 
@@ -47,6 +48,7 @@ class SpectrumMS2Test(unittest.TestCase):
             selected_precursor, [{"mz": 443.711242675781, "i": 0.0, "charge": 2}]
         )
 
+    @unittest.skipIf(pymzml.spec.DECON_DEP is False, "ms_deisotope was not installed")
     def test_deconvolute_peaks(self):
         charge = 3
         test_mz = 430.313
