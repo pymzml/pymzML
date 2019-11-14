@@ -221,7 +221,9 @@ class StandardMzml(object):
             self._build_index_from_scratch(seeker)
         else:
             print('[Warning] Not index found and build_index_from_scratch is False')
-        # seeker.close()
+        
+        seeker.close()
+
 
     def _build_index_from_scratch(self, seeker):
         """Build an index of spectra/chromatogram data with offsets by parsing the file."""
