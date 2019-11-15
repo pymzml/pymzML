@@ -97,7 +97,9 @@ class Reader(object):
 
         # Parameters
         self.ms_precisions = {
-            0: 0.001,  # arbitrary prec for UV spectra
+            None: 0.0001,  # if spectra does not contain ms_level information
+                         # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
+                         # returned as None
             1: 5e-6,
             2: 20e-6,
         }

@@ -853,12 +853,14 @@ class Spectrum(MS_Spectrum):
             ms_level (int):
         """
         if self._ms_level is None:
-            self._ms_level = self.element.find(
+            sub_element = self.element.find(
                 ".//{ns}cvParam[@accession='MS:1000511']".format(ns=self.ns)
-            ).get(
-                "value"
-            )  # put hardcoded MS tags in minimum.py???
-        return int(self._ms_level)
+            )
+            if sub_element is not None:
+                self._ms_level = int(sub_element.get(
+                    "value"
+                ))  # put hardcoded MS tags in minimum.py???
+        return self._ms_level
 
     @property
     def scan_time(self):
