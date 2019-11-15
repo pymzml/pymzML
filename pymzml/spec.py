@@ -232,7 +232,9 @@ class MS_Spectrum(object):
             else:
                 # compression is numpress, dont need floattype here
                 f_type = None
-            data = b_data_array.find("./{ns}binary".format(ns=self.ns)).text
+            data = b_data_array.find("./{ns}binary".format(ns=self.ns))
+            if data is not None:
+                data = data.text
         else:
             data = None
             d_array_length = 0
