@@ -97,7 +97,9 @@ class Reader(object):
 
         # Parameters
         self.ms_precisions = {
-            0: 0.001,  # arbitrary prec for UV spectra
+            None: 0.0001,  # if spectra does not contain ms_level information
+                         # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
+                         # returned as None
             1: 5e-6,
             2: 20e-6,
         }
@@ -187,6 +189,12 @@ class Reader(object):
         if isinstance(spectrum, spec.Spectrum):
             spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
         return spectrum
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
 
     @property
     def file_class(self):

@@ -59,7 +59,8 @@ try:
     DECON_DEP = True
     from ms_deisotope.deconvolution import deconvolute_peaks
     from ms_peak_picker import simple_peak
-except ImportError:
+except (ImportError, ModuleNotFoundError) as e:
+    DECON_DEP = False
     pass
 from . import regex_patterns
 from .decoder import MSDecoder
@@ -231,7 +232,9 @@ class MS_Spectrum(object):
             else:
                 # compression is numpress, dont need floattype here
                 f_type = None
-            data = b_data_array.find("./{ns}binary".format(ns=self.ns)).text
+            data = b_data_array.find("./{ns}binary".format(ns=self.ns))
+            if data is not None:
+                data = data.text
         else:
             data = None
             d_array_length = 0
@@ -852,12 +855,14 @@ class Spectrum(MS_Spectrum):
             ms_level (int):
         """
         if self._ms_level is None:
-            self._ms_level = self.element.find(
+            sub_element = self.element.find(
                 ".//{ns}cvParam[@accession='MS:1000511']".format(ns=self.ns)
-            ).get(
-                "value"
-            )  # put hardcoded MS tags in minimum.py???
-        return int(self._ms_level)
+            )
+            if sub_element is not None:
+                self._ms_level = int(sub_element.get(
+                    "value"
+                ))  # put hardcoded MS tags in minimum.py???
+        return self._ms_level
 
     @property
     def scan_time(self):
@@ -1046,7 +1051,7 @@ class Spectrum(MS_Spectrum):
         return peaks
 
     def _deconvolute_peaks(self, *args, **kwargs):
-        if DECON_DEP:
+        if DECON_DEP is True:
             peaks = self.peaks("centroided")
             # pack peak matrix into expected structure
             peaks = [simple_peak(p[0], p[1], 0.01) for p in peaks]

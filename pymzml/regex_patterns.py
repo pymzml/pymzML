@@ -45,6 +45,10 @@ SPECTRUM_OPEN_PATTERN = re.compile(
 Regex to catch specturm open xml tag with encoded array length
 """
 
+SPECTRUM_OPEN_PATTERN_SIMPLE = re.compile(rb"<spectrum ")
+SPECTRUM_ID_PATTERN_SIMPLE = re.compile(rb"<*spectrum[^>]*id=\"(?P<id>[^\"]+)\"")
+SPECTRUM_DEFAULTARRY_PATTERN_SIMPLE = re.compile(rb"<*spectrum[^>]*defaultArrayLength=\"[0-9]+\">")
+
 CHROMO_OPEN_PATTERN = re.compile(b'<chromatogram\\s.*?id="(.*?)"')
 
 SPECTRUM_CLOSE_PATTERN = re.compile(b"</spectrum>")
