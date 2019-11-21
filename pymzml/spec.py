@@ -1285,11 +1285,11 @@ class Spectrum(MS_Spectrum):
         # callcentPeaks = self.peaks("centroided")
         if noise_level is None:
             noise_level = self.estimated_noise_level(mode=mode)
-        if len(self._peak_dict["centroided"]) != 0:
+        if len(self.peaks("centroided")) != 0:
             self._peak_dict["centroided"] = self.peaks("centroided")[
                 self.peaks("centroided")[:, 1]/noise_level >= signal_to_noise_threshold
             ]
-        if len(self._peak_dict["raw"]) != 0:
+        if len(self.peaks("raw")) != 0:
             self._peak_dict["raw"] = self.peaks("raw")[
                 self.peaks("raw")[:, 1]/noise_level >= signal_to_noise_threshold
             ]

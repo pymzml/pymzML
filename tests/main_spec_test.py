@@ -386,7 +386,7 @@ class SpectrumTest(unittest.TestCase):
 
     def test_estimate_noise_mean_spec_6(self):
         spec = self.Run[6]
-        self.assertEqual(90407.70511570283, spec.estimated_noise_level("mean"))
+        self.assertAlmostEqual(90407.70511570283, spec.estimated_noise_level("mean"))
 
     def test_remove_noise_mean_spec_6(self):
         spec = self.Run[6]
