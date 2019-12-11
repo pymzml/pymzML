@@ -37,7 +37,7 @@ import warnings
 try:
     import plotly.offline as plt
     import plotly.graph_objs as go
-    from plotly import tools
+    from plotly import subplots
 except ImportError:
     warnings.warn("Plotly is required for plotting support.", ImportWarning)
 
@@ -564,7 +564,7 @@ class Factory(object):
         plot_number = len(self.plots)
         rows, cols = int(math.ceil(plot_number / float(2))), 2
         if plot_number % 2 == 0:
-            my_figure = tools.make_subplots(
+            my_figure = subplots.make_subplots(
                 rows=rows,
                 cols=cols,
                 vertical_spacing=0.6 / rows,
@@ -573,7 +573,7 @@ class Factory(object):
         else:
             specs = [[{}, {}] for x in range(rows - 1)]
             specs.append([{"colspan": 2}, None])
-            my_figure = tools.make_subplots(
+            my_figure = subplots.make_subplots(
                 rows=rows,
                 cols=cols,
                 vertical_spacing=0.6 / rows,
