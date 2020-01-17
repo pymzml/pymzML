@@ -133,8 +133,12 @@ class PlotTest(unittest.TestCase):
             style, color, dash, opacity, layout, mz_range = plot
             split_style = style.split(".")
             if split_style[0] == "label":
-                self.pf.add(
+                highest_peaks = sorted(
                     self.spec.highest_peaks(100),
+                    key=lambda x: x[0]
+                )
+                self.pf.add(
+                    highest_peaks,
                     color=(200, 200, 200),
                     style="lines",
                     name="datapoints",
@@ -143,7 +147,7 @@ class PlotTest(unittest.TestCase):
                     mz_range=mz_range,
                 )
                 label_list = []
-                for peak in self.spec.highest_peaks(100):
+                for peak in highest_peaks:
                     label_list.append((peak[0], 100, "spline_top", "label"))
                 self.pf.add(
                     label_list,
@@ -158,7 +162,10 @@ class PlotTest(unittest.TestCase):
                 )
                 self.assertEqual(len(self.pf.plots[plotnumber]), 2)
             else:
-                peak_list = self.spec.highest_peaks(100)
+                peak_list = sorted(
+                    self.spec.highest_peaks(100),
+                    key=lambda x: x[0]
+                )
                 self.pf.add(
                     peak_list,
                     color=color,
@@ -191,6 +198,7 @@ class PlotTest(unittest.TestCase):
             if mz_range is not None:
                 self.assertLessEqual(self.pf.x_max[plotnumber], mz_range[1])
         self.assertEqual(len(self.pf.plots), len(self.test_styles))
+        self.pf.save(self.file_name)
 
     def test_save_plot(self):
         self.pf.add(
@@ -205,7 +213,6 @@ class PlotTest(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(self.file_name):
             os.remove(self.file_name)
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=3)
