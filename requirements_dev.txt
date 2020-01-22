@@ -1,0 +1,10 @@
+# install requirements
+-r requirements.txt
+
+# Testing and Development
+cython
+coverage >= 4.2
+codecov
+pytest
+tox
+regex

@@ -6,16 +6,28 @@ Introduction
 .. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
     :target: https://travis-ci.org/pymzml/pymzML
 
+.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
+   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
+   :alt: AppVeyor CI status
+
 .. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
     :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://codecov.io/gh/pymzml/pymzml/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/pymzml/pymzml
+    :alt: Code Coverage
+
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
-   
-.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
-   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
-   :alt: AppVeyor CI status
+
+.. image:: https://pepy.tech/badge/pymzml
+   :target: https://pepy.tech/project/pymzml
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: As long it is black
+
 
 *******************
 General information
@@ -49,9 +61,9 @@ Please refer to:
     | Cellzome GmbH
     | R&D Platform Technology & Science
     | GSK
-    | Germany 
+    | Germany
     | eMail: christian@fufezan.net
-    | 
+    |
     | http:// <in transition >
 
 
@@ -72,7 +84,7 @@ Implementation
 
 pymzML requires Python3.4+.
 The module is freely available on pymzml.github.com or pypi,
-published under GPL and requires no additional modules to be installed, but can 
+published under MIT license and requires no additional modules to be installed, but can
 optionally use numpy.
 
 
@@ -103,7 +115,7 @@ pymzML requires `Python`_ 3.4 or higher.
 
 .. note::
 
-    Consider to use a Python virtual environment for easy installation and use. 
+    Consider to use a Python virtual environment for easy installation and use.
     Further, usage of python3.4+ is recommended.
 
 
@@ -133,10 +145,21 @@ Testing
 =======
 
 To test the package and correct installation::
-    
+
     nosetests tests/*.py
 
 
+*************
+Contributing
+*************
+
+Please read the contribution guidelines before contributing `here </CONTRIBUTING.rst>`_
 
 
+****************
+Code of Conduct
+****************
 
+Since pymzML is an open source project maintained by the community, we established a code of conduct
+in order to facilitate an inclusive environment for all users, contributors and project memebers.
+Before contributing to pymzML, please read the code of conduct `here </CODE_OF_CONDUCT.md>`_

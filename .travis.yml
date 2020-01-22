@@ -1,14 +1,33 @@
 language: python
 python:
-      - "3.4"
-      - "3.5"
-      - "3.6"
+- '3.6'
 sudo: false
-
-before_install: pip install codecov
-after_success:  codecov
-
+matrix:
+  include:
+  - python: 3.5
+    env: TOXENV=py35
+  - python: 3.6
+    env: TOXENV=py36
+  - python: 3.7
+    env: TOXENV=py37
+    dist: xenial
+  - python: 3.6
+    env: TOXENV=docu
+  - python: 3.6
+    env: TOXENV=coverage
+  - python: 3.6
+    env: TOXENV=example_scripts
 install:
-    - pip install -r requirements.txt
-
-script: nosetests --with-coverage
+  - pip install tox-travis
+script: tox
+deploy:
+  provider: pypi
+  user: pyratez
+  password:
+    secure: "eBvuZ6jAkLVxwHFRJbagVv80l8ssdMDwwpVpfGFsSuhhLWy49HKxspheCr0Tnd4xvlddG+1BXvrUVSmBHmeclEboM5/ddVBJSRp3WIBuR7Z6JirKdFRizamQH/Z0uisuwJyJ0mj5o6qjJFLz6ri7dXaO0epOGuadlaTyTMeTEEqvUpMA4XP1LQqUMAkAaRoURmuBwH2Y3ocQXPLSNYTu0u5+3LLgf4UZ1ZxX/Bv5abBwHyq0TkPnUVkAu2GJ5xhR9ZHJZY8aA5y08sAE9pC9pwyidiiBgK+kmPCX9Owd47SgLzF4K5f5po2fuBtRC8cA5/lf1ykeKwJCHtzcHBJ6jgmg8WFlmri6/Hda72hDZPVhpzYKYqzGUOdIxgT2TwE3L27aL7jR9y2hXLjnM7KvEWCOD9AbylZz9yoe1r3jV1Y97J5nAp7eG3rrzvZJyhhpyQ0PJ0OEvYYqGSrthP40AnVdUyMtcTFCQoWe4G0oA5Z4it3/VZFWNAFwaRV++HdIWOf522PIbk6AsZYlkxCncVD+8oV9RqaiCpZXV5bLDTAW2spfJt+LDeTxVgMc6+DUS5Lul1DPD4PkPc09NW8vs4rEEutoMzzncKAJZtuRfW5JZcJTixOxYN0Eaqb4NNS9uYgFCERdp5BLwihG2Tyiruc3729OeD4uueU/GsVm7Xs="
+  distributions: sdist bdist_wheel bdist_egg
+  on:
+    tags: true
+    all_branches: true
+    skip_existing: true
+    skip_cleanup: true

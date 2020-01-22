@@ -3,6 +3,29 @@
 """
 Reader class for indexed gzipped files
 """
+
+# Python mzML module - pymzml
+# Copyright (C) 2010-2019 M. Kösters, C. Fufezan
+#     The MIT License (MIT)
+
+#     Permission is hereby granted, free of charge, to any person obtaining a copy
+#     of this software and associated documentation files (the "Software"), to deal
+#     in the Software without restriction, including without limitation the rights
+#     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#     copies of the Software, and to permit persons to whom the Software is
+#     furnished to do so, subject to the following conditions:
+
+#     The above copyright notice and this permission notice shall be included in all
+#     copies or substantial portions of the Software.
+
+#     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#     SOFTWARE.
+
 import struct
 import zlib
 from collections import OrderedDict
@@ -19,13 +42,13 @@ class GSGR(object):
 
     def __init__(self, file=None):
 
-        self.file_in     = open(file, 'rb')
-        self.filename    = file
-        self.magic_bytes = b'\x1f\x8b'
-        self.indexed     = True
+        self.file_in = open(file, "rb")
+        self.filename = file
+        self.magic_bytes = b"\x1f\x8b"
+        self.indexed = True
 
         if not self._check_magic_bytes():
-            raise Exception('not a gzip file (wrong magic bytes)')
+            raise Exception("not a gzip file (wrong magic bytes)")
 
         self.random_access = False  # initial state, until index is read
 
@@ -36,7 +59,7 @@ class GSGR(object):
             crc16 = self.file_in.read(2)
         if self.flg & 4 != 0:  # FEXTRA flag
             # TODO: maybe never tested
-            xlen = struct.unpack('<H', self.file_in.read(2))[0]
+            xlen = struct.unpack("<H", self.file_in.read(2))[0]
             self.file_in.seek(xlen)
         if self.flg & 8 != 0:  # FNAME flag
             self.fname = self._read_until_zero()
@@ -49,7 +72,7 @@ class GSGR(object):
         try:
             self.close()
         except:
-            raise Exception(' cant close file')
+            raise Exception(" cant close file")
 
     def seek(self, offset):
         """
@@ -99,20 +122,20 @@ class GSGR(object):
         compression speed and os.
         """
         self.file_in.seek(2)  # make sure filepoiner is at correct position
-        vals       = struct.unpack('<BBLBB', self.file_in.read(8))
-        self.cm    = vals[0]
-        self.flg   = vals[1]
+        vals = struct.unpack("<BBLBB", self.file_in.read(8))
+        self.cm = vals[0]
+        self.flg = vals[1]
         self.mtime = vals[2]
-        self.xfl   = vals[3]
-        self.os    = vals[4]
+        self.xfl = vals[3]
+        self.os = vals[4]
 
     def _read_until_zero(self):
         """
         Read input until \x00 is reached
         """
-        buf = b''
+        buf = b""
         c = self.file_in.read(1)
-        while c != b'\x00':
+        while c != b"\x00":
             buf += c
             c = self.file_in.read(1)
         return buf
@@ -124,28 +147,28 @@ class GSGR(object):
         self.index = OrderedDict()
         self.file_in.seek(10)  # make sure file pointer is at right position
         mb = self.file_in.read(3)
-        if mb != b'FU\x01':  # All hail MK!
-            print('No index in comment field found. No random access possible')
+        if mb != b"FU\x01":  # All hail MK!
+            print("No index in comment field found. No random access possible")
             self.indexed = False
-        lengths = struct.unpack('<BB', self.file_in.read(2))
+        lengths = struct.unpack("<BB", self.file_in.read(2))
         self.idx_len = lengths[0]
         self.offset_len = lengths[1]
-        ID_block = b''
-        while b'\x00' not in ID_block:
+        ID_block = b""
+        while b"\x00" not in ID_block:
             ID_block = self.file_in.read(self.idx_len)
             OffsetBlock = self.file_in.read(self.offset_len)
             try:
                 try:
-                    Identifier = int(ID_block.decode('latin-1').strip('¬'))
+                    Identifier = int(ID_block.decode("latin-1").strip("¬"))
                 except:
-                    Identifier = ID_block.decode('latin-1').strip('¬')
-                Offset = int(OffsetBlock.decode('latin-1').strip('¬'))
+                    Identifier = ID_block.decode("latin-1").strip("¬")
+                Offset = int(OffsetBlock.decode("latin-1").strip("¬"))
                 self.index[Identifier] = Offset
             except:
                 break
         self.file_in.seek(0)
 
-    def read(self, size = -1):
+    def read(self, size=-1):
         """
         Read the content of the in File in binary mode
 
@@ -175,5 +198,6 @@ class GSGR(object):
         """
         self.file_in.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(__doc__)

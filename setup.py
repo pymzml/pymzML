@@ -24,22 +24,24 @@ setup(
     python_requires  = '>=3.4.0',
     install_requires = [
         'numpy >= 1.8.0',
-        'regex'
+        'regex',
     ],
     extras_require   = {
         'full': [
             'plotly < 2.0',
             'pynumpress>=0.0.4',
+            'ms_deisotope',
         ],
         'plot': ['plotly < 2.0'],
         'pynumpress': ['pynumpress>=0.0.4'],
+        'deconvolution': ['ms_deisotope'] 
     },
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
     author           = 'M. Koesters, J. Leufken, S. Schulze, K. Sugimoto, R. Zahedi, M. Hippler and C. Fufezan',
     author_email     = 'christian@fufezan.net',
     url              = 'http://pymzml.github.com',
-    license          = 'GNU General Public License (GPL)',
+    license          = 'The MIT license',
     platforms        = 'any that supports python 3.4',
     classifiers      = [
         'Development Status :: 4 - Beta',
@@ -47,7 +49,7 @@ setup(
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
