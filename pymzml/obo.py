@@ -192,7 +192,7 @@ class OboTranslator(object):
                     "The file may be corrupted or not gzipped."
                 )
 
-        with open_func(obo_file, "rt") as obo:
+        with open_func(obo_file, "rt", encoding='utf-8') as obo:
             collections = {}
             collect = False
             for line in obo:
