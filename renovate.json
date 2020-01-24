@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "pip_requirements": {
+    "enabled": true,
+    "schedule": "before 6am on the first day of the month",
+    "ignoreUnstable": true
+  },
+  "pip_setup": {
+    "enabled": true,
+    "schedule": "before 6am on the first day of the month",
+    "ignoreUnstable": true
+  },
+  "patch": {"enabled": false},
+  "separateMinorPatch": true
+
+}

@@ -384,6 +384,10 @@ class SpectrumTest(unittest.TestCase):
             ],
         )
 
+    def test_estimate_noise_mean_spec_6(self):
+        spec = self.Run[6]
+        self.assertAlmostEqual(90407.70511570283, spec.estimated_noise_level("mean"))
+
     def test_remove_noise_mean_spec_6(self):
         spec = self.Run[6]
         spec.remove_noise("mean")
@@ -425,6 +429,42 @@ class SpectrumTest(unittest.TestCase):
                 [7.20450134e01, 6.51679375e04],
                 [7.20813980e01, 3.49662469e05],
                 [7.30847321e01, 2.11254648e04],
+            ],
+        )
+
+    def test_remove_noise_s2n_noise_level_spec_6(self):
+        spec = self.Run[6]
+        p1 = spec.peaks("centroided")
+        spec.remove_noise(
+            noise_level=1e5,
+            signal_to_noise_threshold=2.0)
+        p2 = spec.peaks("centroided")
+        self.assertPeaksIdentical(
+            p2[:5],
+            [
+                [7.20813980e+01, 3.49662469e+05],
+                [7.40970306e+01, 1.35170670e+07],
+                [7.51003647e+01, 6.28674688e+05],
+                [8.60605240e+01, 3.99662406e+05],
+                [8.60969086e+01, 5.50612938e+05]
+            ],
+        )
+
+    def test_remove_noise_s2n_median_spec_6(self):
+        spec = self.Run[6]
+        p1 = spec.peaks("centroided")
+        spec.remove_noise(
+            mode='mad',
+            signal_to_noise_threshold=5.0)
+        p2 = spec.peaks("centroided")
+        self.assertPeaksIdentical(
+            p2[:5],
+            [
+                [7.00657654e+01, 4.08554297e+04],
+                [7.20450134e+01, 6.51679375e+04],
+                [7.20813980e+01, 3.49662469e+05],
+                [7.40606766e+01, 1.18710039e+05],
+                [7.40970306e+01, 1.35170670e+07]
             ],
         )
 

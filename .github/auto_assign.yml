@@ -1,0 +1,10 @@
+addReviewers: true
+addAssignees: true
+reviewers:
+  - MKoesters
+
+skipKeywords:
+  - wip
+  - WIP
+
+numberOfReviewers: 0

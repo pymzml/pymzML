@@ -64,7 +64,7 @@ Please refer to:
     | Germany
     | eMail: christian@fufezan.net
     |
-    | http:// <in transition >
+    | https://fufezan.net
 
 
 *******

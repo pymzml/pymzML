@@ -31,6 +31,7 @@ Interface for uncompressed mzML files.
 import bisect
 import codecs
 import re
+import os
 from xml.etree.ElementTree import XML, iterparse
 
 from .. import spec
@@ -54,6 +55,21 @@ class StandardMzml(object):
         self.offset_dict = dict()
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
+
+        self.seek_list = self._read_extremes()
+        # print(f"seek_list: {self.seek_list}")
+        if len(self.seek_list) > 1:
+            self._average_bytes_per_spec = round(
+                int(
+                    self.seek_list[-1][1]
+                    / (self.seek_list[-1][0] - self.seek_list[0][0])
+                )
+            )
+        elif len(self.seek_list) == 1:
+            self._average_bytes_per_spec = self.seek_list[-1][1]
+        else:
+            self._average_bytes_per_spec = 100
+
         self._build_index(from_scratch=build_index_from_scratch)
 
     def get_binary_file_handler(self):
@@ -101,9 +117,11 @@ class StandardMzml(object):
         elif identifier in self.offset_dict:
 
             start = self.offset_dict[identifier]
-            with self.get_binary_file_handler() as seeker:
-                seeker.seek(start[0])
-                start, end = self._read_to_spec_end(seeker)
+
+            seeker = self.get_binary_file_handler()
+            seeker.seek(start[0])
+            start, end = self._read_to_spec_end(seeker)
+
             self.file_handler.seek(start, 0)
             data = self.file_handler.read(end)
             if data.startswith("<spectrum"):
@@ -113,9 +131,162 @@ class StandardMzml(object):
         elif type(identifier) == str:
             return self._search_string_identifier(identifier)
         else:
-            spectrum = self._interpol_search(identifier)
+            # spectrum = self._interpol_search(identifier)
+            spectrum = self._binary_search(identifier)
 
         return spectrum
+
+    def _binary_search(self, target_index):
+        """
+        Retrieve spectrum for a given spectrum ID using binary jumps
+
+        Args:
+            target_index (int): native id of the spectrum to access
+
+        Returns:
+            Spectrum (pymzml.spec.Spectrum): pymzML spectrum
+
+
+        """
+        chunk_size = 12800
+        offset_scale = 1
+        jump_history = {'forwards': 0, 'backwards': 0}
+        # This will be used if no spec was found at all during a jump
+        # self._average_bytes_per_spec *= 10
+        # print(f"self.seek_list : {self.seek_list}")
+        with open(self.path, "rb") as seeker:
+            if target_index not in self.offset_dict.keys():
+                for jump in range(40):
+                    scan = None
+                    insert_position = bisect.bisect_left(
+                        self.seek_list, (target_index, 0)
+                    )
+                    if (
+                        target_index < self.seek_list[0][0]
+                        or target_index > self.seek_list[-1][0]
+                    ):
+                        raise Exception(
+                            "Spectrum ID should be between"
+                            " {0} and {1}".format(
+                                self.seek_list[0][0], self.seek_list[-1][0]
+                            )
+                        )
+
+                    element_before = self.seek_list[insert_position - 1]
+                    spec_offset_m1 = target_index - element_before[0]
+
+                    element_after = self.seek_list[insert_position]
+                    spec_offset_p1 = element_after[0] - target_index
+
+                    byte_diff_m1_p1 = element_after[1] - element_before[1]
+                    scan_diff_m1_p1 = element_after[0] - element_before[0]
+
+                    average_spec_between_m1_p1 = int(
+                        round(byte_diff_m1_p1 / scan_diff_m1_p1)
+                    )
+                    # print("\n------------")
+                    # print(f"jump {jump}")
+                    # print(f"insert_pos {insert_position}")
+                    # print(f"average_spec_between_m1_p1 {average_spec_between_m1_p1}")
+                    # print(f"diff target to m1 / spec_offset_m1 {spec_offset_m1}")
+                    # print(f"diff target to p1 / spec_offset_p1 {spec_offset_p1}")
+
+                    # which side are we closer to ...
+                    if spec_offset_m1 < spec_offset_p1:
+                        # print("Closer to m1 - jumping forward")
+                        jump_direction = 'forwards'
+                        jump_history['backwards'] = 0
+                        jump_history['forwards'] += 1
+                        byte_offset = element_before[1] + jump_history['forwards'] * (
+                            offset_scale * average_spec_between_m1_p1 * spec_offset_m1
+                        )
+                        if (target_index - element_before[0]) < 10:
+                            # quite close to target, stat at element before
+                            # and read chunks until found
+                            byte_offset = element_before[1]
+                    else:
+                        # print("Closer to p1 - jumping backwards")
+                        jump_direction = 'backwards'
+                        jump_history['forwards'] = 0
+                        jump_history['backwards'] += 1
+                        byte_offset = element_after[1] - jump_history['backwards'] * (
+                            offset_scale * average_spec_between_m1_p1 * spec_offset_p1
+                        )
+                    byte_offset = int(byte_offset)
+                    # print(f"jump_history {jump_history}")
+                    # print(f"bytes offset {byte_offset}")
+                    # print(f"offset_scale {offset_scale}")
+                    # print(f"seek_list: {min(self.seek_list)} - {max(self.seek_list)} .. n: {len(self.seek_list)}")
+                    # print(f"seek_list[:-10]: {self.seek_list[:10]}")
+                    found_scan = False
+                    chunk = b""
+                    break_outer = False
+
+                    for x in range(100):
+                        seeker.seek(
+                            max([os.SEEK_SET + byte_offset + x * chunk_size, 1])
+                        )
+                        chunk += seeker.read(chunk_size)
+                    # print(f'read {len(chunk)}')
+                    matches = re.finditer(regex_patterns.SPECTRUM_OPEN_PATTERN, chunk)
+                    for _match_number, match in enumerate(matches):
+                        if match is not None:
+                            scan = int(re.search(b"[0-9]*$", match.group("id")).group())
+                            # print(">>", _match_number, scan)
+                            if jump_direction == 'forwards':
+                                if scan > target_index:
+                                    # we went to far ...
+                                    offset_scale = 0.1
+                                    jump_history['forwards'] = 0
+                                else:
+                                    offset_scale = 1
+                            if jump_direction == 'backwards':
+                                if scan < target_index:
+                                    offset_scale = 0.1
+                                    jump_history['backwards'] = 0
+                                else:
+                                    offset_scale = 1
+
+                            if scan in self.offset_dict.keys():
+                                # print("Have seen this scan {scan} already")
+                                continue
+                            found_scan = True
+                            new_entry = (
+                                scan,
+                                byte_offset + match.start(),
+                            )
+                            new_pos = bisect.bisect_left(self.seek_list, new_entry)
+                            self.seek_list.insert(new_pos, new_entry)
+                            self.offset_dict[scan] = (
+                                byte_offset + match.start(),
+                            )
+                            if int(scan) == int(target_index):
+                                # maybe jump from other boarder
+                                break_outer = True
+                                break
+                    if break_outer:
+                        break
+                        if found_scan:
+                            offset_scale = 1
+                        else:
+                            offset_scale += 1
+                    if int(target_index) in self.offset_dict.keys():
+                        break
+
+            start = self.offset_dict[target_index]
+            # print(f"reading spec at pos {start}")
+            seeker.seek(start[0])
+            match = None
+            data = b""
+            while b"</spectrum>" not in data:
+                # print("reading to end")
+                data += seeker.read(chunk_size)
+            end = data.find(b"</spectrum>")
+            seeker.seek(start[0])
+            spec_string = seeker.read(end + len("</spectrum>"))
+            spec_string = spec_string.decode("utf-8")
+            spectrum = spec.Spectrum(XML(spec_string), measured_precision=5e-6)
+            return spectrum
 
     def _build_index(self, from_scratch=False):
         """
@@ -214,12 +385,15 @@ class StandardMzml(object):
                         # so use the whole string as ID
                         pass
                     self.offset_dict[native_id] = (offset,)
+
         elif from_scratch is True:
             seeker.seek(0)
             self._build_index_from_scratch(seeker)
         else:
             print('[Warning] Not index found and build_index_from_scratch is False')
+        
         seeker.close()
+
 
     def _build_index_from_scratch(self, seeker):
         """Build an index of spectra/chromatogram data with offsets by parsing the file."""
@@ -369,7 +543,7 @@ class StandardMzml(object):
                 dist = current_index - target_index
                 if dist < -1 and dist > -(fallback_cutoff):
                     spectrum = self._search_linear(seeker, target_index)
-                    seeker.close()
+                    # seeker.close()
                     spectrum_found = True
                     break
                 elif dist > 0 and dist < fallback_cutoff:
@@ -386,7 +560,7 @@ class StandardMzml(object):
                             )
                     seeker.seek(current_position)
                     spectrum = self._search_linear(seeker, target_index)
-                    seeker.close()
+                    # seeker.close()
                     spectrum_found = True
                     break
 
@@ -397,7 +571,7 @@ class StandardMzml(object):
                     seeker.seek(start)
                     self.offset_dict[current_index] = (start, end)
                     xml_string = seeker.read(end - start)
-                    seeker.close()
+                    # seeker.close()
                     spectrum = spec.Spectrum(XML(xml_string), measured_precision=5e-6)
                     spectrum_found = True
                     break
@@ -427,7 +601,7 @@ class StandardMzml(object):
                 seeker = self.get_binary_file_handler()
                 seeker.seek(spec_start_offset)
                 spectrum = self._search_linear(seeker, target_index)
-                seeker.close()
+                # seeker.close()
                 spectrum_found = True
                 break
 
@@ -466,6 +640,63 @@ class StandardMzml(object):
                 end_pos = chunk_offset + relative_pos_in_chunk
                 end_found = True
         return (start_pos, end_pos)
+
+    def _read_extremes(self):
+        """
+        Read min and max spectrum ids. Required for binary jumps.
+
+        Returns:
+            seek_list (list): list of tuples containing spec_id and file_offset
+        """
+        chunk_size = 128000
+        # chunk_size = 12800
+        first_scan = None
+        last_scan = None
+        seek_list = []
+        with open(self.path, "rb") as seeker:
+            buffer = b""
+            for x in range(100):
+                try:
+                    seeker.seek(os.SEEK_SET + x * chunk_size)
+                except OSError:
+                    break
+                chunk = seeker.read(chunk_size)
+                buffer += chunk
+                match = regex_patterns.SPECTRUM_OPEN_PATTERN_SIMPLE.search(buffer)
+                if match is not None:
+                    id_match = regex_patterns.SPECTRUM_ID_PATTERN_SIMPLE.search(buffer)
+                    first_scan = int(
+                        re.search(b"[0-9]*$", id_match.group("id")).group()
+                    )
+                    #
+                    seek_list.append(
+                        (first_scan, seeker.tell() - chunk_size + match.start())
+                    )
+                    break
+            buffer = b""
+            seeker.seek(0, os.SEEK_END)
+            for x in range(1, 100):
+                try:
+                    seeker.seek(-x * chunk_size, os.SEEK_END)
+                except OSError:
+                    break
+                chunk = seeker.read(chunk_size)
+                buffer = chunk + buffer
+                # match = list(self.regex['spec_title_pattern'].finditer(buffer))
+
+                matches = list(
+                    regex_patterns.SPECTRUM_OPEN_PATTERN_SIMPLE.finditer(buffer)
+                )
+                if len(matches) != 0:
+                    id_match = regex_patterns.SPECTRUM_ID_PATTERN_SIMPLE.search(
+                        buffer[matches[-1].start() :]
+                    )
+                    last_scan = int(re.search(b"[0-9]*$", id_match.group("id")).group())
+                    seek_list.append(
+                        (last_scan, seeker.tell() - chunk_size + matches[-1].start())
+                    )
+                    break
+        return seek_list
 
     def _search_linear(self, seeker, index, chunk_size=8):
         """
@@ -523,7 +754,7 @@ class StandardMzml(object):
                         spec_end_offset,
                     )
                     xml_string = XML(spec_string)
-                    seeker.close()
+                    # seeker.close()
                     return spec.Spectrum(xml_string, measured_precision=5e-6)
 
     def _search_string_identifier(self, search_string, chunk_size=8):
@@ -609,6 +840,7 @@ class StandardMzml(object):
         """
         """
         self.file_handler.close()
+
 
 
 if __name__ == "__main__":
