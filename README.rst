@@ -6,8 +6,8 @@ Introduction
 .. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
     :target: https://travis-ci.org/pymzml/pymzML
 
-.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
-   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
+.. image:: https://ci.appveyor.com/api/projects/status/e5reb5xw74jfqk2v/branch/dev?svg=true
+   :target: https://ci.appveyor.com/api/projects/status/e5reb5xw74jfqk2v/branch/dev?svg=true
    :alt: AppVeyor CI status
 
 .. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
