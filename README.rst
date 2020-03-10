@@ -82,7 +82,7 @@ pymzML is an extension to Python that offers
 Implementation
 **************
 
-pymzML requires Python3.4+.
+pymzML requires Python3.5+.
 The module is freely available on pymzml.github.com or pypi,
 published under MIT license and requires no additional modules to be installed, but can
 optionally use numpy.
@@ -111,7 +111,7 @@ doi: https://doi.org/10.1093/bioinformatics/bty046
 Installation
 ************
 
-pymzML requires `Python`_ 3.4 or higher.
+pymzML requires `Python`_ 3.5 or higher.
 
 .. note::
 
