@@ -84,8 +84,7 @@ Implementation
 
 pymzML requires Python3.5+.
 The module is freely available on pymzml.github.com or pypi,
-published under MIT license and requires no additional modules to be installed, but can
-optionally use numpy.
+published under MIT license and only requires numpy and regex, however there are several optional dependencies for extended functionality like interactive plotting and deconvolution.
 
 
 ********
@@ -133,6 +132,15 @@ Download pymzML using `GitHub`_ **or** the zip file:
 
 .. _GitHub:
    https://github.com/pymzML/pymzml
+
+* pypi version::
+
+  user@localhost:~$ pip install pymzml # install standard version
+  user@localhost:~$ pip install "pymzml[plot]" # with plotting support
+  user@localhost:~$ pip install "pymzml[pynumpress]" # with pynumpress support
+  user@localhost:~$ pip install "pymzml[deconvolution]" # with deconvolution support using ms_deisotope
+  user@localhost:~$ pip install "pymzml[full]" # full featured
+
 
 If you have troubles installing the dependencies, install numpy first separately,
 since pynumpress requires numpy to be installed.
