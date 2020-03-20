@@ -135,11 +135,11 @@ Download pymzML using `GitHub`_ **or** the zip file:
 
 * pypi version::
 
-  user@localhost:~$ pip install pymzml # install standard version
-  user@localhost:~$ pip install "pymzml[plot]" # with plotting support
-  user@localhost:~$ pip install "pymzml[pynumpress]" # with pynumpress support
-  user@localhost:~$ pip install "pymzml[deconvolution]" # with deconvolution support using ms_deisotope
-  user@localhost:~$ pip install "pymzml[full]" # full featured
+   user@localhost:~$ pip install pymzml # install standard version
+   user@localhost:~$ pip install "pymzml[plot]" # with plotting support
+   user@localhost:~$ pip install "pymzml[pynumpress]" # with pynumpress support
+   user@localhost:~$ pip install "pymzml[deconvolution]" # with deconvolution support using ms_deisotope
+   user@localhost:~$ pip install "pymzml[full]" # full featured
 
 
 If you have troubles installing the dependencies, install numpy first separately,
