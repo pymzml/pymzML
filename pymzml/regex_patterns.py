@@ -22,6 +22,14 @@ SIM_INDEX_PATTERN = re.compile(
 """
 Regex pattern for SIM index
 """
+
+
+SHIMADZU_INDEX_PATTERN = re.compile(b'(?P<type>(idRef="))(?P<nativeID>[0-9a-z]*)">(?P<offset>[0-9]*)</offset>')
+"""
+Regex pattern for shimadzu index
+"""
+
+
 SPECTRUM_PATTERN3 = regex.compile(r"((\w+)=(\w+\s*))+")
 SPECTRUM_ID_PATTERN = re.compile(r'="{0,1}([0-9]*)"{0,1}>{0,1}$')
 """

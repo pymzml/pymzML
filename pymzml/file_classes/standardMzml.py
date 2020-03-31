@@ -56,6 +56,7 @@ class StandardMzml(object):
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
+        self._build_index(from_scratch=build_index_from_scratch)
         self.seek_list = self._read_extremes()
         # print(f"seek_list: {self.seek_list}")
         if len(self.seek_list) > 1:
@@ -70,7 +71,6 @@ class StandardMzml(object):
         else:
             self._average_bytes_per_spec = 100
 
-        self._build_index(from_scratch=build_index_from_scratch)
 
     def get_binary_file_handler(self):
         return open(self.path, "rb")
@@ -320,6 +320,7 @@ class StandardMzml(object):
         index_found = False
 
         spectrum_index_pattern = regex_patterns.SPECTRUM_INDEX_PATTERN
+        shimadzu_index_pattern = regex_patterns.SHIMADZU_INDEX_PATTERN
         for _ in range(1, 10):  # max 10kbyte
             # some converters fail in writing a correct index
             # we found
@@ -334,12 +335,14 @@ class StandardMzml(object):
                 match = chromatogram_offset_pattern.search(line)
                 if match:
                     self.offset_dict["TIC"] = int(bytes.decode(match.group("offset")))
-
                 match_spec = spectrum_index_pattern.search(line)
                 if match_spec is not None:
                     spec_byte_offset = int(bytes.decode(match_spec.group("offset")))
                     sanity_check_set.add(spec_byte_offset)
-
+                match_shimadzu = shimadzu_index_pattern.search(line)
+                if match_shimadzu is not None:
+                    spec_byte_offset = int(bytes.decode(match_shimadzu.group("offset")))
+                    sanity_check_set.add(spec_byte_offset)
                 match = index_list_offset_pattern.search(line)
                 if match:
                     index_found = True
@@ -362,12 +365,17 @@ class StandardMzml(object):
 
             for line in seeker:
                 match_spec = spectrum_index_pattern.search(line)
+                match_shimadzu = shimadzu_index_pattern.search(line)
                 if match_spec and match_spec.group("nativeID") == b"":
                     match_spec = None
                 match_sim = sim_index_pattern.search(line)
                 if match_spec:
                     offset = int(bytes.decode(match_spec.group("offset")))
                     native_id = int(bytes.decode(match_spec.group("nativeID")))
+                    self.offset_dict[native_id] = offset
+                if match_shimadzu:
+                    offset = int(bytes.decode(match_shimadzu.group("offset")))
+                    native_id = bytes.decode(match_shimadzu.group("nativeID"))
                     self.offset_dict[native_id] = offset
                 elif match_sim:
                     offset = int(bytes.decode(match_sim.group("offset")))
@@ -391,7 +399,7 @@ class StandardMzml(object):
             self._build_index_from_scratch(seeker)
         else:
             print('[Warning] Not index found and build_index_from_scratch is False')
-        
+
         seeker.close()
 
 
@@ -665,9 +673,12 @@ class StandardMzml(object):
                 match = regex_patterns.SPECTRUM_OPEN_PATTERN_SIMPLE.search(buffer)
                 if match is not None:
                     id_match = regex_patterns.SPECTRUM_ID_PATTERN_SIMPLE.search(buffer)
-                    first_scan = int(
-                        re.search(b"[0-9]*$", id_match.group("id")).group()
-                    )
+                    try:
+                        first_scan = int(
+                            re.search(b"[0-9]*$", id_match.group("id")).group()
+                        )
+                    except ValueError:
+                        first_scan = 0
                     #
                     seek_list.append(
                         (first_scan, seeker.tell() - chunk_size + match.start())
