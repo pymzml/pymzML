@@ -438,6 +438,7 @@ class Spectrum(MS_Spectrum):
             "deconvoluted": None,
         }
         self._selected_precursors = None
+        self._s2i_array = None
         self._profile = None
         self.reprofiled = False
         self._reprofiled_peaks = None
@@ -981,6 +982,20 @@ class Spectrum(MS_Spectrum):
             params = self._get_encoding_parameters("m/z array")
             self._mz = self._decode(*params)
         return self._mz
+
+    @property
+    def signal_to_noise(self):
+        """
+        Return signal to noise array if available.
+
+        Returns:
+            s2i_array (np.array): list of s2i values of spectrum.
+        """
+        if self._s2i_array is None:
+            params = self._get_encoding_parameters("signal to noise array")
+            self._s2i_array = self._decode(*params)
+        return self._s2i_array
+
 
     @mz.setter
     def mz(self, mz_list):
