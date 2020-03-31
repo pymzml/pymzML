@@ -804,7 +804,7 @@ class Spectrum(MS_Spectrum):
                     except ValueError:
                         self._ID = match.group(1)
                 else:
-                    self._ID = ""
+                    self._ID = self.element.get("id")
         return self._ID
 
     @property

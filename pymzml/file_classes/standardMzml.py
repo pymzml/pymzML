@@ -376,7 +376,7 @@ class StandardMzml(object):
                 if match_shimadzu:
                     offset = int(bytes.decode(match_shimadzu.group("offset")))
                     native_id = bytes.decode(match_shimadzu.group("nativeID"))
-                    self.offset_dict[native_id] = offset
+                    self.offset_dict[native_id] = (offset, )
                 elif match_sim:
                     offset = int(bytes.decode(match_sim.group("offset")))
                     native_id = bytes.decode(match_sim.group("nativeID"))

@@ -48,6 +48,7 @@ class StandardMzmlTest(unittest.TestCase):
     def test_vitek_mzml(self):
         standard_mzml = StandardMzml(self.paths[-1], "latin-1")
         assert "v1v6232d" in standard_mzml.offset_dict
+        self.assertIsInstance(standard_mzml["v1v6232d"], Spectrum)
 
 
 if __name__ == "__main__":

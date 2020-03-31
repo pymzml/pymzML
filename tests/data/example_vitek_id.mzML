@@ -250,9 +250,9 @@
   <indexList count="2">
     <index name="spectrum">
       <offset idRef="v1v6232d">4026</offset>
-      <offset idRef="v1v62d34">16851</offset>
-      <offset idRef="v1v6232a">29873</offset>
-      <offset idRef="v1v63gtd">45699</offset>
+      <offset idRef="v1v62d34">16817</offset>
+      <offset idRef="v1v6232a">29805</offset>
+      <offset idRef="v1v63gtd">45597</offset>
     </index>
     <index name="chromatogram">
       <offset idRef="TIC" info="just any number since not existent, ja">132417</offset>
