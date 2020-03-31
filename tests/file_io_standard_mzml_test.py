@@ -17,8 +17,8 @@ class StandardMzmlTest(unittest.TestCase):
     def setUp(self):
         """
         """
-        paths = test_file_paths.paths
-        self.standard_mzml = StandardMzml(paths[0], "latin-1")
+        self.paths = test_file_paths.paths
+        self.standard_mzml = StandardMzml(self.paths[0], "latin-1")
 
     def tearDown(self):
         """
@@ -44,6 +44,10 @@ class StandardMzmlTest(unittest.TestCase):
         """
         spec = self.standard_mzml._interpol_search(5)
         self.assertIsInstance(spec, Spectrum)
+
+    def test_vitek_mzml(self):
+        standard_mzml = StandardMzml(self.paths[-1], "latin-1")
+        assert "v1v6232d" in standard_mzml.offset_dict
 
 
 if __name__ == "__main__":

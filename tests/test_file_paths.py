@@ -21,6 +21,7 @@ DATA_FILES = [
     "BSA1.mzML.gz",
     "example_invalid_obo_version.mzML",
     "example_no_obo_version.mzML",
+    "example_vitek_id.mzML"
 ]
 
 paths = [os.path.join(DATA_FOLDER, file) for file in DATA_FILES]
