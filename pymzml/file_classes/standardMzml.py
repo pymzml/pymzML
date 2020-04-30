@@ -42,7 +42,7 @@ class StandardMzml(object):
     """
     """
 
-    def __init__(self, path, encoding, build_index_from_scratch=False):
+    def __init__(self, path, encoding, build_index_from_scratch=False, index_regex=None):
         """
         Initalize Wrapper object for standard mzML files.
 
@@ -50,6 +50,8 @@ class StandardMzml(object):
             path (str)     : path to the file
             encoding (str) : encoding of the file
         """
+        print(f'\n\n{index_regex}\n\n')
+        self.index_regex = index_regex
         self.path = path
         self.file_handler = self.get_file_handler(encoding)
         self.offset_dict = dict()
@@ -309,12 +311,12 @@ class StandardMzml(object):
         # Declare the pre-seeker
         seeker = self.get_binary_file_handler()
         # Reading last 1024 bytes to find chromatogram Pos and SpectrumIndex Pos
-        index_list_offset_pattern = re.compile(
-            b"<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>"
-        )
-        chromatogram_offset_pattern = re.compile(
-            b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset'
-        )
+        # index_list_offset_pattern = re.compile(
+        #     b"<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>"
+        # )
+        # chromatogram_offset_pattern = re.compile(
+        #     b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset'
+        # )
         self.offset_dict["TIC"] = None
         seeker.seek(0, 2)
         index_found = False
@@ -331,7 +333,7 @@ class StandardMzml(object):
                 break
                 # File is smaller than 10kbytes ...
             for line in seeker:
-                match = chromatogram_offset_pattern.search(line)
+                match = regex_patterns.CHROMATOGRAM_OFFSET_PATTERN.search(line)
                 if match:
                     self.offset_dict["TIC"] = int(bytes.decode(match.group("offset")))
 
@@ -340,7 +342,7 @@ class StandardMzml(object):
                     spec_byte_offset = int(bytes.decode(match_spec.group("offset")))
                     sanity_check_set.add(spec_byte_offset)
 
-                match = index_list_offset_pattern.search(line)
+                match = regex_patterns.INDEX_LIST_OFFSET_PATTERN.search(line)
                 if match:
                     index_found = True
                     # print(int(match.group('indexListOffset').decode('utf-8')))
@@ -361,37 +363,60 @@ class StandardMzml(object):
             sim_index_pattern = regex_patterns.SIM_INDEX_PATTERN
 
             for line in seeker:
+                # if b'<offset' not in line:
+                #     # skip newlines etc
+                #     continue
+                print(line)
                 match_spec = spectrum_index_pattern.search(line)
                 if match_spec and match_spec.group("nativeID") == b"":
                     match_spec = None
                 match_sim = sim_index_pattern.search(line)
-                if match_spec:
-                    offset = int(bytes.decode(match_spec.group("offset")))
-                    native_id = int(bytes.decode(match_spec.group("nativeID")))
-                    self.offset_dict[native_id] = offset
-                elif match_sim:
-                    offset = int(bytes.decode(match_sim.group("offset")))
-                    native_id = bytes.decode(match_sim.group("nativeID"))
-                    # if native_id == 'DECOY_126104_C[160]NVVISGGTGSGK/2_y10':
-                    try:
-                        native_id = int(
-                            regex_patterns.SPECTRUM_ID_PATTERN.search(native_id).group(
-                                1
+                if self.index_regex is None:
+                    if match_spec:
+                        offset = int(bytes.decode(match_spec.group("offset")))
+                        native_id = int(bytes.decode(match_spec.group("nativeID")))
+                        self.offset_dict[native_id] = offset
+                    elif match_sim:
+                        offset = int(bytes.decode(match_sim.group("offset")))
+                        native_id = bytes.decode(match_sim.group("nativeID"))
+                        # if native_id == 'DECOY_126104_C[160]NVVISGGTGSGK/2_y10':
+                        try:
+                            # breakpoint()
+                            native_id = int(
+                                regex_patterns.SPECTRUM_ID_PATTERN2.search(native_id).group(
+                                    2
+                                )
                             )
-                        )
-                        # exit(1)
-                    except AttributeError:
-                        # match is None and has no attribute group,
-                        # so use the whole string as ID
+                            # exit(1)
+                        except AttributeError:
+                            # match is None and has no attribute group,
+                            # so use the whole string as ID
+                            pass
+                        self.offset_dict[native_id] = (offset,)
+                else:
+                    # breakpoint()
+                    match = self.index_regex.search(line)
+                    # print(line)
+                    # print(match)
+                    if match:
+                        native_id = match.group("ID")
+                        try:
+                            native_id = int(native_id)
+                        except ValueError:
+                            pass
+                        offset = match.group("offset")
+                        self.offset_dict[native_id] = (offset,)
+                        # print(native_id, offset)
+                    else:
                         pass
-                    self.offset_dict[native_id] = (offset,)
+                        # print('Custom regex ({r}) does not match line \n{line}\n, skipping!'.format(r=self.index_regex, line=line))
 
         elif from_scratch is True:
             seeker.seek(0)
             self._build_index_from_scratch(seeker)
         else:
             print('[Warning] Not index found and build_index_from_scratch is False')
-        
+
         seeker.close()
 
 
