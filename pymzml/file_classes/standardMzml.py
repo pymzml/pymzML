@@ -366,7 +366,6 @@ class StandardMzml(object):
                 # if b'<offset' not in line:
                 #     # skip newlines etc
                 #     continue
-                print(line)
                 match_spec = spectrum_index_pattern.search(line)
                 if match_spec and match_spec.group("nativeID") == b"":
                     match_spec = None
