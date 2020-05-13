@@ -50,7 +50,6 @@ class StandardMzml(object):
             path (str)     : path to the file
             encoding (str) : encoding of the file
         """
-        print(f'\n\n{index_regex}\n\n')
         self.index_regex = index_regex
         self.path = path
         self.file_handler = self.get_file_handler(encoding)
@@ -689,9 +688,12 @@ class StandardMzml(object):
                 match = regex_patterns.SPECTRUM_OPEN_PATTERN_SIMPLE.search(buffer)
                 if match is not None:
                     id_match = regex_patterns.SPECTRUM_ID_PATTERN_SIMPLE.search(buffer)
-                    first_scan = int(
-                        re.search(b"[0-9]*$", id_match.group("id")).group()
-                    )
+                    try:
+                        first_scan = int(
+                            re.search(b"[0-9]*$", id_match.group("id")).group()
+                        )
+                    except ValueError:
+                        first_scan = 0
                     #
                     seek_list.append(
                         (first_scan, seeker.tell() - chunk_size + match.start())
