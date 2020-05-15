@@ -107,6 +107,7 @@ class Reader(object):
 
         # File info
         self.info = ddict()
+        self.path_or_file = path_or_file
         if isinstance(path_or_file, str):
             self.info["file_name"] = path_or_file
             self.info["encoding"] = self._determine_file_encoding(path_or_file)
@@ -165,6 +166,9 @@ class Reader(object):
                     spectrum.calling_instance = self
                     return spectrum
             elif event == "END":
+                # reinit iter
+                self.info["file_object"] = self._open_file(self.path_or_file)
+                self.iter = self._init_iter()
                 raise StopIteration
 
     def __getitem__(self, identifier):

@@ -215,6 +215,16 @@ class runTest(unittest.TestCase):
         """
         pass
 
+    def test_iter_2_times(self):
+        ids1 = []
+        ids2 = []
+        reader = run.Reader(self.paths[0])
+        for spec in reader:
+            ids1.append(spec.ID)
+        for spec in reader:
+            ids2.append(spec.ID)
+        assert ids1 == ids2
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=3)
