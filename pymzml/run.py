@@ -100,6 +100,7 @@ class Reader(object):
             None: 0.0001,  # if spectra does not contain ms_level information
                          # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
                          # returned as None
+            0: 0.0001,
             1: 5e-6,
             2: 20e-6,
         }
