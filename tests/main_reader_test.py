@@ -228,7 +228,7 @@ class runTest(unittest.TestCase):
                 b'.*idRef="ManuelsCustomID=(?P<ID>.*) diesdas">(?P<offset>[0-9]*)</offset>'
             )
         )
-        ids = [k for k in reader.info['offset_dict'].keys() if k != 'TIC']
+        ids = sorted([k for k in reader.info['offset_dict'].keys() if k != 'TIC'])
         assert ids == list(range(1, 11))
 
 
