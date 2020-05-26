@@ -4,6 +4,7 @@
 Part of pymzml test cases
 """
 import os
+import re
 import pymzml.run as run
 import unittest
 from pymzml.spec import Spectrum, Chromatogram
@@ -215,15 +216,20 @@ class runTest(unittest.TestCase):
         """
         pass
 
-    def test_iter_2_times(self):
-        ids1 = []
-        ids2 = []
-        reader = run.Reader(self.paths[0])
-        for spec in reader:
-            ids1.append(spec.ID)
-        for spec in reader:
-            ids2.append(spec.ID)
-        assert ids1 == ids2
+    def test_read_custom_regex(self):
+        custom_regex_file = os.path.join(
+            os.path.dirname(__file__),
+            "data",
+            "Manuels_custom_ids.mzML"
+        )
+        reader = run.Reader(
+            custom_regex_file,
+            index_regex=re.compile(
+                b'.*idRef="ManuelsCustomID=(?P<ID>.*) diesdas">(?P<offset>[0-9]*)</offset>'
+            )
+        )
+        ids = sorted([k for k in reader.info['offset_dict'].keys() if k != 'TIC'])
+        assert ids == list(range(1, 11))
 
 
 if __name__ == "__main__":

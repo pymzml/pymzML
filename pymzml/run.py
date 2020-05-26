@@ -82,9 +82,11 @@ class Reader(object):
         obo_version=None,
         build_index_from_scratch=False,
         skip_chromatogram=True,
+        index_regex=None,
         **kwargs
     ):
         """Initialize and set required attributes."""
+        self.index_regex = index_regex
         self.build_index_from_scratch = build_index_from_scratch
         self.skip_chromatogram = skip_chromatogram
         if MS_precisions is None:
@@ -221,6 +223,7 @@ class Reader(object):
             path_or_file,
             self.info["encoding"],
             build_index_from_scratch=self.build_index_from_scratch,
+            index_regex=self.index_regex
         )
 
     def _guess_encoding(self, mzml_file):

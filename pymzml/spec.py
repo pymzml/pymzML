@@ -808,7 +808,7 @@ class Spectrum(MS_Spectrum):
                     except ValueError:
                         self._ID = match.group(1)
                 else:
-                    self._ID = ""
+                    self._ID = self.element.get("id")
         return self._ID
 
     @property
@@ -821,14 +821,18 @@ class Spectrum(MS_Spectrum):
         """
         if self._id_dict is None:
             tuples = []
-            captures = regex_patterns.SPECTRUM_PATTERN3.match(
+            match = regex_patterns.SPECTRUM_PATTERN3.match(
                 self.element.attrib["id"]
-            ).captures(1)
-            for element in captures:
-                k, v = element.strip().split("=")
-                v = int(v)
-                tuples.append([k, v])
-            self._id_dict = dict(tuples)
+            )
+            if match is not None:
+                captures = match.captures(1)
+                for element in captures:
+                    k, v = element.strip().split("=")
+                    v = int(v)
+                    tuples.append([k, v])
+                self._id_dict = dict(tuples)
+            else:
+                self._id_dict = {}
         return self._id_dict
 
     @property
