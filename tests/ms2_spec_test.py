@@ -48,6 +48,12 @@ class SpectrumMS2Test(unittest.TestCase):
             selected_precursor, [{"mz": 443.711242675781, "i": 0.0, "charge": 2}]
         )
 
+    def test_ion_mode(self):
+        assert self.spec['positive scan'] is True
+
+    def test_ion_mode_non_existent(self):
+        assert self.spec['negative scan'] is None
+
     @unittest.skipIf(pymzml.spec.DECON_DEP is False, "ms_deisotope was not installed")
     def test_deconvolute_peaks(self):
         charge = 3

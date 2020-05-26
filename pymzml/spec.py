@@ -626,12 +626,14 @@ class Spectrum(MS_Spectrum):
             return_val = self.ID
         else:
             if not accession.startswith("MS:"):
-                accession = self.calling_instance.OT[accession]["id"]
+                try:
+                    accession = self.calling_instance.OT[accession]["id"]
+                except TypeError:
+                    accession = '---'
             search_string = './/*[@accession="{0}"]'.format(accession)
-
             elements = []
             for x in self.element.iterfind(search_string):
-                val = x.attrib.get("value")
+                val = x.attrib.get("value", "")
                 try:
                     val = float(val)
                 except:
@@ -644,6 +646,8 @@ class Spectrum(MS_Spectrum):
                 return_val = elements[0]
             else:
                 return_val = elements
+        if return_val == '':
+            return_val = True
         return return_val
 
     def get(self, acc, default=None):
