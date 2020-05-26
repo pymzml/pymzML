@@ -34,9 +34,11 @@ class SpectrumMS2Test(unittest.TestCase):
 
     def test_scan_time(self):
         scan_time = self.spec.scan_time_in_minutes()
+        scan_time2 = self.spec.scan_time_in_minutes()
         self.assertIsNotNone(scan_time)
         self.assertIsInstance(scan_time, float)
         self.assertEqual(round(scan_time, 4), round(28.96722412109367, 4))
+        self.assertEqual(scan_time, scan_time2)
 
     def test_select_precursors(self):
         selected_precursor = self.spec.selected_precursors
