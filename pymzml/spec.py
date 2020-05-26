@@ -443,6 +443,7 @@ class Spectrum(MS_Spectrum):
         self._reprofiled_peaks = None
         self._scan_time = None
         self._scan_time_unit = None
+        self._scan_time_in_minutes = None
         self._t_mass_set = None
         self._t_mz_set = None
         self._TIC = None
@@ -899,18 +900,17 @@ class Spectrum(MS_Spectrum):
         Returns:
             scan_time (float):
         """
-
-        self._scan_time, time_unit = self.scan_time
-        if self._scan_time_unit.lower() == "second":
-            self._scan_time /= 60.0
-        elif self._scan_time_unit.lower() == "minute":
-            pass
-        elif self._scan_time_unit.lower() == "hour":
-            self._scan_time *= 60.0
-            pass
-        else:
-            raise Exception("Time unit '{0}' unknown".format(self._scan_time_unit))
-        return self._scan_time
+        if self._scan_time_in_minutes is None:
+            self._scan_time, time_unit = self.scan_time
+            if self._scan_time_unit.lower() == "second":
+                self._scan_time_in_minutes = self._scan_time / 60.0
+            elif self._scan_time_unit.lower() == "minute":
+                self._scan_time_in_minutes = self._scan_time
+            elif self._scan_time_unit.lower() == "hour":
+                self._scan_time_in_minutes = self._scan_time * 60.0
+            else:
+                raise Exception("Time unit '{0}' unknown".format(self._scan_time_unit))
+        return self._scan_time_in_minutes
 
     @property
     def selected_precursors(self):
