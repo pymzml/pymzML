@@ -34,9 +34,11 @@ class SpectrumMS2Test(unittest.TestCase):
 
     def test_scan_time(self):
         scan_time = self.spec.scan_time_in_minutes()
+        scan_time2 = self.spec.scan_time_in_minutes()
         self.assertIsNotNone(scan_time)
         self.assertIsInstance(scan_time, float)
         self.assertEqual(round(scan_time, 4), round(28.96722412109367, 4))
+        self.assertEqual(scan_time, scan_time2)
 
     def test_select_precursors(self):
         selected_precursor = self.spec.selected_precursors
@@ -47,6 +49,12 @@ class SpectrumMS2Test(unittest.TestCase):
         self.assertEqual(
             selected_precursor, [{"mz": 443.711242675781, "i": 0.0, "charge": 2}]
         )
+
+    def test_ion_mode(self):
+        assert self.spec['positive scan'] is True
+
+    def test_ion_mode_non_existent(self):
+        assert self.spec['negative scan'] is None
 
     @unittest.skipIf(pymzml.spec.DECON_DEP is False, "ms_deisotope was not installed")
     def test_deconvolute_peaks(self):

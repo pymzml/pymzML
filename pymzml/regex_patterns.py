@@ -24,6 +24,7 @@ Regex pattern for SIM index
 """
 SPECTRUM_PATTERN3 = regex.compile(r"((\w+)=(\w+\s*))+")
 SPECTRUM_ID_PATTERN = re.compile(r'="{0,1}([0-9]*)"{0,1}>{0,1}$')
+SPECTRUM_ID_PATTERN2 = re.compile(r'(scan|scanId)=(\d+)')
 """
 Simplified spectrum id regex. Greedly catches ints at the end of line
 """
@@ -70,3 +71,11 @@ CHROMATOGRAM_AND_SPECTRUM_PATTERN_WITH_ID = re.compile(
     r"<\s*(chromatogram|spectrum)\s*(id=(\".*?\")|index=\".*?\")\s(id=(\".*?\"))*\s*.*\sdefaultArrayLength=\"[0-9]+\">"
 )
 """Regex to catch combined chromatogram and spectrum patterns"""
+
+INDEX_LIST_OFFSET_PATTERN = re.compile(
+    b"<indexListOffset>(?P<indexListOffset>[0-9]*)</indexListOffset>"
+)
+
+CHROMATOGRAM_OFFSET_PATTERN = re.compile(
+    b'(?P<WTF>[nativeID|idRef])="TIC">(?P<offset>[0-9]*)</offset'
+)

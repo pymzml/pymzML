@@ -13,7 +13,7 @@ from pymzml.utils import GSGR
 class FileInterface(object):
     """Interface to different mzML formats."""
 
-    def __init__(self, path, encoding, build_index_from_scratch=False):
+    def __init__(self, path, encoding, build_index_from_scratch=False, index_regex=None):
         """
         Initialize a object interface to mzML files.
 
@@ -24,6 +24,7 @@ class FileInterface(object):
         """
         self.build_index_from_scratch = build_index_from_scratch
         self.encoding = encoding
+        self.index_regex = index_regex
         self.file_handler = self._open(path)
         self.offset_dict = self.file_handler.offset_dict
 
@@ -55,7 +56,7 @@ class FileInterface(object):
             else:
                 return standardGzip.StandardGzip(path_or_file, self.encoding)
         return standardMzml.StandardMzml(
-            path_or_file, self.encoding, self.build_index_from_scratch
+            path_or_file, self.encoding, self.build_index_from_scratch, index_regex=self.index_regex
         )
 
     def _indexed_gzip(self, path):

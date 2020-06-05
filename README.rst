@@ -6,8 +6,8 @@ Introduction
 .. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
     :target: https://travis-ci.org/pymzml/pymzML
 
-.. image:: https://ci.appveyor.com/api/projects/status/4nlw52a9qn22921d?svg=true
-   :target: https://ci.appveyor.com/project/fufezan-lab/pymzml
+.. image:: https://ci.appveyor.com/api/projects/status/e5reb5xw74jfqk2v/branch/dev?svg=true
+   :target: https://ci.appveyor.com/api/projects/status/e5reb5xw74jfqk2v/branch/dev?svg=true
    :alt: AppVeyor CI status
 
 .. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
@@ -82,10 +82,9 @@ pymzML is an extension to Python that offers
 Implementation
 **************
 
-pymzML requires Python3.4+.
+pymzML requires Python3.5+.
 The module is freely available on pymzml.github.com or pypi,
-published under MIT license and requires no additional modules to be installed, but can
-optionally use numpy.
+published under MIT license and only requires numpy and regex, however there are several optional dependencies for extended functionality like interactive plotting and deconvolution.
 
 
 ********
@@ -111,7 +110,7 @@ doi: https://doi.org/10.1093/bioinformatics/bty046
 Installation
 ************
 
-pymzML requires `Python`_ 3.4 or higher.
+pymzML requires `Python`_ 3.5 or higher.
 
 .. note::
 
@@ -134,6 +133,15 @@ Download pymzML using `GitHub`_ **or** the zip file:
 .. _GitHub:
    https://github.com/pymzML/pymzml
 
+* pypi version::
+
+   user@localhost:~$ pip install pymzml # install standard version
+   user@localhost:~$ pip install "pymzml[plot]" # with plotting support
+   user@localhost:~$ pip install "pymzml[pynumpress]" # with pynumpress support
+   user@localhost:~$ pip install "pymzml[deconvolution]" # with deconvolution support using ms_deisotope
+   user@localhost:~$ pip install "pymzml[full]" # full featured
+
+
 If you have troubles installing the dependencies, install numpy first separately,
 since pynumpress requires numpy to be installed.
 
@@ -146,7 +154,7 @@ Testing
 
 To test the package and correct installation::
 
-    nosetests tests/*.py
+    tox
 
 
 *************
