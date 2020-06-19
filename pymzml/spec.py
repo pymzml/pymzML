@@ -443,6 +443,7 @@ class Spectrum(MS_Spectrum):
         self._reprofiled_peaks = None
         self._scan_time = None
         self._scan_time_unit = None
+        self._scan_time_in_minutes = None
         self._t_mass_set = None
         self._t_mz_set = None
         self._TIC = None
@@ -626,12 +627,14 @@ class Spectrum(MS_Spectrum):
             return_val = self.ID
         else:
             if not accession.startswith("MS:"):
-                accession = self.calling_instance.OT[accession]["id"]
+                try:
+                    accession = self.calling_instance.OT[accession]["id"]
+                except TypeError:
+                    accession = '---'
             search_string = './/*[@accession="{0}"]'.format(accession)
-
             elements = []
             for x in self.element.iterfind(search_string):
-                val = x.attrib.get("value")
+                val = x.attrib.get("value", "")
                 try:
                     val = float(val)
                 except:
@@ -644,6 +647,8 @@ class Spectrum(MS_Spectrum):
                 return_val = elements[0]
             else:
                 return_val = elements
+        if return_val == '':
+            return_val = True
         return return_val
 
     def get(self, acc, default=None):
@@ -804,7 +809,7 @@ class Spectrum(MS_Spectrum):
                     except ValueError:
                         self._ID = match.group(1)
                 else:
-                    self._ID = ""
+                    self._ID = self.element.get("id")
         return self._ID
 
     @property
@@ -817,14 +822,18 @@ class Spectrum(MS_Spectrum):
         """
         if self._id_dict is None:
             tuples = []
-            captures = regex_patterns.SPECTRUM_PATTERN3.match(
+            match = regex_patterns.SPECTRUM_PATTERN3.match(
                 self.element.attrib["id"]
-            ).captures(1)
-            for element in captures:
-                k, v = element.strip().split("=")
-                v = int(v)
-                tuples.append([k, v])
-            self._id_dict = dict(tuples)
+            )
+            if match is not None:
+                captures = match.captures(1)
+                for element in captures:
+                    k, v = element.strip().split("=")
+                    v = int(v)
+                    tuples.append([k, v])
+                self._id_dict = dict(tuples)
+            else:
+                self._id_dict = {}
         return self._id_dict
 
     @property
@@ -895,18 +904,17 @@ class Spectrum(MS_Spectrum):
         Returns:
             scan_time (float):
         """
-
-        self._scan_time, time_unit = self.scan_time
-        if self._scan_time_unit.lower() == "second":
-            self._scan_time /= 60.0
-        elif self._scan_time_unit.lower() == "minute":
-            pass
-        elif self._scan_time_unit.lower() == "hour":
-            self._scan_time *= 60.0
-            pass
-        else:
-            raise Exception("Time unit '{0}' unknown".format(self._scan_time_unit))
-        return self._scan_time
+        if self._scan_time_in_minutes is None:
+            self._scan_time, time_unit = self.scan_time
+            if self._scan_time_unit.lower() == "second":
+                self._scan_time_in_minutes = self._scan_time / 60.0
+            elif self._scan_time_unit.lower() == "minute":
+                self._scan_time_in_minutes = self._scan_time
+            elif self._scan_time_unit.lower() == "hour":
+                self._scan_time_in_minutes = self._scan_time * 60.0
+            else:
+                raise Exception("Time unit '{0}' unknown".format(self._scan_time_unit))
+        return self._scan_time_in_minutes
 
     @property
     def selected_precursors(self):
