@@ -502,7 +502,11 @@ class Spectrum(MS_Spectrum):
         if self._peak_dict["reprofiled"] is None:
             reprofiled = self._reprofile_Peaks()
             self.set_peaks(reprofiled, "reprofiled")
-        for mz, i in other_spec.peaks("reprofiled"):
+        if other_spec._peak_dict['reprofiled'] is None:
+            reprofiled = other_spec._reprofile_Peaks()
+            other_spec.set_peaks(reprofiled, "reprofiled")
+        # access peak dict directly to avoid casting to array
+        for mz, i in other_spec._peak_dict['reprofiled'].items():
             self._peak_dict["reprofiled"][mz] += i
         return self
 
