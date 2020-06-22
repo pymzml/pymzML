@@ -1038,13 +1038,13 @@ class Spectrum(MS_Spectrum):
                 i = self._decode(*i_params)
                 arr = np.stack((mz, i), axis=-1)
                 self._peak_dict[peak_type] = arr
-            if peak_type is "raw":
+            if peak_type == "raw":
                 pass
-            elif peak_type is "centroided":
+            elif peak_type == "centroided":
                 self._peak_dict["centroided"] = self._centroid_peaks()
-            elif peak_type is "reprofiled":
+            elif peak_type == "reprofiled":
                 self._peak_dict["reprofiled"] = self._reprofile_Peaks()
-            elif peak_type is "deconvoluted":
+            elif peak_type == "deconvoluted":
                 self._peak_dict["deconvoluted"] = self._deconvolute_peaks()
             else:
                 raise KeyError
@@ -1053,7 +1053,7 @@ class Spectrum(MS_Spectrum):
             peaks = self._array(self._peak_dict[peak_type])
         else:
             peaks = self._peak_dict[peak_type]
-        if peak_type is "reprofiled":
+        if peak_type == "reprofiled":
             peaks = list(self._peak_dict[peak_type].items())
             peaks.sort(key=itemgetter(0))
         return peaks
