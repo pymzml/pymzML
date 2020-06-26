@@ -555,6 +555,8 @@ class Factory(object):
             int_range (list): intensity range which should be considered [min, max].
                 Default = None
             layout (dict): dictionary containing layout information in plotly style
+            write_pdf (bool): Set "True" in order to save plots as pdf file (on Unix systems,
+                this requires Orca to be installed)
 
         Note:
             mz_range and int_range defined here will be applied to all subplots in
