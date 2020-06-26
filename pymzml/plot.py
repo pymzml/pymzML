@@ -35,7 +35,8 @@ import warnings
 
 # Fail gracefully if no plotly installed
 try:
-    import plotly.offline as plt
+    import plotly as plt
+    # import plotly.offline as plt
     import plotly.graph_objs as go
     from plotly import subplots
 except ImportError:
@@ -542,7 +543,7 @@ class Factory(object):
         print()
         return
 
-    def save(self, filename=None, mz_range=None, int_range=None, layout=None):
+    def save(self, filename=None, mz_range=None, int_range=None, layout=None, write_pdf=False):
         """
         Saves all plots and their data points that have been added to the
         plotFactory.
@@ -554,6 +555,8 @@ class Factory(object):
             int_range (list): intensity range which should be considered [min, max].
                 Default = None
             layout (dict): dictionary containing layout information in plotly style
+            write_pdf (bool): Set "True" in order to save plots as pdf file (on Unix systems,
+                this requires Orca to be installed)
 
         Note:
             mz_range and int_range defined here will be applied to all subplots in
@@ -631,7 +634,10 @@ class Factory(object):
             # save fkt name definition overrules original filename
             _filename = filename
 
-        plt.plot(my_figure, filename=_filename, auto_open=False)
+        # plt.plot(my_figure, filename=_filename, auto_open=False)
+        plt.io.write_html(my_figure, _filename)
+        if write_pdf:
+            plt.io.write_image(my_figure, _filename.replace('.html', '.pdf'))
         return
 
     def get_data(self):

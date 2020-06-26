@@ -28,7 +28,27 @@ def main():
         filename = "example_plot_{0}_{1}.html".format(
             os.path.basename(example_file), spec.ID
         )
-        p.save(filename=filename)
+        p.save(
+            filename=filename,
+            layout={
+                "xaxis":{
+                    "ticks": 'outside',
+                    "ticklen": 2,
+                    "tickwidth": 0.25,
+                    "showgrid": False,
+                    "linecolor": 'black',
+                }, 
+                "yaxis": {
+                    "ticks": 'outside',
+                    "ticklen": 2,
+                    "tickwidth": 0.25,
+                    "showgrid": False,
+                    "linecolor": 'black',
+                },
+                "plot_bgcolor": 'rgba(255, 255, 255, 0)',
+                "paper_bgcolor": 'rgba(255, 255, 255, 0)',
+            },
+        )
         print("Plotted file: {0}".format(filename))
         break
 
