@@ -273,18 +273,47 @@ class MS_Spectrum(object):
         d_array_length just for compatibility
         """
         out_data = b64dec(data)
+        # breakpoint()
         if len(out_data) != 0:
-            if "zlib" in comp or "zlib compression" in comp:
-                out_data = zlib.decompress(out_data)
-            if (
-                "ms-np-linear" in comp
-                or "ms-np-pic" in comp
-                or "ms-np-slof" in comp
-                or "MS-Numpress linear prediction compression" in comp
-                or "MS-Numpress short logged float compression" in comp
-            ):
 
-                out_data = self._decodeNumpress_to_array(out_data, comp)
+            # TODO adapt to new MS tags like:
+            # id: MS:1002746
+            # name: MS-Numpress linear prediction compression followed by zlib compression
+            #
+            # id: MS:1002747
+            # name: MS-Numpress positive integer compression followed by zlib compression
+            #
+            # id: MS:1002748
+            # name: MS-Numpress short logged float compression followed by zlib compression
+            # breakpoint()
+            print(comp)
+            print(self.calling_instance.OT[comp[0]])
+            comp_ms_tags = [self.calling_instance.OT[_comp]["id"] for _comp in comp]
+            print(comp_ms_tags)
+            # print(comp_ms_tags)
+            if 'MS:1000574' in comp_ms_tags:
+                out_data = zlib.decompress(out_data)
+                # pass
+            elif 'MS:1002312' in comp_ms_tags:
+                # MS-Numpress linear prediction compression.
+                out_data = MSDecoder.decode_linear(out_data)
+            elif 'MS:1002313' in comp_ms_tags:
+                # MS-Numpress positive integer compression
+                out_data = MSDecoder.decode_pic(data)
+            elif 'MS:1002314' in comp_ms_tags:
+                out_data = MSDecoder.decode_slof(data)
+            elif 'MS:1002746' in comp_ms_tags:
+                # MS-Numpress linear prediction compression followed by zlib compression
+                out_data = MSDecoder.decode_linear(data)
+                out_data = zlib.decompress(out_data)
+            elif 'MS:1002747' in comp_ms_tags:
+                # MS-Numpress positive integer compression followed by zlib compressio
+                out_data = MSDecoder.decode_pic(data)
+                out_data = zlib.decompress(out_data)
+            elif 'MS:1002748' in comp_ms_tags:
+                # MS-Numpress short logged float compression followed by zlib compression
+                out_data = MSDecoder.decode_slof(data)
+                out_data = zlib.decompress(out_data)
             if float_type == "32-bit float":
                 # one character code may be sufficient too (f)
                 f_type = np.float32
@@ -312,13 +341,6 @@ class MS_Spectrum(object):
                 dec_data = zlib.decompress(dec_data)
             if set(["ms-np-linear", "ms-np-pic", "ms-np-slof"]) & set(comp):
                 self._decodeNumpress(data, comp)
-            # else:
-            #     print(
-            #         'New data compression ({0}) detected, cant decompress'.format(
-            #             comp
-            #         )
-            #     )
-            #     sys.exit(1)
             if float_type == "32-bit float":
                 f_type = "f"
             elif float_type == "64-bit float":
@@ -347,6 +369,7 @@ class MS_Spectrum(object):
         result = []
         comp_ms_tags = [self.calling_instance.OT[comp]["id"] for comp in compression]
         data = np.frombuffer(data, dtype=np.uint8)
+
         if "MS:1002312" in comp_ms_tags:
             result = MSDecoder.decode_linear(data)
         elif "MS:1002313" in comp_ms_tags:
@@ -432,6 +455,7 @@ class Spectrum(MS_Spectrum):
         self._ms_level = None
         self._mz = None
         self._peak_dict = {
+            'ion_mobility': None,
             "raw": None,
             "centroided": None,
             "reprofiled": None,
@@ -1046,6 +1070,12 @@ class Spectrum(MS_Spectrum):
                 self._peak_dict["reprofiled"] = self._reprofile_Peaks()
             elif peak_type == "deconvoluted":
                 self._peak_dict["deconvoluted"] = self._deconvolute_peaks()
+            elif peak_type == 'ion_mobility':
+                params = self._get_encoding_parameters("non-standard data array")
+                print(params)
+                ion_mobility = self._decode(*params)
+            #     breakpoint()
+            #     print('test')
             else:
                 raise KeyError
 
