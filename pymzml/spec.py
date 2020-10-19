@@ -1058,7 +1058,7 @@ class Spectrum(MS_Spectrum):
             peaks.sort(key=itemgetter(0))
         return peaks
 
-    @lru_cache
+    @lru_cache()
     def get_array(self, arr_name):
         array_params = self._get_encoding_parameters(arr_name)
         array = self._decode(*array_params)
@@ -1083,10 +1083,10 @@ class Spectrum(MS_Spectrum):
         formatted_array_names = []
         for name in array_names:
             formatted_array_names.append(
-                f'\t- {name}'
+                '\t- {name}'.format(name=name)
             )
         if not_found_array is not None:
-            print(f"Requested array ({not_found_array}) not found.\nAvailable arrays are:")
+            print("Requested array ({not_found_array}) not found.\nAvailable arrays are:".format(not_found_array=not_found_array))
             print('\n'.join(formatted_array_names))
         return array_names
 
