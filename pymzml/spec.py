@@ -1069,8 +1069,7 @@ class Spectrum(MS_Spectrum):
 
     def get_tims_tof_ion_mobility(self, array_name='mean inverse reduced ion mobility array'):
         arr = self.get_array(array_name)
-        if len(arr) == 0:
-            arr = None
+        if arr is None:
             _ = self.get_all_arrays_in_spec(not_found_array=array_name)
         return arr
 
