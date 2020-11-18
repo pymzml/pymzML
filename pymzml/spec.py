@@ -1058,6 +1058,37 @@ class Spectrum(MS_Spectrum):
             peaks.sort(key=itemgetter(0))
         return peaks
 
+    @lru_cache()
+    def get_array(self, arr_name):
+        array_params = self._get_encoding_parameters(arr_name)
+        array = self._decode(*array_params)
+        if len(array) == 0:
+            array = None
+            _ = self.get_all_arrays_in_spec(not_found_array=arr_name)
+        return array
+
+    def get_tims_tof_ion_mobility(self, array_name='mean inverse reduced ion mobility array'):
+        arr = self.get_array(array_name)
+        if arr is None:
+            _ = self.get_all_arrays_in_spec(not_found_array=array_name)
+        return arr
+
+    def get_all_arrays_in_spec(self, not_found_array=None):
+        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@unitCvRef='MS']".format(
+            ns=self.ns
+        )
+        b_data_arrays = self.element.findall(b_data_string)
+        array_names = [arr.attrib['name'] for arr in b_data_arrays]
+        formatted_array_names = []
+        for name in array_names:
+            formatted_array_names.append(
+                '\t- {name}'.format(name=name)
+            )
+        if not_found_array is not None:
+            print("Requested array ({not_found_array}) not found.\nAvailable arrays are:".format(not_found_array=not_found_array))
+            print('\n'.join(formatted_array_names))
+        return array_names
+
     def _deconvolute_peaks(self, *args, **kwargs):
         if DECON_DEP is True:
             peaks = self.peaks("centroided")
