@@ -438,6 +438,7 @@ class Spectrum(MS_Spectrum):
             "deconvoluted": None,
         }
         self._selected_precursors = None
+        self._precursors = None
         self._profile = None
         self.reprofiled = False
         self._reprofiled_peaks = None
