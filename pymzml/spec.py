@@ -160,25 +160,25 @@ class MS_Spectrum(object):
         else:
             raise Exception("Unknown data Type ({0})".format(d_type))
 
-    @property
-    def precursors(self):
-        """
-        List the precursor information of this spectrum, if available.
-
-        Returns:
-            precursor(list): list of precursor ids for this spectrum.
-        """
-        if self._precursors is None:
-            precursors = self.element.findall(
-                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
-            )
-            self._precursors = []
-            for prec in precursors:
-                spec_ref = prec.get("spectrumRef")
-                self._precursors.append(
-                    regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
-                )
-        return self._precursors
+    # @property
+    # def precursors(self):
+    #     """
+    #     List the precursor information of this spectrum, if available.
+    #
+    #     Returns:
+    #         precursor(list): list of precursor ids for this spectrum.
+    #     """
+    #     if self._precursors is None:
+    #         precursors = self.element.findall(
+    #             "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
+    #         )
+    #         self._precursors = []
+    #         for prec in precursors:
+    #             spec_ref = prec.get("spectrumRef")
+    #             self._precursors.append(
+    #                 regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
+    #             )
+    #     return self._precursors
 
     def _get_encoding_parameters(self, array_type):
         """
@@ -438,6 +438,7 @@ class Spectrum(MS_Spectrum):
             "deconvoluted": None,
         }
         self._selected_precursors = None
+        self._precursors = None
         self._profile = None
         self.reprofiled = False
         self._reprofiled_peaks = None
@@ -936,10 +937,14 @@ class Spectrum(MS_Spectrum):
             selected_precursor_cs = self.element.findall(
                 ".//*[@accession='MS:1000041']"
             )
+            precursors = self.element.findall(
+                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
+            )
 
             mz_values = []
             i_values = []
             charges = []
+            ids = []
             for obj in selected_precursor_mzs:
                 mz = obj.get("value")
                 mz_values.append(float(mz))
@@ -949,10 +954,20 @@ class Spectrum(MS_Spectrum):
             for obj in selected_precursor_cs:
                 c = obj.get("value")
                 charges.append(int(c))
+            for prec in precursors:
+                spec_ref = prec.get("spectrumRef")
+                print(spec_ref)
+                if spec_ref is not None:
+                    ids.append(
+                        regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
+                    )
+                else:
+                    ids.append(None)
+                # ids.append()
             self._selected_precursors = []
             for pos, mz in enumerate(mz_values):
                 dict_2_save = {"mz": mz}
-                for key, list_of_values in [("i", i_values), ("charge", charges)]:
+                for key, list_of_values in [("i", i_values), ("charge", charges), ('precursor id', ids)]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
                     except:

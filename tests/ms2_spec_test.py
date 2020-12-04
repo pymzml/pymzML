@@ -47,7 +47,7 @@ class SpectrumMS2Test(unittest.TestCase):
         self.assertIsInstance(selected_precursor[0]["i"], float)
         self.assertIsInstance(selected_precursor[0]["charge"], int)
         self.assertEqual(
-            selected_precursor, [{"mz": 443.711242675781, "i": 0.0, "charge": 2}]
+            selected_precursor, [{"mz": 443.711242675781, "i": 0.0, "charge": 2, 'precursor id': None}]
         )
 
     def test_ion_mode(self):
