@@ -956,7 +956,6 @@ class Spectrum(MS_Spectrum):
                 charges.append(int(c))
             for prec in precursors:
                 spec_ref = prec.get("spectrumRef")
-                print(spec_ref)
                 if spec_ref is not None:
                     ids.append(
                         regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
