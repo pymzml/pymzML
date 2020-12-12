@@ -160,26 +160,6 @@ class MS_Spectrum(object):
         else:
             raise Exception("Unknown data Type ({0})".format(d_type))
 
-    # @property
-    # def precursors(self):
-    #     """
-    #     List the precursor information of this spectrum, if available.
-    #
-    #     Returns:
-    #         precursor(list): list of precursor ids for this spectrum.
-    #     """
-    #     if self._precursors is None:
-    #         precursors = self.element.findall(
-    #             "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
-    #         )
-    #         self._precursors = []
-    #         for prec in precursors:
-    #             spec_ref = prec.get("spectrumRef")
-    #             self._precursors.append(
-    #                 regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
-    #             )
-    #     return self._precursors
-
     def _get_encoding_parameters(self, array_type):
         """
         Find the correct parameter for decoding and return them as tuple.
@@ -409,7 +389,6 @@ class Spectrum(MS_Spectrum):
             "_index",
             "_measured_precision",
             "_peaks",
-            "_precursors",
             "_profile",
             "_reprofiled_peaks",
             "_t_mass_set",
@@ -438,7 +417,6 @@ class Spectrum(MS_Spectrum):
             "deconvoluted": None,
         }
         self._selected_precursors = None
-        self._precursors = None
         self._profile = None
         self.reprofiled = False
         self._reprofiled_peaks = None
