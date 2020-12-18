@@ -952,6 +952,26 @@ class Spectrum(MS_Spectrum):
                 self._selected_precursors.append(dict_2_save)
 
         return self._selected_precursors
+    
+    @property
+    def precursors(self):
+        """
+        List the precursor information of this spectrum, if available.
+        Returns:
+            precursor(list): list of precursor ids for this spectrum.
+        """
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        if self._precursors is None:
+            precursors = self.element.findall(
+                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
+            )
+            self._precursors = []
+            for prec in precursors:
+                spec_ref = prec.get("spectrumRef")
+                self._precursors.append(
+                    regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
+                )
+        return self._precursors
 
     def remove_precursor_peak(self):
         peaks = self.peaks("centroided")
@@ -1619,6 +1639,7 @@ class Spectrum(MS_Spectrum):
             "removeNoise": "remove_noise",
             "newPlot": "new_plot",
             "centroidedPeaks": "peaks",
+            "precursors": "selected_precursors",
         }
         warnings.warn(
             """
