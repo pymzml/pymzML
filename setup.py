@@ -21,7 +21,7 @@ setup(
             'obo/*.obo.gz'
         ]
     },
-    python_requires  = '>=3.5.0',
+    python_requires  = '>=3.7.0',
     install_requires = [
         'numpy >= 1.8.0',
         'regex',
@@ -42,7 +42,7 @@ setup(
     author_email     = 'christian@fufezan.net',
     url              = 'http://pymzml.github.com',
     license          = 'The MIT license',
-    platforms        = 'any that supports python 3.5',
+    platforms        = 'any that supports python 3.7',
     classifiers      = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
