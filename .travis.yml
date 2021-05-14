@@ -4,18 +4,20 @@ python:
 sudo: false
 matrix:
   include:
-  - python: 3.5
-    env: TOXENV=py35
-  - python: 3.6
-    env: TOXENV=py36
   - python: 3.7
     env: TOXENV=py37
     dist: xenial
-  - python: 3.6
+  - python: 3.8
+    env: TOXENV=py38
+    dist: xenial
+  - python: 3.9
+    env: TOXENV=py39
+    dist: xenial
+  - python: 3.7
     env: TOXENV=docu
-  - python: 3.6
+  - python: 3.7
     env: TOXENV=coverage
-  - python: 3.6
+  - python: 3.7
     env: TOXENV=example_scripts
 install:
   - pip install tox-travis
