@@ -152,7 +152,6 @@ class OboTranslator(object):
         urllib.request.urlretrieve(uri, obo_file)
 
         with open(obo_file, "rb") as fin, gzip.open(obo_file + ".gz", "wb") as fout:
-            breakpoint()
             fout.writelines(fin.readlines())
             os.remove(obo_file)
         return
@@ -183,7 +182,6 @@ class OboTranslator(object):
             "obo",
             "psi-ms{0}.obo".format("-" + self.version if self.version else ""),
         )
-        breakpoint()
         if os.path.exists(obo_file):
             pass
         elif os.path.exists(obo_file + ".gz"):
