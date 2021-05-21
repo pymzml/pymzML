@@ -84,6 +84,7 @@ import sys
 import os
 import re
 import gzip
+import urllib
 
 
 class OboTranslator(object):
@@ -146,6 +147,16 @@ class OboTranslator(object):
 
         return version
 
+    def download_obo(self, version, obo_file):
+        uri = f"https://raw.githubusercontent.com/pymzml/psi-ms-CV/v{self.version}/psi-ms.obo"
+        urllib.request.urlretrieve(uri, obo_file)
+
+        with open(obo_file, "rb") as fin, gzip.open(obo_file + ".gz", "wb") as fout:
+            breakpoint()
+            fout.writelines(fin.readlines())
+            os.remove(obo_file)
+        return
+
     def parseOBO(self):
         self.__obo_parsed = True
         """
@@ -172,13 +183,14 @@ class OboTranslator(object):
             "obo",
             "psi-ms{0}.obo".format("-" + self.version if self.version else ""),
         )
-
+        breakpoint()
         if os.path.exists(obo_file):
             pass
         elif os.path.exists(obo_file + ".gz"):
             obo_file = obo_file + ".gz"
         else:
-            raise IOError("Could not find obo file {0}".format(obo_file))
+            self.download_obo(self.version, obo_file)
+            obo_file += ".gz"
 
         with open(obo_file, "rb") as fin:
             # never rely on file extensions!
@@ -192,7 +204,7 @@ class OboTranslator(object):
                     "The file may be corrupted or not gzipped."
                 )
 
-        with open_func(obo_file, "rt", encoding='utf-8') as obo:
+        with open_func(obo_file, "rt", encoding="utf-8") as obo:
             collections = {}
             collect = False
             for line in obo:
