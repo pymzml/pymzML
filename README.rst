@@ -28,6 +28,10 @@ Introduction
    :target: https://github.com/psf/black
    :alt: As long it is black
 
+.. image:: http://depsy.org/api/package/pypi/pymzML/badge.svg
+  :target: http://depsy.org/package/python/pymzML
+  :alt: Research software impact
+
 
 *******************
 General information
