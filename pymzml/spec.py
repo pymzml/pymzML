@@ -1183,11 +1183,11 @@ class Spectrum(MS_Spectrum):
         Returns:
             centroided_peaks (list): list of centroided m/z, i tuples
         """
-        profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
-        if profile_ot is None:
-            profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
 
         try:
+            profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
+            if profile_ot is None:
+                profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
             acc = profile_ot["id"]
             is_profile = (
                 True
@@ -1199,6 +1199,7 @@ class Spectrum(MS_Spectrum):
             )
 
         except (TypeError, AttributeError) as e:
+            # user creadted spectrum objects without xml and calling instance cant determine if they are reprofiled or not
             is_profile = None
 
         if is_profile is not None or self.reprofiled:  # check if spec is a profile spec
