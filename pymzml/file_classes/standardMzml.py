@@ -58,19 +58,6 @@ class StandardMzml(object):
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
         self.seek_list = self._read_extremes()
-        # print(f"seek_list: {self.seek_list}")
-        if len(self.seek_list) > 1:
-            self._average_bytes_per_spec = round(
-                int(
-                    self.seek_list[-1][1]
-                    / (self.seek_list[-1][0] - self.seek_list[0][0])
-                )
-            )
-        elif len(self.seek_list) == 1:
-            self._average_bytes_per_spec = self.seek_list[-1][1]
-        else:
-            self._average_bytes_per_spec = 100
-
         self._build_index(from_scratch=build_index_from_scratch)
 
     def get_binary_file_handler(self):

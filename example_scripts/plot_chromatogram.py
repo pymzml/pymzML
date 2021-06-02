@@ -25,7 +25,26 @@ def main(mzml_file):
     pf.add(run["TIC"].peaks(), color=(0, 0, 0), style="lines", title=mzml_basename)
     pf.save(
         "chromatogram_{0}.html".format(mzml_basename),
-        layout={"xaxis": {"title": "Retention time"}, "yaxis": {"title": "TIC"}},
+        layout={
+            "xaxis":{
+                "title": "Retention time",
+                "ticks": 'outside',
+                "ticklen": 2,
+                "tickwidth": 0.25,
+                "showgrid": False,
+                "linecolor": 'black',
+            }, 
+            "yaxis": {
+                "title": "TIC",
+                "ticks": 'outside',
+                "ticklen": 2,
+                "tickwidth": 0.25,
+                "showgrid": False,
+                "linecolor": 'black',
+            },
+            "plot_bgcolor": 'rgba(255, 255, 255, 0)',
+            "paper_bgcolor": 'rgba(255, 255, 255, 0)',
+        },
     )
     return
 

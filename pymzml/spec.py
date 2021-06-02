@@ -160,26 +160,6 @@ class MS_Spectrum(object):
         else:
             raise Exception("Unknown data Type ({0})".format(d_type))
 
-    @property
-    def precursors(self):
-        """
-        List the precursor information of this spectrum, if available.
-
-        Returns:
-            precursor(list): list of precursor ids for this spectrum.
-        """
-        if self._precursors is None:
-            precursors = self.element.findall(
-                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
-            )
-            self._precursors = []
-            for prec in precursors:
-                spec_ref = prec.get("spectrumRef")
-                self._precursors.append(
-                    regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
-                )
-        return self._precursors
-
     def _get_encoding_parameters(self, array_type):
         """
         Find the correct parameter for decoding and return them as tuple.
@@ -409,7 +389,6 @@ class Spectrum(MS_Spectrum):
             "_index",
             "_measured_precision",
             "_peaks",
-            "_precursors",
             "_profile",
             "_reprofiled_peaks",
             "_t_mass_set",
@@ -630,7 +609,7 @@ class Spectrum(MS_Spectrum):
                 try:
                     accession = self.calling_instance.OT[accession]["id"]
                 except TypeError:
-                    accession = '---'
+                    accession = "---"
             search_string = './/*[@accession="{0}"]'.format(accession)
             elements = []
             for x in self.element.iterfind(search_string):
@@ -647,7 +626,7 @@ class Spectrum(MS_Spectrum):
                 return_val = elements[0]
             else:
                 return_val = elements
-        if return_val == '':
+        if return_val == "":
             return_val = True
         return return_val
 
@@ -822,9 +801,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._id_dict is None:
             tuples = []
-            match = regex_patterns.SPECTRUM_PATTERN3.match(
-                self.element.attrib["id"]
-            )
+            match = regex_patterns.SPECTRUM_PATTERN3.match(self.element.attrib["id"])
             if match is not None:
                 captures = match.captures(1)
                 for element in captures:
@@ -868,9 +845,9 @@ class Spectrum(MS_Spectrum):
                 ".//{ns}cvParam[@accession='MS:1000511']".format(ns=self.ns)
             )
             if sub_element is not None:
-                self._ms_level = int(sub_element.get(
-                    "value"
-                ))  # put hardcoded MS tags in minimum.py???
+                self._ms_level = int(
+                    sub_element.get("value")
+                )  # put hardcoded MS tags in minimum.py???
         return self._ms_level
 
     @property
@@ -930,16 +907,16 @@ class Spectrum(MS_Spectrum):
             selected_precursor_mzs = self.element.findall(
                 ".//*[@accession='MS:1000744']"
             )
-            selected_precursor_is = self.element.findall(
-                ".//*[@accession='MS:1000042']"
-            )
-            selected_precursor_cs = self.element.findall(
-                ".//*[@accession='MS:1000041']"
+            selected_precursor_is = self.element.findall(".//*[@accession='MS:1000042']")
+            selected_precursor_cs = self.element.findall(".//*[@accession='MS:1000041']")
+            precursors = self.element.findall(
+                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
 
             mz_values = []
             i_values = []
             charges = []
+            ids = []
             for obj in selected_precursor_mzs:
                 mz = obj.get("value")
                 mz_values.append(float(mz))
@@ -949,10 +926,23 @@ class Spectrum(MS_Spectrum):
             for obj in selected_precursor_cs:
                 c = obj.get("value")
                 charges.append(int(c))
+            for prec in precursors:
+                spec_ref = prec.get("spectrumRef")
+                if spec_ref is not None:
+                    ids.append(
+                        regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
+                    )
+                else:
+                    ids.append(None)
+                # ids.append()
             self._selected_precursors = []
             for pos, mz in enumerate(mz_values):
                 dict_2_save = {"mz": mz}
-                for key, list_of_values in [("i", i_values), ("charge", charges)]:
+                for key, list_of_values in [
+                    ("i", i_values),
+                    ("charge", charges),
+                    ("precursor id", ids),
+                ]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
                     except:
@@ -960,6 +950,26 @@ class Spectrum(MS_Spectrum):
                 self._selected_precursors.append(dict_2_save)
 
         return self._selected_precursors
+
+    @property
+    def precursors(self):
+        """
+        List the precursor information of this spectrum, if available.
+        Returns:
+            precursor(list): list of precursor ids for this spectrum.
+        """
+        self.deprecation_warning(sys._getframe().f_code.co_name)
+        if self._precursors is None:
+            precursors = self.element.findall(
+                "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
+            )
+            self._precursors = []
+            for prec in precursors:
+                spec_ref = prec.get("spectrumRef")
+                self._precursors.append(
+                    regex_patterns.SPECTRUM_ID_PATTERN.search(spec_ref).group(1)
+                )
+        return self._precursors
 
     def remove_precursor_peak(self):
         peaks = self.peaks("centroided")
@@ -1038,13 +1048,13 @@ class Spectrum(MS_Spectrum):
                 i = self._decode(*i_params)
                 arr = np.stack((mz, i), axis=-1)
                 self._peak_dict[peak_type] = arr
-            if peak_type is "raw":
+            if peak_type == "raw":
                 pass
-            elif peak_type is "centroided":
+            elif peak_type == "centroided":
                 self._peak_dict["centroided"] = self._centroid_peaks()
-            elif peak_type is "reprofiled":
+            elif peak_type == "reprofiled":
                 self._peak_dict["reprofiled"] = self._reprofile_Peaks()
-            elif peak_type is "deconvoluted":
+            elif peak_type == "deconvoluted":
                 self._peak_dict["deconvoluted"] = self._deconvolute_peaks()
             else:
                 raise KeyError
@@ -1053,10 +1063,45 @@ class Spectrum(MS_Spectrum):
             peaks = self._array(self._peak_dict[peak_type])
         else:
             peaks = self._peak_dict[peak_type]
-        if peak_type is "reprofiled":
+        if peak_type == "reprofiled":
             peaks = list(self._peak_dict[peak_type].items())
             peaks.sort(key=itemgetter(0))
         return peaks
+
+    @lru_cache()
+    def get_array(self, arr_name):
+        array_params = self._get_encoding_parameters(arr_name)
+        array = self._decode(*array_params)
+        if len(array) == 0:
+            array = None
+            _ = self.get_all_arrays_in_spec(not_found_array=arr_name)
+        return array
+
+    def get_tims_tof_ion_mobility(
+        self, array_name="mean inverse reduced ion mobility array"
+    ):
+        arr = self.get_array(array_name)
+        if arr is None:
+            _ = self.get_all_arrays_in_spec(not_found_array=array_name)
+        return arr
+
+    def get_all_arrays_in_spec(self, not_found_array=None):
+        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@unitCvRef='MS']".format(
+            ns=self.ns
+        )
+        b_data_arrays = self.element.findall(b_data_string)
+        array_names = [arr.attrib["name"] for arr in b_data_arrays]
+        formatted_array_names = []
+        for name in array_names:
+            formatted_array_names.append("\t- {name}".format(name=name))
+        if not_found_array is not None:
+            print(
+                "Requested array ({not_found_array}) not found.\nAvailable arrays are:".format(
+                    not_found_array=not_found_array
+                )
+            )
+            print("\n".join(formatted_array_names))
+        return array_names
 
     def _deconvolute_peaks(self, *args, **kwargs):
         if DECON_DEP is True:
@@ -1138,8 +1183,12 @@ class Spectrum(MS_Spectrum):
         Returns:
             centroided_peaks (list): list of centroided m/z, i tuples
         """
+
         try:
-            acc = self.calling_instance.OT["profile spectrum"]["id"]
+            profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
+            if profile_ot is None:
+                profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
+            acc = profile_ot["id"]
             is_profile = (
                 True
                 if self.element.find(
@@ -1150,6 +1199,7 @@ class Spectrum(MS_Spectrum):
             )
 
         except (TypeError, AttributeError) as e:
+            # user creadted spectrum objects without xml and calling instance cant determine if they are reprofiled or not
             is_profile = None
 
         if is_profile is not None or self.reprofiled:  # check if spec is a profile spec
@@ -1272,7 +1322,9 @@ class Spectrum(MS_Spectrum):
         self.set_peaks(peaks, peak_type)
         return peaks
 
-    def remove_noise(self, mode="median", noise_level=None, signal_to_noise_threshold=1.0):
+    def remove_noise(
+        self, mode="median", noise_level=None, signal_to_noise_threshold=1.0
+    ):
         """
         Function to remove noise from peaks, centroided peaks and reprofiled
         peaks.
@@ -1295,11 +1347,11 @@ class Spectrum(MS_Spectrum):
             noise_level = self.estimated_noise_level(mode=mode)
         if len(self.peaks("centroided")) != 0:
             self._peak_dict["centroided"] = self.peaks("centroided")[
-                self.peaks("centroided")[:, 1]/noise_level >= signal_to_noise_threshold
+                self.peaks("centroided")[:, 1] / noise_level >= signal_to_noise_threshold
             ]
         if len(self.peaks("raw")) != 0:
             self._peak_dict["raw"] = self.peaks("raw")[
-                self.peaks("raw")[:, 1]/noise_level >= signal_to_noise_threshold
+                self.peaks("raw")[:, 1] / noise_level >= signal_to_noise_threshold
             ]
         self._peak_dict["reprofiled"] = None
         return self
@@ -1596,6 +1648,7 @@ class Spectrum(MS_Spectrum):
             "removeNoise": "remove_noise",
             "newPlot": "new_plot",
             "centroidedPeaks": "peaks",
+            "precursors": "selected_precursors",
         }
         warnings.warn(
             """

@@ -512,6 +512,16 @@ class SpectrumTest(unittest.TestCase):
         self.assertIsInstance(scan_time, float)
         self.assertEqual(scan_time, 0.023756566)
 
+    def test_get_all_arrays_in_spec(self):
+        assert self.spec.get_all_arrays_in_spec() == ['m/z array', 'intensity array']
+
+    def test_get_array(self):
+        # import pdb;pdb.set_trace()
+        assert (self.spec.mz == self.spec.get_array('m/z array')).all()
+
+    def test_get_tims_tof_ion_mobility(self):
+        assert self.spec.get_tims_tof_ion_mobility() is None
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=3)

@@ -28,23 +28,18 @@ def main():
     layout = {
         "xaxis": {
             "title": "<i>m/z</i>",
-            "tickmode": "auto",
-            "showticklabels": True,
             "ticklen": 5,
             "tickwidth": 1,
             "ticks": "outside",
-            "showline": True,
             "showgrid": False,
+            "linecolor": 'black',
         },
         "yaxis": {
-            "color": "#000000",
-            "tickmode": "auto",
-            "showticklabels": True,
             "ticklen": 5,
             "tickwidth": 1,
             "ticks": "outside",
-            "showline": True,
             "showgrid": False,
+            "linecolor": 'black',
         },
     }
 
@@ -200,6 +195,9 @@ def main():
 
     for axis in layout.keys():
         plot_layout["{0}3".format(axis)] = copy.copy(layout[axis])
+
+    plot_layout["plot_bgcolor"] = 'rgba(255, 255, 255, 0)'
+    plot_layout["paper_bgcolor"] = 'rgba(255, 255, 255, 0)'
 
     # Save the plot in a file using the defined plot_layout
     filename = "example_plot_{0}_annotation.html".format(os.path.basename(example_file))
