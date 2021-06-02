@@ -609,7 +609,7 @@ class Spectrum(MS_Spectrum):
                 try:
                     accession = self.calling_instance.OT[accession]["id"]
                 except TypeError:
-                    accession = '---'
+                    accession = "---"
             search_string = './/*[@accession="{0}"]'.format(accession)
             elements = []
             for x in self.element.iterfind(search_string):
@@ -626,7 +626,7 @@ class Spectrum(MS_Spectrum):
                 return_val = elements[0]
             else:
                 return_val = elements
-        if return_val == '':
+        if return_val == "":
             return_val = True
         return return_val
 
@@ -801,9 +801,7 @@ class Spectrum(MS_Spectrum):
         """
         if self._id_dict is None:
             tuples = []
-            match = regex_patterns.SPECTRUM_PATTERN3.match(
-                self.element.attrib["id"]
-            )
+            match = regex_patterns.SPECTRUM_PATTERN3.match(self.element.attrib["id"])
             if match is not None:
                 captures = match.captures(1)
                 for element in captures:
@@ -847,9 +845,9 @@ class Spectrum(MS_Spectrum):
                 ".//{ns}cvParam[@accession='MS:1000511']".format(ns=self.ns)
             )
             if sub_element is not None:
-                self._ms_level = int(sub_element.get(
-                    "value"
-                ))  # put hardcoded MS tags in minimum.py???
+                self._ms_level = int(
+                    sub_element.get("value")
+                )  # put hardcoded MS tags in minimum.py???
         return self._ms_level
 
     @property
@@ -909,12 +907,8 @@ class Spectrum(MS_Spectrum):
             selected_precursor_mzs = self.element.findall(
                 ".//*[@accession='MS:1000744']"
             )
-            selected_precursor_is = self.element.findall(
-                ".//*[@accession='MS:1000042']"
-            )
-            selected_precursor_cs = self.element.findall(
-                ".//*[@accession='MS:1000041']"
-            )
+            selected_precursor_is = self.element.findall(".//*[@accession='MS:1000042']")
+            selected_precursor_cs = self.element.findall(".//*[@accession='MS:1000041']")
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
@@ -944,7 +938,11 @@ class Spectrum(MS_Spectrum):
             self._selected_precursors = []
             for pos, mz in enumerate(mz_values):
                 dict_2_save = {"mz": mz}
-                for key, list_of_values in [("i", i_values), ("charge", charges), ('precursor id', ids)]:
+                for key, list_of_values in [
+                    ("i", i_values),
+                    ("charge", charges),
+                    ("precursor id", ids),
+                ]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
                     except:
@@ -952,7 +950,7 @@ class Spectrum(MS_Spectrum):
                 self._selected_precursors.append(dict_2_save)
 
         return self._selected_precursors
-    
+
     @property
     def precursors(self):
         """
@@ -1079,7 +1077,9 @@ class Spectrum(MS_Spectrum):
             _ = self.get_all_arrays_in_spec(not_found_array=arr_name)
         return array
 
-    def get_tims_tof_ion_mobility(self, array_name='mean inverse reduced ion mobility array'):
+    def get_tims_tof_ion_mobility(
+        self, array_name="mean inverse reduced ion mobility array"
+    ):
         arr = self.get_array(array_name)
         if arr is None:
             _ = self.get_all_arrays_in_spec(not_found_array=array_name)
@@ -1090,15 +1090,17 @@ class Spectrum(MS_Spectrum):
             ns=self.ns
         )
         b_data_arrays = self.element.findall(b_data_string)
-        array_names = [arr.attrib['name'] for arr in b_data_arrays]
+        array_names = [arr.attrib["name"] for arr in b_data_arrays]
         formatted_array_names = []
         for name in array_names:
-            formatted_array_names.append(
-                '\t- {name}'.format(name=name)
-            )
+            formatted_array_names.append("\t- {name}".format(name=name))
         if not_found_array is not None:
-            print("Requested array ({not_found_array}) not found.\nAvailable arrays are:".format(not_found_array=not_found_array))
-            print('\n'.join(formatted_array_names))
+            print(
+                "Requested array ({not_found_array}) not found.\nAvailable arrays are:".format(
+                    not_found_array=not_found_array
+                )
+            )
+            print("\n".join(formatted_array_names))
         return array_names
 
     def _deconvolute_peaks(self, *args, **kwargs):
@@ -1181,8 +1183,12 @@ class Spectrum(MS_Spectrum):
         Returns:
             centroided_peaks (list): list of centroided m/z, i tuples
         """
+
         try:
-            acc = self.calling_instance.OT["profile spectrum"]["id"]
+            profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
+            if profile_ot is None:
+                profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
+            acc = profile_ot["id"]
             is_profile = (
                 True
                 if self.element.find(
@@ -1193,6 +1199,7 @@ class Spectrum(MS_Spectrum):
             )
 
         except (TypeError, AttributeError) as e:
+            # user creadted spectrum objects without xml and calling instance cant determine if they are reprofiled or not
             is_profile = None
 
         if is_profile is not None or self.reprofiled:  # check if spec is a profile spec
@@ -1315,7 +1322,9 @@ class Spectrum(MS_Spectrum):
         self.set_peaks(peaks, peak_type)
         return peaks
 
-    def remove_noise(self, mode="median", noise_level=None, signal_to_noise_threshold=1.0):
+    def remove_noise(
+        self, mode="median", noise_level=None, signal_to_noise_threshold=1.0
+    ):
         """
         Function to remove noise from peaks, centroided peaks and reprofiled
         peaks.
@@ -1338,11 +1347,11 @@ class Spectrum(MS_Spectrum):
             noise_level = self.estimated_noise_level(mode=mode)
         if len(self.peaks("centroided")) != 0:
             self._peak_dict["centroided"] = self.peaks("centroided")[
-                self.peaks("centroided")[:, 1]/noise_level >= signal_to_noise_threshold
+                self.peaks("centroided")[:, 1] / noise_level >= signal_to_noise_threshold
             ]
         if len(self.peaks("raw")) != 0:
             self._peak_dict["raw"] = self.peaks("raw")[
-                self.peaks("raw")[:, 1]/noise_level >= signal_to_noise_threshold
+                self.peaks("raw")[:, 1] / noise_level >= signal_to_noise_threshold
             ]
         self._peak_dict["reprofiled"] = None
         return self
