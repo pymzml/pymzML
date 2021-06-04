@@ -39,7 +39,7 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2018 by:
+Copyright 2010-2021 by:
 
     | M. Kösters,
     | J. Leufken,
