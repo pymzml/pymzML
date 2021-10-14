@@ -959,7 +959,7 @@ class Spectrum(MS_Spectrum):
             precursor(list): list of precursor ids for this spectrum.
         """
         self.deprecation_warning(sys._getframe().f_code.co_name)
-        if self._precursors is None:
+        if not hasattr(self, '_precursors'):
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
