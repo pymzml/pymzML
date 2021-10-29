@@ -105,6 +105,7 @@ class Reader(object):
             0: 0.0001,
             1: 5e-6,
             2: 20e-6,
+            3: 20e-6,
         }
         self.ms_precisions.update(MS_precisions)
 
