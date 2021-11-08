@@ -903,15 +903,31 @@ class Spectrum(MS_Spectrum):
         Returns:
             selected_precursors (list):
         """
+        self.selected_ion_list = self.element.findall(
+            ".//{http://psi.hupo.org/ms/mzml}selectedIonList"
+        )[0]
+
         if self._selected_precursors is None:
-            selected_precursor_mzs = self.element.findall(
+            selected_precursor_mzs = self.selected_ion_list.findall(
                 ".//*[@accession='MS:1000744']"
             )
-            selected_precursor_is = self.element.findall(".//*[@accession='MS:1000042']")
-            selected_precursor_cs = self.element.findall(".//*[@accession='MS:1000041']")
+            selected_precursor_is = self.selected_ion_list.findall(
+                ".//*[@accession='MS:1000042']"
+            )
+            selected_precursor_cs = self.selected_ion_list.findall(
+                ".//*[@accession='MS:1000041']"
+            )
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
+            if len(selected_precursor_cs) == 0:
+                selected_precursor_cs = self.selected_ion_list.findall(
+                    ".//*[@accession='MS:1000633']"
+                )
+            if len(selected_precursor_mzs) == 0:
+                selected_precursor_mzs = self.selected_ion_list.findall(
+                    ".//*[@accession='MS:1000827']"
+                )
 
             mz_values = []
             i_values = []
@@ -959,7 +975,7 @@ class Spectrum(MS_Spectrum):
             precursor(list): list of precursor ids for this spectrum.
         """
         self.deprecation_warning(sys._getframe().f_code.co_name)
-        if not hasattr(self, '_precursors'):
+        if not hasattr(self, "_precursors"):
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
@@ -1187,7 +1203,9 @@ class Spectrum(MS_Spectrum):
         try:
             profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
             if profile_ot is None:
-                profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
+                profile_ot = self.calling_instance.OT.name.get(
+                    "profile mass spectrum", None
+                )
             acc = profile_ot["id"]
             is_profile = (
                 True
@@ -1347,7 +1365,8 @@ class Spectrum(MS_Spectrum):
             noise_level = self.estimated_noise_level(mode=mode)
         if len(self.peaks("centroided")) != 0:
             self._peak_dict["centroided"] = self.peaks("centroided")[
-                self.peaks("centroided")[:, 1] / noise_level >= signal_to_noise_threshold
+                self.peaks("centroided")[:, 1] / noise_level
+                >= signal_to_noise_threshold
             ]
         if len(self.peaks("raw")) != 0:
             self._peak_dict["raw"] = self.peaks("raw")[
