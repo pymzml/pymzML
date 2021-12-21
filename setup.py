@@ -28,11 +28,11 @@ setup(
     ],
     extras_require   = {
         'full': [
-            'plotly<5.0',
+            'plotly<5.6',
             'pynumpress>=0.0.4',
             'ms_deisotope',
         ],
-        'plot': ['plotly<5.0'],
+        'plot': ['plotly<5.6'],
         'pynumpress': ['pynumpress>=0.0.4'],
         'deconvolution': ['ms_deisotope==0.0.14'] 
     },
