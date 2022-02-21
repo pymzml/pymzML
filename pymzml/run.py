@@ -112,13 +112,15 @@ class Reader(object):
         # File info
         self.info = ddict()
         self.path_or_file = path_or_file
-        if isinstance(path_or_file, str):
-            self.info["file_name"] = path_or_file
-            self.info["encoding"] = self._determine_file_encoding(path_or_file)
+        if isinstance(self.path_or_file, Path):
+            self.path_or_file = str(self.path_or_file)
+        if isinstance(self.path_or_file, str):
+            self.info["file_name"] = self.path_or_file
+            self.info["encoding"] = self._determine_file_encoding(self.path_or_file)
         else:
-            self.info["encoding"] = self._guess_encoding(path_or_file)
+            self.info["encoding"] = self._guess_encoding(self.path_or_file)
 
-        self.info["file_object"] = self._open_file(path_or_file)
+        self.info["file_object"] = self._open_file(self.path_or_file)
         self.info["offset_dict"] = self.info["file_object"].offset_dict
         if obo_version:
             self.info["obo_version"] = self._obo_version_validator(obo_version)
