@@ -883,6 +883,8 @@ class Spectrum(MS_Spectrum):
         """
         if self._scan_time_in_minutes is None:
             self._scan_time, time_unit = self.scan_time
+            if self._scan_time_unit.lower() == "millisecond":
+                self._scan_time_in_minutes = self._scan_time / 1000.0 / 50.0
             if self._scan_time_unit.lower() == "second":
                 self._scan_time_in_minutes = self._scan_time / 60.0
             elif self._scan_time_unit.lower() == "minute":
