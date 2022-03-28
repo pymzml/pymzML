@@ -41,6 +41,7 @@ with profile data (time, intensity) in an total ion chromatogram.
 #     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #     SOFTWARE.
 
+import copy
 import math
 import re
 import sys
@@ -484,13 +485,18 @@ class Spectrum(MS_Spectrum):
         ...     s += spec
 
         """
-        assert isinstance(other_spec, Spectrum)
-        if self._peak_dict["reprofiled"] is None:
-            reprofiled = self._reprofile_Peaks()
-            self.set_peaks(reprofiled, "reprofiled")
+        if isinstance(other_spec, Spectrum) is False:
+            raise IOError("Require pymzml Spectrum to add!")
+        # breakpoint()
+        new_spec = copy.deepcopy(self)
+        other_spec.peaks("centroided")
+        if new_spec._peak_dict["reprofiled"] is None:
+            reprofiled = new_spec._reprofile_Peaks()
+            new_spec.set_peaks(reprofiled, "reprofiled")
         for mz, i in other_spec.peaks("reprofiled"):
-            self._peak_dict["reprofiled"][mz] += i
-        return self
+            new_spec._peak_dict["reprofiled"][mz] += i
+        # breakpoint()
+        return new_spec
 
     def __sub__(self, other_spec):
         """
@@ -1051,17 +1057,15 @@ class Spectrum(MS_Spectrum):
         Returns:
             peaks (list or ndarray): list or numpy array of mz/i tuples or arrays
         """
+        if self._peak_dict["raw"] is None:
+            mz_params = self._get_encoding_parameters("m/z array")
+            i_params = self._get_encoding_parameters("intensity array")
+            mz = self._decode(*mz_params)
+            i = self._decode(*i_params)
+            self._peak_dict["raw"] = np.stack((mz, i), axis=-1)
+
         if self._peak_dict[peak_type] is None:
-            if self._peak_dict["raw"] is None:
-                mz_params = self._get_encoding_parameters("m/z array")
-                i_params = self._get_encoding_parameters("intensity array")
-                mz = self._decode(*mz_params)
-                i = self._decode(*i_params)
-                arr = np.stack((mz, i), axis=-1)
-                self._peak_dict[peak_type] = arr
-            if peak_type == "raw":
-                pass
-            elif peak_type == "centroided":
+            if peak_type == "centroided":
                 self._peak_dict["centroided"] = self._centroid_peaks()
             elif peak_type == "reprofiled":
                 self._peak_dict["reprofiled"] = self._reprofile_Peaks()
@@ -1070,13 +1074,13 @@ class Spectrum(MS_Spectrum):
             else:
                 raise KeyError
 
-        if not isinstance(self._peak_dict[peak_type], np.ndarray):
-            peaks = self._array(self._peak_dict[peak_type])
-        else:
-            peaks = self._peak_dict[peak_type]
         if peak_type == "reprofiled":
             peaks = list(self._peak_dict[peak_type].items())
             peaks.sort(key=itemgetter(0))
+        elif not isinstance(self._peak_dict[peak_type], np.ndarray):
+            peaks = self._array(self._peak_dict[peak_type])
+        else:
+            peaks = self._peak_dict[peak_type]
         return peaks
 
     @lru_cache()
@@ -1275,7 +1279,7 @@ class Spectrum(MS_Spectrum):
             for _ in range(int(round(floor * ip)), int(round(ceil * ip)) + 1):
                 if _ % int(5) == 0:
                     a = float(_) / float(ip)
-                    y = i * math.exp(-1 * ((mz - a) * (mz - a)) / (2 * sigma * sigma))
+                    y = i * math.exp(-1 * ((a - mz) * (a- mz)) / (2 * sigma * sigma))
                     tmp[a] += y
             # x_values =
             # Let the measured precision be 2 sigma of the signal width
