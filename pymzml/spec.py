@@ -376,7 +376,13 @@ class Spectrum(MS_Spectrum):
 
     """
 
-    def __init__(self, element=ElementTree.Element(""), measured_precision=5e-6):
+    def __init__(
+        self,
+        element=ElementTree.Element(""),
+        measured_precision=5e-6,
+        resolution=70000,
+        mz_resolution_reference=200,
+    ):
 
         __slots__ = [
             "_centroided_peaks",
@@ -400,7 +406,8 @@ class Spectrum(MS_Spectrum):
             "internal_precision" "noise_level_estimate",
             "selected_precursors",
         ]
-
+        self._resolution = resolution
+        self._mz_resolution_reference = mz_resolution_reference
         self._centroided_peaks = None
         self._centroided_peaks_sorted_by_i = None
         self._extreme_values = None
@@ -907,8 +914,12 @@ class Spectrum(MS_Spectrum):
             selected_precursor_mzs = self.element.findall(
                 ".//*[@accession='MS:1000744']"
             )
-            selected_precursor_is = self.element.findall(".//*[@accession='MS:1000042']")
-            selected_precursor_cs = self.element.findall(".//*[@accession='MS:1000041']")
+            selected_precursor_is = self.element.findall(
+                ".//*[@accession='MS:1000042']"
+            )
+            selected_precursor_cs = self.element.findall(
+                ".//*[@accession='MS:1000041']"
+            )
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
@@ -959,7 +970,7 @@ class Spectrum(MS_Spectrum):
             precursor(list): list of precursor ids for this spectrum.
         """
         self.deprecation_warning(sys._getframe().f_code.co_name)
-        if not hasattr(self, '_precursors'):
+        if not hasattr(self, "_precursors"):
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
@@ -1187,7 +1198,9 @@ class Spectrum(MS_Spectrum):
         try:
             profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
             if profile_ot is None:
-                profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
+                profile_ot = self.calling_instance.OT.name.get(
+                    "profile mass spectrum", None
+                )
             acc = profile_ot["id"]
             is_profile = (
                 True
@@ -1250,21 +1263,36 @@ class Spectrum(MS_Spectrum):
         """
         tmp = ddict(int)
         for mz, i in self.peaks("centroided"):
-            # Let the measured precision be 2 sigma of the signal width
-            # When using normal distribution
-            # FWHM = 2 sqt(2 * ln(2)) sigma = 2.3548 sigma
-            s = mz * self.measured_precision * 2  # in before 2
-            s2 = s * s
-            floor = mz - 5.0 * s  # Gauss curve +- 3 sigma
-            ceil = mz + 5.0 * s
+            sigma = (
+                mz
+                / self._resolution
+                * math.sqrt(mz / self._mz_resolution_reference)
+                / 2.4477
+            )
+            floor = mz - (3 * 2.4477 * sigma)
+            ceil = mz + (3 * 2.4477 * sigma)  # * vor + but anyways :)
             ip = self.internal_precision / 4
-            # more spacing, i.e. less points describing the gauss curve
-            # -> faster adding
             for _ in range(int(round(floor * ip)), int(round(ceil * ip)) + 1):
                 if _ % int(5) == 0:
                     a = float(_) / float(ip)
-                    y = i * math.exp(-1 * ((mz - a) * (mz - a)) / (2 * s2))
+                    y = i * math.exp(-1 * ((mz - a) * (mz - a)) / (2 * sigma * sigma))
                     tmp[a] += y
+            # x_values =
+            # Let the measured precision be 2 sigma of the signal width
+            # When using normal distribution
+            # FWHM = 2 sqt(2 * ln(2)) sigma = 2.3548 sigma
+            # s = mz * self.measured_precision * 2  # in before 2
+            # s2 = s * s
+            # floor = mz - 5.0 * s  # Gauss curve +- 3 sigma
+            # ceil = mz + 5.0 * s
+            # ip = self.internal_precision / 4
+            # # more spacing, i.e. less points describing the gauss curve
+            # # -> faster adding
+            # for _ in range(int(round(floor * ip)), int(round(ceil * ip)) + 1):
+            #     if _ % int(5) == 0:
+            #         a = float(_) / float(ip)
+            #         y = i * math.exp(-1 * ((mz - a) * (mz - a)) / (2 * s2))
+            #         tmp[a] += y
         self.reprofiled = True
         self.set_peaks(None, "centroided")
         return tmp
@@ -1347,7 +1375,8 @@ class Spectrum(MS_Spectrum):
             noise_level = self.estimated_noise_level(mode=mode)
         if len(self.peaks("centroided")) != 0:
             self._peak_dict["centroided"] = self.peaks("centroided")[
-                self.peaks("centroided")[:, 1] / noise_level >= signal_to_noise_threshold
+                self.peaks("centroided")[:, 1] / noise_level
+                >= signal_to_noise_threshold
             ]
         if len(self.peaks("raw")) != 0:
             self._peak_dict["raw"] = self.peaks("raw")[
