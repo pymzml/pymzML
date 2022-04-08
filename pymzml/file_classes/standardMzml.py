@@ -551,9 +551,11 @@ class StandardMzml(object):
                     current_position = seeker.tell()
 
             elif len(data) == 0:
-                sorted_keys = sorted(self.offset_dict.keys())
+                sorted_int_keys = {
+                    k: v for k, v in self.offset_dict.items() if isinstance(k, int)
+                }
                 pos = (
-                    bisect.bisect_left(sorted_keys, target_index) - 2
+                    bisect.bisect_left(sorted_int_keys, target_index) - 2
                 )  # dat magic number :)
                 try:
                     key = sorted_keys[pos]
@@ -587,7 +589,6 @@ class StandardMzml(object):
         start_pos = seeker.tell()
         data_chunk = seeker.read(chunk_size)
         while end_found is False:
-            chunk_offset = seeker.tell()
             data_chunk += seeker.read(chunk_size)
             tag_end, seeker = self._read_until_tag_end(seeker)
             data_chunk += tag_end
