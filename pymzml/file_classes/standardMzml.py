@@ -741,7 +741,7 @@ class StandardMzml(object):
                 file_pointer = seeker.tell()
 
                 data = seeker.read(total_chunk_size)
-                string, seeker = self._read_until_tag_end(seeker, byte_mode=True)
+                string, seeker = self._read_until_tag_end(seeker)
                 data += string
                 spec_start = regex_string.search(data)
                 chrom_start = regex_patterns.CHROMO_OPEN_PATTERN.search(data)
@@ -767,7 +767,7 @@ class StandardMzml(object):
                 elif len(data) == 0:
                     raise Exception("cant find specified string")
 
-    def _read_until_tag_end(self, seeker, max_search_len=12, byte_mode=False):
+    def _read_until_tag_end(self, seeker, max_search_len=12):
         """
         Help make sure no splitted text appear in chunked data, so regex always find
         <spectrum ...>
