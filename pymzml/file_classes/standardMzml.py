@@ -593,14 +593,11 @@ class StandardMzml(object):
             data_chunk += tag_end
             if regex_patterns.SPECTRUM_CLOSE_PATTERN.search(data_chunk):
                 match = regex_patterns.SPECTRUM_CLOSE_PATTERN.search(data_chunk)
-                relative_pos_in_chunk = match.end()
-                end_pos = chunk_offset + relative_pos_in_chunk
                 end_pos = match.end()
                 end_found = True
             elif regex_patterns.CHROMATOGRAM_CLOSE_PATTERN.search(data_chunk):
                 match = regex_patterns.CHROMATOGRAM_CLOSE_PATTERN.search(data_chunk)
-                relative_pos_in_chunk = match.end()
-                end_pos = chunk_offset + relative_pos_in_chunk
+                end_pos = match.end()
                 end_found = True
         return (start_pos, end_pos)
 
