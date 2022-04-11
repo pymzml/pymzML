@@ -554,6 +554,7 @@ class StandardMzml(object):
                 sorted_int_keys = {
                     k: v for k, v in self.offset_dict.items() if isinstance(k, int)
                 }
+                sorted_keys = sorted(sorted_int_keys.keys())
                 pos = (
                     bisect.bisect_left(sorted_int_keys, target_index) - 2
                 )  # dat magic number :)
