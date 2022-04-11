@@ -426,6 +426,7 @@ class Spectrum(MS_Spectrum):
         self._t_mass_set = None
         self._t_mz_set = None
         self._TIC = None
+        self._precursors = None
         self._transformed_mass_with_error = None
         self._transformed_mz_with_error = None
         self._transformed_peaks = None
@@ -883,6 +884,8 @@ class Spectrum(MS_Spectrum):
         """
         if self._scan_time_in_minutes is None:
             self._scan_time, time_unit = self.scan_time
+            if self._scan_time_unit.lower() == "millisecond":
+                self._scan_time_in_minutes = self._scan_time / 1000.0 / 60.0
             if self._scan_time_unit.lower() == "second":
                 self._scan_time_in_minutes = self._scan_time / 60.0
             elif self._scan_time_unit.lower() == "minute":
@@ -959,7 +962,7 @@ class Spectrum(MS_Spectrum):
             precursor(list): list of precursor ids for this spectrum.
         """
         self.deprecation_warning(sys._getframe().f_code.co_name)
-        if self._precursors is None:
+        if not self._precursors:
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )

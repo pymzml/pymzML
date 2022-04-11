@@ -551,9 +551,12 @@ class StandardMzml(object):
                     current_position = seeker.tell()
 
             elif len(data) == 0:
-                sorted_keys = sorted(self.offset_dict.keys())
+                sorted_int_keys = {
+                    k: v for k, v in self.offset_dict.items() if isinstance(k, int)
+                }
+                sorted_keys = sorted(sorted_int_keys.keys())
                 pos = (
-                    bisect.bisect_left(sorted_keys, target_index) - 2
+                    bisect.bisect_left(sorted_int_keys, target_index) - 2
                 )  # dat magic number :)
                 try:
                     key = sorted_keys[pos]
@@ -587,20 +590,16 @@ class StandardMzml(object):
         start_pos = seeker.tell()
         data_chunk = seeker.read(chunk_size)
         while end_found is False:
-            chunk_offset = seeker.tell()
             data_chunk += seeker.read(chunk_size)
             tag_end, seeker = self._read_until_tag_end(seeker)
             data_chunk += tag_end
             if regex_patterns.SPECTRUM_CLOSE_PATTERN.search(data_chunk):
                 match = regex_patterns.SPECTRUM_CLOSE_PATTERN.search(data_chunk)
-                relative_pos_in_chunk = match.end()
-                end_pos = chunk_offset + relative_pos_in_chunk
                 end_pos = match.end()
                 end_found = True
             elif regex_patterns.CHROMATOGRAM_CLOSE_PATTERN.search(data_chunk):
                 match = regex_patterns.CHROMATOGRAM_CLOSE_PATTERN.search(data_chunk)
-                relative_pos_in_chunk = match.end()
-                end_pos = chunk_offset + relative_pos_in_chunk
+                end_pos = match.end()
                 end_found = True
         return (start_pos, end_pos)
 
@@ -743,7 +742,7 @@ class StandardMzml(object):
                 file_pointer = seeker.tell()
 
                 data = seeker.read(total_chunk_size)
-                string, seeker = self._read_until_tag_end(seeker, byte_mode=True)
+                string, seeker = self._read_until_tag_end(seeker)
                 data += string
                 spec_start = regex_string.search(data)
                 chrom_start = regex_patterns.CHROMO_OPEN_PATTERN.search(data)
@@ -769,7 +768,7 @@ class StandardMzml(object):
                 elif len(data) == 0:
                     raise Exception("cant find specified string")
 
-    def _read_until_tag_end(self, seeker, max_search_len=12, byte_mode=False):
+    def _read_until_tag_end(self, seeker, max_search_len=12):
         """
         Help make sure no splitted text appear in chunked data, so regex always find
         <spectrum ...>
