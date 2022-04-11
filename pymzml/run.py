@@ -43,6 +43,7 @@ import os
 import xml.etree.ElementTree as ElementTree
 from collections import defaultdict as ddict
 from io import BytesIO
+from pathlib import Path
 
 from . import spec
 from . import obo
