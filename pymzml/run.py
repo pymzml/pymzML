@@ -84,12 +84,15 @@ class Reader(object):
         build_index_from_scratch=False,
         skip_chromatogram=True,
         index_regex=None,
-        **kwargs
+        resolution_dict=None,
+        mz_resolution_reference=200,
+        **kwargs,
     ):
         """Initialize and set required attributes."""
         self.index_regex = index_regex
         self.build_index_from_scratch = build_index_from_scratch
         self.skip_chromatogram = skip_chromatogram
+        self.mz_resolution_reference = mz_resolution_reference
         if MS_precisions is None:
             MS_precisions = {}
             if "MS1_Precision" in kwargs.keys():
@@ -98,11 +101,20 @@ class Reader(object):
                 MS_precisions[2] = kwargs["MSn_Precision"]
                 MS_precisions[3] = kwargs["MSn_Precision"]
 
+        if resolution_dict is None:
+            resolution_dict = {}
+        self.resolution_dict = {
+            None: 70_000,
+            1: 70_000,
+            2: 35_000,
+        }
+        self.resolution_dict.update(resolution_dict)
+
         # Parameters
         self.ms_precisions = {
             None: 0.0001,  # if spectra does not contain ms_level information
-                         # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
-                         # returned as None
+            # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
+            # returned as None
             0: 0.0001,
             1: 5e-6,
             2: 20e-6,
@@ -153,7 +165,11 @@ class Reader(object):
             event, element = next(self.iter, ("END", "END"))
             if event == "end":
                 if element.tag.endswith("}spectrum"):
-                    spectrum = spec.Spectrum(element)
+                    spectrum = spec.Spectrum(
+                        element=element,
+                        resolution_dict=self.resolution_dict,
+                        mz_resolution_reference=self.mz_resolution_reference,
+                    )
                     if has_ref_group:
                         spectrum._set_params_from_reference_group(
                             self.info["referenceable_param_group_list_element"]
@@ -196,6 +212,7 @@ class Reader(object):
         except:
             pass
         spectrum = self.info["file_object"][identifier]
+        spectrum._resolution_dict.update(self.resolution_dict)
         spectrum.calling_instance = self
         if isinstance(spectrum, spec.Spectrum):
             spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
@@ -227,7 +244,7 @@ class Reader(object):
             path_or_file,
             self.info["encoding"],
             build_index_from_scratch=self.build_index_from_scratch,
-            index_regex=self.index_regex
+            index_regex=self.index_regex,
         )
 
     def _guess_encoding(self, mzml_file):

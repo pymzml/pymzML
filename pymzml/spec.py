@@ -381,7 +381,7 @@ class Spectrum(MS_Spectrum):
         self,
         element=ElementTree.Element(""),
         measured_precision=5e-6,
-        resolution=70000,
+        resolution_dict=None,
         mz_resolution_reference=200,
     ):
 
@@ -407,7 +407,13 @@ class Spectrum(MS_Spectrum):
             "internal_precision" "noise_level_estimate",
             "selected_precursors",
         ]
-        self._resolution = resolution
+        if resolution_dict is None:
+            resolution_dict = {
+                None: 70_000,
+                1: 70_000,
+                2: 35_000,
+            }
+        self._resolution_dict = resolution_dict
         self._mz_resolution_reference = mz_resolution_reference
         self._centroided_peaks = None
         self._centroided_peaks_sorted_by_i = None
@@ -467,6 +473,7 @@ class Spectrum(MS_Spectrum):
         result = cls.__new__(cls)
         memo[id(self)] = result
         for k, v in self.__dict__.items():
+            # skip underscore prefix keys from __dict__
             try:
                 setattr(result, k, copy.deepcopy(v, memo))
             except:
@@ -632,7 +639,7 @@ class Spectrum(MS_Spectrum):
             if not accession.startswith("MS:"):
                 try:
                     accession = self.calling_instance.OT[accession]["id"]
-                except TypeError:
+                except (TypeError, AttributeError):
                     accession = "---"
             search_string = './/*[@accession="{0}"]'.format(accession)
             elements = []
@@ -1281,10 +1288,11 @@ class Spectrum(MS_Spectrum):
             reprofiled_peaks (list): list of reprofiled m/z, i tuples
         """
         tmp = ddict(int)
+        ms_level = self.get("ms_level", None)
         for mz, i in self.peaks("centroided"):
             sigma = (
                 mz
-                / self._resolution
+                / self._resolution_dict.get(ms_level)
                 * math.sqrt(mz / self._mz_resolution_reference)
                 / 2.4477
             )
@@ -1785,6 +1793,7 @@ class Chromatogram(MS_Spectrum):
         self._measured_precision = measured_precision
         self.element = element
         self.noise_level_estimate = {}
+        self._resolution_dict = {}
         # Property variables
         self._time = None
         self._ms_level = None
