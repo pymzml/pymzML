@@ -169,23 +169,23 @@ class SpectrumTest(unittest.TestCase):
     def test_add_specs_to_empty_spec(self):
         spec1 = Spectrum()
         spec2 = Spectrum()
-        spec2.set_peaks([(100, 200)], "raw")
-        spec1 += spec2
-        centroided_mz = spec1.peaks("centroided")[:, 0]
-        centroided_i = spec1.peaks("centroided")[:, 1]
+        spec2.set_peaks([(100, 2e6)], "raw")
+        spec3 = spec1 + spec2
+        centroided_mz = spec3.peaks("centroided")[:, 0]
+        centroided_i = spec3.peaks("centroided")[:, 1]
         assert np.allclose(centroided_mz, [100], rtol=5e-6)
-        assert np.allclose(centroided_i, [200], atol=0.002)
+        assert np.allclose(centroided_i, [2e6], atol=0.002)
 
     def test_add_tow_custom_specs(self):
         spec1 = Spectrum()
         spec2 = Spectrum()
-        spec1.set_peaks([(100, 200)], "raw")
-        spec2.set_peaks([(100, 200), (200, 300)], "raw")
-        spec1 += spec2
-        centroided_mz = spec1.peaks("centroided")[:, 0]
-        centroided_i = spec1.peaks("centroided")[:, 1]
+        spec1.set_peaks([(100, 2e6)], "raw")
+        spec2.set_peaks([(100, 2e6), (200, 3e6)], "raw")
+        spec3 = spec1 + spec2
+        centroided_mz = spec3.peaks("centroided")[:, 0]
+        centroided_i = spec3.peaks("centroided")[:, 1]
         assert np.allclose(centroided_mz, [100, 200], rtol=5e-6)
-        assert np.allclose(centroided_i, [400, 300], atol=0.002)
+        assert np.allclose(centroided_i, [4e6, 3e6], atol=0.002)
 
     def test_average_spectra(self):
         spec0 = Spectrum()

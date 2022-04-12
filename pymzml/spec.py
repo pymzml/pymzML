@@ -461,6 +461,18 @@ class Spectrum(MS_Spectrum):
         if self.element:
             self.element.clear()
 
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            try:
+                setattr(result, k, copy.deepcopy(v, memo))
+            except:
+                # skip copying of buffered reader
+                pass
+        return result
+
     def __add__(self, other_spec):
         """
         Adds two pymzml spectra
@@ -487,7 +499,6 @@ class Spectrum(MS_Spectrum):
         """
         if isinstance(other_spec, Spectrum) is False:
             raise IOError("Require pymzml Spectrum to add!")
-        # breakpoint()
         new_spec = copy.deepcopy(self)
         other_spec.peaks("centroided")
         if new_spec._peak_dict["reprofiled"] is None:
@@ -495,7 +506,6 @@ class Spectrum(MS_Spectrum):
             new_spec.set_peaks(reprofiled, "reprofiled")
         for mz, i in other_spec.peaks("reprofiled"):
             new_spec._peak_dict["reprofiled"][mz] += i
-        # breakpoint()
         return new_spec
 
     def __sub__(self, other_spec):
@@ -1222,13 +1232,15 @@ class Spectrum(MS_Spectrum):
         if is_profile is not None or self.reprofiled:  # check if spec is a profile spec
             tmp = []
             if self._peak_dict["reprofiled"] is not None:
+                # reprofile case
                 i_array = [i for mz, i in self.peaks("reprofiled")]
                 mz_array = [mz for mz, i in self.peaks("reprofiled")]
             else:
+                # profile spec case
                 i_array = self.i
                 mz_array = self.mz
             for pos, i in enumerate(i_array[:-1]):
-                if pos <= 1:
+                if pos < 1:
                     continue
                 if 0 < i_array[pos - 1] < i > i_array[pos + 1] > 0:
                     x1 = float(mz_array[pos - 1])
