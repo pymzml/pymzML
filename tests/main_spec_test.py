@@ -513,14 +513,35 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(scan_time, 0.023756566)
 
     def test_get_all_arrays_in_spec(self):
-        assert self.spec.get_all_arrays_in_spec() == ['m/z array', 'intensity array']
+        assert self.spec.get_all_arrays_in_spec() == ["m/z array", "intensity array"]
 
     def test_get_array(self):
         # import pdb;pdb.set_trace()
-        assert (self.spec.mz == self.spec.get_array('m/z array')).all()
+        assert (self.spec.mz == self.spec.get_array("m/z array")).all()
 
     def test_get_tims_tof_ion_mobility(self):
         assert self.spec.get_tims_tof_ion_mobility() is None
+
+    def test_spectrum_set_resolution(self):
+        res_dict = {
+            1: 70_000,
+            2: 35_000,
+        }
+        spec = Spectrum(resolution_dict=res_dict, mz_resolution_reference=200)
+        assert spec._mz_resolution_reference == 200
+        assert spec._resolution_dict[1] == 70_000
+        assert spec._resolution_dict[2] == 35_000
+
+    def test_spectrum_set_resolution(self):
+        res_dict = {
+            1: 70_000,
+            2: 35_000,
+        }
+        spec = Spectrum(resolution_dict=res_dict, mz_resolution_reference=200)
+        spec.set_peaks(np.array([[100, 200], [200, 200]]), "raw")
+        spec.ms_level = 1
+        peaks = spec.peaks("reprofiled")
+        breakpoint()
 
 
 if __name__ == "__main__":

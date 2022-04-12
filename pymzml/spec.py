@@ -881,6 +881,17 @@ class Spectrum(MS_Spectrum):
                 )  # put hardcoded MS tags in minimum.py???
         return self._ms_level
 
+    @ms_level.setter
+    def ms_level(self, ms_level):
+        """
+        Property to access the ms level.
+
+        Returns:
+            ms_level (int):
+        """
+        if isinstance(ms_level, int):
+            self._ms_level = ms_level
+
     @property
     def scan_time(self):
         """
@@ -1288,7 +1299,7 @@ class Spectrum(MS_Spectrum):
             reprofiled_peaks (list): list of reprofiled m/z, i tuples
         """
         tmp = ddict(int)
-        ms_level = self.get("ms_level", None)
+        ms_level = self.ms_level
         for mz, i in self.peaks("centroided"):
             sigma = (
                 mz
