@@ -541,7 +541,6 @@ class SpectrumTest(unittest.TestCase):
         spec.set_peaks(np.array([[100, 200], [200, 200]]), "raw")
         spec.ms_level = 1
         peaks = spec.peaks("reprofiled")
-        breakpoint()
 
 
 if __name__ == "__main__":
