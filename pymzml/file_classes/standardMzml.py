@@ -203,7 +203,9 @@ class StandardMzml(object):
                     matches = re.finditer(regex_patterns.SPECTRUM_OPEN_PATTERN, chunk)
                     for _match_number, match in enumerate(matches):
                         if match is not None:
-                            scan = int(re.search(b"[0-9]*$", match.group("id")).group())
+                            spec_info = match.groups()
+                            spec_info = dict(zip(spec_info[0::2], spec_info[1::2]))
+                            scan = int(re.search(b"[0-9]*$", spec_info[b"id"]).group())
                             # print(">>", _match_number, scan)
                             if jump_direction == 'forwards':
                                 if scan > target_index:
@@ -493,8 +495,10 @@ class StandardMzml(object):
             if spec_start is not None:
                 spec_start_offset = file_pointer + spec_start.start()
                 seeker.seek(spec_start_offset)
+                spec_info = self.spec_open.search(data).groups()
+                spec_info = dict(zip(spec_info[0::2], spec_info[1::2]))
                 current_index = int(
-                    re.search(b"[0-9]*$", spec_start.group("id")).group()
+                    re.search(b"[0-9]*$", spec_info[b"id"]).group()
                 )
 
                 self.offset_dict[current_index] = (spec_start_offset,)
@@ -519,9 +523,10 @@ class StandardMzml(object):
                         current_position = seeker.tell()
                         data = seeker.read(chunk_size)
                         if self.spec_open.search(data):
-                            spec_start = self.spec_open.search(data)
+                            spec_info = self.spec_open.search(data).groups()
+                            spec_info = dict(zip(spec_info[0::2], spec_info[1::2]))
                             current_index = int(
-                                re.search(b"[0-9]*$", spec_start.group("id")).group()
+                                re.search(b"[0-9]*$", spec_info[b"id"]).group()
                             )
                     seeker.seek(current_position)
                     spectrum = self._search_linear(seeker, target_index)
@@ -685,8 +690,10 @@ class StandardMzml(object):
             if spec_start:
                 spec_start_offset = file_pointer + spec_start.start()
                 seeker.seek(spec_start_offset)
+                spec_info = spec_start.groups()
+                spec_info = dict(zip(spec_info[0::2], spec_info[1::2]))
                 current_index = int(
-                    re.search(b"[0-9]*$", spec_start.group("id")).group()
+                    re.search(b"[0-9]*$", spec_info[b"id"]).group()
                 )
                 # print(current_index)
                 spec_end = self.spec_close.search(data[spec_start.start() :])
