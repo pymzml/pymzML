@@ -38,10 +38,7 @@ MOBY_DICK_CHAPTER_PATTERN = re.compile(r"CHAPTER ([0-9]+).*")
 """
 Regex to catch moby dick chapter number used in the index gezip writer example.
 """
-
-SPECTRUM_OPEN_PATTERN = re.compile(
-    b'<*spectrum[^>]*index="(?P<index>[0-9]+)" id="(?P<id>[^"]+)" defaultArrayLength="[0-9]+">'
-)
+SPECTRUM_OPEN_PATTERN = re.compile(b'<*spectrum[^>]*(index|id)="(.*?)".*(index|id)="(.*?)"')
 """
 Regex to catch specturm open xml tag with encoded array length
 """
