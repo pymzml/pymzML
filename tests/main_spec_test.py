@@ -169,23 +169,23 @@ class SpectrumTest(unittest.TestCase):
     def test_add_specs_to_empty_spec(self):
         spec1 = Spectrum()
         spec2 = Spectrum()
-        spec2.set_peaks([(100, 200)], "raw")
-        spec1 += spec2
-        centroided_mz = spec1.peaks("centroided")[:, 0]
-        centroided_i = spec1.peaks("centroided")[:, 1]
+        spec2.set_peaks([(100, 2e6)], "raw")
+        spec3 = spec1 + spec2
+        centroided_mz = spec3.peaks("centroided")[:, 0]
+        centroided_i = spec3.peaks("centroided")[:, 1]
         assert np.allclose(centroided_mz, [100], rtol=5e-6)
-        assert np.allclose(centroided_i, [200], atol=0.002)
+        assert np.allclose(centroided_i, [2e6], atol=0.002)
 
     def test_add_tow_custom_specs(self):
         spec1 = Spectrum()
         spec2 = Spectrum()
-        spec1.set_peaks([(100, 200)], "raw")
-        spec2.set_peaks([(100, 200), (200, 300)], "raw")
-        spec1 += spec2
-        centroided_mz = spec1.peaks("centroided")[:, 0]
-        centroided_i = spec1.peaks("centroided")[:, 1]
+        spec1.set_peaks([(100, 2e6)], "raw")
+        spec2.set_peaks([(100, 2e6), (200, 3e6)], "raw")
+        spec3 = spec1 + spec2
+        centroided_mz = spec3.peaks("centroided")[:, 0]
+        centroided_i = spec3.peaks("centroided")[:, 1]
         assert np.allclose(centroided_mz, [100, 200], rtol=5e-6)
-        assert np.allclose(centroided_i, [400, 300], atol=0.002)
+        assert np.allclose(centroided_i, [4e6, 3e6], atol=0.002)
 
     def test_average_spectra(self):
         spec0 = Spectrum()
@@ -513,14 +513,34 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(scan_time, 0.023756566)
 
     def test_get_all_arrays_in_spec(self):
-        assert self.spec.get_all_arrays_in_spec() == ['m/z array', 'intensity array']
+        assert self.spec.get_all_arrays_in_spec() == ["m/z array", "intensity array"]
 
     def test_get_array(self):
         # import pdb;pdb.set_trace()
-        assert (self.spec.mz == self.spec.get_array('m/z array')).all()
+        assert (self.spec.mz == self.spec.get_array("m/z array")).all()
 
     def test_get_tims_tof_ion_mobility(self):
         assert self.spec.get_tims_tof_ion_mobility() is None
+
+    def test_spectrum_set_resolution(self):
+        res_dict = {
+            1: 70_000,
+            2: 35_000,
+        }
+        spec = Spectrum(resolution_dict=res_dict, mz_resolution_reference=200)
+        assert spec._mz_resolution_reference == 200
+        assert spec._resolution_dict[1] == 70_000
+        assert spec._resolution_dict[2] == 35_000
+
+    def test_spectrum_set_resolution(self):
+        res_dict = {
+            1: 70_000,
+            2: 35_000,
+        }
+        spec = Spectrum(resolution_dict=res_dict, mz_resolution_reference=200)
+        spec.set_peaks(np.array([[100, 200], [200, 200]]), "raw")
+        spec.ms_level = 1
+        peaks = spec.peaks("reprofiled")
 
 
 if __name__ == "__main__":
