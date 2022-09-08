@@ -482,6 +482,8 @@ class Spectrum(MS_Spectrum):
         if self._peak_dict["reprofiled"] is None:
             reprofiled = self._reprofile_Peaks()
             self.set_peaks(reprofiled, "reprofiled")
+        if other_spec._peak_dict["reprofiled"] is None:
+            other_spec.set_peaks(other_spec._reprofile_Peaks(), "reprofiled")
         for mz, i in other_spec.peaks("reprofiled"):
             self._peak_dict["reprofiled"][mz] += i
         return self
