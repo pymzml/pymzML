@@ -1,0 +1,43 @@
+name: Continious Integration
+
+on:
+  pull_request
+
+jobs:
+  pydocstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install PyDocStyle
+        run: pip install pydocstyle
+      - name: Run PyDocStyle
+        run: pydocstyle pymzml
+       
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run black
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: install black
+        run: pip install black
+      - name: run black
+        run: black --check pymzml
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: install tox
+        run: pip install tox
+      - name: Tox
+        run: tox -e py
