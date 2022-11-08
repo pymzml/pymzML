@@ -101,8 +101,8 @@ class Reader(object):
         # Parameters
         self.ms_precisions = {
             None: 0.0001,  # if spectra does not contain ms_level information
-                         # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
-                         # returned as None
+            # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
+            # returned as None
             0: 0.0001,
             1: 5e-6,
             2: 20e-6,
@@ -227,7 +227,7 @@ class Reader(object):
             path_or_file,
             self.info["encoding"],
             build_index_from_scratch=self.build_index_from_scratch,
-            index_regex=self.index_regex
+            index_regex=self.index_regex,
         )
 
     def _guess_encoding(self, mzml_file):

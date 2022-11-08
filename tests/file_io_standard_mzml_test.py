@@ -11,23 +11,19 @@ import test_file_paths
 
 
 class StandardMzmlTest(unittest.TestCase):
-    """
-    """
+    """ """
 
     def setUp(self):
-        """
-        """
+        """ """
         paths = test_file_paths.paths
         self.standard_mzml = StandardMzml(paths[0], "latin-1")
 
     def tearDown(self):
-        """
-        """
+        """ """
         self.standard_mzml.close()
 
     def test_getitem(self):
-        """
-        """
+        """ """
         ID = 8
         spec = self.standard_mzml[ID]
         self.assertIsInstance(spec, Spectrum)
@@ -40,8 +36,7 @@ class StandardMzmlTest(unittest.TestCase):
         self.assertEqual(ID, chrom.ID)
 
     def test_interpol_search(self):
-        """
-        """
+        """ """
         spec = self.standard_mzml._interpol_search(5)
         self.assertIsInstance(spec, Spectrum)
 

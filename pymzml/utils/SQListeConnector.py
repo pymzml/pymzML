@@ -27,8 +27,7 @@ class SQLiteDatabase(object):
     """
 
     def __init__(self, path):
-        """
-        """
+        """ """
         connection = sqlite3.connect(path)
         self.cursor = connection.cursor()
 

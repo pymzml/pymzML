@@ -24,7 +24,7 @@ Regex pattern for SIM index
 """
 SPECTRUM_PATTERN3 = regex.compile(r"((\w+)=(\w+\s*))+")
 SPECTRUM_ID_PATTERN = re.compile(r'="{0,1}([0-9]*)"{0,1}>{0,1}$')
-SPECTRUM_ID_PATTERN2 = re.compile(r'(scan|scanId)=(\d+)')
+SPECTRUM_ID_PATTERN2 = re.compile(r"(scan|scanId)=(\d+)")
 """
 Simplified spectrum id regex. Greedly catches ints at the end of line
 """
@@ -38,14 +38,18 @@ MOBY_DICK_CHAPTER_PATTERN = re.compile(r"CHAPTER ([0-9]+).*")
 """
 Regex to catch moby dick chapter number used in the index gezip writer example.
 """
-SPECTRUM_OPEN_PATTERN = re.compile(b'<*spectrum[^>]*(index|id)="(.*?)".*(index|id)="(.*?)"')
+SPECTRUM_OPEN_PATTERN = re.compile(
+    b'<*spectrum[^>]*(index|id)="(.*?)".*(index|id)="(.*?)"'
+)
 """
 Regex to catch specturm open xml tag with encoded array length
 """
 
 SPECTRUM_OPEN_PATTERN_SIMPLE = re.compile(rb"<spectrum ")
 SPECTRUM_ID_PATTERN_SIMPLE = re.compile(rb"<*spectrum[^>]*id=\"(?P<id>[^\"]+)\"")
-SPECTRUM_DEFAULTARRY_PATTERN_SIMPLE = re.compile(rb"<*spectrum[^>]*defaultArrayLength=\"[0-9]+\">")
+SPECTRUM_DEFAULTARRY_PATTERN_SIMPLE = re.compile(
+    rb"<*spectrum[^>]*defaultArrayLength=\"[0-9]+\">"
+)
 
 CHROMO_OPEN_PATTERN = re.compile(b'<chromatogram\\s.*?id="(.*?)"')
 

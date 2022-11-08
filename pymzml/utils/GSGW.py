@@ -209,7 +209,7 @@ class GSGW(object):
         if isinstance(data, bytes) is False:
             data = bytes(data, "latin-1")
         self.crc32 = zlib.crc32(data)
-        self.isize = len(data) % 2 ** 32
+        self.isize = len(data) % 2**32
         comp_data = Compressor.compress(data) + Compressor.flush()
         self.file_out.write(comp_data)
         self.file_out.write(struct.pack("<L", self.crc32))

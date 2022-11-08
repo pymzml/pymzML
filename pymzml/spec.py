@@ -912,8 +912,12 @@ class Spectrum(MS_Spectrum):
             selected_precursor_mzs = self.element.findall(
                 ".//*[@accession='MS:1000744']"
             )
-            selected_precursor_is = self.element.findall(".//*[@accession='MS:1000042']")
-            selected_precursor_cs = self.element.findall(".//*[@accession='MS:1000041']")
+            selected_precursor_is = self.element.findall(
+                ".//*[@accession='MS:1000042']"
+            )
+            selected_precursor_cs = self.element.findall(
+                ".//*[@accession='MS:1000041']"
+            )
             precursors = self.element.findall(
                 "./{ns}precursorList/{ns}precursor".format(ns=self.ns)
             )
@@ -1192,7 +1196,9 @@ class Spectrum(MS_Spectrum):
         try:
             profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
             if profile_ot is None:
-                profile_ot = self.calling_instance.OT.name.get("profile mass spectrum", None)
+                profile_ot = self.calling_instance.OT.name.get(
+                    "profile mass spectrum", None
+                )
             acc = profile_ot["id"]
             is_profile = (
                 True
@@ -1352,7 +1358,8 @@ class Spectrum(MS_Spectrum):
             noise_level = self.estimated_noise_level(mode=mode)
         if len(self.peaks("centroided")) != 0:
             self._peak_dict["centroided"] = self.peaks("centroided")[
-                self.peaks("centroided")[:, 1] / noise_level >= signal_to_noise_threshold
+                self.peaks("centroided")[:, 1] / noise_level
+                >= signal_to_noise_threshold
             ]
         if len(self.peaks("raw")) != 0:
             self._peak_dict["raw"] = self.peaks("raw")[

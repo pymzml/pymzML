@@ -36,6 +36,7 @@ import warnings
 # Fail gracefully if no plotly installed
 try:
     import plotly as plt
+
     # import plotly.offline as plt
     import plotly.graph_objs as go
     from plotly import subplots
@@ -72,13 +73,11 @@ class Factory(object):
         self.style_options = {"line.width": 1}  # default value
 
     def __return_max_y(self, i):
-        """
-        """
+        """ """
         return self.y_max[i]
 
     def __return_neg_offset_0(self, i):
-        """
-        """
+        """ """
         return 0.0 - (self.y_max[i] * (self.offset * 0.05))
 
     def new_plot(self, MS_precision="5e-6", title=None):
@@ -543,7 +542,9 @@ class Factory(object):
         print()
         return
 
-    def save(self, filename=None, mz_range=None, int_range=None, layout=None, write_pdf=False):
+    def save(
+        self, filename=None, mz_range=None, int_range=None, layout=None, write_pdf=False
+    ):
         """
         Saves all plots and their data points that have been added to the
         plotFactory.
@@ -637,7 +638,7 @@ class Factory(object):
         # plt.plot(my_figure, filename=_filename, auto_open=False)
         plt.io.write_html(my_figure, _filename)
         if write_pdf:
-            plt.io.write_image(my_figure, _filename.replace('.html', '.pdf'))
+            plt.io.write_image(my_figure, _filename.replace(".html", ".pdf"))
         return
 
     def get_data(self):
