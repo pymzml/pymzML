@@ -101,8 +101,8 @@ class Reader(object):
         # Parameters
         self.ms_precisions = {
             None: 0.0001,  # if spectra does not contain ms_level information
-                         # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
-                         # returned as None
+            # e.g. UV-chromatograms (thanks pyeguy) then ms_level is
+            # returned as None
             0: 0.0001,
             1: 5e-6,
             2: 20e-6,
@@ -121,7 +121,9 @@ class Reader(object):
         else:
             self.info["encoding"] = self._guess_encoding(self.path_or_file)
 
-        self.info["file_object"] = self._open_file(self.path_or_file)
+        self.info["file_object"] = self._open_file(
+            self.path_or_file, build_index_from_scratch=self.build_index_from_scratch
+        )
         self.info["offset_dict"] = self.info["file_object"].offset_dict
         if obo_version:
             self.info["obo_version"] = self._obo_version_validator(obo_version)
@@ -174,7 +176,10 @@ class Reader(object):
                     return spectrum
             elif event == "END":
                 # reinit iter
-                self.info["file_object"] = self._open_file(self.path_or_file)
+                self.info["file_object"].close()
+                self.info["file_object"] = self._open_file(
+                    self.path_or_file, build_index_from_scratch=False
+                )
                 self.iter = self._init_iter()
                 raise StopIteration
 
@@ -212,7 +217,7 @@ class Reader(object):
         """Return file object in use."""
         return type(self.info["file_object"].file_handler)
 
-    def _open_file(self, path_or_file):
+    def _open_file(self, path_or_file, build_index_from_scratch=False):
         """
         Open the path using the FileInterface class as a wrapper.
 
@@ -226,8 +231,8 @@ class Reader(object):
         return FileInterface(
             path_or_file,
             self.info["encoding"],
-            build_index_from_scratch=self.build_index_from_scratch,
-            index_regex=self.index_regex
+            build_index_from_scratch=build_index_from_scratch,
+            index_regex=self.index_regex,
         )
 
     def _guess_encoding(self, mzml_file):
