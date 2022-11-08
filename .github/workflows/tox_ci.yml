@@ -4,6 +4,14 @@ on:
   pull_request
 
 jobs:
+  pydocstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install PyDocStyle
+        run: pip install pydocstyle
+      - name: Run PyDocStyle
+        run: pydocstyle pymzml
   black:
     runs-on: ubuntu-latest
     steps:
