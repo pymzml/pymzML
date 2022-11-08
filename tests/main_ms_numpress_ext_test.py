@@ -18,8 +18,7 @@ class test_MSNumpress(unittest.TestCase):
     """
 
     def setUp(self):
-        """
-        """
+        """ """
         self.mz_data = np.asarray([100.1, 100.01, 100.001, 100.0001], dtype=np.float64)
         self.i_data = np.array([5e6, 6.5e5, 2e6, 12e6])
         self.i_slof_data = np.array([1.0, 2.0, 4.0])
@@ -76,8 +75,7 @@ class test_MSNumpress(unittest.TestCase):
         # self.assertCountEqual(decoded_array, self.i_slof_data)
 
     def test_encode_decode_slof(self):
-        """
-        """
+        """ """
         # pynumpress.decoded_data = self.i_slof_data
         print(self.i_slof_data)
         fp = pynumpress.optimal_slof_fixed_point(self.i_slof_data)
@@ -135,8 +133,7 @@ class test_MSNumpress(unittest.TestCase):
         )
 
     def test_encode_decode_pic(self):
-        """
-        """
+        """ """
         encoded_array = pynumpress.encode_pic(
             np.asarray(self.i_slof_data, dtype=np.float64)
         )
@@ -337,8 +334,7 @@ class test_MSNumpress(unittest.TestCase):
             self.assertAlmostEqual(decoded_array[i], self.mz_data[i], places=i + 1)
 
     def test_encode_decode_linear(self):
-        """
-        """
+        """ """
         test_array = [
             100.00066,
             100.00217,

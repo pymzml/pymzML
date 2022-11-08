@@ -18,8 +18,7 @@ class test_MSNumpress(unittest.TestCase):
     """
 
     def setUp(self):
-        """
-        """
+        """ """
         self.mz_data = np.asarray([100.1, 100.01, 100.001, 100.0001], dtype=np.float64)
         self.i_data = [5e6, 6.5e5, 2e6, 12e6]
         self.i_slof_data = [1, 2, 4]
@@ -36,13 +35,12 @@ class test_MSNumpress(unittest.TestCase):
 
     def test_enc_int_leading_ones(self):
         bytearray(b"\x08\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x07")
-        encoded_integer = self.Decoder._encodeInt((2 ** 31) - 1)
+        encoded_integer = self.Decoder._encodeInt((2**31) - 1)
         self.assertEqual(encoded_integer[0], 0x08)
         self.assertEqual(encoded_integer[1], 0x0F)
 
     def test_encodeInt_negative(self):
-        """
-        """
+        """ """
         negative_integer = -1
         encoded_integer = self.Decoder._encodeInt(negative_integer)
         # print('encoded', encoded_integer)
@@ -144,8 +142,7 @@ class test_MSNumpress(unittest.TestCase):
         # self.assertCountEqual(decoded_array, self.i_slof_data)
 
     def test_encode_decode_slof(self):
-        """
-        """
+        """ """
         self.Decoder.decoded_data = self.i_slof_data
         self.Decoder.encode_slof()
         decoded_array = self.Decoder.decode_slof()
@@ -202,8 +199,7 @@ class test_MSNumpress(unittest.TestCase):
         )
 
     def test_encode_decode_pic(self):
-        """
-        """
+        """ """
         self.Decoder.decoded_data = self.i_slof_data
         self.Decoder.encode_pic()
         decoded_array = self.Decoder.decode_pic()
@@ -396,8 +392,7 @@ class test_MSNumpress(unittest.TestCase):
     #             decoded_array[i], self.mz_data[i], places=i+1)
 
     def test_encode_decode_linear(self):
-        """
-        """
+        """ """
         test_array = [
             100.00066,
             100.00217,

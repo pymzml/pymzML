@@ -90,8 +90,7 @@ class Decoder:
     """
 
     def __init__(self, nb_workers=2):
-        """
-        """
+        """ """
         self._mz = None
         self._i = None
 
@@ -112,8 +111,7 @@ class Decoder:
         ZE_POOL.starmap(_decode, data)
 
     def _error_callback(self, result):
-        """
-        """
+        """ """
         raise Exception("Failed with error:\n{0}".format(result))
 
 

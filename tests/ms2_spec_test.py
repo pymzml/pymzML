@@ -23,8 +23,7 @@ class SpectrumMS2Test(unittest.TestCase):
     """
 
     def setUp(self):
-        """
-        """
+        """ """
         # self.paths = [
         #     os.path.join( DATA_FOLDER, file ) for file in DATA_FILES]
         self.paths = test_file_paths.paths
@@ -47,14 +46,15 @@ class SpectrumMS2Test(unittest.TestCase):
         self.assertIsInstance(selected_precursor[0]["i"], float)
         self.assertIsInstance(selected_precursor[0]["charge"], int)
         self.assertEqual(
-            selected_precursor, [{"mz": 443.711242675781, "i": 0.0, "charge": 2, 'precursor id': None}]
+            selected_precursor,
+            [{"mz": 443.711242675781, "i": 0.0, "charge": 2, "precursor id": None}],
         )
 
     def test_ion_mode(self):
-        assert self.spec['positive scan'] is True
+        assert self.spec["positive scan"] is True
 
     def test_ion_mode_non_existent(self):
-        assert self.spec['negative scan'] is None
+        assert self.spec["negative scan"] is None
 
     @unittest.skipIf(pymzml.spec.DECON_DEP is False, "ms_deisotope was not installed")
     def test_deconvolute_peaks(self):

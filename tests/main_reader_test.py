@@ -12,12 +12,10 @@ import test_file_paths
 
 
 class runTest(unittest.TestCase):
-    """
-    """
+    """ """
 
     def setUp(self):
-        """
-        """
+        """ """
         self.paths = test_file_paths.paths
 
         file_compressed_indexed = self.paths[2]
@@ -52,8 +50,7 @@ class runTest(unittest.TestCase):
         self.assertEqual(spec.measured_precision, 61)
 
     def test_determine_file_encoding(self):
-        """
-        """
+        """ """
         encoding = self.reader_compressed_indexed._determine_file_encoding(
             self.paths[2]
         )
@@ -72,8 +69,7 @@ class runTest(unittest.TestCase):
         self.assertEqual(encoding, "ISO-8859-1")
 
     def test_init_iter(self):
-        """
-        """
+        """ """
         mzml_version = self.reader_compressed_indexed.info["mzml_version"]
         obo_version = self.reader_compressed_indexed.info["obo_version"]
         spec_count = self.reader_compressed_indexed.info["spectrum_count"]
@@ -184,8 +180,7 @@ class runTest(unittest.TestCase):
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
 
     def test_next(self):
-        """
-        """
+        """ """
         ret = self.reader_compressed_indexed.next()
         self.assertIsInstance(ret, Spectrum)
         ret = self.reader_compressed_unindexed.next()
@@ -218,17 +213,15 @@ class runTest(unittest.TestCase):
 
     def test_read_custom_regex(self):
         custom_regex_file = os.path.join(
-            os.path.dirname(__file__),
-            "data",
-            "Manuels_custom_ids.mzML"
+            os.path.dirname(__file__), "data", "Manuels_custom_ids.mzML"
         )
         reader = run.Reader(
             custom_regex_file,
             index_regex=re.compile(
                 b'.*idRef="ManuelsCustomID=(?P<ID>.*) diesdas">(?P<offset>[0-9]*)</offset>'
-            )
+            ),
         )
-        ids = sorted([k for k in reader.info['offset_dict'].keys() if k != 'TIC'])
+        ids = sorted([k for k in reader.info["offset_dict"].keys() if k != "TIC"])
         assert ids == list(range(1, 11))
 
 
