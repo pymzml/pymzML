@@ -19,8 +19,7 @@ except:
 
 
 class SpectrumTest(unittest.TestCase):
-    """
-    """
+    """ """
 
     def assertPeaksIdentical(
         self, peaks1, peaks2, mult=1, msg=None, measured_precision=5e-6
@@ -37,23 +36,20 @@ class SpectrumTest(unittest.TestCase):
             )
 
     def setUp(self):
-        """
-        """
+        """ """
         self.paths = test_file_paths.paths
         path = self.paths[2]
         self.Run = run.Reader(path)
         self.spec = self.Run[6]
 
     def test_init(self):
-        """
-        """
+        """ """
         self.assertEqual(self.spec.measured_precision, 5e-6)
         self.assertEqual(self.spec.ns, "{http://psi.hupo.org/ms/mzml}")
         self.assertIsNotNone(self.spec.element)
 
     def test_mz(self):
-        """
-        """
+        """ """
         mz = self.spec.mz
         self.spec.mz = [1, 2, 3]
         self.assertCountEqual(self.spec.mz, [1, 2, 3])
@@ -62,15 +58,13 @@ class SpectrumTest(unittest.TestCase):
         mz64 = spec64.mz
 
     def test_i(self):
-        """
-        """
+        """ """
         i = self.spec.i
         self.spec.i = [1, 2, 3]
         self.assertCountEqual(self.spec.i, [1, 2, 3])
 
     def test_decode_to_numpy(self):
-        """
-        """
+        """ """
         if numpy_installed:
             test_array = [100.00087, 100.00238, 100.00389, 100.00541, 119.27174]
             b64_array = "cgDIQjgByEL+AchCxQLIQiGL7kIjjO5CJY3uQieO7kIpj+5CK5DuQi2R7kIvku5CMpPuQjeU7kI5le5CO5buQj2X7kK6QgJDTUMCQ+FDAkN0RAJDB0UCQ5pFAkMuRgJDwUYCQ1RHAkPoRwJDe0gCQw9JAkOiSQJDj/YGQyr3BkPF9wZDYfgGQ/z4BkOX+QZDM/oGQ876BkNp+wZDBfwGQ6L8BkM9/QZD2P0GQ3T+BkPmBRVDmgYVQ04HFUMCCBVDtggVQ2oJFUMfChVD0woVQ4cLFUM7DBVD8AwVQ6QNFUNYDhVDDA8VQ8EPFUN1EBVDKREVQ/UFFkOrBhZDYQcWQxcIFkPNCBZDgwkWQzkKFkPvChZDpQsWQ1sMFkMRDRZDxw0WQ34OFkM0DxZDw6gZQ4CpGUM9qhlD+aoZQ7arGUNzrBlDL60ZQ+ytGUOprhlDZq8ZQyKwGUPfsBlDnLEZQ0iiGkMGoxpDxaMaQ4OkGkNCpRpDAKYaQ7+mGkN9pxpDPKgaQ/+oGkO9qRpDfKoaQzqrGkO0o0dDy6RHQ+OlR0P6pkdDEahHQympR0NAqkdDWKtHQ2+sR0OHrUdDnq5HQ7avR0PNsEdDaT1RQ5U+UUPAP1FD7EBRQxhCUUNEQ1FDcERRQ5xFUUPHRlFD9EdRQyBJUUNLSlFDd0tRQ3p0bEPidWxDS3dsQ7N4bEMbemxDg3tsQ+t8bENTfmxDvH9sQySBbEONgmxD9YNsQ12FbEPGhmxDDn6EQ+R+hEO5f4RDj4CEQ2WBhEM6goRDEIOEQ+aDhEO7hIRDkYWEQ2eGhEM8h4RDEoiEQ5x6hUN0e4VDTHyFQyR9hUP9fYVD1X6FQ61/hUOFgIVDXYGFQzWChUMNg4VD5YOFQ72EhUOVhYVDlnaGQ3B3hkNLeIZDJXmGQwB6hkPaeoZDtHuGQ498hkNpfYZDRH6GQx5/hkP5f4ZD04CGQ66BhkOIgoZDY4OGQz2EhkMM9oZD6PaGQ8T3hkOf+IZDe/mGQ1f6hkMy+4ZDDvyGQ+r8hkPF/YZDof6GQ33/hkNYAIdDNAGHQxACh0PrAodDG9CIQ/vQiEPb0YhDu9KIQ5vTiEN71IhDXNWIQzzWiEMc14hD/NeIQ9zYiEO82YhDnNqIQ33biENvQYxDV0KMQ0BDjEMpRIxDEUWMQ/pFjEPjRoxDy0eMQ7RIjEOdSYxDhkqMQ25LjENXTIxDT3+MQzmAjEMigYxDC4KMQ/WCjEPeg4xDx4SMQ7CFjEOahoxDg4eMQ2yIjENWiYxDP4qMQyiLjEMSjIxD+4yMQ+WNjEMhAI1DCwGNQ/YBjUPgAo1DywONQ7UEjUOgBY1DigaNQ3UHjUNgCI1DSgmNQzUKjUMfC41DCgyNQ/UMjUP0fY1D4H6NQ8x/jUO3gI1Do4GNQ4+CjUN7g41DZ4SNQ1KFjUM+ho1DKoeNQxaIjUMCiY1D7YmNQ9mKjUO6eY5DqXqOQ5d7jkOFfI5Dc32OQ2F+jkNQf45DPoCOQyyBjkMago5DCYOOQ/eDjkPlhI5D1IWOQ8KGjkOwh45Dn4iOQ3n6jkNo+45DWPyOQ0f9jkM3/o5DJv+OQxYAj0MFAY9D9QGPQ+QCj0PUA49DwwSPQ7IFj0OiBo9DkQePQ4EIj0P7f5VD+4CVQ/uBlUP7gpVD+4OVQ/uElUP7hZVD+4aVQ/uHlUP7iJVD/ImVQ/yKlUP8i5VD/IyVQ/yNlUP8jpVD/I+VQ4AtmkOMLppDmC+aQ6UwmkOxMZpDvTKaQ8kzmkPVNJpD4jWaQ+42mkP6N5pDBjmaQxM6mkMfO5pDbF3DQ+pew0NpYMND52HDQw=="
@@ -83,8 +77,7 @@ class SpectrumTest(unittest.TestCase):
             self.assertEqual(val1, val2)
 
     def test_decode_to_tuple(self):
-        """
-        """
+        """ """
         test_array = "123"
         b64_array = "cgDIQjgByEL+AchCxQLIQiGL7kIjjO5CJY3uQieO7kIpj+5CK5DuQi2R7kIvku5CMpPuQjeU7kI5le5CO5buQj2X7kK6QgJDTUMCQ+FDAkN0RAJDB0UCQ5pFAkMuRgJDwUYCQ1RHAkPoRwJDe0gCQw9JAkOiSQJDj/YGQyr3BkPF9wZDYfgGQ/z4BkOX+QZDM/oGQ876BkNp+wZDBfwGQ6L8BkM9/QZD2P0GQ3T+BkPmBRVDmgYVQ04HFUMCCBVDtggVQ2oJFUMfChVD0woVQ4cLFUM7DBVD8AwVQ6QNFUNYDhVDDA8VQ8EPFUN1EBVDKREVQ/UFFkOrBhZDYQcWQxcIFkPNCBZDgwkWQzkKFkPvChZDpQsWQ1sMFkMRDRZDxw0WQ34OFkM0DxZDw6gZQ4CpGUM9qhlD+aoZQ7arGUNzrBlDL60ZQ+ytGUOprhlDZq8ZQyKwGUPfsBlDnLEZQ0iiGkMGoxpDxaMaQ4OkGkNCpRpDAKYaQ7+mGkN9pxpDPKgaQ/+oGkO9qRpDfKoaQzqrGkO0o0dDy6RHQ+OlR0P6pkdDEahHQympR0NAqkdDWKtHQ2+sR0OHrUdDnq5HQ7avR0PNsEdDaT1RQ5U+UUPAP1FD7EBRQxhCUUNEQ1FDcERRQ5xFUUPHRlFD9EdRQyBJUUNLSlFDd0tRQ3p0bEPidWxDS3dsQ7N4bEMbemxDg3tsQ+t8bENTfmxDvH9sQySBbEONgmxD9YNsQ12FbEPGhmxDDn6EQ+R+hEO5f4RDj4CEQ2WBhEM6goRDEIOEQ+aDhEO7hIRDkYWEQ2eGhEM8h4RDEoiEQ5x6hUN0e4VDTHyFQyR9hUP9fYVD1X6FQ61/hUOFgIVDXYGFQzWChUMNg4VD5YOFQ72EhUOVhYVDlnaGQ3B3hkNLeIZDJXmGQwB6hkPaeoZDtHuGQ498hkNpfYZDRH6GQx5/hkP5f4ZD04CGQ66BhkOIgoZDY4OGQz2EhkMM9oZD6PaGQ8T3hkOf+IZDe/mGQ1f6hkMy+4ZDDvyGQ+r8hkPF/YZDof6GQ33/hkNYAIdDNAGHQxACh0PrAodDG9CIQ/vQiEPb0YhDu9KIQ5vTiEN71IhDXNWIQzzWiEMc14hD/NeIQ9zYiEO82YhDnNqIQ33biENvQYxDV0KMQ0BDjEMpRIxDEUWMQ/pFjEPjRoxDy0eMQ7RIjEOdSYxDhkqMQ25LjENXTIxDT3+MQzmAjEMigYxDC4KMQ/WCjEPeg4xDx4SMQ7CFjEOahoxDg4eMQ2yIjENWiYxDP4qMQyiLjEMSjIxD+4yMQ+WNjEMhAI1DCwGNQ/YBjUPgAo1DywONQ7UEjUOgBY1DigaNQ3UHjUNgCI1DSgmNQzUKjUMfC41DCgyNQ/UMjUP0fY1D4H6NQ8x/jUO3gI1Do4GNQ4+CjUN7g41DZ4SNQ1KFjUM+ho1DKoeNQxaIjUMCiY1D7YmNQ9mKjUO6eY5DqXqOQ5d7jkOFfI5Dc32OQ2F+jkNQf45DPoCOQyyBjkMago5DCYOOQ/eDjkPlhI5D1IWOQ8KGjkOwh45Dn4iOQ3n6jkNo+45DWPyOQ0f9jkM3/o5DJv+OQxYAj0MFAY9D9QGPQ+QCj0PUA49DwwSPQ7IFj0OiBo9DkQePQ4EIj0P7f5VD+4CVQ/uBlUP7gpVD+4OVQ/uElUP7hZVD+4aVQ/uHlUP7iJVD/ImVQ/yKlUP8i5VD/IyVQ/yNlUP8jpVD/I+VQ4AtmkOMLppDmC+aQ6UwmkOxMZpDvTKaQ8kzmkPVNJpD4jWaQ+42mkP6N5pDBjmaQxM6mkMfO5pDbF3DQ+pew0NpYMND52HDQw=="
         out_array = self.spec._decode_to_tuple(
@@ -93,22 +86,19 @@ class SpectrumTest(unittest.TestCase):
         # self.assertEqual(out_array, test_array)
 
     def test_reprofile_peaks(self):
-        """
-        """
+        """ """
         r_peaks = self.spec.peaks("reprofiled")
         self.assertIsNotNone(r_peaks)
         # self.assertEqual(r_peaks, [(1, 10),(2, 20),(3, 30),(4, 40)])
 
     def test_centroid_peaks(self):
-        """
-        """
+        """ """
         self.spec.set_peaks([(1, 10), (2, 20), (3, 30), (4, 40)], "centroided")
         c_peaks = self.spec.peaks("centroided")
         self.assertPeaksIdentical(c_peaks, [(1, 10), (2, 20), (3, 30), (4, 40)])
 
     def test_centroid_peaks_for_real(self):
-        """
-        """
+        """ """
         new_peaks = [
             (99.999, 0.1),
             (99.9995, 1),
@@ -128,8 +118,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(res_correct, res)
 
     def test_add(self):
-        """
-        """
+        """ """
         spec = self.Run[6]
         p1 = spec.peaks("reprofiled")
         spec += spec
@@ -149,8 +138,7 @@ class SpectrumTest(unittest.TestCase):
         )  # , msg='List 1 : {0}\nList 2:{1}'.format(p1, p2))
 
     def test_mult(self):
-        """
-        """
+        """ """
         new_peaks = [(1, 10), (2, 20)]
         self.spec.set_peaks(new_peaks, "raw")
         self.spec * 2
@@ -158,8 +146,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertCountEqual(self.spec.peaks("raw")[1], (2, 40))
 
     def test_div(self):
-        """
-        """
+        """ """
         new_peaks = [(1, 10), (2, 20)]
         self.spec.set_peaks(new_peaks, "raw")
         self.spec / 2
@@ -206,8 +193,7 @@ class SpectrumTest(unittest.TestCase):
         assert np.allclose(centroided_peaks[:, 1], [1.4, 0.6], atol=0.0001)
 
     def test_reduce(self):
-        """
-        """
+        """ """
         new_peaks = [(50, 100), (102, 300), (400, 20), (401, 207)]
         # self.spec.peaks = new_peaks
         self.spec.set_peaks(new_peaks, "raw")
@@ -216,8 +202,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertPeaksIdentical(self.spec.peaks("raw"), [(102, 300), (400, 20)])
 
     def test_highest_peaks(self):
-        """
-        """
+        """ """
         h_peaks = self.spec.highest_peaks(3)
         high_i = [i for mz, i in h_peaks]
         self.assertEqual(
@@ -225,8 +210,7 @@ class SpectrumTest(unittest.TestCase):
         )
 
     def test_extreme_values(self):
-        """
-        """
+        """ """
         new_peaks = [(1, 10000), (10000, 1), (500, 600), (600, 500)]
         self.spec.set_peaks(new_peaks, "raw")
         extreme_vals_i = self.spec.extreme_values("i")
@@ -235,8 +219,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(extreme_vals_i, (1, 10000))
 
     def test_has_peak(self):
-        """
-        """
+        """ """
         i = self.spec.peaks("centroided")[1][0]
         hits = self.spec.has_peak(i)
         hits2 = self.spec.has_peak(i + 5e-6)
@@ -244,15 +227,13 @@ class SpectrumTest(unittest.TestCase):
         self.assertIsNotNone(hits2[0][0], i)
 
     def test_transform_mz(self):
-        """
-        """
+        """ """
         mz = 213.33333333333333
         tMZ = self.spec.transform_mz(mz)
         self.assertEqual(tMZ, int(round(mz * self.spec.internal_precision)))
 
     def test_has_overlapping_peak(self):
-        """
-        """
+        """ """
         overlaps = []
         mzs = self.spec.mz
         for mz in mzs:
@@ -260,8 +241,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertTrue(any(overlaps))
 
     def test_similarity_to(self):
-        """
-        """
+        """ """
         cos = self.spec.similarity_to(self.spec)
         self.assertEqual(round(cos), 1)
 
@@ -279,8 +259,7 @@ class SpectrumTest(unittest.TestCase):
         self.assertPeaksIdentical(spec.peaks("raw"), [(1000, 10)])
 
     def test_spec_has_peak_within_precision(self):
-        """
-        """
+        """ """
         pass
 
     def test_getitem_index_gzip(self):
@@ -435,36 +414,32 @@ class SpectrumTest(unittest.TestCase):
     def test_remove_noise_s2n_noise_level_spec_6(self):
         spec = self.Run[6]
         p1 = spec.peaks("centroided")
-        spec.remove_noise(
-            noise_level=1e5,
-            signal_to_noise_threshold=2.0)
+        spec.remove_noise(noise_level=1e5, signal_to_noise_threshold=2.0)
         p2 = spec.peaks("centroided")
         self.assertPeaksIdentical(
             p2[:5],
             [
-                [7.20813980e+01, 3.49662469e+05],
-                [7.40970306e+01, 1.35170670e+07],
-                [7.51003647e+01, 6.28674688e+05],
-                [8.60605240e+01, 3.99662406e+05],
-                [8.60969086e+01, 5.50612938e+05]
+                [7.20813980e01, 3.49662469e05],
+                [7.40970306e01, 1.35170670e07],
+                [7.51003647e01, 6.28674688e05],
+                [8.60605240e01, 3.99662406e05],
+                [8.60969086e01, 5.50612938e05],
             ],
         )
 
     def test_remove_noise_s2n_median_spec_6(self):
         spec = self.Run[6]
         p1 = spec.peaks("centroided")
-        spec.remove_noise(
-            mode='mad',
-            signal_to_noise_threshold=5.0)
+        spec.remove_noise(mode="mad", signal_to_noise_threshold=5.0)
         p2 = spec.peaks("centroided")
         self.assertPeaksIdentical(
             p2[:5],
             [
-                [7.00657654e+01, 4.08554297e+04],
-                [7.20450134e+01, 6.51679375e+04],
-                [7.20813980e+01, 3.49662469e+05],
-                [7.40606766e+01, 1.18710039e+05],
-                [7.40970306e+01, 1.35170670e+07]
+                [7.00657654e01, 4.08554297e04],
+                [7.20450134e01, 6.51679375e04],
+                [7.20813980e01, 3.49662469e05],
+                [7.40606766e01, 1.18710039e05],
+                [7.40970306e01, 1.35170670e07],
             ],
         )
 
@@ -513,11 +488,11 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(scan_time, 0.023756566)
 
     def test_get_all_arrays_in_spec(self):
-        assert self.spec.get_all_arrays_in_spec() == ['m/z array', 'intensity array']
+        assert self.spec.get_all_arrays_in_spec() == ["m/z array", "intensity array"]
 
     def test_get_array(self):
         # import pdb;pdb.set_trace()
-        assert (self.spec.mz == self.spec.get_array('m/z array')).all()
+        assert (self.spec.mz == self.spec.get_array("m/z array")).all()
 
     def test_get_tims_tof_ion_mobility(self):
         assert self.spec.get_tims_tof_ion_mobility() is None

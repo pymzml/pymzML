@@ -10,21 +10,18 @@ import test_file_paths
 
 
 class GSGRTest(unittest.TestCase):
-    """
-    """
+    """ """
 
     def setUp(self):
         paths = test_file_paths.paths
         self.Reader = GSGR(paths[2])
 
     def test_init(self):
-        """
-        """
+        """ """
         self.assertTrue(self.Reader.indexed)
 
     def test_check_magic_bytes(self):
-        """
-        """
+        """ """
         self.assertTrue(self.Reader._check_magic_bytes())
 
     def test_read_block(self):

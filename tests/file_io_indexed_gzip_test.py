@@ -14,27 +14,23 @@ import test_file_paths
 
 
 class IndexedGzipTest(unittest.TestCase):
-    """
-    """
+    """ """
 
     def setUp(self):
         paths = test_file_paths.paths
         self.File = IndexedGzip(paths[2], "latin-1")
 
     def tearDown(self):
-        """
-        """
+        """ """
         self.File.close()
 
     def test_build_index(self):
-        """
-        """
+        """ """
         # more elaborated?
         self.assertIsNotNone(self.File.offset_dict)
 
     def test_getitem_5(self):
-        """
-        """
+        """ """
         ID = 5
         spec = self.File[ID]
         self.assertIsInstance(spec, Spectrum)
