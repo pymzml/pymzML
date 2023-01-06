@@ -93,7 +93,7 @@ class MS_Spectrum(object):
     def _read_accessions(self):
         """Set all required variables for this spectrum."""
         self.accessions = {}
-        for element in self.element.getiterator():
+        for element in self.element.iter():
             accession = element.get("accession")
             name = element.get("name")
             if accession is not None:
@@ -1310,7 +1310,7 @@ class Spectrum(MS_Spectrum):
             ref = ref.get("ref")
         ele = ref_element.find(".//*[@id='{ref}']".format(ref=ref, ns=self.ns))
         if ele is not None and ref == ele.get("id"):
-            for param in ele.getiterator():
+            for param in ele.iter():
                 self.element.append(ele)
                 acc = param.get("accession")
 
