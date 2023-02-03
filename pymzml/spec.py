@@ -502,6 +502,8 @@ class Spectrum(MS_Spectrum):
         assert isinstance(other_spec, Spectrum)
         if self._peak_dict["reprofiled"] is None:
             self.set_peaks(self._reprofile_Peaks(), "reprofiled")
+        if other_spec._peak_dict["reprofiled"] is None:
+            other_spec.set_peaks(other_spec._reprofile_Peaks(), "reprofiled")
         for mz, i in other_spec.peaks("reprofiled"):
             self._peak_dict["reprofiled"][mz] -= i
         self.set_peaks(None, "centroided")
