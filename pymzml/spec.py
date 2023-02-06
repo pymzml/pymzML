@@ -170,7 +170,7 @@ class MS_Spectrum(object):
         Returns:
             data (str)           : encoded data
             comp (str)           : compression method
-            fType (str)          : float precision
+            d_type (str)         : data type
             d_array_length (str) : length of the data array
         """
         numpress_encoding = False
@@ -195,35 +195,62 @@ class MS_Spectrum(object):
             if not numpress_encoding:
                 try:
                     # 32-bit float
-                    f_type = b_data_array.find(
+                    d_type = b_data_array.find(
                         float_type_string.format(
                             ns=self.ns,
                             Acc=self.calling_instance.OT["32-bit float"]["id"],
                         )
                     ).get("name")
                 except:
-                    # 64-bit Float
-                    f_type = b_data_array.find(
-                        float_type_string.format(
-                            ns=self.ns,
-                            Acc=self.calling_instance.OT["64-bit float"]["id"],
-                        )
-                    ).get("name")
+                    try:
+                        # 64-bit Float
+                        d_type = b_data_array.find(
+                            float_type_string.format(
+                                ns=self.ns,
+                                Acc=self.calling_instance.OT["64-bit float"]["id"],
+                            )
+                        ).get("name")
+                    except:
+                        try:
+                            # 32-bit integer
+                            d_type = b_data_array.find(
+                                float_type_string.format(
+                                    ns=self.ns,
+                                    Acc=self.calling_instance.OT["32-bit integer"]["id"],
+                                )
+                            ).get("name")
+                        except:
+                            try:
+                                # 64-bit integer
+                                d_type = b_data_array.find(
+                                    float_type_string.format(
+                                        ns=self.ns,
+                                        Acc=self.calling_instance.OT["64-bit integer"]["id"],
+                                    )
+                                ).get("name")
+                            except:
+                                # null-terminated ASCII string
+                                d_type = b_data_array.find(
+                                    float_type_string.format(
+                                        ns=self.ns,
+                                        Acc=self.calling_instance.OT["null-terminated ASCII string"]["id"],
+                                    )
+                                ).get("name")
             else:
-                # compression is numpress, dont need floattype here
-                f_type = None
+                # compression is numpress, dont need data type here
+                d_type = None
             data = b_data_array.find("./{ns}binary".format(ns=self.ns))
             if data is not None:
                 data = data.text
         else:
             data = None
             d_array_length = 0
-            f_type = "64-bit float"
+            d_type = "64-bit float"
         if data is not None:
             data = data.encode("utf-8")
         else:
             data = ""
-        return (data, d_array_length, f_type, comp)
+        return (data, d_array_length, d_type, comp)
 
     @property
     def measured_precision(self):
@@ -241,7 +268,7 @@ class MS_Spectrum(object):
         self.internal_precision = int(round(50000.0 / (value * 1e6)))
         return
 
-    def _decode_to_numpy(self, data, d_array_length, float_type, comp):
+    def _decode_to_numpy(self, data, d_array_length, data_type, comp):
         """
         Decode the b64 encoded and packed strings from data as numpy arrays.
 
@@ -265,14 +292,25 @@ class MS_Spectrum(object):
             ):
 
                 out_data = self._decodeNumpress_to_array(out_data, comp)
-            if float_type == "32-bit float":
+            if data_type == "32-bit float":
                 # one character code may be sufficient too (f)
                 f_type = np.float32
                 out_data = np.frombuffer(out_data, f_type)
-            elif float_type == "64-bit float":
+            elif data_type == "64-bit float":
                 # one character code may be sufficient too (d)
                 f_type = np.float64
                 out_data = np.frombuffer(out_data, f_type)
+            elif data_type == "32-bit integer":
+                # one character code may be sufficient too (d)
+                i_type = np.int32
+                out_data = np.frombuffer(out_data, i_type)
+            elif data_type == "64-bit integer":
+                # one character code may be sufficient too (d)
+                i_type = np.int64
+                out_data = np.frombuffer(out_data, i_type)
+            # TODO elif data_type == "null-terminated ASCII string":
+            else:
+                raise ValueError(f'Unsupported data type: {data_type}')
         else:
             out_data = np.array([])
         return out_data
