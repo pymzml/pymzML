@@ -301,11 +301,11 @@ class MS_Spectrum(object):
                 f_type = np.float64
                 out_data = np.frombuffer(out_data, f_type)
             elif data_type == "32-bit integer":
-                # one character code may be sufficient too (d)
+                # one character code may be sufficient too (i)
                 i_type = np.int32
                 out_data = np.frombuffer(out_data, i_type)
             elif data_type == "64-bit integer":
-                # one character code may be sufficient too (d)
+                # one character code may be sufficient too (l)
                 i_type = np.int64
                 out_data = np.frombuffer(out_data, i_type)
             # TODO elif data_type == "null-terminated ASCII string":
