@@ -953,6 +953,7 @@ class Spectrum(MS_Spectrum):
                     ("i", i_values),
                     ("charge", charges),
                     ("precursor id", ids),
+                    ("element", precursors),
                 ]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
