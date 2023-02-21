@@ -177,13 +177,19 @@ class MS_Spectrum(object):
 
         # array_type_accession = self.calling_instance.OT[array_type]["id"]
 
-        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@name='{Acc}']/..".format(
-            ns=self.ns, Acc=array_type
+        b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@name='{name}']/..".format(
+            ns=self.ns, name=array_type
         )
-
         float_type_string = "./{ns}cvParam[@accession='{Acc}']"
 
         b_data_array = self.element.find(b_data_string)
+        if not b_data_array:
+            # non-standard data array
+            b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@value='{value}']/..".format(
+                ns=self.ns, value=array_type
+            )
+            b_data_array = self.element.find(b_data_string)
+
         comp = []
         if b_data_array:
             for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns=self.ns)):
