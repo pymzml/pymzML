@@ -222,7 +222,9 @@ class MS_Spectrum(object):
                             d_type = b_data_array.find(
                                 float_type_string.format(
                                     ns=self.ns,
-                                    Acc=self.calling_instance.OT["32-bit integer"]["id"],
+                                    Acc=self.calling_instance.OT["32-bit integer"][
+                                        "id"
+                                    ],
                                 )
                             ).get("name")
                         except:
@@ -231,7 +233,9 @@ class MS_Spectrum(object):
                                 d_type = b_data_array.find(
                                     float_type_string.format(
                                         ns=self.ns,
-                                        Acc=self.calling_instance.OT["64-bit integer"]["id"],
+                                        Acc=self.calling_instance.OT["64-bit integer"][
+                                            "id"
+                                        ],
                                     )
                                 ).get("name")
                             except:
@@ -239,7 +243,9 @@ class MS_Spectrum(object):
                                 d_type = b_data_array.find(
                                     float_type_string.format(
                                         ns=self.ns,
-                                        Acc=self.calling_instance.OT["null-terminated ASCII string"]["id"],
+                                        Acc=self.calling_instance.OT[
+                                            "null-terminated ASCII string"
+                                        ]["id"],
                                     )
                                 ).get("name")
             else:
@@ -316,7 +322,7 @@ class MS_Spectrum(object):
                 out_data = np.frombuffer(out_data, i_type)
             # TODO elif data_type == "null-terminated ASCII string":
             else:
-                raise ValueError(f'Unsupported data type: {data_type}')
+                raise ValueError(f"Unsupported data type: {data_type}")
         else:
             out_data = np.array([])
         return out_data
