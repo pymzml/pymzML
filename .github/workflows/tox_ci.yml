@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: 3.8
       - name: install black
-        run: pip install black<23
+        run: pip install "black<23"
       - name: run black
         run: black --check pymzml
 
