@@ -38,18 +38,16 @@ Note:
 #     SOFTWARE.
 
 
-import re
 import os
+import re
 import xml.etree.ElementTree as ElementTree
 from collections import defaultdict as ddict
 from io import BytesIO
 from pathlib import Path
 
-from . import spec
-from . import obo
-from . import regex_patterns
-from .file_interface import FileInterface
+from . import obo, regex_patterns, spec
 from .file_classes.standardMzml import StandardMzml
+from .file_interface import FileInterface
 
 
 class Reader(object):
@@ -117,7 +115,8 @@ class Reader(object):
             self.path_or_file = str(self.path_or_file)
         if isinstance(self.path_or_file, str):
             self.info["file_name"] = self.path_or_file
-            self.info["encoding"] = self._determine_file_encoding(self.path_or_file)
+            self.info["encoding"] = self._determine_file_encoding(
+                self.path_or_file)
         else:
             self.info["encoding"] = self._guess_encoding(self.path_or_file)
 
@@ -245,7 +244,8 @@ class Reader(object):
         Returns:
             mzml_encoding (str): encoding type of the file
         """
-        match = regex_patterns.FILE_ENCODING_PATTERN.search(mzml_file.readline())
+        match = regex_patterns.FILE_ENCODING_PATTERN.search(
+            mzml_file.readline())
         if match:
             return bytes.decode(match.group("encoding"))
         else:
@@ -273,7 +273,6 @@ class Reader(object):
 
     @staticmethod
     def _obo_version_validator(version):
-
         """
         The obo version should fit file names in the obo folder.
         However, some software generate mzML with built in obo version string like:
@@ -323,7 +322,8 @@ class Reader(object):
             obo_file = os.path.join(
                 obo_root,
                 "obo",
-                "psi-ms{0}.obo".format("-" + version_fixed if version_fixed else ""),
+                "psi-ms{0}.obo".format("-" +
+                                       version_fixed if version_fixed else ""),
             )
             if os.path.exists(obo_file) or os.path.exists(obo_file + ".gz"):
                 pass
@@ -361,7 +361,8 @@ class Reader(object):
                 all element in the file starting with the first spectrum
         """
         mzml_iter = iter(
-            ElementTree.iterparse(self.info["file_object"], events=("end", "start"))
+            ElementTree.iterparse(
+                self.info["file_object"], events=("end", "start"))
         )  # NOTE: end might be sufficient
         _, self.root = next(mzml_iter)
         self.info["chromatogram_count"] = None
@@ -384,14 +385,27 @@ class Reader(object):
                     and element.attrib.get("id", None) == "MS"
                 ):
                     obo_in_mzml = element.attrib.get("version", "1.1.0")
-                    self.info["obo_version"] = self._obo_version_validator(obo_in_mzml)
-
+                    self.info["obo_version"] = self._obo_version_validator(
+                        obo_in_mzml)
+            elif element.tag.endswith("}fileDescription"):
+                self.info["file_description"] = True
+                self.info["file_description_element"] = element
             elif element.tag.endswith("}referenceableParamGroupList"):
                 self.info["referenceable_param_group_list"] = True
                 self.info["referenceable_param_group_list_element"] = element
+            elif element.tag.endswith("}softwareList"):
+                self.info["software_list"] = True
+                self.info["software_list_element"] = element
+            elif element.tag.endswith("}instrumentConfigurationList"):
+                self.info["instrument_configuration_list"] = True
+                self.info["instrument_configuration_list_element"] = element
+            elif element.tag.endswith("}dataProcessingList"):
+                self.info["data_processing_list"] = True
+                self.info["data_processing_list_element"] = element
             elif element.tag.endswith("}spectrumList"):
                 spec_cnt = element.attrib.get("count")
-                self.info["spectrum_count"] = int(spec_cnt) if spec_cnt else None
+                self.info["spectrum_count"] = int(
+                    spec_cnt) if spec_cnt else None
                 break
             elif element.tag.endswith("}chromatogramList"):
                 chrom_cnt = element.attrib.get("count", None)
