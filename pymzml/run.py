@@ -415,6 +415,7 @@ class Reader(object):
             elif element.tag.endswith("}run"):
                 run_id = element.attrib.get("id")
                 start_time = element.attrib.get("startTimeStamp")
+                self.info["run_element"] = element
                 self.info["run_id"] = run_id
                 self.info["start_time"] = start_time
             else:
