@@ -390,6 +390,9 @@ class Reader(object):
             elif element.tag.endswith("}fileDescription"):
                 self.info["file_description"] = True
                 self.info["file_description_element"] = element
+            elif element.tag.endswith("}sampleList"):
+                self.info["sample_list"] = True
+                self.info["sample_list_element"] = element
             elif element.tag.endswith("}referenceableParamGroupList"):
                 self.info["referenceable_param_group_list"] = True
                 self.info["referenceable_param_group_list_element"] = element
