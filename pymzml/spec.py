@@ -74,22 +74,6 @@ class MS_Spectrum(object):
     General spectrum class for data handling.
     """
 
-    # __slots__ = [
-    #     # '_read_accessions',
-    #     # 'get_element_by_name',
-    #     # 'get_element_by_path',
-    #     # '_register',
-    #     # 'precursors',
-    #     # '_get_encoding_parameters',
-    #     # 'measured_precision',
-    #     # '_decode_to_numpy',
-    #     # '_median',
-    #     # 'to_string',
-    # ]
-    def __init__(self):
-        """."""
-        pass
-
     def _read_accessions(self):
         """Set all required variables for this spectrum."""
         self.accessions = {}
@@ -174,8 +158,6 @@ class MS_Spectrum(object):
             d_array_length (str) : length of the data array
         """
         numpress_encoding = False
-
-        # array_type_accession = self.calling_instance.OT[array_type]["id"]
 
         b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@name='{name}']/..".format(
             ns=self.ns, name=array_type
@@ -427,29 +409,6 @@ class Spectrum(MS_Spectrum):
     """
 
     def __init__(self, element=ElementTree.Element(""), measured_precision=5e-6):
-
-        __slots__ = [
-            "_centroided_peaks",
-            "_centroided_peaks_sorted_by_i",
-            "_deconvoluted_peaks",
-            "_extreme_values",
-            "_i",
-            "_ID",
-            "_id_dict",
-            "_index",
-            "_measured_precision",
-            "_peaks",
-            "_profile",
-            "_reprofiled_peaks",
-            "_t_mass_set",
-            "_t_mz_set",
-            "_time",
-            "_transformed_mass_with_error",
-            "_transformed_mz_with_error",
-            "_transformed_peaks" "calling_instance" "element",
-            "internal_precision" "noise_level_estimate",
-            "selected_precursors",
-        ]
 
         self._centroided_peaks = None
         self._centroided_peaks_sorted_by_i = None
@@ -1332,17 +1291,6 @@ class Spectrum(MS_Spectrum):
         self.set_peaks(None, "centroided")
         return tmp
 
-    def _register(self, decoded_tuple):
-        d_type, array = decoded_tuple
-        if d_type == "mz":
-            self._mz = array
-        elif d_type == "i":
-            self._i = array
-        elif d_type == "time":
-            self._time = array
-        else:
-            raise Exception("Unknown data Type ({0})".format(d_type))
-
     def _mz_2_mass(self, mz, charge):
         """
         Calculate the uncharged mass for a given mz value
@@ -1775,29 +1723,6 @@ class Chromatogram(MS_Spectrum):
             measured_precision (float): in ppm, i.e. 5e-6 equals to 5 ppm.
             param (dict): parameter mapping for this spectrum
         """
-
-        __slots__ = [
-            "_measured_precision",
-            "element",
-            "noise_level_estimate",
-            "_time",
-            "_i",
-            "_t_mass_set",
-            "_peaks",
-            "_t_mz_set",
-            "_centroided_peaks",
-            "_reprofiled_peaks",
-            "_deconvoluted_peaks",
-            "_profile",
-            "_extreme_values",
-            "_centroided_peaks_sorted_by_i",
-            "_transformed_mz_with_error",
-            "_transformed_mass_with_error",
-            "_precursors",
-            "_ID",
-            "internal_precision",
-        ]
-
         self._measured_precision = measured_precision
         self.element = element
         self.noise_level_estimate = {}
