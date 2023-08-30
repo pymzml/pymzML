@@ -205,9 +205,7 @@ class MS_Spectrum(object):
                             d_type = b_data_array.find(
                                 float_type_string.format(
                                     ns=self.ns,
-                                    Acc=self.obo_translator["32-bit integer"][
-                                        "id"
-                                    ],
+                                    Acc=self.obo_translator["32-bit integer"]["id"],
                                 )
                             ).get("name")
                         except:
@@ -216,9 +214,7 @@ class MS_Spectrum(object):
                                 d_type = b_data_array.find(
                                     float_type_string.format(
                                         ns=self.ns,
-                                        Acc=self.obo_translator["64-bit integer"][
-                                            "id"
-                                        ],
+                                        Acc=self.obo_translator["64-bit integer"]["id"],
                                     )
                                 ).get("name")
                             except:
@@ -285,7 +281,6 @@ class MS_Spectrum(object):
                 or "MS-Numpress linear prediction compression" in comp
                 or "MS-Numpress short logged float compression" in comp
             ):
-
                 out_data = self._decodeNumpress_to_array(out_data, comp)
             if data_type == "32-bit float":
                 # one character code may be sufficient too (f)
@@ -1213,9 +1208,7 @@ class Spectrum(MS_Spectrum):
         try:
             profile_ot = self.obo_translator.name.get("profile spectrum", None)
             if profile_ot is None:
-                profile_ot = self.obo_translator.name.get(
-                    "profile mass spectrum", None
-                )
+                profile_ot = self.obo_translator.name.get("profile mass spectrum", None)
             acc = profile_ot["id"]
             is_profile = (
                 True

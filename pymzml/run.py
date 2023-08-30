@@ -271,7 +271,6 @@ class Reader(object):
 
     @staticmethod
     def _obo_version_validator(version):
-
         """
         The obo version should fit file names in the obo folder.
         However, some software generate mzML with built in obo version string like:
