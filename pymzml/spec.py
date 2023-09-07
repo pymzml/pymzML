@@ -302,7 +302,6 @@ class MS_Spectrum(object):
                 or "MS-Numpress linear prediction compression" in comp
                 or "MS-Numpress short logged float compression" in comp
             ):
-
                 out_data = self._decodeNumpress_to_array(out_data, comp)
             if data_type == "32-bit float":
                 # one character code may be sufficient too (f)
@@ -427,7 +426,6 @@ class Spectrum(MS_Spectrum):
     """
 
     def __init__(self, element=ElementTree.Element(""), measured_precision=5e-6):
-
         __slots__ = [
             "_centroided_peaks",
             "_centroided_peaks_sorted_by_i",
@@ -1003,6 +1001,7 @@ class Spectrum(MS_Spectrum):
                     ("i", i_values),
                     ("charge", charges),
                     ("precursor id", ids),
+                    ("element", precursors),
                 ]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
