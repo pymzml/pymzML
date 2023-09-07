@@ -9,6 +9,7 @@ import os
 import pymzml.regex_patterns as rp
 import unittest
 from collections import OrderedDict as odict
+import re
 
 
 class RegexTest(unittest.TestCase):
@@ -61,6 +62,15 @@ class RegexTest(unittest.TestCase):
     def test_spectrum_tag_patter(self):
         for tag in self.spec_tags.values():
             self.assertRegex(tag.decode("utf-8"), rp.SPECTRUM_TAG_PATTERN)
+
+    def test_index_and_id_order_does_not_matter(self):
+        a = b'<spectrum id="controllerType=0 controllerNumber=1 scan=1" index="0" defaultArrayLength="1100">'
+        b = b'<spectrum index="0" id="controllerType=0 controllerNumber=1 scan=1" defaultArrayLength="917">'
+        a_match = re.search(rp.SPECTRUM_OPEN_PATTERN, a).groups()
+        b_match = re.search(rp.SPECTRUM_OPEN_PATTERN, b).groups()
+        a_dict = dict(zip(a_match[0::2], a_match[1::2]))
+        b_dict = dict(zip(b_match[0::2], b_match[1::2]))
+        assert a_dict == b_dict
 
 
 if __name__ == "__main__":

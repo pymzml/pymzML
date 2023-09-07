@@ -3,20 +3,10 @@
 Introduction
 ############
 
-.. image:: https://travis-ci.org/pymzml/pymzML.svg?branch=master
-    :target: https://travis-ci.org/pymzml/pymzML
-
-.. image:: https://ci.appveyor.com/api/projects/status/e5reb5xw74jfqk2v/branch/dev?svg=true
-   :target: https://ci.appveyor.com/api/projects/status/e5reb5xw74jfqk2v/branch/dev?svg=true
-   :alt: AppVeyor CI status
 
 .. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
     :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
-
-.. image:: https://codecov.io/gh/pymzml/pymzml/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/pymzml/pymzml
-    :alt: Code Coverage
 
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
@@ -99,7 +89,7 @@ Get the latest version via github
     | https://github.com/pymzml/pymzML
 
 The complete Documentation can be found as pdf
-    | http://pymzml.github.com/dist/pymzml.pdf
+    | https://pymzml.readthedocs.io/_/downloads/en/latest/pdf/
 
 
 ********

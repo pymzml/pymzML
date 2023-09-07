@@ -28,8 +28,7 @@ class GSGWTest(unittest.TestCase):
         )
 
     def tearDown(self):
-        """
-        """
+        """ """
         self.Writer.close()
         os.remove(os.path.abspath(os.path.join(".", "tests", "data", "unittest.mzml")))
 
@@ -112,7 +111,7 @@ class GSGWTest(unittest.TestCase):
         isize = struct.unpack("<L", data[-4:])[0]
         self.assertEqual(Decomp.decompress(compData), test_string)
         self.assertEqual(crc, zlib.crc32(test_string))
-        self.assertEqual(isize, len(test_string) % 2 ** 32)
+        self.assertEqual(isize, len(test_string) % 2**32)
 
     def test_add_data(self):
         test_string = b"AAAAAAAAbbbbbbbbCCCCCCCCdddddddd"

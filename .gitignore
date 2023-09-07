@@ -19,4 +19,3 @@ dist
 .tox
 pymzml.egg-info
 docs/source/code_inc/
-/.github/
