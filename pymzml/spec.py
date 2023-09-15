@@ -403,9 +403,10 @@ class Spectrum(MS_Spectrum):
         measured_precision (float): in ppm, i.e. 5e-6 equals to 5 ppm.
 
     """
+
     def __init__(
-        self, 
-        element=ElementTree.Element(""), 
+        self,
+        element=ElementTree.Element(""),
         measured_precision=5e-6,
         *,
         obo_version=None,
