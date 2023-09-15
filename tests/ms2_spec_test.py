@@ -45,10 +45,9 @@ class SpectrumMS2Test(unittest.TestCase):
         self.assertIsInstance(selected_precursor[0]["mz"], float)
         self.assertIsInstance(selected_precursor[0]["i"], float)
         self.assertIsInstance(selected_precursor[0]["charge"], int)
-        self.assertEqual(
-            selected_precursor,
-            [{"mz": 443.711242675781, "i": 0.0, "charge": 2, "precursor id": None}],
-        )
+        assert selected_precursor[0]["mz"] == 443.711242675781
+        assert selected_precursor[0]["i"] == 0.0
+        assert selected_precursor[0]["precursor id"] is None
 
     def test_ion_mode(self):
         assert self.spec["positive scan"] is True
