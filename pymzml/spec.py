@@ -410,7 +410,7 @@ class Spectrum(MS_Spectrum):
         measured_precision=5e-6,
         *,
         obo_version=None,
-      ):
+    ):
         __slots__ = [
             "_centroided_peaks",
             "_centroided_peaks_sorted_by_i",
