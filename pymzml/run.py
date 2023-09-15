@@ -155,24 +155,22 @@ class Reader(object):
             event, element = next(self.iter, ("END", "END"))
             if event == "end":
                 if element.tag.endswith("}spectrum"):
-                    spectrum = spec.Spectrum(element)
+                    spectrum = spec.Spectrum(element, obo_version=self.OT.version)
                     if has_ref_group:
                         spectrum._set_params_from_reference_group(
                             self.info["referenceable_param_group_list_element"]
                         )
                     ms_level = spectrum.ms_level
                     spectrum.measured_precision = self.ms_precisions[ms_level]
-                    spectrum.calling_instance = self
                     return spectrum
                 if element.tag.endswith("}chromatogram"):
                     if self.skip_chromatogram:
                         continue
-                    spectrum = spec.Chromatogram(element)
+                    spectrum = spec.Chromatogram(element, obo_version=self.OT.version)
                     # if has_ref_group:
                     #     spectrum._set_params_from_reference_group(
                     #         self.info['referenceable_param_group_list_element']
                     #     )
-                    spectrum.calling_instance = self
                     return spectrum
             elif event == "END":
                 # reinit iter
@@ -201,7 +199,7 @@ class Reader(object):
         except:
             pass
         spectrum = self.info["file_object"][identifier]
-        spectrum.calling_instance = self
+        spectrum.obo_translator = self.OT
         if isinstance(spectrum, spec.Spectrum):
             spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
         return spectrum
@@ -273,7 +271,6 @@ class Reader(object):
 
     @staticmethod
     def _obo_version_validator(version):
-
         """
         The obo version should fit file names in the obo folder.
         However, some software generate mzML with built in obo version string like:
@@ -347,7 +344,7 @@ class Reader(object):
         # required) ...
         if self.info.get("obo_version", None) is None:
             self.info["obo_version"] = "1.1.0"
-        obo_translator = obo.OboTranslator(version=self.info["obo_version"])
+        obo_translator = obo.OboTranslator.from_cache(version=self.info["obo_version"])
 
         return obo_translator
 
@@ -386,9 +383,27 @@ class Reader(object):
                     obo_in_mzml = element.attrib.get("version", "1.1.0")
                     self.info["obo_version"] = self._obo_version_validator(obo_in_mzml)
 
+            elif element.tag.endswith("}fileDescription"):
+                self.info["file_description"] = True
+                self.info["file_description_element"] = element
+            elif element.tag.endswith("}sampleList"):
+                self.info["sample_list"] = True
+                self.info["sample_list_element"] = element
+
             elif element.tag.endswith("}referenceableParamGroupList"):
                 self.info["referenceable_param_group_list"] = True
                 self.info["referenceable_param_group_list_element"] = element
+
+            elif element.tag.endswith("}softwareList"):
+                self.info["software_list"] = True
+                self.info["software_list_element"] = element
+            elif element.tag.endswith("}instrumentConfigurationList"):
+                self.info["instrument_configuration_list"] = True
+                self.info["instrument_configuration_list_element"] = element
+            elif element.tag.endswith("}dataProcessingList"):
+                self.info["data_processing_list"] = True
+                self.info["data_processing_list_element"] = element
+
             elif element.tag.endswith("}spectrumList"):
                 spec_cnt = element.attrib.get("count")
                 self.info["spectrum_count"] = int(spec_cnt) if spec_cnt else None
@@ -401,6 +416,7 @@ class Reader(object):
             elif element.tag.endswith("}run"):
                 run_id = element.attrib.get("id")
                 start_time = element.attrib.get("startTimeStamp")
+                self.info["run_element"] = element
                 self.info["run_id"] = run_id
                 self.info["start_time"] = start_time
             else:
