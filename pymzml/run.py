@@ -383,9 +383,27 @@ class Reader(object):
                     obo_in_mzml = element.attrib.get("version", "1.1.0")
                     self.info["obo_version"] = self._obo_version_validator(obo_in_mzml)
 
+            elif element.tag.endswith("}fileDescription"):
+                self.info["file_description"] = True
+                self.info["file_description_element"] = element
+            elif element.tag.endswith("}sampleList"):
+                self.info["sample_list"] = True
+                self.info["sample_list_element"] = element
+
             elif element.tag.endswith("}referenceableParamGroupList"):
                 self.info["referenceable_param_group_list"] = True
                 self.info["referenceable_param_group_list_element"] = element
+
+            elif element.tag.endswith("}softwareList"):
+                self.info["software_list"] = True
+                self.info["software_list_element"] = element
+            elif element.tag.endswith("}instrumentConfigurationList"):
+                self.info["instrument_configuration_list"] = True
+                self.info["instrument_configuration_list_element"] = element
+            elif element.tag.endswith("}dataProcessingList"):
+                self.info["data_processing_list"] = True
+                self.info["data_processing_list_element"] = element
+
             elif element.tag.endswith("}spectrumList"):
                 spec_cnt = element.attrib.get("count")
                 self.info["spectrum_count"] = int(spec_cnt) if spec_cnt else None
@@ -398,6 +416,7 @@ class Reader(object):
             elif element.tag.endswith("}run"):
                 run_id = element.attrib.get("id")
                 start_time = element.attrib.get("startTimeStamp")
+                self.info["run_element"] = element
                 self.info["run_id"] = run_id
                 self.info["start_time"] = start_time
             else:

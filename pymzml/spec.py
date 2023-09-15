@@ -405,12 +405,35 @@ class Spectrum(MS_Spectrum):
     """
 
     def __init__(
-        self,
-        element=ElementTree.Element(""),
+        self, 
+        element=ElementTree.Element(""), 
         measured_precision=5e-6,
         *,
         obo_version=None,
-    ):
+      ):
+        __slots__ = [
+            "_centroided_peaks",
+            "_centroided_peaks_sorted_by_i",
+            "_deconvoluted_peaks",
+            "_extreme_values",
+            "_i",
+            "_ID",
+            "_id_dict",
+            "_index",
+            "_measured_precision",
+            "_peaks",
+            "_profile",
+            "_reprofiled_peaks",
+            "_t_mass_set",
+            "_t_mz_set",
+            "_time",
+            "_transformed_mass_with_error",
+            "_transformed_mz_with_error",
+            "_transformed_peaks" "calling_instance" "element",
+            "internal_precision" "noise_level_estimate",
+            "selected_precursors",
+        ]
+
         self._centroided_peaks = None
         self._centroided_peaks_sorted_by_i = None
         self._extreme_values = None
@@ -963,6 +986,7 @@ class Spectrum(MS_Spectrum):
                     ("i", i_values),
                     ("charge", charges),
                     ("precursor id", ids),
+                    ("element", precursors),
                 ]:
                     try:
                         dict_2_save[key] = list_of_values[pos]
