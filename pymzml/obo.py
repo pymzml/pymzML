@@ -96,6 +96,8 @@ class OboTranslator(object):
         version (str): obo version
     """
 
+    _obo_instance_cache = {}
+
     def __init__(self, version=None):
         self.version = self.__normalize_version(version)
         self.all_dicts = []
@@ -107,6 +109,15 @@ class OboTranslator(object):
 
         # Only parse the OBO when necessary, not upon object construction
         self.__obo_parsed = False
+
+    @classmethod
+    def from_cache(cls, version):
+        version = cls.__normalize_version(version)
+        try:
+            return cls._obo_instance_cache[version]
+        except KeyError:
+            inst = cls._obo_instance_cache[version] = cls(version)
+            return inst
 
     def __setitem__(self, key, value):
         raise TypeError("OBO translator dictionaries only support assignment via .add")

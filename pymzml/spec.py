@@ -64,6 +64,7 @@ except (ImportError, ModuleNotFoundError) as e:
     pass
 from . import regex_patterns
 from .decoder import MSDecoder
+from .obo import OboTranslator
 
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
@@ -73,22 +74,6 @@ class MS_Spectrum(object):
     """
     General spectrum class for data handling.
     """
-
-    # __slots__ = [
-    #     # '_read_accessions',
-    #     # 'get_element_by_name',
-    #     # 'get_element_by_path',
-    #     # '_register',
-    #     # 'precursors',
-    #     # '_get_encoding_parameters',
-    #     # 'measured_precision',
-    #     # '_decode_to_numpy',
-    #     # '_median',
-    #     # 'to_string',
-    # ]
-    def __init__(self):
-        """."""
-        pass
 
     def _read_accessions(self):
         """Set all required variables for this spectrum."""
@@ -175,8 +160,6 @@ class MS_Spectrum(object):
         """
         numpress_encoding = False
 
-        # array_type_accession = self.calling_instance.OT[array_type]["id"]
-
         b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@name='{name}']/..".format(
             ns=self.ns, name=array_type
         )
@@ -204,7 +187,7 @@ class MS_Spectrum(object):
                     d_type = b_data_array.find(
                         float_type_string.format(
                             ns=self.ns,
-                            Acc=self.calling_instance.OT["32-bit float"]["id"],
+                            Acc=self.obo_translator["32-bit float"]["id"],
                         )
                     ).get("name")
                 except:
@@ -213,7 +196,7 @@ class MS_Spectrum(object):
                         d_type = b_data_array.find(
                             float_type_string.format(
                                 ns=self.ns,
-                                Acc=self.calling_instance.OT["64-bit float"]["id"],
+                                Acc=self.obo_translator["64-bit float"]["id"],
                             )
                         ).get("name")
                     except:
@@ -222,9 +205,7 @@ class MS_Spectrum(object):
                             d_type = b_data_array.find(
                                 float_type_string.format(
                                     ns=self.ns,
-                                    Acc=self.calling_instance.OT["32-bit integer"][
-                                        "id"
-                                    ],
+                                    Acc=self.obo_translator["32-bit integer"]["id"],
                                 )
                             ).get("name")
                         except:
@@ -233,9 +214,7 @@ class MS_Spectrum(object):
                                 d_type = b_data_array.find(
                                     float_type_string.format(
                                         ns=self.ns,
-                                        Acc=self.calling_instance.OT["64-bit integer"][
-                                            "id"
-                                        ],
+                                        Acc=self.obo_translator["64-bit integer"]["id"],
                                     )
                                 ).get("name")
                             except:
@@ -243,7 +222,7 @@ class MS_Spectrum(object):
                                 d_type = b_data_array.find(
                                     float_type_string.format(
                                         ns=self.ns,
-                                        Acc=self.calling_instance.OT[
+                                        Acc=self.obo_translator[
                                             "null-terminated ASCII string"
                                         ]["id"],
                                     )
@@ -425,7 +404,13 @@ class Spectrum(MS_Spectrum):
 
     """
 
-    def __init__(self, element=ElementTree.Element(""), measured_precision=5e-6):
+    def __init__(
+        self,
+        element=ElementTree.Element(""),
+        measured_precision=5e-6,
+        *,
+        obo_version=None,
+    ):
         __slots__ = [
             "_centroided_peaks",
             "_centroided_peaks_sorted_by_i",
@@ -478,7 +463,7 @@ class Spectrum(MS_Spectrum):
         self._transformed_mass_with_error = None
         self._transformed_mz_with_error = None
         self._transformed_peaks = None
-        self.calling_instance = None
+        self.obo_translator = OboTranslator.from_cache(obo_version)
         self.element = element
         self.measured_precision = measured_precision
         self.noise_level_estimate = {}
@@ -660,7 +645,7 @@ class Spectrum(MS_Spectrum):
         else:
             if not accession.startswith("MS:"):
                 try:
-                    accession = self.calling_instance.OT[accession]["id"]
+                    accession = self.obo_translator[accession]["id"]
                 except TypeError:
                     accession = "---"
             search_string = './/*[@accession="{0}"]'.format(accession)
@@ -1245,11 +1230,9 @@ class Spectrum(MS_Spectrum):
         """
 
         try:
-            profile_ot = self.calling_instance.OT.name.get("profile spectrum", None)
+            profile_ot = self.obo_translator.name.get("profile spectrum", None)
             if profile_ot is None:
-                profile_ot = self.calling_instance.OT.name.get(
-                    "profile mass spectrum", None
-                )
+                profile_ot = self.obo_translator.name.get("profile mass spectrum", None)
             acc = profile_ot["id"]
             is_profile = (
                 True
@@ -1330,17 +1313,6 @@ class Spectrum(MS_Spectrum):
         self.reprofiled = True
         self.set_peaks(None, "centroided")
         return tmp
-
-    def _register(self, decoded_tuple):
-        d_type, array = decoded_tuple
-        if d_type == "mz":
-            self._mz = array
-        elif d_type == "i":
-            self._i = array
-        elif d_type == "time":
-            self._time = array
-        else:
-            raise Exception("Unknown data Type ({0})".format(d_type))
 
     def _mz_2_mass(self, mz, charge):
         """
@@ -1765,7 +1737,7 @@ class Chromatogram(MS_Spectrum):
     Class for Chromatogram access and handling.
     """
 
-    def __init__(self, element, measured_precision=5e-6, param=None):
+    def __init__(self, element, measured_precision=5e-6, *, obo_version=None):
         """
         Arguments:
             element (xml.etree.ElementTree.Element): spectrum as xml Element
@@ -1774,29 +1746,6 @@ class Chromatogram(MS_Spectrum):
             measured_precision (float): in ppm, i.e. 5e-6 equals to 5 ppm.
             param (dict): parameter mapping for this spectrum
         """
-
-        __slots__ = [
-            "_measured_precision",
-            "element",
-            "noise_level_estimate",
-            "_time",
-            "_i",
-            "_t_mass_set",
-            "_peaks",
-            "_t_mz_set",
-            "_centroided_peaks",
-            "_reprofiled_peaks",
-            "_deconvoluted_peaks",
-            "_profile",
-            "_extreme_values",
-            "_centroided_peaks_sorted_by_i",
-            "_transformed_mz_with_error",
-            "_transformed_mass_with_error",
-            "_precursors",
-            "_ID",
-            "internal_precision",
-        ]
-
         self._measured_precision = measured_precision
         self.element = element
         self.noise_level_estimate = {}
@@ -1817,6 +1766,7 @@ class Chromatogram(MS_Spectrum):
         self._transformed_mass_with_error = None
         self._precursors = None
         self._ID = None
+        self.obo_translator = OboTranslator.from_cache(obo_version)
 
         if self.element:
             # self._read_accessions()

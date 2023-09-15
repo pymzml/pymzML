@@ -155,24 +155,22 @@ class Reader(object):
             event, element = next(self.iter, ("END", "END"))
             if event == "end":
                 if element.tag.endswith("}spectrum"):
-                    spectrum = spec.Spectrum(element)
+                    spectrum = spec.Spectrum(element, obo_version=self.OT.version)
                     if has_ref_group:
                         spectrum._set_params_from_reference_group(
                             self.info["referenceable_param_group_list_element"]
                         )
                     ms_level = spectrum.ms_level
                     spectrum.measured_precision = self.ms_precisions[ms_level]
-                    spectrum.calling_instance = self
                     return spectrum
                 if element.tag.endswith("}chromatogram"):
                     if self.skip_chromatogram:
                         continue
-                    spectrum = spec.Chromatogram(element)
+                    spectrum = spec.Chromatogram(element, obo_version=self.OT.version)
                     # if has_ref_group:
                     #     spectrum._set_params_from_reference_group(
                     #         self.info['referenceable_param_group_list_element']
                     #     )
-                    spectrum.calling_instance = self
                     return spectrum
             elif event == "END":
                 # reinit iter
@@ -201,7 +199,7 @@ class Reader(object):
         except:
             pass
         spectrum = self.info["file_object"][identifier]
-        spectrum.calling_instance = self
+        spectrum.obo_translator = self.OT
         if isinstance(spectrum, spec.Spectrum):
             spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
         return spectrum
@@ -346,7 +344,7 @@ class Reader(object):
         # required) ...
         if self.info.get("obo_version", None) is None:
             self.info["obo_version"] = "1.1.0"
-        obo_translator = obo.OboTranslator(version=self.info["obo_version"])
+        obo_translator = obo.OboTranslator.from_cache(version=self.info["obo_version"])
 
         return obo_translator
 
