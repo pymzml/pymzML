@@ -13,6 +13,7 @@ include AUTHORS.txt
 include README.rst
 include requirements.txt
 include pymzml/utils/Moby_Dick_indexed.gz
+include pyproject.toml
 
 prune docs/build/html/.doctrees/
 prune compare

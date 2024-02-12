@@ -1,0 +1,72 @@
+[dev-dependencies]
+black = { version = "^18.3-alpha.0", python = "^3.7" }
+
+[build-system]
+requires = [
+    "setuptools>=45",
+    "setuptools_scm[toml]>=6.2"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymzml"
+readme = "README.rst"
+description = 'python module for high-throughput mzML parsing'
+authors = [
+    {name = "M.Koesters"},
+    {name = "J.Leufken"},
+    {name = "S.Schulze"},
+    {name = "K.Sugimoto"},
+    {name = "R.Zahedi"},
+    {name = "M. Hippler"},
+    {name = "C.Fufezan", email = 'christian@fufezan.net'},
+]
+license = {text = 'The MIT license'}
+dynamic = ["version"]
+urls = { Source = "http://pymzml.github.com" }
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: POSIX :: SunOS/Solaris',
+    'Operating System :: Unix',
+    'Programming Language :: Python :: 3.5',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
+    'Topic :: Scientific/Engineering :: Chemistry',
+    'Topic :: Scientific/Engineering :: Medical Science Apps.',
+]
+dependencies = [
+    'numpy >= 1.8.0',
+    'regex',
+]
+[project.optional-dependencies]
+full = [
+    'plotly<5.0',
+    'pynumpress>=0.0.4',
+    'ms_deisotope',
+]
+plot = [
+    'plotly<5.0'
+]
+pynumpress = [
+    'pynumpress>=0.0.4'
+]
+deconvolution = [
+    'ms_deisotope==0.0.14'
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["pymzml"]
+
+[tool.setuptools_scm]
+write_to = "pymzml/_version.py"
+local_scheme = "no-local-version"
