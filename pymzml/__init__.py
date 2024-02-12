@@ -28,14 +28,19 @@ __all__ = ["run", "spec", "obo", "minimum", "plot", "file_classes"]
 
 import os
 import sys
+from importlib.metadata import PackageNotFoundError, version
 
 if not hasattr(sys, "version_info") or sys.version_info < (3, 4):
     raise RuntimeError("pymzML requires Python 3.4 or later.")
 
 # Set version
-version_path = os.path.join(os.path.dirname(__file__), "version.txt")
-with open(version_path, "r") as version_file:
-    __version__ = version_file.read().strip()
+try:
+    __version__ = version(__name__)
+except PackageNotFoundError:
+    __version__ = None
+# version_path = os.path.join(os.path.dirname(__file__), "version.txt")
+# with open(version_path, "r") as version_file:
+#     __version__ = version_file.read().strip()
 
 # Imports of individual modules
 import pymzml.run
