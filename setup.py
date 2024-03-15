@@ -2,17 +2,19 @@
 from setuptools import setup
 import os
 
-version_path = os.path.join(
-    os.path.dirname(__file__),
-    'pymzml',
-    'version.txt'
-)
-with open(version_path, 'r') as version_file:
-    pymzml_version = version_file.read().strip()
+# version_path = os.path.join(
+#     os.path.dirname(__file__),
+#     'pymzml',
+#     'version.txt'
+# )
+# with open(version_path, 'r') as version_file:
+#     pymzml_version = version_file.read().strip()
 
 setup(
     name             = 'pymzml',
-    version          = pymzml_version,
+    use_scm_version  = True,
+    setup_requires   = ['setuptools_scm'],
+    # version          = pymzml_version,
     packages         = ['pymzml', 'pymzml.file_classes', 'pymzml.utils'],
     package_dir      = {'pymzml': 'pymzml'},
     package_data     = {
