@@ -1,0 +1,26 @@
+# For reference: https://github.com/JamesIves/github-pages-deploy-action
+name: Build Sphinx docu.
+
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install and Build HTML
+        run: |
+          pip install --upgrade pip
+          pip install sphinx sphinx-rtd-theme
+          pip install ".[full]"
+          sphinx-build ./docs/source ./docs/build
+
+      - name: Deploy HTML
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/build/ # The folder the action should deploy.

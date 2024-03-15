@@ -34,7 +34,7 @@ setup(
         ],
         'plot': ['plotly<5.0'],
         'pynumpress': ['pynumpress>=0.0.4'],
-        'deconvolution': ['ms_deisotope==0.0.14'] 
+        'deconvolution': ['ms_deisotope==0.0.14']
     },
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
