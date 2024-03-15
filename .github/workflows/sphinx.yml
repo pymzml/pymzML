@@ -17,7 +17,7 @@ jobs:
       - name: Install and Build HTML
         run: |
           pip install --upgrade pip
-          pip install sphinx sphinx-rtd-theme
+          pip install sphinx sphinx-rtd-theme numpy
           sphinx-build ./docs/source ./docs/build
 
       - name: Deploy HTML
