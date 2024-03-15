@@ -2,19 +2,17 @@
 from setuptools import setup
 import os
 
-# version_path = os.path.join(
-#     os.path.dirname(__file__),
-#     'pymzml',
-#     'version.txt'
-# )
-# with open(version_path, 'r') as version_file:
-#     pymzml_version = version_file.read().strip()
+version_path = os.path.join(
+    os.path.dirname(__file__),
+    'pymzml',
+    'version.txt'
+)
+with open(version_path, 'r') as version_file:
+    pymzml_version = version_file.read().strip()
 
 setup(
     name             = 'pymzml',
-    use_scm_version  = True,
-    setup_requires   = ['setuptools_scm'],
-    # version          = pymzml_version,
+    version          = pymzml_version,
     packages         = ['pymzml', 'pymzml.file_classes', 'pymzml.utils'],
     package_dir      = {'pymzml': 'pymzml'},
     package_data     = {
@@ -36,7 +34,7 @@ setup(
         ],
         'plot': ['plotly<5.0'],
         'pynumpress': ['pynumpress>=0.0.4'],
-        'deconvolution': ['ms_deisotope==0.0.14'] 
+        'deconvolution': ['ms_deisotope==0.0.14']
     },
     description      = 'high-throughput mzML parsing',
     long_description = 'pymzML - python module for mzML parsing',
