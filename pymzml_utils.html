@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.3. Utils &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3.4. Plotting functions" href="plot.html" />
+    <link rel="prev" title="3.2. Spectrum and Chromatogram" href="pymzml_spec.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">3. pymzML module content</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pymzml_run.html">3.1. Main reader interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymzml_spec.html">3.2. Spectrum and Chromatogram</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.3. Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gsgw">3.3.1. GSGW</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymzml.utils.GSGW.GSGW"><code class="docutils literal notranslate"><span class="pre">GSGW</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gsgr">3.3.2. GSGR</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymzml.utils.GSGR.GSGR"><code class="docutils literal notranslate"><span class="pre">GSGR</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html">3.4. Plotting functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_handlers.html">3.5. File Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="obo.html">3.6. OBO parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymzml_regex_patterns.html">3.7. Regex patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">4. Examples and Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html"><span class="section-number">3. </span>pymzML module content</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.3. </span>Utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pymzml_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utils">
+<h1><span class="section-number">3.3. </span>Utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h1>
+<section id="gsgw">
+<h2><span class="section-number">3.3.1. </span>GSGW<a class="headerlink" href="#gsgw" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.utils.GSGW.</span></span><span class="sig-name descname"><span class="pre">GSGW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_idx_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_offset_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./test.dat.igzip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW" title="Link to this definition"></a></dt>
+<dd><p>Generalized Gzip writer class with random access to indexed offsets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>string</em>) – Filename for the resulting file</p></li>
+<li><p><strong>max_idx</strong> (<em>int</em>) – max number of indices which can be saved in
+this file</p></li>
+<li><p><strong>max_idx_len</strong> (<em>int</em>) – maximal length of the index in bytes, must
+be between 1 and 255</p></li>
+<li><p><strong>max_offset_len</strong> (<em>int</em>) – maximal length of the offset in bytes</p></li>
+<li><p><strong>output_path</strong> (<em>str</em>) – path to the output file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#pymzml.utils.GSGW.GSGW.encoding" title="pymzml.utils.GSGW.GSGW.encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encoding</span></code></a></dt><dd><p>Returns the encoding used for this file</p>
+</dd>
+<dt><a class="reference internal" href="#pymzml.utils.GSGW.GSGW.file_out" title="pymzml.utils.GSGW.GSGW.file_out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_out</span></code></a></dt><dd><p>Output filehandler</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.utils.GSGW.GSGW.add_data" title="pymzml.utils.GSGW.GSGW.add_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_data</span></code></a>(data, identifier)</p></td>
+<td><p>Create a new gzip member with compressed 'data' indexed with 'index'.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymzml.utils.GSGW.GSGW.write_index" title="pymzml.utils.GSGW.GSGW.write_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_index</span></code></a>()</p></td>
+<td><p>Only called after all the data is written, i.e. all calls to <a class="reference internal" href="#pymzml.utils.GSGW.GSGW.add_data" title="pymzml.utils.GSGW.GSGW.add_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_data()</span></code></a> have been done.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW._allocate_index_bytes">
+<span class="sig-name descname"><span class="pre">_allocate_index_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW._allocate_index_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW._allocate_index_bytes" title="Link to this definition"></a></dt>
+<dd><p>Allocate ‘self.max_index_num’ bytes of length ‘self.max_idx_len’
+in the header for inserting the index later on.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW._write_data">
+<span class="sig-name descname"><span class="pre">_write_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW._write_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW._write_data" title="Link to this definition"></a></dt>
+<dd><p>Write data into file-stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – uncompressed data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW._write_gen_header">
+<span class="sig-name descname"><span class="pre">_write_gen_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FLAGS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW._write_gen_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW._write_gen_header" title="Link to this definition"></a></dt>
+<dd><p>Write a valid gzip header with creation time, user defined flag fields
+and allocated index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Index</strong> (<em>bool</em>) – whether to or not to write an
+index into this header.</p></li>
+<li><p><strong>FLAGS</strong> (<em>list</em><em>, </em><em>optional</em>) – list of flags (FTEXT, FHCRC, FEXTRA,
+FNAME) to set for this header.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>byte offset of the file pointer</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>offset (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW._write_identifier">
+<span class="sig-name descname"><span class="pre">_write_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW._write_identifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW._write_identifier" title="Link to this definition"></a></dt>
+<dd><p>Convert and write the identifier into output file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em><em> or </em><em>int</em>) – identifier to write into index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW._write_offset">
+<span class="sig-name descname"><span class="pre">_write_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW._write_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW._write_offset" title="Link to this definition"></a></dt>
+<dd><p>Convert and write offset to output file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset</strong> (<em>int</em>) – offset which will be formatted and written
+into file index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW.add_data">
+<span class="sig-name descname"><span class="pre">add_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW.add_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW.add_data" title="Link to this definition"></a></dt>
+<dd><p>Create a new gzip member with compressed ‘data’ indexed with ‘index’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em>) – uncompressed data to write to file</p></li>
+<li><p><strong>index</strong> (<em>str</em><em> or </em><em>int</em>) – unique index for the data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW.encoding">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#pymzml.utils.GSGW.GSGW.encoding" title="Link to this definition"></a></dt>
+<dd><p>Returns the encoding used for this file</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW.file_out">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_out</span></span><a class="headerlink" href="#pymzml.utils.GSGW.GSGW.file_out" title="Link to this definition"></a></dt>
+<dd><p>Output filehandler</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGW.GSGW.write_index">
+<span class="sig-name descname"><span class="pre">write_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGW.html#GSGW.write_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGW.GSGW.write_index" title="Link to this definition"></a></dt>
+<dd><p>Only called after all the data is written, i.e. all calls to
+<a class="reference internal" href="#pymzml.utils.GSGW.GSGW.add_data" title="pymzml.utils.GSGW.GSGW.add_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_data()</span></code></a> have been done.</p>
+<p>Seek back to the beginning of the file and write the index into the
+allocated comment bytes (see _write_gen_header(Index=True)).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="gsgr">
+<h2><span class="section-number">3.3.2. </span>GSGR<a class="headerlink" href="#gsgr" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.utils.GSGR.</span></span><span class="sig-name descname"><span class="pre">GSGR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR" title="Link to this definition"></a></dt>
+<dd><p>Generalized Gzip reader class which enables random access in files
+written with the <a class="reference internal" href="#pymzml.utils.GSGW.GSGW" title="pymzml.utils.GSGW.GSGW"><code class="xref py py-class docutils literal notranslate"><span class="pre">GSGW</span></code></a> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – path to file to read</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.utils.GSGR.GSGR.read" title="pymzml.utils.GSGR.GSGR.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>([size])</p></td>
+<td><p>Read the content of the in File in binary mode</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymzml.utils.GSGR.GSGR.read_block" title="pymzml.utils.GSGR.GSGR.read_block"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_block</span></code></a>(index)</p></td>
+<td><p>Read and return the data block with the unique index <cite>index</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.utils.GSGR.GSGR.seek" title="pymzml.utils.GSGR.GSGR.seek"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seek</span></code></a>(offset)</p></td>
+<td><p>Seek to byte offset in input file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR._check_magic_bytes">
+<span class="sig-name descname"><span class="pre">_check_magic_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR._check_magic_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR._check_magic_bytes" title="Link to this definition"></a></dt>
+<dd><p>Check if file is a gzip file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR._read_basic_header">
+<span class="sig-name descname"><span class="pre">_read_basic_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR._read_basic_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR._read_basic_header" title="Link to this definition"></a></dt>
+<dd><p>Read and save compression method, bitflags, changetime,
+compression speed and os.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR._read_index">
+<span class="sig-name descname"><span class="pre">_read_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR._read_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR._read_index" title="Link to this definition"></a></dt>
+<dd><p>Read and save offset dict from indexed gzip file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR.read" title="Link to this definition"></a></dt>
+<dd><p>Read the content of the in File in binary mode</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bytes to read, -1 for everything</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>parsed bytes from input file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (bytes)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR.read_block">
+<span class="sig-name descname"><span class="pre">read_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR.read_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR.read_block" title="Link to this definition"></a></dt>
+<dd><p>Read and return the data block with the unique index <cite>index</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em><em> or </em><em>str</em>) – identifier associated with a specific block</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>indexed text block as string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.utils.GSGR.GSGR.seek">
+<span class="sig-name descname"><span class="pre">seek</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/utils/GSGR.html#GSGR.seek"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.utils.GSGR.GSGR.seek" title="Link to this definition"></a></dt>
+<dd><p>Seek to byte offset in input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset</strong> (<em>int</em>) – byte offset to seek to in FileIn</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span>      <span class="k">class</span> <span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">..</span>              <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">..              Example implementation of a database Connector,</span>
+<span class="s2">..              which can be used to make run accept paths to</span>
+<span class="s2">..              sqlite db files.</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span>      <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="o">..</span>              <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
+<span class="o">..</span>                      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indexed_gzip</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="o">..</span>                              <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">indexedGzip</span><span class="o">.</span><span class="n">IndexedGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+<span class="o">..</span>                      <span class="k">else</span><span class="p">:</span>
+<span class="o">..</span>                              <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">standardGzip</span><span class="o">.</span><span class="n">StandardGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+<span class="o">..</span>              <span class="c1"># Insert a new condition to enable your new fileclass</span>
+<span class="o">..</span>              <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.db&#39;</span><span class="p">):</span>
+<span class="o">..</span>                      <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">SQLiteConnector</span><span class="o">.</span><span class="n">SQLiteDatabase</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+<span class="o">..</span>              <span class="k">else</span><span class="p">:</span>
+<span class="o">..</span>                      <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span>     <span class="o">=</span> <span class="n">standardMzml</span><span class="o">.</span><span class="n">StandardMzml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+<span class="o">..</span>              <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pymzml_spec.html" class="btn btn-neutral float-left" title="3.2. Spectrum and Chromatogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot.html" class="btn btn-neutral float-right" title="3.4. Plotting functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

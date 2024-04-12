@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.5. File Access &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3.6. OBO parser" href="obo.html" />
+    <link rel="prev" title="3.4. Plotting functions" href="plot.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">3. pymzML module content</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pymzml_run.html">3.1. Main reader interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymzml_spec.html">3.2. Spectrum and Chromatogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymzml_utils.html">3.3. Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html">3.4. Plotting functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.5. File Access</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#file-interface">3.5.1. File Interface</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymzml.file_interface.FileInterface"><code class="docutils literal notranslate"><span class="pre">FileInterface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#file-classes">3.5.2. File Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mzml">3.5.2.1. mzML</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gzip">3.5.2.2. Gzip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#igzip">3.5.2.3. iGzip</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="obo.html">3.6. OBO parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymzml_regex_patterns.html">3.7. Regex patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">4. Examples and Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html"><span class="section-number">3. </span>pymzML module content</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.5. </span>File Access</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/file_handlers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-access">
+<h1><span class="section-number">3.5. </span>File Access<a class="headerlink" href="#file-access" title="Link to this heading"></a></h1>
+<p>pymzML offers support for different kinds of mzML files.
+The following classes are wrappers for access of different types of mzML
+files, which allows the implementation of file type specific search and data retrieving algorithms.
+An explanation of how to implement your own file class can be found in the advanced usage section.</p>
+<section id="file-interface">
+<h2><span class="section-number">3.5.1. </span>File Interface<a class="headerlink" href="#file-interface" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymzml.file_interface.FileInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.file_interface.</span></span><span class="sig-name descname"><span class="pre">FileInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_index_from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_interface.html#FileInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_interface.FileInterface" title="Link to this definition"></a></dt>
+<dd><p>Interface to different mzML formats.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.file_interface.FileInterface.read" title="pymzml.file_interface.FileInterface.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>([size])</p></td>
+<td><p>Read binary data from file handler.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_interface.FileInterface.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_interface.html#FileInterface.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_interface.FileInterface.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Access the item with id ‘identifier’ in the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – native id of the item to access</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text associated with the given identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_interface.FileInterface.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_index_from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_interface.html#FileInterface.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_interface.FileInterface.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a object interface to mzML files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path to the mzML file</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – encoding of the file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_interface.FileInterface._indexed_gzip">
+<span class="sig-name descname"><span class="pre">_indexed_gzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_interface.html#FileInterface._indexed_gzip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_interface.FileInterface._indexed_gzip" title="Link to this definition"></a></dt>
+<dd><p>Check if the given file is an indexed gzip file or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – path to the file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>True</cite> if path is a gzip file with index, else <cite>False</cite></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_interface.FileInterface._open">
+<span class="sig-name descname"><span class="pre">_open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_or_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_interface.html#FileInterface._open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_interface.FileInterface._open" title="Link to this definition"></a></dt>
+<dd><p>Open a file like object resp. a wrapper for a file like object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – path to the mzml file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>instance of
+<a class="reference internal" href="#pymzml.file_classes.standardGzip.StandardGzip" title="pymzml.file_classes.standardGzip.StandardGzip"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardGzip</span></code></a>,
+<a class="reference internal" href="#pymzml.file_classes.indexedGzip.IndexedGzip" title="pymzml.file_classes.indexedGzip.IndexedGzip"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexedGzip</span></code></a> or
+<a class="reference internal" href="#pymzml.file_classes.standardMzml.StandardMzml" title="pymzml.file_classes.standardMzml.StandardMzml"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardMzml</span></code></a>,
+based on the file ending of ‘path’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>file_handler</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_interface.FileInterface.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_interface.html#FileInterface.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_interface.FileInterface.read" title="Link to this definition"></a></dt>
+<dd><p>Read binary data from file handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Number of bytes to read from file, -1 to</p></li>
+<li><p><strong>file</strong> (<em>read to end of</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>byte string with defined size of the input data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="file-classes">
+<h2><span class="section-number">3.5.2. </span>File Classes<a class="headerlink" href="#file-classes" title="Link to this heading"></a></h2>
+<section id="mzml">
+<h3><span class="section-number">3.5.2.1. </span>mzML<a class="headerlink" href="#mzml" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.file_classes.standardMzml.</span></span><span class="sig-name descname"><span class="pre">StandardMzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_index_from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml" title="Link to this definition"></a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.file_classes.standardMzml.StandardMzml.read" title="pymzml.file_classes.standardMzml.StandardMzml.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>([size])</p></td>
+<td><p>Read binary data from file handler.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>get_binary_file_handler</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>get_file_handler</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Access the item with id ‘identifier’.</p>
+<p>Either use linear, binary or interpolated search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – native id of the item to access</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text associated with the given identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_index_from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initalize Wrapper object for standard mzML files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path to the file</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – encoding of the file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml._binary_search">
+<span class="sig-name descname"><span class="pre">_binary_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml._binary_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml._binary_search" title="Link to this definition"></a></dt>
+<dd><p>Retrieve spectrum for a given spectrum ID using binary jumps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_index</strong> (<em>int</em>) – native id of the spectrum to access</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pymzML spectrum</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pymzml_spec.html#pymzml.spec.Spectrum" title="pymzml.spec.Spectrum">Spectrum</a> (<a class="reference internal" href="pymzml_spec.html#pymzml.spec.Spectrum" title="pymzml.spec.Spectrum">pymzml.spec.Spectrum</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml._build_index">
+<span class="sig-name descname"><span class="pre">_build_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml._build_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml._build_index" title="Link to this definition"></a></dt>
+<dd><p>Build an index.</p>
+<p>A list of offsets to which a file pointer can seek
+directly to access a particular spectrum or chromatogram without
+parsing the entire file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>from_scratch</strong> (<em>bool</em>) – Whether or not to force building the index from
+scratch, by parsing the file, if no existing
+index can be found.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A file-like object used to access the indexed content by
+seeking to a particular offset for the file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml._build_index_from_scratch">
+<span class="sig-name descname"><span class="pre">_build_index_from_scratch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seeker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml._build_index_from_scratch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml._build_index_from_scratch" title="Link to this definition"></a></dt>
+<dd><p>Build an index of spectra/chromatogram data with offsets by parsing the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml._interpol_search">
+<span class="sig-name descname"><span class="pre">_interpol_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml._interpol_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml._interpol_search" title="Link to this definition"></a></dt>
+<dd><p>Use linear interpolation search to find spectra faster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_index</strong> (<em>str</em><em> or </em><em>int</em>) – native id of the item to access</p>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>chunk_size</strong> (<em>int</em>) – size of the chunk to read in one go in kb</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml._read_extremes">
+<span class="sig-name descname"><span class="pre">_read_extremes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml._read_extremes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml._read_extremes" title="Link to this definition"></a></dt>
+<dd><p>Read min and max spectrum ids. Required for binary jumps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of tuples containing spec_id and file_offset</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>seek_list (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml._search_linear">
+<span class="sig-name descname"><span class="pre">_search_linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seeker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml._search_linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml._search_linear" title="Link to this definition"></a></dt>
+<dd><p>Fallback to linear search if interpolated search fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardMzml.StandardMzml.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardMzml.html#StandardMzml.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardMzml.StandardMzml.read" title="Link to this definition"></a></dt>
+<dd><p>Read binary data from file handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em>) – Number of bytes to read from file, -1 to read to end of file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>byte string of len size of input data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="gzip">
+<h3><span class="section-number">3.5.2.2. </span>Gzip<a class="headerlink" href="#gzip" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardGzip.StandardGzip">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.file_classes.standardGzip.</span></span><span class="sig-name descname"><span class="pre">StandardGzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardGzip.html#StandardGzip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardGzip.StandardGzip" title="Link to this definition"></a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.file_classes.standardGzip.StandardGzip.read" title="pymzml.file_classes.standardGzip.StandardGzip.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>([size])</p></td>
+<td><p>Read binary data from file handler.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>close</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardGzip.StandardGzip.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardGzip.html#StandardGzip.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardGzip.StandardGzip.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Access the item with id ‘identifier’ in the file by iterating the xml-tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – native id of the item to access</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text associated with the given identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardGzip.StandardGzip.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardGzip.html#StandardGzip.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardGzip.StandardGzip.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initalize Wrapper object for gzipped mzML files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path to the file</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – encoding of the file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardGzip.StandardGzip._build_index">
+<span class="sig-name descname"><span class="pre">_build_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardGzip.html#StandardGzip._build_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardGzip.StandardGzip._build_index" title="Link to this definition"></a></dt>
+<dd><p>Cant build index for standard gzip files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.standardGzip.StandardGzip.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/standardGzip.html#StandardGzip.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.standardGzip.StandardGzip.read" title="Link to this definition"></a></dt>
+<dd><p>Read binary data from file handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em>) – Number of bytes to read from file, -1 to read to end of file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>byte string of len size of input data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="igzip">
+<h3><span class="section-number">3.5.2.3. </span>iGzip<a class="headerlink" href="#igzip" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymzml.file_classes.indexedGzip.IndexedGzip">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.file_classes.indexedGzip.</span></span><span class="sig-name descname"><span class="pre">IndexedGzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/indexedGzip.html#IndexedGzip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.indexedGzip.IndexedGzip" title="Link to this definition"></a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.file_classes.indexedGzip.IndexedGzip.read" title="pymzml.file_classes.indexedGzip.IndexedGzip.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>([size])</p></td>
+<td><p>Read binary data from file handler.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.indexedGzip.IndexedGzip.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/indexedGzip.html#IndexedGzip.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.indexedGzip.IndexedGzip.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Access the item with id ‘identifier’ in the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – native id of the item to access</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text associated with the given identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.indexedGzip.IndexedGzip.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/indexedGzip.html#IndexedGzip.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.indexedGzip.IndexedGzip.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize Wrapper object for indexed gzipped files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path to the file</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – encoding of the file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.indexedGzip.IndexedGzip._build_index">
+<span class="sig-name descname"><span class="pre">_build_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/indexedGzip.html#IndexedGzip._build_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.indexedGzip.IndexedGzip._build_index" title="Link to this definition"></a></dt>
+<dd><p>Use the GSGR class to retrieve the index from the file and save it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.file_classes.indexedGzip.IndexedGzip.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/file_classes/indexedGzip.html#IndexedGzip.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.file_classes.indexedGzip.IndexedGzip.read" title="Link to this definition"></a></dt>
+<dd><p>Read binary data from file handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em>) – Number of bytes to read from file, -1 to read to end of file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>byte string of len size of input data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plot.html" class="btn btn-neutral float-left" title="3.4. Plotting functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="obo.html" class="btn btn-neutral float-right" title="3.6. OBO parser" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

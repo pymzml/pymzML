@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>plot_spectrum_with_annotation &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">3. pymzML module content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">4. Examples and Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">plot_spectrum_with_annotation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for plot_spectrum_with_annotation</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../example_scripts.html#plot_spectrum_with_annotation.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This script shows how to plot multiple spectra in one plot and</span>
+<span class="sd">    how to use label for the annotation of spectra.</span>
+<span class="sd">    The first plot is an MS1 spectrum with the annotated precursor ion.</span>
+<span class="sd">    The second plot is a zoom into the precursor isotope pattern.</span>
+<span class="sd">    The third plot is an annotated fragmentation spectrum (MS2) of the</span>
+<span class="sd">    peptide HLVDEPQNLIK from BSA.</span>
+<span class="sd">    These examples also show the use of &#39;layout&#39; to define the appearance</span>
+<span class="sd">    of a plot.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./plot_spectrum_with_annotation.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># First we define some general layout attributes</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;xaxis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;i&gt;m/z&lt;/i&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ticklen&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;tickwidth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;ticks&quot;</span><span class="p">:</span> <span class="s2">&quot;outside&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showgrid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;linecolor&quot;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;yaxis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;ticklen&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;tickwidth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;ticks&quot;</span><span class="p">:</span> <span class="s2">&quot;outside&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showgrid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;linecolor&quot;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="c1"># The example BSA file will be used</span>
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;BSA1.mzML.gz&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define different precisions for MS1 and MS2</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">,</span> <span class="n">MS_precisions</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mf">5e-6</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">5e-4</span><span class="p">})</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">Factory</span><span class="p">()</span>
+    <span class="n">plot_layout</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Now that everything is set up, we can plot the MS1 spectrum</span>
+    <span class="c1"># Spectrum ID: 1574</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;MS1 Spectrum&quot;</span><span class="p">)</span>
+    <span class="n">ms1_spectrum</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="mi">1574</span><span class="p">]</span>
+
+    <span class="c1"># The measured peaks are added as first trace</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">ms1_spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;raw data plot 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># The label for the precursor ion is added as a seperate trace.</span>
+    <span class="c1"># Note that triangle.MS_precision is used here as a label.</span>
+    <span class="c1"># By zooming in at this peak one can therefore check if the measured</span>
+    <span class="c1"># peak fits into defined the mass accuracy range.</span>
+    <span class="n">precursor_mz_calc</span> <span class="o">=</span> <span class="mf">435.9102</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="p">[(</span><span class="n">precursor_mz_calc</span><span class="p">,</span> <span class="s2">&quot;max_intensity&quot;</span><span class="p">,</span> <span class="s2">&quot;theoretical precursor&quot;</span><span class="p">)],</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;label.triangle.MS_precision&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;theoretical precursor plot 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define the layout for the first subplot.</span>
+    <span class="c1"># The x- and y-axes of subplots are numbered, starting at 1.</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+
+    <span class="c1"># Now we can add a second plot, the same way as above but as a zoom-in.</span>
+    <span class="c1"># Therefore, we define a mz_range</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;MS1 Spectrum Zoom&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">ms1_spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;raw data plot 2&quot;</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">mz_range</span><span class="o">=</span><span class="p">[</span><span class="mf">435.7</span><span class="p">,</span> <span class="mi">437</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="p">[(</span><span class="n">precursor_mz_calc</span><span class="p">,</span> <span class="s2">&quot;max_intensity&quot;</span><span class="p">,</span> <span class="s2">&quot;theoretical precursor&quot;</span><span class="p">)],</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;label.triangle.MS_precision&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;theoretical precursor plot 2&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># The mz_range can be included in the layout as well.</span>
+    <span class="c1"># In contrast to mz_range in the add() function, which limits the included</span>
+    <span class="c1"># datapoints, the layout range only defines the area that is depicted (i.e. the zoom)</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+    <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;xaxis2&quot;</span><span class="p">][</span><span class="s2">&quot;autorange&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;xaxis2&quot;</span><span class="p">][</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">435.7</span><span class="p">,</span> <span class="mi">437</span><span class="p">]</span>
+
+    <span class="c1"># Now the third plot will be added, a fragmentation spectrum of HLVDEPQNLIK</span>
+    <span class="n">ms2_spectrum</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="mi">3542</span><span class="p">]</span>
+
+    <span class="c1"># The MS_precision for the plotting option label.triangle.MS_precision</span>
+    <span class="c1"># needs to be defined</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;MS2 Spectrum Annotated: HLVDEPQNLIK&quot;</span><span class="p">,</span> <span class="n">MS_precision</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">ms2_spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;raw data plot 3&quot;</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">theoretical_b_ions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;b&lt;sub&gt;2&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">126.0788</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;3&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">175.6130</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;4&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">233.1264</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;2&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">251.1503</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;5&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">297.6477</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;6&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">346.1741</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;3&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">350.2187</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;7&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">410.2034</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;4&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">465.2456</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;8&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">467.2249</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;9&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">523.7669</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;10&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">580.3089</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;5&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">594.2882</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;6&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">691.341</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;7&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">819.3995</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;8&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">933.4425</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;9&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1046.5265</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;10&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1159.6106</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">theoretical_y_ions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;y&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">74.0600</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;2&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">130.6021</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;1&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">147.1128</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;3&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">187.1441</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;4&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">244.1656</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;2&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">260.1969</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;5&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">308.1949</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;6&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">356.7212</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;3&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">373.2809</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;7&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">421.2425</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;8&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">478.7560</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;4&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">487.3239</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;9&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">528.2902</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;10&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">584.8322</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;5&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">615.3824</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;6&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">712.4352</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;7&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">841.4778</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;8&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">956.5047</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;9&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1055.5732</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;10&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1168.6572</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Check which theoretical fragments are present in the spectrum</span>
+    <span class="c1"># using the has_peak() function</span>
+    <span class="k">for</span> <span class="n">ion_list</span> <span class="ow">in</span> <span class="p">[</span><span class="n">theoretical_b_ions</span><span class="p">,</span> <span class="n">theoretical_y_ions</span><span class="p">]:</span>
+        <span class="n">label_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fragment</span> <span class="ow">in</span> <span class="n">ion_list</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">peak</span> <span class="o">=</span> <span class="n">ms2_spectrum</span><span class="o">.</span><span class="n">has_peak</span><span class="p">(</span><span class="n">ion_list</span><span class="p">[</span><span class="n">fragment</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">label_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ion_list</span><span class="p">[</span><span class="n">fragment</span><span class="p">],</span> <span class="n">peak</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">fragment</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ion_list</span> <span class="o">==</span> <span class="n">theoretical_b_ions</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">label_list</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="s2">&quot;label.triangle.MS_precision&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;theoretical fragment ions plot 3&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">3&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+
+    <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;plot_bgcolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;rgba(255, 255, 255, 0)&#39;</span>
+    <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;paper_bgcolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;rgba(255, 255, 255, 0)&#39;</span>
+
+    <span class="c1"># Save the plot in a file using the defined plot_layout</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;example_plot_</span><span class="si">{0}</span><span class="s2">_annotation.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">example_file</span><span class="p">))</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">plot_layout</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotted file: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

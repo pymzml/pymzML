@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.7. Example Scripts &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Supplemental Material" href="suppl_material.html" />
+    <link rel="prev" title="4.6. Implementing an own file class" href="custom_fileclass.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">3. pymzML module content</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">4. Examples and Advanced Usage</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index_gzip.html">4.1. Writing and Reading igzip files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_gzip.html#generalized-seekable-index-gzip-writer">4.2. Generalized Seekable index Gzip Writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_gzip.html#generalized-seekable-index-gzip-reader">4.3. Generalized Seekable index Gzip Reader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_gzip.html#practical-example-moby-dick">4.4. Practical Example: Moby Dick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_gzip.html#igzip-file-format-specification">4.5. igzip file format specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_fileclass.html">4.6. Implementing an own file class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.7. Example Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#parsing-a-mzml-file-new-syntax">4.7.1. Parsing a mzML file (new syntax)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#simple_parser.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#parsing-a-mzml-file-old-syntax">4.7.2. Parsing a mzML file (old syntax)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#simple_parser_v2.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#query-the-obo-files">4.7.3. Query the obo files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#queryOBO.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting-a-chromatogram">4.7.4. Plotting a chromatogram</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plot_chromatogram.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting-a-spectrum">4.7.5. Plotting a spectrum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plot_spectrum.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting-a-spectrum-with-annotation">4.7.6. Plotting a spectrum with annotation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plot_spectrum_with_annotation.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#extracting-highest-peaks">4.7.7. Extracting highest peaks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#highest_peaks.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#compare-spectra">4.7.8. Compare spectra</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#compare_spectra.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#find-m-z-values">4.7.9. Find m/z values</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#has_peak.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#extract-ion-chromatogram">4.7.10. Extract ion chromatogram</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#extract_ion_chromatogram.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#find-abundant-precursors">4.7.11. Find abundant precursors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get_precursors.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#access-polarity-of-spectra">4.7.12. Access polarity of spectra</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#polarity.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#check-old-to-new-function-name-mapping">4.7.13. Check old to new function name mapping</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#deprecation_check.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#convert-mzml-gz-to-mzml-gz-igzip">4.7.14. Convert mzML(.gz) to mzML.gz (igzip)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gzip_mzml.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-threading-conversion-of-mzml-gz-to-mzml-gz-igzip">4.7.15. Multi threading conversion of mzML(.gz) to mzML.gz (igzip)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multi_threading_file_compression.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#acces-run-infos">4.7.16. Acces run infos</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#access_run_info.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-custom-filehandler">4.7.17. Creating a custom Filehandler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#introduction">4.7.17.1. Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implementation-of-the-api-class">4.7.17.2. Implementation of the API Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enabling-the-new-api-class-in-file-interface">4.7.17.3. Enabling the new API Class in File Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#moby-dick-as-indexed-gzip">4.7.18. Moby Dick as indexed Gzip</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="examples.html"><span class="section-number">4. </span>Examples and Advanced Usage</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.7. </span>Example Scripts</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/example_scripts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-scripts">
+<span id="id1"></span><h1><span class="section-number">4.7. </span>Example Scripts<a class="headerlink" href="#example-scripts" title="Link to this heading"></a></h1>
+<section id="parsing-a-mzml-file-new-syntax">
+<h2><span class="section-number">4.7.1. </span>Parsing a mzML file (new syntax)<a class="headerlink" href="#parsing-a-mzml-file-new-syntax" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_parser.main">
+<span class="sig-prename descclassname"><span class="pre">simple_parser.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_parser.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_parser.main" title="Link to this definition"></a></dt>
+<dd><p>Basic example script to demonstrate the usage of pymzML. Requires a mzML
+file as first argument.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./simple_parser.py &lt;path_to_mzml_file&gt;</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This script uses the new syntax with the MS level being a property of
+the spectrum class ( Spectrum.ms_level ). The old syntax can be found in
+the script simple_parser_v2.py where the MS level can be queried as a key
+(Spectrum[‘ms level’])</p>
+</div>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic example script to demonstrate the usage of pymzML. Requires a mzML</span>
+<span class="sd">    file as first argument.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./simple_parser.py &lt;path_to_mzml_file&gt;</span>
+
+<span class="sd">    Note:</span>
+
+<span class="sd">        This script uses the new syntax with the MS level being a property of</span>
+<span class="sd">        the spectrum class ( Spectrum.ms_level ). The old syntax can be found in</span>
+<span class="sd">        the script simple_parser_v2.py where the MS level can be queried as a key</span>
+<span class="sd">        (Spectrum[&#39;ms level&#39;])</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">run</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Spectrum </span><span class="si">{0}</span><span class="s2">, MS level </span><span class="si">{ms_level}</span><span class="s2"> @ RT </span><span class="si">{scan_time:1.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">spec</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">ms_level</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">ms_level</span><span class="p">,</span> <span class="n">scan_time</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">scan_time_in_minutes</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">{0}</span><span class="s2"> spectra from file </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mzml_file</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="n">mzml_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="parsing-a-mzml-file-old-syntax">
+<h2><span class="section-number">4.7.2. </span>Parsing a mzML file (old syntax)<a class="headerlink" href="#parsing-a-mzml-file-old-syntax" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_parser_v2.main">
+<span class="sig-prename descclassname"><span class="pre">simple_parser_v2.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_parser_v2.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_parser_v2.main" title="Link to this definition"></a></dt>
+<dd><p>Basic example script to demonstrate the usage of pymzML. Requires a mzML
+file as first argument.</p>
+<dl class="simple">
+<dt>usage:</dt><dd><p>./simple_parser_v2.py &lt;path_to_mzml_file&gt;</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This script uses the old syntax where the MS level can be queried as a
+key (Spectrum[‘ms level’]). The current syntax can be found in
+simple_parser.py</p>
+</div>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic example script to demonstrate the usage of pymzML. Requires a mzML</span>
+<span class="sd">    file as first argument.</span>
+
+<span class="sd">    usage:</span>
+<span class="sd">        ./simple_parser_v2.py &lt;path_to_mzml_file&gt;</span>
+
+<span class="sd">    Note:</span>
+
+<span class="sd">        This script uses the old syntax where the MS level can be queried as a</span>
+<span class="sd">        key (Spectrum[&#39;ms level&#39;]). The current syntax can be found in</span>
+<span class="sd">        simple_parser.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+    <span class="c1"># print( run[10000].keys() )</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">run</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Spectrum </span><span class="si">{0}</span><span class="s2">, MS level </span><span class="si">{ms_level}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ms_level</span><span class="o">=</span><span class="n">spec</span><span class="p">[</span><span class="s2">&quot;ms level&quot;</span><span class="p">]),</span>
+            <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># the old method to obtain peaks from the Spectrum class</span>
+        <span class="n">stats</span><span class="p">[</span><span class="n">spec</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">centroidedPeaks</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">{0}</span><span class="s2"> spectra from file </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">mzml_file</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="n">mzml_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="query-the-obo-files">
+<h2><span class="section-number">4.7.3. </span>Query the obo files<a class="headerlink" href="#query-the-obo-files" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="queryOBO.main">
+<span class="sig-prename descclassname"><span class="pre">queryOBO.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queryOBO.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#queryOBO.main" title="Link to this definition"></a></dt>
+<dd><p>Use this script to interrogate the OBO database files.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./queryOBO.py [-h] [-v VERSION] query</p>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./queryOBO.py&#39;scan time&#39;
+MS:1000016
+scan time
+&#39;The time taken for an acquisition by scanning analyzers.&#39; [PSI:MS]
+Is a: MS:1000503 ! scan attribute
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./queryOBO.py 1000016
+MS:1000016
+scan time
+&quot;The time taken for an acquisition by scanning analyzers.&quot; [PSI:MS]
+MS:1000503 ! scan attribute
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">pymzml.obo</span>
+
+
+<span class="n">FIELDNAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;def&quot;</span><span class="p">,</span> <span class="s2">&quot;is_a&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use this script to interrogate the OBO database files.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./queryOBO.py [-h] [-v VERSION] query</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">      $ ./queryOBO.py&#39;scan time&#39;</span>
+<span class="sd">      MS:1000016</span>
+<span class="sd">      scan time</span>
+<span class="sd">      &#39;The time taken for an acquisition by scanning analyzers.&#39; [PSI:MS]</span>
+<span class="sd">      Is a: MS:1000503 ! scan attribute</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        $ ./queryOBO.py 1000016</span>
+<span class="sd">        MS:1000016</span>
+<span class="sd">        scan time</span>
+<span class="sd">        &quot;The time taken for an acquisition by scanning analyzers.&quot; [PSI:MS]</span>
+<span class="sd">        MS:1000503 ! scan attribute</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obo</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">obo</span><span class="o">.</span><span class="n">OboTranslator</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+    <span class="n">obo</span><span class="o">.</span><span class="n">parseOBO</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">search_by_id</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">query</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">search_by_name</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">query</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ix</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;def&quot;</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="n">fieldname</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="s2">&quot;is_a&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Is a:&quot;</span><span class="p">,</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;is_a&quot;</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">search_by_name</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">obo</span><span class="o">.</span><span class="n">lookups</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="n">FIELDNAMES</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">match</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">fieldname</span><span class="p">]</span>
+
+                <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">matches</span>
+
+
+<span class="k">def</span> <span class="nf">search_by_id</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MS:</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">obo</span><span class="o">.</span><span class="n">lookups</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obo</span><span class="o">.</span><span class="n">MS_tag_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">FIELDNAMES</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">return_value</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">fn</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">return_value</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">argparser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="n">argparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;an accession or part of an OBO term name to look for&quot;</span>
+    <span class="p">)</span>
+    <span class="n">argparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1.1.0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            the version of the OBO to use; valid options are 1.0.0, 1.1.0, and 1.2,</span>
+<span class="s2">            default is 1.1.0</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">argparser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plotting-a-chromatogram">
+<h2><span class="section-number">4.7.4. </span>Plotting a chromatogram<a class="headerlink" href="#plotting-a-chromatogram" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="plot_chromatogram.main">
+<span class="sig-prename descclassname"><span class="pre">plot_chromatogram.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plot_chromatogram.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plot_chromatogram.main" title="Link to this definition"></a></dt>
+<dd><p>Plots a chromatogram for the given mzML file. File is saved as
+‘chromatogram_&lt;mzml_file&gt;.html’.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./plot_chromatogram.py &lt;path_to_mzml_file&gt;</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">from</span> <span class="nn">pymzml.plot</span> <span class="kn">import</span> <span class="n">Factory</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plots a chromatogram for the given mzML file. File is saved as</span>
+<span class="sd">    &#39;chromatogram_&lt;mzml_file&gt;.html&#39;.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./plot_chromatogram.py &lt;path_to_mzml_file&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+    <span class="n">mzml_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+    <span class="n">pf</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">()</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">new_plot</span><span class="p">()</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">run</span><span class="p">[</span><span class="s2">&quot;TIC&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">peaks</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">mzml_basename</span><span class="p">)</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="s2">&quot;chromatogram_</span><span class="si">{0}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mzml_basename</span><span class="p">),</span>
+        <span class="n">layout</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;xaxis&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Retention time&quot;</span><span class="p">},</span> <span class="s2">&quot;yaxis&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;TIC&quot;</span><span class="p">}},</span>
+    <span class="p">)</span>
+    <span class="k">return</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="n">mzml_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plotting-a-spectrum">
+<h2><span class="section-number">4.7.5. </span>Plotting a spectrum<a class="headerlink" href="#plotting-a-spectrum" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="plot_spectrum.main">
+<span class="sig-prename descclassname"><span class="pre">plot_spectrum.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plot_spectrum.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plot_spectrum.main" title="Link to this definition"></a></dt>
+<dd><p>This function shows how to plot a simple spectrum. It can be directly
+plotted via this script or using the python console.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./plot_spectrum.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function shows how to plot a simple spectrum. It can be directly</span>
+<span class="sd">    plotted via this script or using the python console.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./plot_spectrum.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;example.mzML&quot;</span>
+    <span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">Factory</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;peaks&quot;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;example_plot_</span><span class="si">{0}</span><span class="s2">_</span><span class="si">{1}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">example_file</span><span class="p">),</span> <span class="n">spec</span><span class="o">.</span><span class="n">ID</span>
+        <span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotted file: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">break</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="plotting-a-spectrum-with-annotation">
+<h2><span class="section-number">4.7.6. </span>Plotting a spectrum with annotation<a class="headerlink" href="#plotting-a-spectrum-with-annotation" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="plot_spectrum_with_annotation.main">
+<span class="sig-prename descclassname"><span class="pre">plot_spectrum_with_annotation.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plot_spectrum_with_annotation.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plot_spectrum_with_annotation.main" title="Link to this definition"></a></dt>
+<dd><p>This script shows how to plot multiple spectra in one plot and
+how to use label for the annotation of spectra.
+The first plot is an MS1 spectrum with the annotated precursor ion.
+The second plot is a zoom into the precursor isotope pattern.
+The third plot is an annotated fragmentation spectrum (MS2) of the
+peptide HLVDEPQNLIK from BSA.
+These examples also show the use of ‘layout’ to define the appearance
+of a plot.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./plot_spectrum_with_annotation.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This script shows how to plot multiple spectra in one plot and</span>
+<span class="sd">    how to use label for the annotation of spectra.</span>
+<span class="sd">    The first plot is an MS1 spectrum with the annotated precursor ion.</span>
+<span class="sd">    The second plot is a zoom into the precursor isotope pattern.</span>
+<span class="sd">    The third plot is an annotated fragmentation spectrum (MS2) of the</span>
+<span class="sd">    peptide HLVDEPQNLIK from BSA.</span>
+<span class="sd">    These examples also show the use of &#39;layout&#39; to define the appearance</span>
+<span class="sd">    of a plot.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./plot_spectrum_with_annotation.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># First we define some general layout attributes</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;xaxis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;i&gt;m/z&lt;/i&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tickmode&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showticklabels&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;ticklen&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;tickwidth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;ticks&quot;</span><span class="p">:</span> <span class="s2">&quot;outside&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showline&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;showgrid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;yaxis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tickmode&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showticklabels&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;ticklen&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;tickwidth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;ticks&quot;</span><span class="p">:</span> <span class="s2">&quot;outside&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showline&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;showgrid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="c1"># The example BSA file will be used</span>
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;BSA1.mzML.gz&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define different precisions for MS1 and MS2</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">,</span> <span class="n">MS_precisions</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mf">5e-6</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">5e-4</span><span class="p">})</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">Factory</span><span class="p">()</span>
+    <span class="n">plot_layout</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Now that everything is set up, we can plot the MS1 spectrum</span>
+    <span class="c1"># Spectrum ID: 1574</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;MS1 Spectrum&quot;</span><span class="p">)</span>
+    <span class="n">ms1_spectrum</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="mi">1574</span><span class="p">]</span>
+
+    <span class="c1"># The measured peaks are added as first trace</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">ms1_spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;raw data plot 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># The label for the precursor ion is added as a seperate trace.</span>
+    <span class="c1"># Note that triangle.MS_precision is used here as a label.</span>
+    <span class="c1"># By zooming in at this peak one can therefore check if the measured</span>
+    <span class="c1"># peak fits into defined the mass accuracy range.</span>
+    <span class="n">precursor_mz_calc</span> <span class="o">=</span> <span class="mf">435.9102</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="p">[(</span><span class="n">precursor_mz_calc</span><span class="p">,</span> <span class="s2">&quot;max_intensity&quot;</span><span class="p">,</span> <span class="s2">&quot;theoretical precursor&quot;</span><span class="p">)],</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;label.triangle.MS_precision&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;theoretical precursor plot 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define the layout for the first subplot.</span>
+    <span class="c1"># The x- and y-axes of subplots are numbered, starting at 1.</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+
+    <span class="c1"># Now we can add a second plot, the same way as above but as a zoom-in.</span>
+    <span class="c1"># Therefore, we define a mz_range</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;MS1 Spectrum Zoom&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">ms1_spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;raw data plot 2&quot;</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">mz_range</span><span class="o">=</span><span class="p">[</span><span class="mf">435.7</span><span class="p">,</span> <span class="mi">437</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="p">[(</span><span class="n">precursor_mz_calc</span><span class="p">,</span> <span class="s2">&quot;max_intensity&quot;</span><span class="p">,</span> <span class="s2">&quot;theoretical precursor&quot;</span><span class="p">)],</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;label.triangle.MS_precision&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;theoretical precursor plot 2&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># The mz_range can be included in the layout as well.</span>
+    <span class="c1"># In contrast to mz_range in the add() function, which limits the included</span>
+    <span class="c1"># datapoints, the layout range only defines the area that is depicted (i.e. the zoom)</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+    <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;xaxis2&quot;</span><span class="p">][</span><span class="s2">&quot;autorange&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;xaxis2&quot;</span><span class="p">][</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">435.7</span><span class="p">,</span> <span class="mi">437</span><span class="p">]</span>
+
+    <span class="c1"># Now the third plot will be added, a fragmentation spectrum of HLVDEPQNLIK</span>
+    <span class="n">ms2_spectrum</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="mi">3542</span><span class="p">]</span>
+
+    <span class="c1"># The MS_precision for the plotting option label.triangle.MS_precision</span>
+    <span class="c1"># needs to be defined</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;MS2 Spectrum Annotated: HLVDEPQNLIK&quot;</span><span class="p">,</span> <span class="n">MS_precision</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">ms2_spectrum</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;raw data plot 3&quot;</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">theoretical_b_ions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;b&lt;sub&gt;2&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">126.0788</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;3&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">175.6130</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;4&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">233.1264</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;2&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">251.1503</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;5&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">297.6477</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;6&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">346.1741</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;3&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">350.2187</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;7&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">410.2034</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;4&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">465.2456</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;8&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">467.2249</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;9&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">523.7669</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;10&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">580.3089</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;5&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">594.2882</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;6&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">691.341</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;7&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">819.3995</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;8&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">933.4425</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;9&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1046.5265</span><span class="p">,</span>
+        <span class="s2">&quot;b&lt;sub&gt;10&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1159.6106</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">theoretical_y_ions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;y&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">74.0600</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;2&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">130.6021</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;1&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">147.1128</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;3&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">187.1441</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;4&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">244.1656</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;2&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">260.1969</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;5&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">308.1949</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;6&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">356.7212</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;3&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">373.2809</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;7&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">421.2425</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;8&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">478.7560</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;4&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">487.3239</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;9&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">528.2902</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;10&lt;/sub&gt;&lt;sup&gt;+2&lt;/sup&gt;&quot;</span><span class="p">:</span> <span class="mf">584.8322</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;5&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">615.3824</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;6&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">712.4352</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;7&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">841.4778</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;8&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">956.5047</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;9&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1055.5732</span><span class="p">,</span>
+        <span class="s2">&quot;y&lt;sub&gt;10&lt;/sub&gt;&quot;</span><span class="p">:</span> <span class="mf">1168.6572</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Check which theoretical fragments are present in the spectrum</span>
+    <span class="c1"># using the has_peak() function</span>
+    <span class="k">for</span> <span class="n">ion_list</span> <span class="ow">in</span> <span class="p">[</span><span class="n">theoretical_b_ions</span><span class="p">,</span> <span class="n">theoretical_y_ions</span><span class="p">]:</span>
+        <span class="n">label_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fragment</span> <span class="ow">in</span> <span class="n">ion_list</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">peak</span> <span class="o">=</span> <span class="n">ms2_spectrum</span><span class="o">.</span><span class="n">has_peak</span><span class="p">(</span><span class="n">ion_list</span><span class="p">[</span><span class="n">fragment</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">label_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ion_list</span><span class="p">[</span><span class="n">fragment</span><span class="p">],</span> <span class="n">peak</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">fragment</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ion_list</span> <span class="o">==</span> <span class="n">theoretical_b_ions</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">label_list</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="s2">&quot;label.triangle.MS_precision&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;theoretical fragment ions plot 3&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">plot_layout</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">3&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+
+    <span class="c1"># Save the plot in a file using the defined plot_layout</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;example_plot_</span><span class="si">{0}</span><span class="s2">_annotation.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">example_file</span><span class="p">))</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">plot_layout</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotted file: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="extracting-highest-peaks">
+<h2><span class="section-number">4.7.7. </span>Extracting highest peaks<a class="headerlink" href="#extracting-highest-peaks" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="highest_peaks.main">
+<span class="sig-prename descclassname"><span class="pre">highest_peaks.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/highest_peaks.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#highest_peaks.main" title="Link to this definition"></a></dt>
+<dd><p>Testscript to isolate the n-highest peaks from an example file.</p>
+<p>Usage:</p>
+<blockquote>
+<div><p>./highest_peaks.py</p>
+</div></blockquote>
+<p>Parses the file ‘../tests/data/example.mzML’ and extracts the 2 highest
+intensities from each spectrum.</p>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testscript to isolate the n-highest peaks from an example file.</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">        ./highest_peaks.py</span>
+
+<span class="sd">    Parses the file &#39;../tests/data/example.mzML&#39; and extracts the 2 highest</span>
+<span class="sd">    intensities from each spectrum.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;example.mzML&quot;</span>
+    <span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="n">highest_i_dict</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="n">number_of_peaks_to_extract</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="c1"># print( spectrum.ID )</span>
+        <span class="k">if</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">ms_level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mz</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">highest_peaks</span><span class="p">(</span><span class="n">number_of_peaks_to_extract</span><span class="p">):</span>
+                <span class="n">highest_i_dict</span><span class="p">[</span><span class="n">spectrum</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">spectrum_id</span><span class="p">,</span> <span class="n">highest_peak_list</span> <span class="ow">in</span> <span class="n">highest_i_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">highest_peak_list</span><span class="p">)</span> <span class="o">==</span> <span class="n">number_of_peaks_to_extract</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Spectrum </span><span class="si">{0}</span><span class="s2">; highest intensities: </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">spectrum_id</span><span class="p">,</span> <span class="n">highest_peak_list</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="compare-spectra">
+<h2><span class="section-number">4.7.8. </span>Compare spectra<a class="headerlink" href="#compare-spectra" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compare_spectra.main">
+<span class="sig-prename descclassname"><span class="pre">compare_spectra.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_spectra.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#compare_spectra.main" title="Link to this definition"></a></dt>
+<dd><p>Compare multiple spectra and return the cosine distance between them.
+The returned value is between 0 and 1, a returned value of 1
+represents highest similarity.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./compare_spectra.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compare multiple spectra and return the cosine distance between them.</span>
+<span class="sd">    The returned value is between 0 and 1, a returned value of 1</span>
+<span class="sd">    represents highest similarity.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./compare_spectra.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;example.mzML&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Comparing spectra</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># print(example_file)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">ms_level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parsing spectrum lvl 1 has id </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">ID</span><span class="p">))</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Print total number of specs collected </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">compare_tuples</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Cosine between spectra </span><span class="si">{0}</span><span class="s2"> &amp; </span><span class="si">{1}</span><span class="s2"> is </span><span class="si">{2:1.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">compare_tuples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">compare_tuples</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">tmp</span><span class="p">[</span><span class="n">compare_tuples</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">similarity_to</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">compare_tuples</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Cosine score between first spectrum against itself: </span><span class="si">{0:1.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">similarity_to</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="find-m-z-values">
+<h2><span class="section-number">4.7.9. </span>Find m/z values<a class="headerlink" href="#find-m-z-values" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="has_peak.main">
+<span class="sig-prename descclassname"><span class="pre">has_peak.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/has_peak.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#has_peak.main" title="Link to this definition"></a></dt>
+<dd><p>Testscript to demonstrate functionality of function <a class="reference internal" href="pymzml_spec.html#pymzml.spec.Spectrum.has_peak" title="pymzml.spec.Spectrum.has_peak"><code class="xref py py-func docutils literal notranslate"><span class="pre">pymzml.spec.Spectrum.has_peak()</span></code></a></p>
+<p>usage:</p>
+<blockquote>
+<div><p>./has_peak.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testscript to demonstrate functionality of function :py:func:`pymzml.spec.Spectrum.has_peak`</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./has_peak.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;example.mzML&quot;</span>
+    <span class="p">)</span>
+    <span class="n">mz_to_find</span> <span class="o">=</span> <span class="mf">820.7711792</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="n">found_peaks</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">has_peak</span><span class="p">(</span><span class="n">mz_to_find</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">found_peaks</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found peaks: </span><span class="si">{0}</span><span class="s2"> in spectrum </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">found_peaks</span><span class="p">,</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">ID</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="extract-ion-chromatogram">
+<h2><span class="section-number">4.7.10. </span>Extract ion chromatogram<a class="headerlink" href="#extract-ion-chromatogram" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="extract_ion_chromatogram.main">
+<span class="sig-prename descclassname"><span class="pre">extract_ion_chromatogram.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/extract_ion_chromatogram.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#extract_ion_chromatogram.main" title="Link to this definition"></a></dt>
+<dd><p>Demonstration of the extraction of a specific ion chromatogram, i.e. XIC or EIC</p>
+<p>All intensities and m/z values for a target m/z are extracted.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./extract_ion_chromatogram.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Demonstration of the extraction of a specific ion chromatogram, i.e. XIC or EIC</span>
+
+<span class="sd">    All intensities and m/z values for a target m/z are extracted.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./extract_ion_chromatogram.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;example.mzML&quot;</span>
+    <span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="n">time_dependent_intensities</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">MZ_2_FOLLOW</span> <span class="o">=</span> <span class="mf">70.06575775</span>
+
+    <span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">ms_level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">has_peak_matches</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">has_peak</span><span class="p">(</span><span class="n">MZ_2_FOLLOW</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">has_peak_matches</span> <span class="o">!=</span> <span class="p">[]:</span>
+                <span class="k">for</span> <span class="n">mz</span><span class="p">,</span> <span class="n">I</span> <span class="ow">in</span> <span class="n">has_peak_matches</span><span class="p">:</span>
+                    <span class="n">time_dependent_intensities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">spectrum</span><span class="o">.</span><span class="n">scan_time_in_minutes</span><span class="p">(),</span> <span class="n">I</span><span class="p">,</span> <span class="n">mz</span><span class="p">]</span>
+                    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RT   </span><span class="se">\t</span><span class="s2">i   </span><span class="se">\t</span><span class="s2">mz&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">rt</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">mz</span> <span class="ow">in</span> <span class="n">time_dependent_intensities</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0:5.3f}</span><span class="se">\t</span><span class="si">{1:13.4f}</span><span class="se">\t</span><span class="si">{2:10}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">mz</span><span class="p">))</span>
+    <span class="k">return</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="find-abundant-precursors">
+<h2><span class="section-number">4.7.11. </span>Find abundant precursors<a class="headerlink" href="#find-abundant-precursors" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="get_precursors.main">
+<span class="sig-prename descclassname"><span class="pre">get_precursors.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/get_precursors.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#get_precursors.main" title="Link to this definition"></a></dt>
+<dd><p>Extract the 10 most often fragmented precursors from the BSA example file.</p>
+<p>This can e.g. be used for defining exclusion lists for further MS runs.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./get_precursors.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the 10 most often fragmented precursors from the BSA example file.</span>
+
+<span class="sd">    This can e.g. be used for defining exclusion lists for further MS runs.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./get_precursors.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;BSA1.mzML.gz&quot;</span>
+    <span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="n">fragmented_precursors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">ms_level</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">selected_precursors</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">selected_precursors</span>
+            <span class="k">if</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">selected_precursors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">precursor_dict</span> <span class="ow">in</span> <span class="n">selected_precursors</span><span class="p">:</span>
+                    <span class="n">precursor_mz</span> <span class="o">=</span> <span class="n">precursor_dict</span><span class="p">[</span><span class="s2">&quot;mz&quot;</span><span class="p">]</span>
+                    <span class="n">precursor_i</span> <span class="o">=</span> <span class="n">precursor_dict</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span>
+                    <span class="n">rounded_precursor_mz</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">precursor_mz</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rounded_precursor_mz</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fragmented_precursors</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">fragmented_precursors</span><span class="p">[</span><span class="n">rounded_precursor_mz</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">fragmented_precursors</span><span class="p">[</span><span class="n">rounded_precursor_mz</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="n">precursor_info_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">rounded_precursor_mz</span><span class="p">,</span> <span class="n">spectra_list</span> <span class="ow">in</span> <span class="n">fragmented_precursors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">precursor_info_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spectra_list</span><span class="p">),</span> <span class="n">rounded_precursor_mz</span><span class="p">,</span> <span class="n">spectra_list</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="p">(</span><span class="n">number_of_spectra</span><span class="p">,</span> <span class="n">rounded_precursor_mz</span><span class="p">,</span> <span class="n">spectra_list</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+        <span class="nb">sorted</span><span class="p">(</span><span class="n">precursor_info_list</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Found precursor: </span><span class="si">{0}</span><span class="s2"> in spectra: </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">rounded_precursor_mz</span><span class="p">,</span> <span class="n">spectra_list</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">break</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="access-polarity-of-spectra">
+<h2><span class="section-number">4.7.12. </span>Access polarity of spectra<a class="headerlink" href="#access-polarity-of-spectra" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="polarity.main">
+<span class="sig-prename descclassname"><span class="pre">polarity.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polarity.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polarity.main" title="Link to this definition"></a></dt>
+<dd><p>Accessing positive or negative polarity of scan using obo 1.1.0</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./polarity.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span> <span class="nn">get_example_file</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Accessing positive or negative polarity of scan using obo 1.1.0</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./polarity.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">get_example_file</span><span class="o">.</span><span class="n">open_example</span><span class="p">(</span><span class="s2">&quot;small.pwiz.1.1.mzML&quot;</span><span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">,</span> <span class="n">obo_version</span><span class="o">=</span><span class="s2">&quot;1.1.0&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">run</span><span class="p">:</span>
+        <span class="n">negative_polarity</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;negative scan&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">negative_polarity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">negative_polarity</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">negative_polarity</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">negative_polarity</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">positive_polarity</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;positive scan&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">positive_polarity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">positive_polarity</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">positive_polarity</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">positive_polarity</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">positive_polarity</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Polarity negative </span><span class="si">{0}</span><span class="s2"> - Polarity positive </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">negative_polarity</span><span class="p">,</span> <span class="n">positive_polarity</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="check-old-to-new-function-name-mapping">
+<h2><span class="section-number">4.7.13. </span>Check old to new function name mapping<a class="headerlink" href="#check-old-to-new-function-name-mapping" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deprecation_check.main">
+<span class="sig-prename descclassname"><span class="pre">deprecation_check.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/deprecation_check.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deprecation_check.main" title="Link to this definition"></a></dt>
+<dd><p>Testscript to highlight the function name changes in the Spectrum class.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please adjust any old scripts to the new syntax.</p>
+</div>
+<p>usage:</p>
+<blockquote>
+<div><p>./deprecation_check.py</p>
+</div></blockquote>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testscript to highlight the function name changes in the Spectrum class.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Please adjust any old scripts to the new syntax.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./deprecation_check.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">example_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;example.mzML&quot;</span>
+    <span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
+    <span class="n">spectrum_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">run</span><span class="p">):</span>
+        <span class="n">spectrum_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">hasPeak</span><span class="p">((</span><span class="mf">813.19073486</span><span class="p">))</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">extremeValues</span><span class="p">(</span><span class="s2">&quot;mz&quot;</span><span class="p">)</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">hasOverlappingPeak</span><span class="p">(</span><span class="mf">813.19073486</span><span class="p">)</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">highestPeaks</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">estimatedNoiseLevel</span><span class="p">()</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">removeNoise</span><span class="p">()</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">transformMZ</span><span class="p">(</span><span class="mf">813.19073486</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">spectrum</span><span class="o">.</span><span class="n">similarityTo</span><span class="p">(</span><span class="n">spectrum_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">break</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="convert-mzml-gz-to-mzml-gz-igzip">
+<h2><span class="section-number">4.7.14. </span>Convert mzML(.gz) to mzML.gz (igzip)<a class="headerlink" href="#convert-mzml-gz-to-mzml-gz-igzip" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gzip_mzml.main">
+<span class="sig-prename descclassname"><span class="pre">gzip_mzml.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gzip_mzml.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gzip_mzml.main" title="Link to this definition"></a></dt>
+<dd><p>Create and indexed gzip mzML file from a plain mzML.</p>
+<p>Usage: python3 gzip_mzml.py &lt;path/to/mzml&gt; &lt;path/to/output&gt;</p>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3.4</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pymzml.utils.utils</span> <span class="kn">import</span> <span class="n">index_gzip</span>
+<span class="kn">from</span> <span class="nn">pymzml.run</span> <span class="kn">import</span> <span class="n">Reader</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_path</span><span class="p">,</span> <span class="n">out_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create and indexed gzip mzML file from a plain mzML.</span>
+
+<span class="sd">    Usage: python3 gzip_mzml.py &lt;path/to/mzml&gt; &lt;path/to/output&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mzml_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="n">fin</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">max_offset_len</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">max_spec_no</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">mzml_path</span><span class="p">)</span><span class="o">.</span><span class="n">get_spectrum_count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span>
+
+    <span class="n">index_gzip</span><span class="p">(</span>
+        <span class="n">mzml_path</span><span class="p">,</span> <span class="n">out_path</span><span class="p">,</span> <span class="n">max_idx</span><span class="o">=</span><span class="n">max_spec_no</span><span class="p">,</span> <span class="n">idx_len</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">max_offset_len</span><span class="p">))</span>
+    <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multi-threading-conversion-of-mzml-gz-to-mzml-gz-igzip">
+<h2><span class="section-number">4.7.15. </span>Multi threading conversion of mzML(.gz) to mzML.gz (igzip)<a class="headerlink" href="#multi-threading-conversion-of-mzml-gz-to-mzml-gz-igzip" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="multi_threading_file_compression.main">
+<span class="sig-prename descclassname"><span class="pre">multi_threading_file_compression.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/multi_threading_file_compression.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#multi_threading_file_compression.main" title="Link to this definition"></a></dt>
+<dd><p>Creates indexed gzip mzML files from all mzMLs files in the given folder
+using a given number of threads.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>python multi_threading_file_compression.py &lt;folder&gt; &lt;threads&gt;</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the number of threads is larger than the number of actual possible
+threads, all possible threads will be used.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="acces-run-infos">
+<h2><span class="section-number">4.7.16. </span>Acces run infos<a class="headerlink" href="#acces-run-infos" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="access_run_info.main">
+<span class="sig-prename descclassname"><span class="pre">access_run_info.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/access_run_info.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#access_run_info.main" title="Link to this definition"></a></dt>
+<dd><p>Basic example script to access basic run info of an mzML file. Requires a
+mzML file as first command line argument.</p>
+<p>usage:</p>
+<blockquote>
+<div><p>./access_run_info.py &lt;path_to_mzml_file&gt;</p>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span>
+<span class="go">        {</span>
+<span class="go">            &#39;encoding&#39;: &#39;utf-8&#39;,</span>
+<span class="go">             &#39;file_name&#39;: &#39;/Users/joe/Dev/pymzml_2.0/tests/data/BSA1.mzML.gz&#39;,</span>
+<span class="go">             &#39;file_object&#39;: &lt;pymzml.file_interface.FileInterface object at 0x1039a3f28&gt;,</span>
+<span class="go">             &#39;obo_version&#39;: &#39;1.1.0&#39;,</span>
+<span class="go">             &#39;offset_dict&#39;: None,</span>
+<span class="go">             &#39;run_id&#39;: &#39;ru_0&#39;,</span>
+<span class="go">             &#39;spectrum_count&#39;: 1684,</span>
+<span class="go">             &#39;start_time&#39;: &#39;2009-08-09T22:32:31&#39;</span>
+<span class="go">         }</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pymzml</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic example script to access basic run info of an mzML file. Requires a</span>
+<span class="sd">    mzML file as first command line argument.</span>
+
+<span class="sd">    usage:</span>
+
+<span class="sd">        ./access_run_info.py &lt;path_to_mzml_file&gt;</span>
+
+<span class="sd">    &gt;&gt;&gt; run.info =</span>
+<span class="sd">            {</span>
+<span class="sd">                &#39;encoding&#39;: &#39;utf-8&#39;,</span>
+<span class="sd">                 &#39;file_name&#39;: &#39;/Users/joe/Dev/pymzml_2.0/tests/data/BSA1.mzML.gz&#39;,</span>
+<span class="sd">                 &#39;file_object&#39;: &lt;pymzml.file_interface.FileInterface object at 0x1039a3f28&gt;,</span>
+<span class="sd">                 &#39;obo_version&#39;: &#39;1.1.0&#39;,</span>
+<span class="sd">                 &#39;offset_dict&#39;: None,</span>
+<span class="sd">                 &#39;run_id&#39;: &#39;ru_0&#39;,</span>
+<span class="sd">                 &#39;spectrum_count&#39;: 1684,</span>
+<span class="sd">                 &#39;start_time&#39;: &#39;2009-08-09T22:32:31&#39;</span>
+<span class="sd">             }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Summary for mzML file:</span>
+<span class="sd">    {file_name}</span>
+<span class="sd">Run was measured on {start_time} using obo version {obo_version}</span>
+<span class="sd">File contains {spectrum_count} spectra</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">run</span><span class="o">.</span><span class="n">info</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="n">mzml_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-a-custom-filehandler">
+<h2><span class="section-number">4.7.17. </span>Creating a custom Filehandler<a class="headerlink" href="#creating-a-custom-filehandler" title="Link to this heading"></a></h2>
+<section id="introduction">
+<h3><span class="section-number">4.7.17.1. </span>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h3>
+<p>It is also possible to create an own API for different forms
+of mzML files. For this, a new class needs to be written, which
+implements a <cite>read</cite> and a <cite>__getitem__</cite> function.</p>
+</section>
+<section id="implementation-of-the-api-class">
+<h3><span class="section-number">4.7.17.2. </span>Implementation of the API Class<a class="headerlink" href="#implementation-of-the-api-class" title="Link to this heading"></a></h3>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Example implementation of a database Conncetor,</span>
+<span class="sd">        which can be used to make run accept paths to</span>
+<span class="sd">        sqlite db files.</span>
+
+<span class="sd">        We initialize with a path to a database and implement</span>
+<span class="sd">        a custom __getitem__ function to retrieve the spectra</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Execute a SQL request, process the data and return a spectrum object.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                        key (str or int): unique identifier for the given spectrum in the</span>
+<span class="sd">                        database</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM spectra WHERE id=?&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">ID</span><span class="p">,</span> <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+                <span class="n">element</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">XML</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;spectrum&#39;</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                        <span class="n">spectrum</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s1">&#39;chromatogram&#39;</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                        <span class="n">spectrum</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">spectrum</span>
+
+        <span class="k">def</span> <span class="nf">get_spectrum_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) from spectra&quot;</span><span class="p">)</span>
+                <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">num</span>
+
+        <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="c1"># implement read so it starts reading in first ID,</span>
+                <span class="c1"># if end reached switches to next id and so on ...</span>
+
+                <span class="k">return</span> <span class="s1">&#39;&lt;spectrum index=&quot;0&quot; id=&quot;controllerType=0 controllerNumber=1 scan=1&quot; defaultArrayLength=&quot;917&quot;&gt;&lt;/spectrum&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="enabling-the-new-api-class-in-file-interface">
+<h3><span class="section-number">4.7.17.3. </span>Enabling the new API Class in File Interface<a class="headerlink" href="#enabling-the-new-api-class-in-file-interface" title="Link to this heading"></a></h3>
+<p>In order to make the run class accept the new file class, one need to edit
+the <code class="xref py py-func docutils literal notranslate"><span class="pre">_open()</span></code> function in file_interface.py</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indexed_gzip</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">indexedGzip</span><span class="o">.</span><span class="n">IndexedGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">standardGzip</span><span class="o">.</span><span class="n">StandardGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="c1"># Insert a new condition to enable your new fileclass</span>
+        <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.db&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">SQLiteConnector</span><span class="o">.</span><span class="n">SQLiteDatabase</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span>     <span class="o">=</span> <span class="n">standardMzml</span><span class="o">.</span><span class="n">StandardMzml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="moby-dick-as-indexed-gzip">
+<h2><span class="section-number">4.7.18. </span>Moby Dick as indexed Gzip<a class="headerlink" href="#moby-dick-as-indexed-gzip" title="Link to this heading"></a></h2>
+<p>Example of how to use the GSGW and GSGR class to create and access indexed Gzip files</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>index_moby_dick.py
+
+python3<span class="w"> </span>read_moby_dick.py<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="custom_fileclass.html" class="btn btn-neutral float-left" title="4.6. Implementing an own file class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="suppl_material.html" class="btn btn-neutral float-right" title="5. Supplemental Material" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

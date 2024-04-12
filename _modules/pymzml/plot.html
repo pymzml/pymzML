@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymzml.plot &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">3. pymzML module content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">4. Examples and Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pymzml.plot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pymzml.plot</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting functions for pymzML.</span>
+<span class="sd">The Factory object can hold several plots with several data traces each.</span>
+<span class="sd">The data can be visualized as an interactive plotly plot or be exported as JSON.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Python mzML module - pymzml</span>
+<span class="c1"># Copyright (C) 2010-2019 M. Kösters, C. Fufezan</span>
+<span class="c1">#     The MIT License (MIT)</span>
+
+<span class="c1">#     Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1">#     of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1">#     in the Software without restriction, including without limitation the rights</span>
+<span class="c1">#     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1">#     copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1">#     furnished to do so, subject to the following conditions:</span>
+
+<span class="c1">#     The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1">#     copies or substantial portions of the Software.</span>
+
+<span class="c1">#     THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1">#     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1">#     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1">#     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1">#     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1">#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1">#     SOFTWARE.</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<span class="c1"># Fail gracefully if no plotly installed</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">plotly</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="c1"># import plotly.offline as plt</span>
+    <span class="kn">import</span> <span class="nn">plotly.graph_objs</span> <span class="k">as</span> <span class="nn">go</span>
+    <span class="kn">from</span> <span class="nn">plotly</span> <span class="kn">import</span> <span class="n">subplots</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Plotly is required for plotting support.&quot;</span><span class="p">,</span> <span class="ne">ImportWarning</span><span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">spec</span>
+
+
+<div class="viewcode-block" id="Factory">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory">[docs]</a>
+<span class="k">class</span> <span class="nc">Factory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Factory.__init__">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface to visualize m/z or profile data using plotly (https://plot.ly/).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            filename (str): Name for the output file. Default = &quot;spectrum_plot.html&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MS_precisions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_mapper</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;-__splineOffset__0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__return_neg_offset_0</span><span class="p">,</span>
+            <span class="s2">&quot;max_intensity&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__return_max_y</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;line.width&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>  <span class="c1"># default value</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__return_max_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__return_neg_offset_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">0.0</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Factory.new_plot">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.new_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MS_precision</span><span class="o">=</span><span class="s2">&quot;5e-6&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add new plot to the plotting Factory.</span>
+<span class="sd">        Every plot will be put into the x * 2 grid of one single figure.</span>
+
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            title (str): an optional title that will be printed above the plot</span>
+<span class="sd">            MS_precision (float): measuring MS_precision used in handler.</span>
+<span class="sd">                Default 5e-6.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Old function newPlot() is still working. However, the new syntax</span>
+<span class="sd">            should be used.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MS_precisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MS_precision</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Factory.newPlot">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.newPlot">[docs]</a>
+    <span class="k">def</span> <span class="nf">newPlot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MS_precision</span><span class="o">=</span><span class="s2">&quot;5e-6&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deprecated since version 1.2.&quot;&quot;&quot;</span>
+        <span class="c1"># Is this ok, pass the Factory.self to Spectrum class???</span>
+        <span class="c1"># Id just make deprecation warning a function independent of any class</span>
+        <span class="c1"># Also, this just looks wrong</span>
+        <span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">function_name</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">MS_precision</span><span class="o">=</span><span class="n">MS_precision</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Factory.add">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.add">[docs]</a>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span>
+        <span class="n">mz_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">int_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_num</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add data to the graph.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            data (list): The data added to the graph. Must be list of  tuples with</span>
+<span class="sd">                the following format. Note that i can be set to &#39;max_intensity&#39; for</span>
+<span class="sd">                setting the label position to the maximum intensity.</span>
+<span class="sd">                    *   (mz,i) for all styles, except label,</span>
+<span class="sd">                    *   (mz,i, string) for label.hoverinfo, .sticks and .triangle</span>
+<span class="sd">                    *   (mz1, mz2, i, string) for label.linear and .spline</span>
+
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            color (tuple): color encoded in RGB. Default = (0,0,0)</span>
+<span class="sd">            style (str): plotting style. Default = &quot;sticks&quot;.</span>
+<span class="sd">                Currently supported styles are:</span>
+<span class="sd">                    *   &#39;lines&#39;:</span>
+<span class="sd">                        Datapoints connected by lines</span>
+<span class="sd">                    *   &#39;points&#39;:</span>
+<span class="sd">                        Datapoints without connection</span>
+<span class="sd">                    *   &#39;sticks&#39;:</span>
+<span class="sd">                        Vertical line at given m/z (corresponds to centroided peaks)</span>
+<span class="sd">                    *   &#39;triangle&#39; (MS_precision, micro, tiny, small, medium, big):</span>
+<span class="sd">                        The top of the triangle corresponds to the given m/z, the width</span>
+<span class="sd">                        corresponds to he given format, e.g. &#39;triangle.MS_precision&#39;</span>
+<span class="sd">                    *   &#39;label.hoverinfo&#39;:</span>
+<span class="sd">                        Label string appears as plotly hover info</span>
+<span class="sd">                    *   &#39;label.linear&#39;   (top, medium or bottom)</span>
+<span class="sd">                    *   &#39;label.spline&#39;   (top, medium or bottom)</span>
+<span class="sd">                    *   &#39;label.sticks&#39;</span>
+<span class="sd">                    *   &#39;label.triangle&#39; (small, medium or big)</span>
+<span class="sd">            mz_range (list): Boundaries that should be added to the current</span>
+<span class="sd">                plot</span>
+<span class="sd">            int_range (list): Boundaries that should be added to the current</span>
+<span class="sd">                plot</span>
+<span class="sd">            opacity (float): opacity of the data points</span>
+<span class="sd">            dash (str): type of line (&#39;solid&#39;, &#39;dash&#39;, &#39;longdash&#39;, &#39;dot&#39;, &#39;dashdot&#39;, &#39;longdashdot&#39;)</span>
+<span class="sd">            name (str): name of data in legend</span>
+<span class="sd">            plot_num (int): Add data to plot[plot_num]</span>
+<span class="sd">            title (str): an optional title that will be printed above the plot</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The mz_range and int_range in the add() function sets the limits of datapoints</span>
+<span class="sd">            added to the plot. This is in contrast to defining a range in the layout, which</span>
+<span class="sd">            only defines the area that is depicted (i.e. the zoom) but still adds the datapoints to the plot</span>
+<span class="sd">            (can be seen by zooming out).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mz_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mz_range</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">int_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">int_range</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mz_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">int_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Init variables</span>
+        <span class="n">filling</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;lines&quot;</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">style</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">MS_precision</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MS_precisions</span><span class="p">[</span><span class="n">plot_num</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">style</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">style</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">available_pos</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;MS_precision&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;micro&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tiny&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;small&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;top&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available_pos</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Position must one of the following: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">available_pos</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;text+lines&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Must have at least (mz, i, annotation) in data</span>
+<span class="sd">                    when using labels</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hoverinfo&quot;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">filling</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">data_tuple</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">x_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">y_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">txt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;sticks&quot;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="n">filling</span> <span class="o">=</span> <span class="s2">&quot;tozeroy&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">y_pos</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">x_values</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
+                    <span class="n">y_values</span> <span class="o">+=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;triangle&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span>
+                <span class="n">triangle_pos_list</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;MS_precision&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;micro&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;tiny&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;small&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">pos</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">triangle_pos_list</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Position must be in </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">triangle_pos_list</span><span class="p">))</span>
+
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="n">filling</span> <span class="o">=</span> <span class="s2">&quot;tozeroy&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span>
+                    <span class="n">y_max</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">y_values</span> <span class="o">+=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+                    <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;MS_precision&quot;</span><span class="p">:</span>
+                        <span class="n">x_values</span> <span class="o">+=</span> <span class="p">(</span>
+                            <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">MS_precision</span><span class="p">),</span>
+                            <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">MS_precision</span><span class="p">),</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;micro&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;tiny&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;small&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;big&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+                    <span class="n">x_values</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">*</span> <span class="n">rel_width</span><span class="p">),</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">*</span> <span class="n">rel_width</span><span class="p">),</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;spline&quot;</span><span class="p">:</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;lines+markers+text&quot;</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;spline&quot;</span>
+                <span class="n">txt</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;top&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;max_intensity&quot;</span><span class="p">:</span>
+                        <span class="n">y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">y_max</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span>
+                        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">y_max</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="n">y_max</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+<span class="w">                            </span><span class="sd">&quot;&quot;&quot;&#39;</span>
+<span class="sd">                            {0}</span>
+<span class="sd">                            is not working atm for</span>
+<span class="sd">                            {1}</span>
+<span class="sd">                            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">pos</span><span class="p">,</span> <span class="n">style</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="s2">&quot;__splineOffset__&quot;</span>
+
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span>
+                        <span class="n">y_pos</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="s2">&quot;-__splineOffset__0&quot;</span>
+
+                    <span class="n">x_values</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span>
+                    <span class="n">y_values</span> <span class="o">+=</span> <span class="n">y_pos</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">),</span> <span class="n">y_pos</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;bottom&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;max_intensity&quot;</span><span class="p">:</span>
+                        <span class="n">y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">y_max</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span>
+                        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">y_max</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="n">y_max</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+<span class="w">                            </span><span class="sd">&quot;&quot;&quot;&#39;</span>
+<span class="sd">                            {0}</span>
+<span class="sd">                            is not working atm for</span>
+<span class="sd">                            {1}</span>
+<span class="sd">                            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">pos</span><span class="p">,</span> <span class="n">style</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="s2">&quot;+__splineOffset__&quot;</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span>
+                        <span class="n">y_pos</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="s2">&quot;-__splineOffset__0&quot;</span>
+
+                    <span class="n">x_values</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span>
+                    <span class="n">y_values</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">),</span> <span class="kc">None</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+            <span class="c1"># elif style[1] == &#39;lines&#39;:</span>
+            <span class="c1">#         shape = &#39;linear&#39;</span>
+            <span class="c1">#         filling = &#39;tozeroy&#39;</span>
+            <span class="c1">#         for x in data:</span>
+            <span class="c1">#             y_pos = &#39;self.y_max[i]&#39;</span>
+            <span class="c1">#             x_values += x[0], x[0], x[0], None</span>
+            <span class="c1">#             y_values += .0, y_pos, .0, None</span>
+            <span class="c1">#             txt     += None, x[2], None, None</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Unknown label type</span>
+<span class="sd">                    Currently supported are:</span>
+<span class="sd">                    -&gt; linear</span>
+<span class="sd">                    -&gt; spline</span>
+<span class="sd">                    -&gt; sticks</span>
+<span class="sd">                    -&gt; triangle</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sticks&quot;</span><span class="p">,</span> <span class="s2">&quot;triangle&quot;</span><span class="p">,</span> <span class="s2">&quot;lines&quot;</span><span class="p">,</span> <span class="s2">&quot;points&quot;</span><span class="p">]:</span>
+            <span class="n">x_vals</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">mz</span>
+                <span class="k">for</span> <span class="n">mz</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span>
+                <span class="k">if</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="n">y_vals</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span>
+                <span class="k">for</span> <span class="n">mz</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span>
+                <span class="k">if</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mz</span> <span class="o">&lt;=</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="n">y_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_vals</span><span class="p">)</span>
+            <span class="n">y_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y_vals</span><span class="p">)</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_vals</span><span class="p">)</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_vals</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_max</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_max</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x_min</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_min</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_max</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_max</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;Inf&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">y_min</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_min</span>
+
+            <span class="k">if</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;sticks&quot;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;lines&quot;</span>
+                <span class="n">filling</span> <span class="o">=</span> <span class="s2">&quot;tozeroy&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">y_vals</span><span class="p">):</span>
+                    <span class="n">y_pos</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">x_values</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
+                    <span class="n">y_values</span> <span class="o">+=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;triangle&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">style</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span>
+                <span class="n">triangle_pos_list</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;MS_precision&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;micro&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;tiny&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;small&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">pos</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">triangle_pos_list</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Position must be in </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">triangle_pos_list</span><span class="p">))</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="n">filling</span> <span class="o">=</span> <span class="s2">&quot;tozeroy&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">y_vals</span><span class="p">):</span>
+                    <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span>
+                    <span class="n">y_pos</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">y_values</span> <span class="o">+=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;MS_precision&quot;</span><span class="p">:</span>
+                        <span class="n">x_values</span> <span class="o">+=</span> <span class="p">(</span>
+                            <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">MS_precision</span><span class="p">),</span>
+                            <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">MS_precision</span><span class="p">),</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;micro&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;tiny&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;small&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;big&quot;</span><span class="p">:</span>
+                        <span class="n">rel_width</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+                    <span class="n">x_values</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">*</span> <span class="n">rel_width</span><span class="p">),</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">*</span> <span class="n">rel_width</span><span class="p">),</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;lines&quot;</span><span class="p">:</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;lines&quot;</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">y_vals</span><span class="p">):</span>
+                    <span class="n">x_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">y_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;points&quot;</span><span class="p">:</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;markers&quot;</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+                <span class="n">x_values</span> <span class="o">=</span> <span class="n">x_vals</span>
+                <span class="n">y_values</span> <span class="o">=</span> <span class="n">y_vals</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Invalid plotting style</span>
+<span class="sd">                Currently supported are:</span>
+<span class="sd">                -&gt; lines</span>
+<span class="sd">                -&gt; points</span>
+<span class="sd">                -&gt; sticks</span>
+<span class="sd">                -&gt; triangle</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x_values</span><span class="p">,</span>
+                <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_values</span><span class="p">,</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">txt</span><span class="p">,</span>
+                <span class="s2">&quot;textfont&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;family&quot;</span><span class="p">:</span> <span class="s2">&quot;Helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">},</span>
+                <span class="s2">&quot;textposition&quot;</span><span class="p">:</span> <span class="s2">&quot;top center&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;visible&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;rgba(</span><span class="si">{0}</span><span class="s2">,</span><span class="si">{1}</span><span class="s2">,</span><span class="si">{2}</span><span class="s2">,</span><span class="si">{3}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">opacity</span>
+                    <span class="p">),</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;rgba(</span><span class="si">{0}</span><span class="s2">,</span><span class="si">{1}</span><span class="s2">,</span><span class="si">{2}</span><span class="s2">,</span><span class="si">{3}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">opacity</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_options</span><span class="p">[</span><span class="s2">&quot;line.width&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
+                    <span class="s2">&quot;dash&quot;</span><span class="p">:</span> <span class="n">dash</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;fill&quot;</span><span class="p">:</span> <span class="n">filling</span><span class="p">,</span>
+                <span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;rgba(</span><span class="si">{0}</span><span class="s2">,</span><span class="si">{1}</span><span class="s2">,</span><span class="si">{2}</span><span class="s2">,</span><span class="si">{3}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">opacity</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;opacity&quot;</span><span class="p">:</span> <span class="n">opacity</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_num</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">trace</span></div>
+
+
+<div class="viewcode-block" id="Factory.info">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.info">[docs]</a>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints summary about the plotting factory, i.e. how many plots and how</span>
+<span class="sd">        many datasets per plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Factory holds {0} unique plots</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">Plot </span><span class="si">{0}</span><span class="s2"> holds </span><span class="si">{1}</span><span class="s2"> unique datasets&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">plot</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">Dataset </span><span class="si">{0}</span><span class="s2"> holds </span><span class="si">{1}</span><span class="s2"> datapoints&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">j</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Factory.save">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mz_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write_pdf</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves all plots and their data points that have been added to the</span>
+<span class="sd">        plotFactory.</span>
+
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            filename (str): Name for the output file. Default = &quot;spectrum_plot.html&quot;</span>
+<span class="sd">            mz_range (list): m/z range which should be considered [start, end].</span>
+<span class="sd">                Default = None</span>
+<span class="sd">            int_range (list): intensity range which should be considered [min, max].</span>
+<span class="sd">                Default = None</span>
+<span class="sd">            layout (dict): dictionary containing layout information in plotly style</span>
+<span class="sd">            write_pdf (bool): Set &quot;True&quot; in order to save plots as pdf file (on Unix systems,</span>
+<span class="sd">                this requires Orca to be installed)</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            mz_range and int_range defined here will be applied to all subplots in</span>
+<span class="sd">            the current plot, i.e. ranges defined when adding a subplot will be</span>
+<span class="sd">            overwritten. To avoid this, a list of lists can be given in the order</span>
+<span class="sd">            corresponding to the subplots.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plot_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">plot_number</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">))),</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">plot_number</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">my_figure</span> <span class="o">=</span> <span class="n">subplots</span><span class="o">.</span><span class="n">make_subplots</span><span class="p">(</span>
+                <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+                <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
+                <span class="n">vertical_spacing</span><span class="o">=</span><span class="mf">0.6</span> <span class="o">/</span> <span class="n">rows</span><span class="p">,</span>
+                <span class="n">subplot_titles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">titles</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">specs</span> <span class="o">=</span> <span class="p">[[{},</span> <span class="p">{}]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="n">specs</span><span class="o">.</span><span class="n">append</span><span class="p">([{</span><span class="s2">&quot;colspan&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="kc">None</span><span class="p">])</span>
+            <span class="n">my_figure</span> <span class="o">=</span> <span class="n">subplots</span><span class="o">.</span><span class="n">make_subplots</span><span class="p">(</span>
+                <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+                <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
+                <span class="n">vertical_spacing</span><span class="o">=</span><span class="mf">0.6</span> <span class="o">/</span> <span class="n">rows</span><span class="p">,</span>
+                <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+                <span class="n">subplot_titles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">titles</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">i</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+                <span class="n">trace</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">function_mapper</span><span class="p">[</span><span class="n">x</span><span class="p">](</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_mapper</span> <span class="k">else</span> <span class="n">x</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+                <span class="p">]</span>
+                <span class="n">my_figure</span><span class="o">.</span><span class="n">append_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">i</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">plot_number</span><span class="p">):</span>
+            <span class="n">xaxis_key</span> <span class="o">=</span> <span class="s2">&quot;xaxis</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mz_range</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">or</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+                    <span class="c1"># if list and not list of lists, apply same for all</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">xaxis_key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="n">mz_range</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">xaxis_key</span><span class="p">][</span><span class="s2">&quot;autorange&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">xaxis_key</span><span class="p">][</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mz_range</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">xaxis_key</span><span class="p">][</span><span class="s2">&quot;autorange&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">yaxis_key</span> <span class="o">=</span> <span class="s2">&quot;yaxis</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">int_range</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">or</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+                    <span class="c1"># if list and not list of lists, apply same for all</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">yaxis_key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="n">int_range</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">yaxis_key</span><span class="p">][</span><span class="s2">&quot;autorange&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">int_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">yaxis_key</span><span class="p">][</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">int_range</span>
+                    <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">yaxis_key</span><span class="p">][</span><span class="s2">&quot;autorange&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">xaxis_key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;m/z &quot;</span><span class="p">)</span>
+            <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">yaxis_key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Intensity&quot;</span><span class="p">)</span>
+            <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">xaxis_key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">titlefont</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span> <span class="s2">&quot;family&quot;</span><span class="p">:</span> <span class="s2">&quot;Helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">18</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="n">yaxis_key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">titlefont</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span> <span class="s2">&quot;family&quot;</span><span class="p">:</span> <span class="s2">&quot;Helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">18</span><span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">][</span><span class="s2">&quot;legend&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF0000&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">layout</span><span class="p">:</span>
+            <span class="n">my_figure</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_filename</span> <span class="o">=</span> <span class="s2">&quot;spectrum_plot.html&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># save fkt name definition overrules original filename</span>
+            <span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+        <span class="c1"># plt.plot(my_figure, filename=_filename, auto_open=False)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">my_figure</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">write_pdf</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">my_figure</span><span class="p">,</span> <span class="n">_filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.html&quot;</span><span class="p">,</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Factory.get_data">
+<a class="viewcode-back" href="../../plot.html#pymzml.plot.Factory.get_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return data and layout in JSON format.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            plots (dict): JSON compatible python dict</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">function_mapper</span><span class="p">[</span><span class="n">x</span><span class="p">](</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_mapper</span> <span class="k">else</span> <span class="n">x</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+                <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

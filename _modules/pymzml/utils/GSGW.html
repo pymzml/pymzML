@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymzml.utils.GSGW &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">3. pymzML module content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">4. Examples and Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pymzml.utils.GSGW</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pymzml.utils.GSGW</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: latin-1 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Writer class for indexed gzipped files</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Python mzML module - pymzml</span>
+<span class="c1"># Copyright (C) 2010-2019 M. KÃ¶sters, C. Fufezan</span>
+<span class="c1">#     The MIT License (MIT)</span>
+
+<span class="c1">#     Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1">#     of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1">#     in the Software without restriction, including without limitation the rights</span>
+<span class="c1">#     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1">#     copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1">#     furnished to do so, subject to the following conditions:</span>
+
+<span class="c1">#     The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1">#     copies or substantial portions of the Software.</span>
+
+<span class="c1">#     THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1">#     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1">#     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1">#     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1">#     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1">#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1">#     SOFTWARE.</span>
+
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">zlib</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="GSGW">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW">[docs]</a>
+<span class="k">class</span> <span class="nc">GSGW</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Generalized Gzip writer class with random access to indexed offsets.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        file (string)        : Filename for the resulting file</span>
+<span class="sd">        max_idx (int)        : max number of indices which can be saved in</span>
+<span class="sd">                                this file</span>
+<span class="sd">        max_idx_len (int)    : maximal length of the index in bytes, must</span>
+<span class="sd">                                be between 1 and 255</span>
+<span class="sd">        max_offset_len (int) : maximal length of the offset in bytes</span>
+<span class="sd">        output_path (str)    : path to the output file</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_idx</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+        <span class="n">max_idx_len</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">max_offset_len</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;./test.dat.igzip&quot;</span><span class="p">,</span>
+        <span class="n">comp_str</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Lock</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_version</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># max 255!!!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">output_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_idx_num</span> <span class="o">=</span> <span class="n">max_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_idx_len</span> <span class="o">=</span> <span class="n">max_idx_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_offset_len</span> <span class="o">=</span> <span class="n">max_offset_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;MAGIC_BYTE_1&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1f</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;MAGIC_BYTE_2&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x8b</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;COMPRESSION&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x08</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;DATE&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00\x00\x00\x00</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;XFL&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x02</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x03</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_header_set</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_out</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="s2">&quot;latin-1&quot;</span>
+        <span class="c1"># magic bytes. FU+version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_magic_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;FU&quot;</span> <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;B&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_version</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crc32</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isize</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_str</span> <span class="o">=</span> <span class="n">comp_str</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the file object properly after this object is deleted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the internal file object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">file_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output filehandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_out</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the encoding used for this file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span>
+
+    <span class="nd">@encoding</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the file encoding for the output file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;encoding must be a string&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
+
+<div class="viewcode-block" id="GSGW._write_gen_header">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW._write_gen_header">[docs]</a>
+    <span class="k">def</span> <span class="nf">_write_gen_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">FLAGS</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write a valid gzip header with creation time, user defined flag fields</span>
+<span class="sd">        and allocated index.</span>
+
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            Index (bool)           : whether to or not to write an</span>
+<span class="sd">                                        index into this header.</span>
+<span class="sd">            FLAGS (list, optional) : list of flags (FTEXT, FHCRC, FEXTRA,</span>
+<span class="sd">                                        FNAME) to set for this header.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            offset (int): byte offset of the file pointer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">FLAGS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">FLAGS</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">FTEXT</span><span class="p">,</span> <span class="n">FHCRC</span><span class="p">,</span> <span class="n">FEXTRA</span><span class="p">,</span> <span class="n">FNAME</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span>  <span class="c1"># extra field bit flags</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">time_byte</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">current_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;DATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_byte</span>
+        <span class="k">if</span> <span class="n">Index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x10</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">FLAGS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;FTEXT&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">FTEXT</span>
+
+            <span class="k">if</span> <span class="s2">&quot;FHCRC&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+                <span class="n">header_crc32</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">FHCRC</span>
+                <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">header_crc32</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="n">byte</span><span class="p">,</span> <span class="n">header_crc32</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;FEXTRA&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">FEXTRA</span>
+
+            <span class="k">if</span> <span class="s2">&quot;FNAME&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">FNAME</span>
+
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;FEXTRA&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+            <span class="c1"># WRITE EXTRA FIELD</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="s2">&quot;FNAME&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+            <span class="c1"># WRITE FNAME FIELD</span>
+            <span class="n">fName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">Index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generic_header</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_magic_bytes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;B&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_idx_len</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;B&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_offset_len</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allocate_index_bytes</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;FHCRC&quot;</span> <span class="ow">in</span> <span class="n">FLAGS</span><span class="p">:</span>
+            <span class="c1"># WRITE checksum for header</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GSGW._allocate_index_bytes">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW._allocate_index_bytes">[docs]</a>
+    <span class="k">def</span> <span class="nf">_allocate_index_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allocate &#39;self.max_index_num&#39; bytes of length &#39;self.max_idx_len&#39;</span>
+<span class="sd">        in the header for inserting the index later on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">id_placeholder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_idx_len</span> <span class="o">*</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x01</span><span class="s2">&quot;</span>
+        <span class="n">offset_placeholder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_offset_len</span> <span class="o">*</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x01</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_idx_num</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">id_placeholder</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">offset_placeholder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="GSGW._write_data">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW._write_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">_write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write data into file-stream.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            data (str): uncompressed data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Compressor</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compressobj</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comp_str</span><span class="p">,</span> <span class="n">zlib</span><span class="o">.</span><span class="n">DEFLATED</span><span class="p">,</span> <span class="o">-</span><span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span><span class="p">,</span> <span class="n">zlib</span><span class="o">.</span><span class="n">DEF_MEM_LEVEL</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="c1"># compress data and flush (includes writing crc32 and isize)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crc32</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
+        <span class="n">comp_data</span> <span class="o">=</span> <span class="n">Compressor</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="n">Compressor</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crc32</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">isize</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="GSGW.add_data">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW.add_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new gzip member with compressed &#39;data&#39; indexed with &#39;index&#39;.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            data (str)         : uncompressed data to write to file</span>
+<span class="sd">            index (str or int) : unique index for the data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lock</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_idx_num</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    WARNING: Reached maximum number of indexed data blocks</span>
+<span class="sd">    &#39;({0}), cannot add any more data!</span>
+<span class="sd">                    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">max_idx_num</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_header_set</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_gen_header</span><span class="p">(</span><span class="n">Index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">first_header_set</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># do we need this?</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_gen_header</span><span class="p">(</span><span class="n">Index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cant add any more data if index is already written&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GSGW._write_identifier">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW._write_identifier">[docs]</a>
+    <span class="k">def</span> <span class="nf">_write_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert and write the identifier into output file.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            identifier (str or int): identifier to write into index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">id_format</span> <span class="o">=</span> <span class="s2">&quot;{0:</span><span class="se">\xAC</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_idx_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="n">id_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="GSGW._write_offset">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW._write_offset">[docs]</a>
+    <span class="k">def</span> <span class="nf">_write_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert and write offset to output file.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            offset (int): offset which will be formatted and written</span>
+<span class="sd">                into file index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">offset_format</span> <span class="o">=</span> <span class="s2">&quot;{0:</span><span class="se">\xAC</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_offset_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">offset_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="GSGW.write_index">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGW.GSGW.write_index">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Only called after all the data is written, i.e. all calls to</span>
+<span class="sd">        :func:`~GSGW.add_data` have been done.</span>
+
+<span class="sd">        Seek back to the beginning of the file and write the index into the</span>
+<span class="sd">        allocated comment bytes (see _write_gen_header(Index=True)).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Lock</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_offset</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">offset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_identifier</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_offset</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enable the with syntax for this class (entry point).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Destructor when using this class with &#39;with .. as&#39;.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

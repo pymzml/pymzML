@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymzml.utils.GSGR &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">3. pymzML module content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">4. Examples and Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pymzml.utils.GSGR</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pymzml.utils.GSGR</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: latin-1 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Reader class for indexed gzipped files</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Python mzML module - pymzml</span>
+<span class="c1"># Copyright (C) 2010-2019 M. KÃ¶sters, C. Fufezan</span>
+<span class="c1">#     The MIT License (MIT)</span>
+
+<span class="c1">#     Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1">#     of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1">#     in the Software without restriction, including without limitation the rights</span>
+<span class="c1">#     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1">#     copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1">#     furnished to do so, subject to the following conditions:</span>
+
+<span class="c1">#     The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1">#     copies or substantial portions of the Software.</span>
+
+<span class="c1">#     THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1">#     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1">#     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1">#     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1">#     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1">#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1">#     SOFTWARE.</span>
+
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">zlib</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="GSGR">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR">[docs]</a>
+<span class="k">class</span> <span class="nc">GSGR</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generalized Gzip reader class which enables random access in files</span>
+<span class="sd">    written with the :class:`~pymzml.utils.GSGW.GSGW` class.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        file (str): path to file to read</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magic_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1f\x8b</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_magic_bytes</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;not a gzip file (wrong magic bytes)&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_access</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># initial state, until index is read</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_basic_header</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flg</span> <span class="o">&amp;</span> <span class="mi">0</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># FTEXT flag</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ascii_file</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flg</span> <span class="o">&amp;</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># FHCRC flag</span>
+            <span class="n">crc16</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flg</span> <span class="o">&amp;</span> <span class="mi">4</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># FEXTRA flag</span>
+            <span class="c1"># TODO: maybe never tested</span>
+            <span class="n">xlen</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;H&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">xlen</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flg</span> <span class="o">&amp;</span> <span class="mi">8</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># FNAME flag</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_until_zero</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flg</span> <span class="o">&amp;</span> <span class="mi">16</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># FCOMMENT flag NOT SET</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read_index</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot; cant close file&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GSGR.seek">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR.seek">[docs]</a>
+    <span class="k">def</span> <span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Seek to byte offset in input file.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            offset (int): byte offset to seek to in FileIn</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="GSGR.read_block">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR.read_block">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read and return the data block with the unique index `index`</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            index(int or str): identifier associated with a specific block</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (str): indexed text block as string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">readSize</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="n">comp_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">readSize</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">comp_data</span><span class="p">,</span> <span class="o">-</span><span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="GSGR._check_magic_bytes">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR._check_magic_bytes">[docs]</a>
+    <span class="k">def</span> <span class="nf">_check_magic_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if file is a gzip file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.file_in.seek(0) # make sure file pointer is at start</span>
+        <span class="n">mb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mb</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">magic_bytes</span></div>
+
+
+<div class="viewcode-block" id="GSGR._read_basic_header">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR._read_basic_header">[docs]</a>
+    <span class="k">def</span> <span class="nf">_read_basic_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read and save compression method, bitflags, changetime,</span>
+<span class="sd">        compression speed and os.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># make sure filepoiner is at correct position</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;BBLBB&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flg</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtime</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xfl</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_read_until_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read input until \x00 is reached</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">c</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">+=</span> <span class="n">c</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">buf</span>
+
+<div class="viewcode-block" id="GSGR._read_index">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR._read_index">[docs]</a>
+    <span class="k">def</span> <span class="nf">_read_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read and save offset dict from indexed gzip file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># make sure file pointer is at right position</span>
+        <span class="n">mb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mb</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;FU</span><span class="se">\x01</span><span class="s2">&quot;</span><span class="p">:</span>  <span class="c1"># All hail MK!</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No index in comment field found. No random access possible&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;BB&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_len</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_len</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ID_block</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+        <span class="k">while</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ID_block</span><span class="p">:</span>
+            <span class="n">ID_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_len</span><span class="p">)</span>
+            <span class="n">OffsetBlock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset_len</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">Identifier</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ID_block</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;Â¬&quot;</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">Identifier</span> <span class="o">=</span> <span class="n">ID_block</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;Â¬&quot;</span><span class="p">)</span>
+                <span class="n">Offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">OffsetBlock</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;Â¬&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">Identifier</span><span class="p">]</span> <span class="o">=</span> <span class="n">Offset</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GSGR.read">
+<a class="viewcode-back" href="../../../pymzml_utils.html#pymzml.utils.GSGR.GSGR.read">[docs]</a>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the content of the in File in binary mode</span>
+
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            size (int, optional): number of bytes to read, -1 for everything</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (bytes): parsed bytes from input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enable the with syntax for this class (entry point)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        destructor when using this class with &#39;with .. as &#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the internal Filehandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_in</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

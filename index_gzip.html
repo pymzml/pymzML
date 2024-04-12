@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.1. Writing and Reading igzip files &mdash; pymzML 2.5.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4.6. Implementing an own file class" href="custom_fileclass.html" />
+    <link rel="prev" title="4. Examples and Advanced Usage" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymzML
+          </a>
+              <div class="version">
+                2.5.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">2. Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">3. pymzML module content</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">4. Examples and Advanced Usage</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.1. Writing and Reading igzip files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generalized-seekable-index-gzip-writer">4.2. Generalized Seekable index Gzip Writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generalized-seekable-index-gzip-reader">4.3. Generalized Seekable index Gzip Reader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#practical-example-moby-dick">4.4. Practical Example: Moby Dick</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-the-compressed-file">4.4.1. Creating the compressed file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-data">4.4.2. Accessing the data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#igzip-file-format-specification">4.5. igzip file format specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_fileclass.html">4.6. Implementing an own file class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_scripts.html">4.7. Example Scripts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="suppl_material.html">5. Supplemental Material</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymzML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="examples.html"><span class="section-number">4. </span>Examples and Advanced Usage</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.1. </span>Writing and Reading igzip files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index_gzip.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="writing-and-reading-igzip-files">
+<h1><span class="section-number">4.1. </span>Writing and Reading igzip files<a class="headerlink" href="#writing-and-reading-igzip-files" title="Link to this heading"></a></h1>
+<p>One key feature of pymzML is the ability to write and read indexed gzip files.
+The utils module contains a script to easily convert plain or gzipped mzML files into indexed gzip files.
+However, the <a class="reference internal" href="pymzml_utils.html#pymzml.utils.GSGW.GSGW" title="pymzml.utils.GSGW.GSGW"><code class="xref py py-func docutils literal notranslate"><span class="pre">GSGW()</span></code></a> and <a class="reference internal" href="pymzml_utils.html#pymzml.utils.GSGR.GSGR" title="pymzml.utils.GSGR.GSGR"><code class="xref py py-func docutils literal notranslate"><span class="pre">GSGR()</span></code></a> class can be used to index any type of data.
+After these two classes have been introduced, a small example of how to use them for other data than mzML can be found.</p>
+</section>
+<section id="generalized-seekable-index-gzip-writer">
+<h1><span class="section-number">4.2. </span>Generalized Seekable index Gzip Writer<a class="headerlink" href="#generalized-seekable-index-gzip-writer" title="Link to this heading"></a></h1>
+<p>Please refer to <a class="reference internal" href="pymzml_utils.html#pymzml.utils.GSGW.GSGW" title="pymzml.utils.GSGW.GSGW"><code class="xref py py-func docutils literal notranslate"><span class="pre">GSGW()</span></code></a> for further information.</p>
+</section>
+<section id="generalized-seekable-index-gzip-reader">
+<h1><span class="section-number">4.3. </span>Generalized Seekable index Gzip Reader<a class="headerlink" href="#generalized-seekable-index-gzip-reader" title="Link to this heading"></a></h1>
+<p>Please refer to <a class="reference internal" href="pymzml_utils.html#pymzml.utils.GSGR.GSGR" title="pymzml.utils.GSGR.GSGR"><code class="xref py py-func docutils literal notranslate"><span class="pre">GSGR()</span></code></a> for further information.</p>
+</section>
+<section id="practical-example-moby-dick">
+<h1><span class="section-number">4.4. </span>Practical Example: Moby Dick<a class="headerlink" href="#practical-example-moby-dick" title="Link to this heading"></a></h1>
+<section id="creating-the-compressed-file">
+<h2><span class="section-number">4.4.1. </span>Creating the compressed file<a class="headerlink" href="#creating-the-compressed-file" title="Link to this heading"></a></h2>
+<p>To utilze <a class="reference internal" href="pymzml_utils.html#pymzml.utils.GSGW.GSGW" title="pymzml.utils.GSGW.GSGW"><code class="xref py py-func docutils literal notranslate"><span class="pre">GSGW()</span></code></a> for other data, one simply needs to parse the data blockwise, so every piece of data, which should be accessible by indexing is written in one go. The index used can be either an integer or a string.
+The code example below parses each chapter of moby dick and indexes it with its corresponding chapter number.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index_by_chapter</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterate the text file while collecting the data for each chapter and compressing it</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt(str): Moby Dick text as string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">chapter_start</span> <span class="o">=</span> <span class="n">regex_patterns</span><span class="o">.</span><span class="n">MOBY_DICK_CHAPTER_PATTERN</span>
+    <span class="n">general_seekable_gzip_writer</span> <span class="o">=</span> <span class="n">GSGW</span><span class="p">(</span>
+        <span class="n">file</span>        <span class="o">=</span> <span class="s1">&#39;Moby_Dick_indexed.gz&#39;</span><span class="p">,</span>
+        <span class="n">max_idx</span>     <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">max_idx_len</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="s1">&#39;./Moby_Dick_indexed.gz&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">general_seekable_gzip_writer</span> <span class="k">as</span> <span class="n">index_writer</span><span class="p">:</span>
+        <span class="n">current_chapter</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">chapter_start</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">chapter_start</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+                <span class="n">current_chapter_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s1">&#39;indexing chapter </span><span class="si">{0}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">current_chapter_number</span>
+                    <span class="p">),</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="n">index_writer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">current_chapter</span><span class="p">,</span> <span class="n">current_chapter_number</span><span class="p">)</span>
+                <span class="n">current_chapter</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">current_chapter</span> <span class="o">+=</span> <span class="n">line</span>
+        <span class="n">current_chapter_number</span>  <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">index_writer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">current_chapter</span><span class="p">,</span> <span class="n">current_chapter_number</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;index chapter </span><span class="si">{0}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">current_chapter_number</span>
+            <span class="p">),</span>
+            <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="n">index_writer</span><span class="o">.</span><span class="n">write_index</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Indexed </span><span class="si">{0}</span><span class="s1"> chapters&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_chapter_number</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-the-data">
+<h2><span class="section-number">4.4.2. </span>Accessing the data<a class="headerlink" href="#accessing-the-data" title="Link to this heading"></a></h2>
+<p>In order to access the chapter in the compressed file, one simply needs to initialize the <a class="reference internal" href="pymzml_utils.html#pymzml.utils.GSGR.GSGR" title="pymzml.utils.GSGR.GSGR"><code class="xref py py-func docutils literal notranslate"><span class="pre">GSGR()</span></code></a> with the path to the created file and can access the chapters conveniently by the python bracket notation ([]).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">GSGR</span> <span class="kn">import</span> <span class="n">GSGR</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">my_Reader</span> <span class="o">=</span> <span class="n">GSGR</span><span class="p">(</span><span class="s1">&#39;./Moby_Dick_indexed.gz&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chap_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Reading indexed gzip and retrieving chapter {0}</span>
+<span class="sd">            &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chap_num</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Chapter {0} Took {1:.5f} seconds to retrieve chapter</span>
+<span class="sd">            &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">my_Reader</span><span class="o">.</span><span class="n">read_block</span><span class="p">(</span><span class="n">chap_num</span><span class="p">),</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="igzip-file-format-specification">
+<h1><span class="section-number">4.5. </span>igzip file format specification<a class="headerlink" href="#igzip-file-format-specification" title="Link to this heading"></a></h1>
+<p>In the following, the changes from igzip to gzip will be discussed.
+If one fieldentry requires more than 1 byte, the byte count in indicated in brackets (capital x for arbitrary byte count)</p>
+<p>For further information on the gzip format, see <a class="reference external" href="https://tools.ietf.org/html/rfc1952">https://tools.ietf.org/html/rfc1952</a> .</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>ID1</p></td>
+<td><p>ID2</p></td>
+<td><p>CM</p></td>
+<td><p>FLG</p></td>
+<td><p>MTIME (x4)</p></td>
+<td><p>XFL</p></td>
+<td><p>OS</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>COMPRESSED BLOCKS</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td colspan="4"><p>CRC32 (x4)</p></td>
+<td colspan="4"><p>ISIZE (x4)</p></td>
+</tr>
+</tbody>
+</table>
+<p>by setting the ‘Comment Flag’ in FLG, an additional headerfield can be activated.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>file comment, zero-terminated (xX)</p></td>
+</tr>
+</tbody>
+</table>
+<p>This field is then used to save the Uniq IDs, version, index/offset length and is terminated with a zero byte, like described in the following:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>ID1</p></td>
+<td><p>ID2</p></td>
+<td><p>VERSION</p></td>
+<td><p>IDXLEN</p></td>
+<td><p>OFFSETLEN</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Index (xX)</p></td>
+<td><p>Offset (xX)</p></td>
+</tr>
+</tbody>
+</table>
+<p>…</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>x00</p></td>
+</tr>
+</tbody>
+</table>
+<p>The length of the ID and the offset field can be set when initializing the gzip writer, along with the maximal number of ID/offset pairs.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00000000</span><span class="p">:</span>  <span class="mi">1</span><span class="n">f8b</span> <span class="mi">0810</span> <span class="n">ea57</span> <span class="mi">4</span><span class="n">f5a</span> <span class="mi">0203</span> <span class="mi">4655</span> <span class="mi">0109</span> <span class="mi">06</span><span class="n">ac</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7230</span>  <span class="p">:</span><span class="o">.....</span><span class="n">WOZ</span><span class="o">..</span><span class="n">FU</span><span class="o">....</span><span class="n">Chapter0</span>
+<span class="mi">00000018</span><span class="p">:</span>  <span class="n">acac</span> <span class="n">ac36</span> <span class="mi">3436</span> <span class="n">ac43</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">31</span><span class="n">ac</span> <span class="mi">3136</span> <span class="mi">3033</span> <span class="mi">32</span><span class="n">ac</span> <span class="mi">4368</span>  <span class="p">:</span><span class="o">..</span><span class="mf">.646</span><span class="o">.</span><span class="n">Chapter1</span><span class="mf">.16032</span><span class="o">.</span><span class="n">Ch</span>
+<span class="mi">00000030</span><span class="p">:</span>  <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7232</span> <span class="n">ac32</span> <span class="mi">3137</span> <span class="mi">3831</span> <span class="n">ac43</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">33</span><span class="n">ac</span> <span class="mi">3235</span>  <span class="p">:</span><span class="n">apter2</span><span class="mf">.21781</span><span class="o">.</span><span class="n">Chapter3</span><span class="mf">.25</span>
+<span class="mi">00000048</span><span class="p">:</span>  <span class="mi">3534</span> <span class="mi">37</span><span class="n">ac</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7234</span> <span class="n">ac33</span> <span class="mi">3932</span> <span class="mi">3436</span> <span class="n">ac43</span> <span class="mi">6861</span> <span class="mi">7074</span>  <span class="p">:</span><span class="mf">547.</span><span class="n">Chapter4</span><span class="mf">.39246</span><span class="o">.</span><span class="n">Chapt</span>
+<span class="mi">00000060</span><span class="p">:</span>  <span class="mi">6572</span> <span class="mi">35</span><span class="n">ac</span> <span class="mi">3433</span> <span class="mi">3435</span> <span class="mi">38</span><span class="n">ac</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7236</span> <span class="n">ac34</span> <span class="mi">3535</span> <span class="mi">3437</span>  <span class="p">:</span><span class="n">er5</span><span class="mf">.43458</span><span class="o">.</span><span class="n">Chapter6</span><span class="mf">.45547</span>
+<span class="mi">00000078</span><span class="p">:</span>  <span class="n">ac43</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">37</span><span class="n">ac</span> <span class="mi">3437</span> <span class="mi">3936</span> <span class="mi">39</span><span class="n">ac</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7238</span>  <span class="p">:</span><span class="o">.</span><span class="n">Chapter7</span><span class="mf">.47969</span><span class="o">.</span><span class="n">Chapter8</span>
+<span class="mi">00000090</span><span class="p">:</span>  <span class="n">ac35</span> <span class="mi">3037</span> <span class="mi">3033</span> <span class="n">ac43</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">39</span><span class="n">ac</span> <span class="mi">3533</span> <span class="mi">3239</span> <span class="mi">3943</span> <span class="mi">6861</span>  <span class="p">:</span><span class="mf">.50703</span><span class="o">.</span><span class="n">Chapter9</span><span class="mf">.53299</span><span class="n">Cha</span>
+<span class="mi">000000</span><span class="n">a8</span><span class="p">:</span>  <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3130</span> <span class="n">ac36</span> <span class="mi">3230</span> <span class="mi">3138</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7231</span> <span class="mi">31</span><span class="n">ac</span> <span class="mi">3636</span>  <span class="p">:</span><span class="n">pter10</span><span class="mf">.62018</span><span class="n">Chapter11</span><span class="mf">.66</span>
+<span class="mi">000000</span><span class="n">c0</span><span class="p">:</span>  <span class="mi">3032</span> <span class="mi">3843</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3132</span> <span class="n">ac36</span> <span class="mi">3739</span> <span class="mi">3536</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span>  <span class="p">:</span><span class="mi">028</span><span class="n">Chapter12</span><span class="mf">.67956</span><span class="n">Chapte</span>
+<span class="mi">000000</span><span class="n">d8</span><span class="p">:</span>  <span class="mi">7231</span> <span class="mi">33</span><span class="n">ac</span> <span class="mi">3730</span> <span class="mi">3333</span> <span class="mi">3043</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3134</span> <span class="n">ac37</span> <span class="mi">3438</span> <span class="mi">3331</span>  <span class="p">:</span><span class="n">r13</span><span class="mf">.70330</span><span class="n">Chapter14</span><span class="mf">.74831</span>
+<span class="mi">000000</span><span class="n">f0</span><span class="p">:</span>  <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7231</span> <span class="mi">35</span><span class="n">ac</span> <span class="mi">3736</span> <span class="mi">3938</span> <span class="mi">3443</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3136</span>  <span class="p">:</span><span class="n">Chapter15</span><span class="mf">.76984</span><span class="n">Chapter16</span>
+<span class="mi">00000108</span><span class="p">:</span>  <span class="n">ac38</span> <span class="mi">3030</span> <span class="mi">3937</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7231</span> <span class="mi">37</span><span class="n">ac</span> <span class="mi">3933</span> <span class="mi">3134</span> <span class="mi">3743</span> <span class="mi">6861</span>  <span class="p">:</span><span class="mf">.80097</span><span class="n">Chapter17</span><span class="mf">.93147</span><span class="n">Cha</span>
+<span class="mi">00000120</span><span class="p">:</span>  <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3138</span> <span class="n">ac39</span> <span class="mi">3838</span> <span class="mi">3534</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7231</span> <span class="mi">3931</span> <span class="mi">3032</span>  <span class="p">:</span><span class="n">pter18</span><span class="mf">.98854</span><span class="n">Chapter19102</span>
+<span class="mi">00000138</span><span class="p">:</span>  <span class="mi">3430</span> <span class="mi">3343</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3230</span> <span class="mi">3130</span> <span class="mi">3533</span> <span class="mi">3932</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span>  <span class="p">:</span><span class="mi">403</span><span class="n">Chapter20105392Chapte</span>
+<span class="mi">00000150</span><span class="p">:</span>  <span class="mi">7232</span> <span class="mi">3131</span> <span class="mi">3037</span> <span class="mi">3739</span> <span class="mi">3043</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3232</span> <span class="mi">3131</span> <span class="mi">3037</span> <span class="mi">3232</span>  <span class="p">:</span><span class="n">r21107790Chapter22110722</span>
+<span class="mi">00000168</span><span class="p">:</span>  <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7232</span> <span class="mi">3331</span> <span class="mi">3134</span> <span class="mi">3936</span> <span class="mi">3143</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3234</span>  <span class="p">:</span><span class="n">Chapter23114961Chapter24</span>
+<span class="mi">00000180</span><span class="p">:</span>  <span class="mi">3131</span> <span class="mi">3631</span> <span class="mi">3134</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7232</span> <span class="mi">3531</span> <span class="mi">3230</span> <span class="mi">3731</span> <span class="mi">3943</span> <span class="mi">6861</span>  <span class="p">:</span><span class="mi">116114</span><span class="n">Chapter25120719Cha</span>
+<span class="mi">00000198</span><span class="p">:</span>  <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3236</span> <span class="mi">3132</span> <span class="mi">3135</span> <span class="mi">3633</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7232</span> <span class="mi">3731</span> <span class="mi">3234</span>  <span class="p">:</span><span class="n">pter26121563Chapter27124</span>
+<span class="mi">000001</span><span class="n">b0</span><span class="p">:</span>  <span class="mi">3839</span> <span class="mi">3343</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3238</span> <span class="mi">3132</span> <span class="mi">3933</span> <span class="mi">3138</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span>  <span class="p">:</span><span class="mi">893</span><span class="n">Chapter28129318Chapte</span>
+<span class="mi">000001</span><span class="n">c8</span><span class="p">:</span>  <span class="mi">7232</span> <span class="mi">3931</span> <span class="mi">3333</span> <span class="mi">3134</span> <span class="mi">3843</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3330</span> <span class="mi">3133</span> <span class="mi">3633</span> <span class="mi">3436</span>  <span class="p">:</span><span class="n">r29133148Chapter30136346</span>
+<span class="mf">000001e0</span><span class="p">:</span>  <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7233</span> <span class="mi">3131</span> <span class="mi">3337</span> <span class="mi">3230</span> <span class="mi">3043</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3332</span>  <span class="p">:</span><span class="n">Chapter31137200Chapter32</span>
+<span class="mi">000001</span><span class="n">f8</span><span class="p">:</span>  <span class="mi">3133</span> <span class="mi">3933</span> <span class="mi">3137</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7233</span> <span class="mi">3331</span> <span class="mi">3532</span> <span class="mi">3031</span> <span class="mi">3743</span> <span class="mi">6861</span>  <span class="p">:</span><span class="mi">139317</span><span class="n">Chapter33152017Cha</span>
+<span class="mi">00000210</span><span class="p">:</span>  <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3334</span> <span class="mi">3135</span> <span class="mi">3437</span> <span class="mi">3635</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7233</span> <span class="mi">3531</span> <span class="mi">3630</span>  <span class="p">:</span><span class="n">pter34154765Chapter35160</span>
+<span class="mi">00000228</span><span class="p">:</span>  <span class="mi">3536</span> <span class="mi">3743</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3336</span> <span class="mi">3136</span> <span class="mi">3732</span> <span class="mi">3736</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span>  <span class="p">:</span><span class="mi">567</span><span class="n">Chapter36167276Chapte</span>
+<span class="mi">00000240</span><span class="p">:</span>  <span class="mi">7233</span> <span class="mi">3731</span> <span class="mi">3734</span> <span class="mi">3530</span> <span class="mi">3243</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3338</span> <span class="mi">3137</span> <span class="mi">3630</span> <span class="mi">3330</span>  <span class="p">:</span><span class="n">r37174502Chapter38176030</span>
+<span class="mi">00000258</span><span class="p">:</span>  <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7233</span> <span class="mi">3931</span> <span class="mi">3737</span> <span class="mi">3230</span> <span class="mi">3043</span> <span class="mi">6861</span> <span class="mi">7074</span> <span class="mi">6572</span> <span class="mi">3430</span>  <span class="p">:</span><span class="n">Chapter39177200Chapter40</span>
+<span class="mi">00000270</span><span class="p">:</span>  <span class="mi">3137</span> <span class="mi">3830</span> <span class="mi">3338</span> <span class="mi">4368</span> <span class="mi">6170</span> <span class="mi">7465</span> <span class="mi">7234</span> <span class="mi">3131</span> <span class="mi">3832</span> <span class="mi">3531</span> <span class="mi">3900</span>
+</pre></div>
+</div>
+<p>In this example of the Moby Dick igz header, the first 10 bytes show the gzip header explained above.
+After the first 10 bytes, the comment field starts with the 2 ID bytes F and U and version 1.
+The Idx len is set to have a length of 9 and the offset needs to fit in 6 bytes.
+After this, the index to offset mapping starts until the zero byte is reached.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="4. Examples and Advanced Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="custom_fileclass.html" class="btn btn-neutral float-right" title="4.6. Implementing an own file class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kösters, M., Leufken, J., Schulze, S., Sugimoto, K., Zahedi, R. P., Hippler, M., Leidel, S. A. and Fufezan, C..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
