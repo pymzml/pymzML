@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.spec &mdash; pymzML 2.5.9 documentation</title>
+  <title>pymzml.spec &mdash; pymzML 2.5.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bbada2d9"></script>
+        <script src="../../_static/documentation_options.js?v=1416012d"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -34,7 +34,7 @@
             pymzML
           </a>
               <div class="version">
-                2.5.9
+                2.5.10
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1015,8 +1015,9 @@
             <span class="n">scan_time_ele</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
                 <span class="s2">&quot;.//*[@accession=&#39;MS:1000016&#39;]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scan_time_ele</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span> <span class="o">=</span> <span class="n">scan_time_ele</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unitName&quot;</span><span class="p">,</span> <span class="s2">&quot;unicorns&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">scan_time_ele</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scan_time_ele</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span> <span class="o">=</span> <span class="n">scan_time_ele</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unitName&quot;</span><span class="p">,</span> <span class="s2">&quot;unicorns&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span>
 
     <span class="c1"># @property</span>
