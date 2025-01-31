@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.utils.GSGW &mdash; pymzML 2.5.10 documentation</title>
+  <title>pymzml.utils.GSGW &mdash; pymzML 2.5.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=1416012d"></script>
+      <script src="../../../_static/documentation_options.js?v=b06e8534"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -346,7 +346,7 @@
 <span class="sd">        Arguments:</span>
 <span class="sd">            identifier (str or int): identifier to write into index</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">id_format</span> <span class="o">=</span> <span class="s2">&quot;{0:</span><span class="se">\xAC</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_idx_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="n">id_format</span> <span class="o">=</span> <span class="s2">&quot;{0:</span><span class="se">\xac</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_idx_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
         <span class="n">identifier</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
         <span class="n">identifier</span> <span class="o">=</span> <span class="n">id_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
@@ -363,7 +363,7 @@
 <span class="sd">            offset (int): offset which will be formatted and written</span>
 <span class="sd">                into file index</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">offset_format</span> <span class="o">=</span> <span class="s2">&quot;{0:</span><span class="se">\xAC</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_offset_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="n">offset_format</span> <span class="o">=</span> <span class="s2">&quot;{0:</span><span class="se">\xac</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_offset_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
         <span class="n">offset</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
         <span class="n">offset</span> <span class="o">=</span> <span class="n">offset_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
