@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,18 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.1. Main reader interface &mdash; pymzML 2.5.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=1416012d"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1416012d"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -36,9 +34,6 @@
           <a href="index.html" class="icon icon-home">
             pymzML
           </a>
-              <div class="version">
-                2.5.10
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -58,6 +53,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.get_chromatogram_count"><code class="docutils literal notranslate"><span class="pre">Reader.get_chromatogram_count()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.get_spectrum_count"><code class="docutils literal notranslate"><span class="pre">Reader.get_spectrum_count()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.next"><code class="docutils literal notranslate"><span class="pre">Reader.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.term_is_a_member"><code class="docutils literal notranslate"><span class="pre">Reader.term_is_a_member()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -162,6 +158,9 @@ However, the old syntax as kwargs is still compatible ( e.g. ‘MS1_Precision=5e
 <tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.run.Reader.next" title="pymzml.run.Reader.next"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next</span></code></a>()</p></td>
 <td><p>Function to return the next Spectrum element.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymzml.run.Reader.term_is_a_member" title="pymzml.run.Reader.term_is_a_member"><code class="xref py py-obj docutils literal notranslate"><span class="pre">term_is_a_member</span></code></a>(tested_term, member_of_term)</p></td>
+<td><p>Use translated obo file to check if given term is_a member of the</p></td>
+</tr>
 </tbody>
 </table>
 <table class="docutils align-default">
@@ -228,6 +227,17 @@ with native id ‘identifier’</p>
 <dt class="sig sig-object py" id="pymzml.run.Reader.next">
 <span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader.next"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader.next" title="Link to this definition"></a></dt>
 <dd><p>Function to return the next Spectrum element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.run.Reader.term_is_a_member">
+<span class="sig-name descname"><span class="pre">term_is_a_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tested_term</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_of_term</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader.term_is_a_member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader.term_is_a_member" title="Link to this definition"></a></dt>
+<dd><p>Use translated obo file to check if given term is_a member of the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>is_member (bool) whether given term is a member of member_of_term</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -5,18 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pymzml.run &mdash; pymzML 2.5.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1416012d"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=1416012d"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -33,9 +31,6 @@
           <a href="../../index.html" class="icon icon-home">
             pymzML
           </a>
-              <div class="version">
-                2.5.10
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -212,8 +207,8 @@
             <span class="c1"># obo version not specified -&gt; try to identify from mzML by self._init_iter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;obo_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_iter</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">OT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_obo_translator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_iter</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -379,6 +374,8 @@
             <span class="mi">2017</span><span class="p">:</span> <span class="s2">&quot;4.1.0&quot;</span><span class="p">,</span>
             <span class="mi">2018</span><span class="p">:</span> <span class="s2">&quot;4.1.10&quot;</span><span class="p">,</span>
             <span class="mi">2019</span><span class="p">:</span> <span class="s2">&quot;4.1.22&quot;</span><span class="p">,</span>
+            <span class="mi">2024</span><span class="p">:</span> <span class="s2">&quot;4.1.79&quot;</span><span class="p">,</span>
+            <span class="mi">2025</span><span class="p">:</span> <span class="s2">&quot;4.1.188&quot;</span>
         <span class="p">}</span>
         <span class="n">version_fixed</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">obo_rgx</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
@@ -427,7 +424,7 @@
         <span class="c1"># parse obo, check MS tags and if they are ok in minimum.py (minimum</span>
         <span class="c1"># required) ...</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obo_version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;obo_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1.1.0&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;obo_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;4.1.79&quot;</span>
         <span class="n">obo_translator</span> <span class="o">=</span> <span class="n">obo</span><span class="o">.</span><span class="n">OboTranslator</span><span class="o">.</span><span class="n">from_cache</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;obo_version&quot;</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">obo_translator</span>
@@ -487,6 +484,9 @@
             <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}dataProcessingList&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;data_processing_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;data_processing_list_element&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}cvParam&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_is_a_member</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;accession&#39;</span><span class="p">),</span> <span class="s2">&quot;MS:1000494&quot;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;instrument_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}spectrumList&quot;</span><span class="p">):</span>
                 <span class="n">spec_cnt</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
@@ -544,7 +544,27 @@
 
 
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;file_object&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;file_object&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Reader.term_is_a_member">
+<a class="viewcode-back" href="../../pymzml_run.html#pymzml.run.Reader.term_is_a_member">[docs]</a>
+    <span class="k">def</span> <span class="nf">term_is_a_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tested_term</span><span class="p">,</span> <span class="n">member_of_term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use translated obo file to check if given term is_a member of the</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            is_member (bool) whether given term is a member of member_of_term</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_member</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">term_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OT</span><span class="p">[</span><span class="n">tested_term</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">term_in</span><span class="p">:</span>
+                <span class="n">is_member</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OT</span><span class="o">.</span><span class="n">id</span><span class="p">[</span><span class="n">tested_term</span><span class="p">][</span><span class="s1">&#39;is_a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">member_of_term</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;term not found (</span><span class="si">{</span><span class="n">tested_term</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">is_member</span></div>
+</div>
 
 
 
