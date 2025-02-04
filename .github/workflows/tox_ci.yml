@@ -1,8 +1,5 @@
 name: Continious Integration
-
-on:
-  pull_request
-
+on: pull_request
 jobs:
   black:
     runs-on: ubuntu-latest
@@ -16,7 +13,6 @@ jobs:
         run: pip install "black<23"
       - name: run black
         run: black --check pymzml
-
   build:
     runs-on: ubuntu-latest
     strategy:

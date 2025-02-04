@@ -1,5 +1,4 @@
 name: Publish to pypi
-
 on:
   push:
     tags:

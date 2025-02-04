@@ -26,24 +26,24 @@ def main(mzml_file):
     pf.save(
         "chromatogram_{0}.html".format(mzml_basename),
         layout={
-            "xaxis":{
+            "xaxis": {
                 "title": "Retention time",
-                "ticks": 'outside',
+                "ticks": "outside",
                 "ticklen": 2,
                 "tickwidth": 0.25,
                 "showgrid": False,
-                "linecolor": 'black',
-            }, 
+                "linecolor": "black",
+            },
             "yaxis": {
                 "title": "TIC",
-                "ticks": 'outside',
+                "ticks": "outside",
                 "ticklen": 2,
                 "tickwidth": 0.25,
                 "showgrid": False,
-                "linecolor": 'black',
+                "linecolor": "black",
             },
-            "plot_bgcolor": 'rgba(255, 255, 255, 0)',
-            "paper_bgcolor": 'rgba(255, 255, 255, 0)',
+            "plot_bgcolor": "rgba(255, 255, 255, 0)",
+            "paper_bgcolor": "rgba(255, 255, 255, 0)",
         },
     )
     return
