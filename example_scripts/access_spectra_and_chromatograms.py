@@ -80,7 +80,7 @@ def main(mzml_file):
             break
         if isinstance(item, pymzml.spec.Spectrum):
             print(f"  Spectrum {item.ID}, MS level {item.ms_level}, RT {item.scan_time_in_minutes():.2f} min")
-        elif isinstance(item, pymzml.spec.Chromatogram):
+        elif hasattr(item, 'time') and hasattr(item, 'i'):
             print(f"  Chromatogram {item.ID}, {len(item.peaks())} data points")
         count += 1
     

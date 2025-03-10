@@ -46,6 +46,7 @@ from io import BytesIO
 from pathlib import Path
 
 from . import spec
+from . import chromatogram
 from . import obo
 from . import regex_patterns
 from .file_interface import FileInterface
@@ -166,7 +167,7 @@ class Reader(object):
                 if element.tag.endswith("}chromatogram"):
                     if self.skip_chromatogram:
                         continue
-                    spectrum = spec.Chromatogram(element, obo_version=self.OT.version)
+                    spectrum = chromatogram.Chromatogram(element, obo_version=self.OT.version)
                     # if has_ref_group:
                     #     spectrum._set_params_from_reference_group(
                     #         self.info['referenceable_param_group_list_element']
@@ -514,7 +515,7 @@ class Reader(object):
             chrom_count = 0
             try:
                 for element in self:
-                    if isinstance(element, spec.Chromatogram):
+                    if isinstance(element, chromatogram.Chromatogram):
                         if chrom_count == identifier:
                             return element
                         chrom_count += 1

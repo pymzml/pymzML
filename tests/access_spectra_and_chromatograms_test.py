@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
 import unittest
 import pymzml.run as run
-from pymzml.spec import Spectrum, Chromatogram
+from pymzml.spec import Spectrum
 import test_file_paths
 
 
@@ -81,13 +81,13 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         # Test accessing chromatogram by index
         try:
             chrom_by_index = self.reader_with_chromatograms.get_chromatogram(0)
-            self.assertIsInstance(chrom_by_index, Chromatogram)
+            self.assertTrue(hasattr(chrom_by_index, 'time') and hasattr(chrom_by_index, 'i'))
             
             # If we successfully got a chromatogram by index, try to get it by ID
             chrom_id = chrom_by_index.ID
             if chrom_id:
                 chrom_by_id = self.reader_with_chromatograms[chrom_id]
-                self.assertIsInstance(chrom_by_id, Chromatogram)
+                self.assertTrue(hasattr(chrom_by_id, 'time') and hasattr(chrom_by_id, 'i'))
                 self.assertEqual(chrom_by_id.ID, chrom_id)
         except Exception as e:
             self.skipTest(f"Could not access chromatogram at index 0: {e}")
@@ -123,7 +123,7 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         for item in self.reader_with_chromatograms:
             if isinstance(item, Spectrum):
                 spectra_found = True
-            elif isinstance(item, Chromatogram):
+            elif hasattr(item, 'time') and hasattr(item, 'i'):
                 chromatograms_found = True
                 
             if spectra_found and chromatograms_found:

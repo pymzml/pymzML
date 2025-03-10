@@ -24,7 +24,7 @@ Copyright (C) 2010-2019 M. Kösters, C. Fufezan
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
-__all__ = ["run", "spec", "obo", "minimum", "plot", "file_classes"]
+__all__ = ["run", "spec", "chromatogram", "obo", "minimum", "plot", "file_classes"]
 
 import os
 import sys
@@ -40,7 +40,9 @@ with open(version_path, "r") as version_file:
 # Imports of individual modules
 import pymzml.run
 import pymzml.spec
+import pymzml.chromatogram
 from pymzml.spec import MSDecoder
+from pymzml.chromatogram import Chromatogram
 import pymzml.obo
 import pymzml.plot
 import pymzml.utils

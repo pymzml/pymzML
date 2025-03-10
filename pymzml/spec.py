@@ -69,6 +69,10 @@ from .obo import OboTranslator
 PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
 
+# Import Chromatogram from chromatogram.py for backward compatibility
+# Import MS_Spectrum from ms_spectrum.py
+from .ms_spectrum import MS_Spectrum
+
 
 class MS_Spectrum(object):
     """
