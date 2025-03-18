@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: latin-1 -*-
 """
-The MS_Spectrum class offers a base class for mass spectrometry data.
+The MsData class offers a base class for mass spectrometry data.
 It provides common functionality for both Spectrum and Chromatogram classes.
 """
 
@@ -42,9 +42,10 @@ import numpy as np
 from .obo import OboTranslator
 
 
-class MS_Spectrum(object):
+class MsData(object):
     """
-    General spectrum class for data handling.
+    General base class for mass spectrometry data handling.
+    Provides common functionality for both Spectrum and Chromatogram classes.
     """
 
     def _read_accessions(self):

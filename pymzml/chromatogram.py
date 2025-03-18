@@ -35,11 +35,11 @@ There each chromatogram is accessible as a chromatogram object.
 
 import re
 import numpy as np
-from .ms_spectrum import MS_Spectrum
+from .msdata import MsData
 from .obo import OboTranslator
 
 
-class Chromatogram(MS_Spectrum):
+class Chromatogram(MsData):
     """
     Class for Chromatogram access and handling.
     """

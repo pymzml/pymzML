@@ -70,13 +70,14 @@ PROTON = 1.00727646677
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
 
 # Import Chromatogram from chromatogram.py for backward compatibility
-# Import MS_Spectrum from ms_spectrum.py
-from .ms_spectrum import MS_Spectrum
+# Import MsData from msdata.py
+from .msdata import MsData
 
 
-class MS_Spectrum(object):
+class MS_Spectrum(MsData):
     """
     General spectrum class for data handling.
+    This class is kept for backward compatibility.
     """
 
     def _read_accessions(self):
@@ -396,7 +397,7 @@ class MS_Spectrum(object):
         return ElementTree.tostring(self.element, encoding=encoding, method=method)
 
 
-class Spectrum(MS_Spectrum):
+class Spectrum(MsData):
     """
     Spectrum class which inherits from class :py:attr:`pymzml.spec.MS_Spectrum`
 
@@ -1737,7 +1738,7 @@ class Spectrum(MS_Spectrum):
         return self.peaks("centroided")
 
 
-class Chromatogram(MS_Spectrum):
+class Chromatogram(MsData):
     """
     Class for Chromatogram access and handling.
     """
