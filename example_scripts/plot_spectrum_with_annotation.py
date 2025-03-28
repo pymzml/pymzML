@@ -32,14 +32,14 @@ def main():
             "tickwidth": 1,
             "ticks": "outside",
             "showgrid": False,
-            "linecolor": 'black',
+            "linecolor": "black",
         },
         "yaxis": {
             "ticklen": 5,
             "tickwidth": 1,
             "ticks": "outside",
             "showgrid": False,
-            "linecolor": 'black',
+            "linecolor": "black",
         },
     }
 
@@ -196,8 +196,8 @@ def main():
     for axis in layout.keys():
         plot_layout["{0}3".format(axis)] = copy.copy(layout[axis])
 
-    plot_layout["plot_bgcolor"] = 'rgba(255, 255, 255, 0)'
-    plot_layout["paper_bgcolor"] = 'rgba(255, 255, 255, 0)'
+    plot_layout["plot_bgcolor"] = "rgba(255, 255, 255, 0)"
+    plot_layout["paper_bgcolor"] = "rgba(255, 255, 255, 0)"
 
     # Save the plot in a file using the defined plot_layout
     filename = "example_plot_{0}_annotation.html".format(os.path.basename(example_file))

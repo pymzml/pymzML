@@ -31,11 +31,15 @@ class GSGWTest(unittest.TestCase):
         """ """
         self.Writer.close()
         try:
-            os.remove(os.path.abspath(os.path.join(".", "tests", "data", "unittest.mzml")))
+            os.remove(
+                os.path.abspath(os.path.join(".", "tests", "data", "unittest.mzml"))
+            )
         except FileNotFoundError:
             pass
         try:
-            os.remove(os.path.abspath(os.path.join(".", "tests", "data", "unittest2.mzml")))
+            os.remove(
+                os.path.abspath(os.path.join(".", "tests", "data", "unittest2.mzml"))
+            )
         except FileNotFoundError:
             pass
 
@@ -135,9 +139,15 @@ class GSGWTest(unittest.TestCase):
             "uncompressed",
             "CF_07062012_pH8_2_3A.mzML",
         )
-        self.Writer = GSGW(test_file, max_idx=80, max_idx_len=8, max_offset_len=8, output_path=os.path.abspath(
+        self.Writer = GSGW(
+            test_file,
+            max_idx=80,
+            max_idx_len=8,
+            max_offset_len=8,
+            output_path=os.path.abspath(
                 os.path.join(".", "tests", "data", "unittest2.mzml")
-            ))
+            ),
+        )
         self.Writer.add_data(test_string, "a")
         self.Writer.close()
         file = open(self.paths[0], "rb")

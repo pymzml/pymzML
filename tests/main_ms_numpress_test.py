@@ -12,7 +12,6 @@ from pymzml.ms_numpress import MSNumpress
 
 @unittest.skipIf(np is None, "Numpy is required for this test.")
 class test_MSNumpress(unittest.TestCase):
-
     """
     unittest for MSNumpress en- and decoding
     """

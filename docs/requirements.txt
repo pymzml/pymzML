@@ -1,4 +1,0 @@
-sphinx
-sphinx_rtd_theme
-regex
-numpydoc==1.7.0

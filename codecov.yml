@@ -5,12 +5,10 @@ coverage:
   precision: 2
   round: down
   range: "70...100"
-
   status:
     project: yes
     patch: yes
     changes: no
-
 parsers:
   gcov:
     branch_detection:
@@ -19,9 +17,7 @@ parsers:
       method: False
       changes: False
       macro: False
-
   comment:
     layout: "head, diff"
     behaviour: default
     require_change: no
-

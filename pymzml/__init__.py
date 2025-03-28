@@ -26,16 +26,15 @@ Copyright (C) 2010-2019 M. Kösters, C. Fufezan
 """
 __all__ = ["run", "spec", "obo", "minimum", "plot", "file_classes"]
 
-import os
 import sys
 
 if not hasattr(sys, "version_info") or sys.version_info < (3, 4):
     raise RuntimeError("pymzML requires Python 3.4 or later.")
 
 # Set version
-version_path = os.path.join(os.path.dirname(__file__), "version.txt")
-with open(version_path, "r") as version_file:
-    __version__ = version_file.read().strip()
+from importlib.metadata import version
+
+__version__ = version("pymzml").rstrip(".dev0")
 
 # Imports of individual modules
 import pymzml.run
