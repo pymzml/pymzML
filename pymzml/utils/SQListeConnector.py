@@ -1,6 +1,7 @@
 import sqlite3
 import xml.etree.ElementTree as et
 from pymzml import spec
+from pymzml import chromatogram
 from pymzml.run import Reader
 
 
@@ -46,7 +47,7 @@ class SQLiteDatabase(object):
         if "spectrum" in element.tag:
             spectrum = spec.Spectrum(element)
         elif "chromatogram" in element.tag:
-            spectrum = spec.Chromatogram(element)
+            spectrum = chromatogram.Chromatogram(element)
         return spectrum
 
     def get_spectrum_count(self):

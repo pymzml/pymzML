@@ -3,7 +3,8 @@ import os
 
 sys.path.append(os.path.abspath("."))
 import pymzml.run as run
-from pymzml.spec import Spectrum, Chromatogram
+from pymzml.spec import Spectrum
+from pymzml.chromatogram import Chromatogram
 import random
 import statistics as stat
 import unittest

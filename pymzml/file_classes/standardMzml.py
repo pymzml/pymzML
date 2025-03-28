@@ -35,6 +35,7 @@ import os
 from xml.etree.ElementTree import XML, iterparse
 
 from .. import spec
+from .. import chromatogram
 from .. import regex_patterns
 
 
@@ -97,7 +98,7 @@ class StandardMzml(object):
                     if element.tag.endswith("}chromatogram"):
                         if element.get("id") == "TIC":
                             found = True
-                            spectrum = spec.Chromatogram(
+                            spectrum = chromatogram.Chromatogram(
                                 element, measured_precision=5e-6
                             )
                 elif event == "STOP":
@@ -116,7 +117,7 @@ class StandardMzml(object):
             if data.startswith("<spectrum"):
                 spectrum = spec.Spectrum(XML(data), measured_precision=5e-6)
             elif data.startswith("<chromatogram"):
-                spectrum = spec.Chromatogram(XML(data))
+                spectrum = chromatogram.Chromatogram(XML(data))
         elif type(identifier) == str:
             return self._search_string_identifier(identifier)
         else:
@@ -765,7 +766,7 @@ class StandardMzml(object):
                         seeker.seek(start)
                         chrom_string = seeker.read(end)
                         xml_string = XML(chrom_string)
-                        return spec.Chromatogram(xml_string)
+                        return chromatogram.Chromatogram(xml_string)
                 elif len(data) == 0:
                     raise Exception("cant find specified string")
 
