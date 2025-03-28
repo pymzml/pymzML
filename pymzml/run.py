@@ -167,7 +167,9 @@ class Reader(object):
                 if element.tag.endswith("}chromatogram"):
                     if self.skip_chromatogram:
                         continue
-                    spectrum = chromatogram.Chromatogram(element, obo_version=self.OT.version)
+                    spectrum = chromatogram.Chromatogram(
+                        element, obo_version=self.OT.version
+                    )
                     # if has_ref_group:
                     #     spectrum._set_params_from_reference_group(
                     #         self.info['referenceable_param_group_list_element']
@@ -199,13 +201,13 @@ class Reader(object):
                 raise Exception("Requested identifier is out of range")
         except:
             pass
-        
+
         element = self.info["file_object"][identifier]
         element.obo_translator = self.OT
-        
+
         if isinstance(element, spec.Spectrum):
             element.measured_precision = self.ms_precisions[element.ms_level]
-        
+
         return element
 
     def __enter__(self):
@@ -458,35 +460,35 @@ class Reader(object):
             chromatogram count (int): Number of chromatograms in file.
         """
         return self.info["chromatogram_count"]
-        
+
     def get_spectrum(self, identifier):
         """
         Access spectrum with the given identifier.
-        
+
         Arguments:
             identifier (str or int): Either a string identifier or an index (0-based)
                 to access spectra in order.
-                
+
         Returns:
             spectrum (Spectrum): spectrum object with the given identifier
-            
+
         Note:
             This method provides the same functionality as using the indexing syntax
             (e.g., run[0]), but with a more explicit method name.
         """
         return self[identifier]
-        
+
     def get_chromatogram(self, identifier):
         """
         Access chromatogram with the given identifier.
-        
+
         Arguments:
             identifier (str or int): Either a string identifier like 'TIC' or
                 an index (0-based) to access chromatograms in order.
-                
+
         Returns:
             chromatogram (Chromatogram): chromatogram object with the given identifier
-            
+
         Note:
             This method is only useful when skip_chromatogram is set to False
             if you want to access chromatograms by index. If skip_chromatogram is True,
@@ -494,24 +496,26 @@ class Reader(object):
         """
         if isinstance(identifier, str):
             return self[identifier]
-            
+
         if isinstance(identifier, int):
             if self.get_chromatogram_count() is None:
                 raise Exception("No chromatograms found in the file")
-                
+
             if identifier >= self.get_chromatogram_count():
-                raise Exception(f"Chromatogram index {identifier} is out of range (0-{self.get_chromatogram_count()-1})")
-                
+                raise Exception(
+                    f"Chromatogram index {identifier} is out of range (0-{self.get_chromatogram_count()-1})"
+                )
+
             # Reset the file pointer and iterate to find the chromatogram
             temp_skip_chromatogram = self.skip_chromatogram
             self.skip_chromatogram = False
-            
+
             self.info["file_object"].close()
             self.info["file_object"] = self._open_file(
                 self.path_or_file, build_index_from_scratch=False
             )
             self.iter = self._init_iter()
-            
+
             chrom_count = 0
             try:
                 for element in self:
@@ -522,9 +526,9 @@ class Reader(object):
             finally:
                 # Restore original skip_chromatogram setting
                 self.skip_chromatogram = temp_skip_chromatogram
-                
+
             raise Exception(f"Chromatogram with index {identifier} not found")
-        
+
         raise ValueError("Identifier must be a string or an integer")
 
     def close(self):

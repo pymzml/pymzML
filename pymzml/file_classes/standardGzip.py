@@ -101,7 +101,9 @@ class StandardGzip(object):
                 elif element.tag.endswith("}chromatogram"):
                     if element.get("id") == identifier:
                         self.file_handler.seek(old_pos, 0)
-                        return chromatogram.Chromatogram(element, measured_precision=5e-6)
+                        return chromatogram.Chromatogram(
+                            element, measured_precision=5e-6
+                        )
 
 
 if __name__ == "__main__":

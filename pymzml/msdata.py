@@ -330,12 +330,15 @@ class MsData(object):
         data = np.frombuffer(data, dtype=np.uint8)
         if "MS:1002312" in comp_ms_tags:
             from .decoder import MSDecoder
+
             result = MSDecoder.decode_linear(data)
         elif "MS:1002313" in comp_ms_tags:
             from .decoder import MSDecoder
+
             result = MSDecoder.decode_pic(data)
         elif "MS:1002314" in comp_ms_tags:
             from .decoder import MSDecoder
+
             result = MSDecoder.decode_slof(data)
         return result
 

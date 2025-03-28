@@ -325,7 +325,10 @@ class Chromatogram(MsData):
                 isolation_window = precursor.find(f".//{self.ns}isolationWindow")
                 if isolation_window is not None:
                     for element in isolation_window.iter():
-                        if element.tag.endswith("}cvParam") and element.get("accession") == "MS:1000827":  # isolation window target m/z
+                        if (
+                            element.tag.endswith("}cvParam")
+                            and element.get("accession") == "MS:1000827"
+                        ):  # isolation window target m/z
                             self._precursor_mz = float(element.get("value"))
                             break
         return self._precursor_mz
@@ -344,7 +347,10 @@ class Chromatogram(MsData):
                 isolation_window = product.find(f".//{self.ns}isolationWindow")
                 if isolation_window is not None:
                     for element in isolation_window.iter():
-                        if element.tag.endswith("}cvParam") and element.get("accession") == "MS:1000827":  # isolation window target m/z
+                        if (
+                            element.tag.endswith("}cvParam")
+                            and element.get("accession") == "MS:1000827"
+                        ):  # isolation window target m/z
                             self._product_mz = float(element.get("value"))
                             break
         return self._product_mz
