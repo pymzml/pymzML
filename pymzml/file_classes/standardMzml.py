@@ -382,10 +382,10 @@ class StandardMzml(object):
             chromcnt = 0
             speccnt = 0
             # regexes to be used
-            chromexp = re.compile(b'<\s*chromatogram[^>]*id="([^"]*)"')
-            chromcntexp = re.compile(b'<\s*chromatogramList\s*count="([^"]*)"')
-            specexp = re.compile(b'<\s*spectrum[^>]*id="([^"]*)"')
-            speccntexp = re.compile(b'<\s*spectrumList\s*count="([^"]*)"')
+            chromexp = re.compile(b'<\\s*chromatogram[^>]*id="([^"]*)"')
+            chromcntexp = re.compile(b'<\\s*chromatogramList\\s*count="([^"]*)"')
+            specexp = re.compile(b'<\\s*spectrum[^>]*id="([^"]*)"')
+            speccntexp = re.compile(b'<\\s*spectrumList\\s*count="([^"]*)"')
             # go to start of file
             fh.seek(0)
             prev_chunk = ""
@@ -733,7 +733,7 @@ class StandardMzml(object):
             # NOTE: This needs to go intp regex_patterns.py
 
             regex_string = re.compile(
-                '<\s*spectrum[^>]*index="[0-9]+"\sid="({0})"\sdefaultArrayLength="[0-9]+">'.format(
+                '<\\s*spectrum[^>]*index="[0-9]+"\\sid="({0})"\\sdefaultArrayLength="[0-9]+">'.format(
                     "".join([".*", search_string, ".*"])
                 ).encode()
             )
