@@ -55,7 +55,7 @@ class StandardMzml(object):
         self.index_regex = index_regex
         self.path = path
         self.file_handler = self.get_file_handler(encoding)
-        self.offset_dict = dict()
+        self.offset_dict = {}
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
@@ -450,7 +450,7 @@ class StandardMzml(object):
         if indices is not None:
             tmp_dict = {}
 
-            item_list = sorted(list(indices.items()), key=lambda x: x[1])
+            item_list = sorted(indices.items(), key=lambda x: x[1])
             for i in range(len(item_list)):
                 key = item_list[i][0]
                 tmp_dict[key] = (item_list[i][1],)
