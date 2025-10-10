@@ -55,7 +55,7 @@ class StandardMzml(object):
         self.index_regex = index_regex
         self.path = path
         self.file_handler = self.get_file_handler(encoding)
-        self.offset_dict = dict()
+        self.offset_dict = {}
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
