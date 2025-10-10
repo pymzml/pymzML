@@ -450,7 +450,7 @@ class StandardMzml(object):
         if indices is not None:
             tmp_dict = {}
 
-            item_list = sorted(list(indices.items()), key=lambda x: x[1])
+            item_list = sorted(indices.items(), key=lambda x: x[1])
             for i in range(len(item_list)):
                 key = item_list[i][0]
                 tmp_dict[key] = (item_list[i][1],)
