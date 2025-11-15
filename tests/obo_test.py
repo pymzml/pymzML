@@ -51,7 +51,9 @@ class TestOboVersion(unittest.TestCase):
         for fn in self.obo_files:
             v = self._get_file_version(os.path.join(self.obodir, fn))
             _v = fn[7:-7].strip()
-            yield self._check_version, v, _v
+            # yield self._check_version, v, _v
+            print(fn)
+            self._check_version(v, _v)
 
 
 if __name__ == "__main__":
