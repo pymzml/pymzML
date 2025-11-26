@@ -352,7 +352,7 @@ class StandardMzml(object):
                             native_id = int(native_id)
                         except ValueError:
                             pass
-                        offset = match.group("offset")
+                        offset = int(match.group("offset"))
                         self.offset_dict[native_id] = (offset,)
 
         elif from_scratch is True:
