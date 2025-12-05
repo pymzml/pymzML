@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.run &mdash; pymzML 2.5.11 documentation</title>
+  <title>pymzml.run &mdash; pymzML 0.0.0+unknown documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b06e8534"></script>
+      <script src="../../_static/documentation_options.js?v=0b8c961e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -120,6 +120,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">spec</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">chromatogram</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">obo</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">regex_patterns</span>
 <span class="kn">from</span> <span class="nn">.file_interface</span> <span class="kn">import</span> <span class="n">FileInterface</span>
@@ -242,7 +243,9 @@
                 <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}chromatogram&quot;</span><span class="p">):</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_chromatogram</span><span class="p">:</span>
                         <span class="k">continue</span>
-                    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">obo_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">OT</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+                    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">chromatogram</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span>
+                        <span class="n">element</span><span class="p">,</span> <span class="n">obo_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">OT</span><span class="o">.</span><span class="n">version</span>
+                    <span class="p">)</span>
                     <span class="c1"># if has_ref_group:</span>
                     <span class="c1">#     spectrum._set_params_from_reference_group(</span>
                     <span class="c1">#         self.info[&#39;referenceable_param_group_list_element&#39;]</span>
@@ -261,26 +264,29 @@
 <a class="viewcode-back" href="../../pymzml_run.html#pymzml.run.Reader.__getitem__">[docs]</a>
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Access spectrum with native id &#39;identifier&#39;.</span>
+<span class="sd">        Access spectrum or chromatogram with native id &#39;identifier&#39;.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            identifier (str or int): last number in the id tag of the spectrum</span>
-<span class="sd">                element</span>
+<span class="sd">                element or a chromatogram identifier like &#39;TIC&#39;</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            spectrum (Spectrum or Chromatogram): spectrum/chromatogram object</span>
 <span class="sd">            with native id &#39;identifier&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spectrum_count</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">identifier</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spectrum_count</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Requested identifier is out of range&quot;</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;file_object&quot;</span><span class="p">][</span><span class="n">identifier</span><span class="p">]</span>
-        <span class="n">spectrum</span><span class="o">.</span><span class="n">obo_translator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OT</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">):</span>
-            <span class="n">spectrum</span><span class="o">.</span><span class="n">measured_precision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms_precisions</span><span class="p">[</span><span class="n">spectrum</span><span class="o">.</span><span class="n">ms_level</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">spectrum</span></div>
+
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;file_object&quot;</span><span class="p">][</span><span class="n">identifier</span><span class="p">]</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">obo_translator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OT</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">):</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">measured_precision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms_precisions</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">ms_level</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">element</span></div>
 
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -541,6 +547,82 @@
 <span class="sd">            chromatogram count (int): Number of chromatograms in file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chromatogram_count&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Reader.get_spectrum">
+<a class="viewcode-back" href="../../pymzml_run.html#pymzml.run.Reader.get_spectrum">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Access spectrum with the given identifier.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            identifier (str or int): Either a string identifier or an index (0-based)</span>
+<span class="sd">                to access spectra in order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            spectrum (Spectrum): spectrum object with the given identifier</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method provides the same functionality as using the indexing syntax</span>
+<span class="sd">            (e.g., run[0]), but with a more explicit method name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Reader.get_chromatogram">
+<a class="viewcode-back" href="../../pymzml_run.html#pymzml.run.Reader.get_chromatogram">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Access chromatogram with the given identifier.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            identifier (str or int): Either a string identifier like &#39;TIC&#39; or</span>
+<span class="sd">                an index (0-based) to access chromatograms in order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            chromatogram (Chromatogram): chromatogram object with the given identifier</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is only useful when skip_chromatogram is set to False</span>
+<span class="sd">            if you want to access chromatograms by index. If skip_chromatogram is True,</span>
+<span class="sd">            you can still access chromatograms by string identifiers (e.g., &#39;TIC&#39;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_chromatogram_count</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No chromatograms found in the file&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">identifier</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_chromatogram_count</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Chromatogram index </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> is out of range (0-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_chromatogram_count</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Reset the file pointer and iterate to find the chromatogram</span>
+            <span class="n">temp_skip_chromatogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_chromatogram</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skip_chromatogram</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;file_object&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;file_object&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_file</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_or_file</span><span class="p">,</span> <span class="n">build_index_from_scratch</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_iter</span><span class="p">()</span>
+
+            <span class="n">chrom_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">chromatogram</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">chrom_count</span> <span class="o">==</span> <span class="n">identifier</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">element</span>
+                        <span class="n">chrom_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="c1"># Restore original skip_chromatogram setting</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skip_chromatogram</span> <span class="o">=</span> <span class="n">temp_skip_chromatogram</span>
+
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chromatogram with index </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Identifier must be a string or an integer&quot;</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

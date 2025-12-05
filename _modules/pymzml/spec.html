@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.spec &mdash; pymzML 2.5.11 documentation</title>
+  <title>pymzml.spec &mdash; pymzML 0.0.0+unknown documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b06e8534"></script>
+      <script src="../../_static/documentation_options.js?v=0b8c961e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -143,12 +143,15 @@
 <span class="n">PROTON</span> <span class="o">=</span> <span class="mf">1.00727646677</span>
 <span class="n">ISOTOPE_AVERAGE_DIFFERENCE</span> <span class="o">=</span> <span class="mf">1.002</span>
 
+<span class="c1"># Import Chromatogram from chromatogram.py for backward compatibility</span>
+<span class="c1"># Import MsData from msdata.py</span>
+<span class="kn">from</span> <span class="nn">.msdata</span> <span class="kn">import</span> <span class="n">MsData</span>
 
-<div class="viewcode-block" id="MS_Spectrum">
-<a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.MS_Spectrum">[docs]</a>
-<span class="k">class</span> <span class="nc">MS_Spectrum</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<span class="k">class</span> <span class="nc">MS_Spectrum</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    General spectrum class for data handling.</span>
+<span class="sd">    This class is kept for backward compatibility.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_read_accessions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -162,8 +165,6 @@
         <span class="k">if</span> <span class="s2">&quot;profile spectrum&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accessions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_profile</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="MS_Spectrum.get_element_by_name">
-<a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.MS_Spectrum.get_element_by_name">[docs]</a>
     <span class="k">def</span> <span class="nf">get_element_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get element from the original tree by it&#39;s unit name.</span>
@@ -181,11 +182,8 @@
             <span class="k">if</span> <span class="n">ele</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">return_ele</span> <span class="o">=</span> <span class="n">ele</span>
                 <span class="k">break</span>
-        <span class="k">return</span> <span class="n">return_ele</span></div>
+        <span class="k">return</span> <span class="n">return_ele</span>
 
-
-<div class="viewcode-block" id="MS_Spectrum.get_element_by_path">
-<a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.MS_Spectrum.get_element_by_path">[docs]</a>
     <span class="k">def</span> <span class="nf">get_element_by_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find elements in spectrum by its path.</span>
@@ -213,8 +211,7 @@
             <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_array</span><span class="p">)</span>
             <span class="n">return_ele</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">return_ele</span></div>
-
+        <span class="k">return</span> <span class="n">return_ele</span>
 
     <span class="k">def</span> <span class="nf">_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decoded_tuple</span><span class="p">):</span>
         <span class="n">d_type</span><span class="p">,</span> <span class="n">array</span> <span class="o">=</span> <span class="n">decoded_tuple</span>
@@ -457,8 +454,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MS_Spectrum.to_string">
-<a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.MS_Spectrum.to_string">[docs]</a>
     <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin-1&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return string representation of the xml element the</span>
@@ -473,14 +468,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            element (str)  : xml string representation of the spectrum.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span></div>
-</div>
-
+        <span class="k">return</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Spectrum">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum">[docs]</a>
-<span class="k">class</span> <span class="nc">Spectrum</span><span class="p">(</span><span class="n">MS_Spectrum</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Spectrum</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spectrum class which inherits from class :py:attr:`pymzml.spec.MS_Spectrum`</span>
 
@@ -1881,7 +1874,7 @@
 
 <div class="viewcode-block" id="Chromatogram">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Chromatogram">[docs]</a>
-<span class="k">class</span> <span class="nc">Chromatogram</span><span class="p">(</span><span class="n">MS_Spectrum</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Chromatogram</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for Chromatogram access and handling.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

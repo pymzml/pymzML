@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.1. Main reader interface &mdash; pymzML 2.5.11 documentation</title>
+  <title>3.1. Main reader interface &mdash; pymzML 0.0.0+unknown documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=b06e8534"></script>
+      <script src="_static/documentation_options.js?v=0b8c961e"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -50,7 +50,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#pymzml.run.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.__getitem__"><code class="docutils literal notranslate"><span class="pre">Reader.__getitem__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.file_class"><code class="docutils literal notranslate"><span class="pre">Reader.file_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.get_chromatogram"><code class="docutils literal notranslate"><span class="pre">Reader.get_chromatogram()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.get_chromatogram_count"><code class="docutils literal notranslate"><span class="pre">Reader.get_chromatogram_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.get_spectrum"><code class="docutils literal notranslate"><span class="pre">Reader.get_spectrum()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.get_spectrum_count"><code class="docutils literal notranslate"><span class="pre">Reader.get_spectrum_count()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.next"><code class="docutils literal notranslate"><span class="pre">Reader.next()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pymzml.run.Reader.term_is_a_member"><code class="docutils literal notranslate"><span class="pre">Reader.term_is_a_member()</span></code></a></li>
@@ -111,7 +113,7 @@ if the file if not truncated by a conversion Program.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="pymzml.run.Reader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.run.</span></span><span class="sig-name descname"><span class="pre">Reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_or_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MS_precisions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obo_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_index_from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_chromatogram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.run.</span></span><span class="sig-name descname"><span class="pre">Reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_or_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MS_precisions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obo_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_index_from_scratch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_chromatogram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader" title="Link to this definition"></a></dt>
 <dd><p>Initialize Reader object for a given mzML file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -149,8 +151,14 @@ However, the old syntax as kwargs is still compatible ( e.g. ‘MS1_Precision=5e
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.run.Reader.get_chromatogram_count" title="pymzml.run.Reader.get_chromatogram_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chromatogram_count</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.run.Reader.get_chromatogram" title="pymzml.run.Reader.get_chromatogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chromatogram</span></code></a>(identifier)</p></td>
+<td><p>Access chromatogram with the given identifier.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymzml.run.Reader.get_chromatogram_count" title="pymzml.run.Reader.get_chromatogram_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chromatogram_count</span></code></a>()</p></td>
 <td><p>Number of chromatograms in file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymzml.run.Reader.get_spectrum" title="pymzml.run.Reader.get_spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_spectrum</span></code></a>(identifier)</p></td>
+<td><p>Access spectrum with the given identifier.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pymzml.run.Reader.get_spectrum_count" title="pymzml.run.Reader.get_spectrum_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_spectrum_count</span></code></a>()</p></td>
 <td><p>Number of spectra in file.</p></td>
@@ -173,11 +181,11 @@ However, the old syntax as kwargs is still compatible ( e.g. ‘MS1_Precision=5e
 <dl class="py method">
 <dt class="sig sig-object py" id="pymzml.run.Reader.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader.__getitem__" title="Link to this definition"></a></dt>
-<dd><p>Access spectrum with native id ‘identifier’.</p>
+<dd><p>Access spectrum or chromatogram with native id ‘identifier’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>identifier</strong> (<em>str</em><em> or </em><em>int</em>) – last number in the id tag of the spectrum
-element</p>
+element or a chromatogram identifier like ‘TIC’</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>spectrum/chromatogram object
@@ -191,8 +199,32 @@ with native id ‘identifier’</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.run.Reader.file_class">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_class</span></span><a class="headerlink" href="#pymzml.run.Reader.file_class" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_class</span></span><a class="headerlink" href="#pymzml.run.Reader.file_class" title="Link to this definition"></a></dt>
 <dd><p>Return file object in use.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.run.Reader.get_chromatogram">
+<span class="sig-name descname"><span class="pre">get_chromatogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader.get_chromatogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader.get_chromatogram" title="Link to this definition"></a></dt>
+<dd><p>Access chromatogram with the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em><em> or </em><em>int</em>) – Either a string identifier like ‘TIC’ or
+an index (0-based) to access chromatograms in order.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>chromatogram object with the given identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>chromatogram (<a class="reference internal" href="pymzml_spec.html#pymzml.spec.Chromatogram" title="pymzml.spec.Chromatogram">Chromatogram</a>)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only useful when skip_chromatogram is set to False
+if you want to access chromatograms by index. If skip_chromatogram is True,
+you can still access chromatograms by string identifiers (e.g., ‘TIC’).</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -207,6 +239,29 @@ with native id ‘identifier’</p>
 <dd class="field-even"><p>chromatogram count (int)</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymzml.run.Reader.get_spectrum">
+<span class="sig-name descname"><span class="pre">get_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/run.html#Reader.get_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.run.Reader.get_spectrum" title="Link to this definition"></a></dt>
+<dd><p>Access spectrum with the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em><em> or </em><em>int</em>) – Either a string identifier or an index (0-based)
+to access spectra in order.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>spectrum object with the given identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>spectrum (<a class="reference internal" href="pymzml_spec.html#pymzml.spec.Spectrum" title="pymzml.spec.Spectrum">Spectrum</a>)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method provides the same functionality as using the indexing syntax
+(e.g., run[0]), but with a more explicit method name.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">

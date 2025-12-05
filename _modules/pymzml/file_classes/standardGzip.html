@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.file_classes.standardGzip &mdash; pymzML 2.5.11 documentation</title>
+  <title>pymzml.file_classes.standardGzip &mdash; pymzML 0.0.0+unknown documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=b06e8534"></script>
+      <script src="../../../_static/documentation_options.js?v=0b8c961e"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -106,6 +106,7 @@
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">regex_patterns</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">spec</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">chromatogram</span>
 
 
 <div class="viewcode-block" id="StandardGzip">
@@ -187,7 +188,9 @@
                 <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}chromatogram&quot;</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">identifier</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">old_pos</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-                        <span class="k">return</span> <span class="n">spec</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">measured_precision</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">)</span></div>
+                        <span class="k">return</span> <span class="n">chromatogram</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span>
+                            <span class="n">element</span><span class="p">,</span> <span class="n">measured_precision</span><span class="o">=</span><span class="mf">5e-6</span>
+                        <span class="p">)</span></div>
 </div>
 
 
