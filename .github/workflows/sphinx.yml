@@ -16,7 +16,7 @@ jobs:
       - name: Install and Build HTML
         run: |
           pip install --upgrade pip
-          pip install ".[full]"
+          pip install ".[test]"
           python -m sphinx.cmd.build ./docs/source ./docs/build
       - name: Deploy HTML
         uses: JamesIves/github-pages-deploy-action@v4
