@@ -29,7 +29,7 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2021 by:
+Copyright 2010-2024 by:
 
     | M. Kösters,
     | J. Leufken,
@@ -88,8 +88,8 @@ Download
 Get the latest version via github
     | https://github.com/pymzml/pymzML
 
-The complete Documentation can be found as pdf
-    | https://pymzml.readthedocs.io/_/downloads/en/latest/pdf/
+The complete Documentation can be found here
+    | https://pymzml.readthedocs.io/en/latest/
 
 
 ********

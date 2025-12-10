@@ -1,31 +1,27 @@
 name: Continious Integration
-
-on:
-  pull_request
-
+on: pull_request
 jobs:
   black:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run black
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.8
       - name: install black
         run: pip install "black<23"
       - name: run black
         run: black --check pymzml
-
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10']
+        python: ['3.9', '3.10', '3.11']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - name: install tox

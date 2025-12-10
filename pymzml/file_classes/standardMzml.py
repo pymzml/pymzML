@@ -35,6 +35,7 @@ import os
 from xml.etree.ElementTree import XML, iterparse
 
 from .. import spec
+from .. import chromatogram
 from .. import regex_patterns
 
 
@@ -54,7 +55,7 @@ class StandardMzml(object):
         self.index_regex = index_regex
         self.path = path
         self.file_handler = self.get_file_handler(encoding)
-        self.offset_dict = dict()
+        self.offset_dict = {}
         self.spec_open = regex_patterns.SPECTRUM_OPEN_PATTERN
         self.spec_close = regex_patterns.SPECTRUM_CLOSE_PATTERN
 
@@ -97,7 +98,7 @@ class StandardMzml(object):
                     if element.tag.endswith("}chromatogram"):
                         if element.get("id") == "TIC":
                             found = True
-                            spectrum = spec.Chromatogram(
+                            spectrum = chromatogram.Chromatogram(
                                 element, measured_precision=5e-6
                             )
                 elif event == "STOP":
@@ -116,7 +117,7 @@ class StandardMzml(object):
             if data.startswith("<spectrum"):
                 spectrum = spec.Spectrum(XML(data), measured_precision=5e-6)
             elif data.startswith("<chromatogram"):
-                spectrum = spec.Chromatogram(XML(data))
+                spectrum = chromatogram.Chromatogram(XML(data))
         elif type(identifier) == str:
             return self._search_string_identifier(identifier)
         else:
@@ -351,7 +352,7 @@ class StandardMzml(object):
                             native_id = int(native_id)
                         except ValueError:
                             pass
-                        offset = match.group("offset")
+                        offset = int(match.group("offset"))
                         self.offset_dict[native_id] = (offset,)
 
         elif from_scratch is True:
@@ -381,10 +382,10 @@ class StandardMzml(object):
             chromcnt = 0
             speccnt = 0
             # regexes to be used
-            chromexp = re.compile(b'<\s*chromatogram[^>]*id="([^"]*)"')
-            chromcntexp = re.compile(b'<\s*chromatogramList\s*count="([^"]*)"')
-            specexp = re.compile(b'<\s*spectrum[^>]*id="([^"]*)"')
-            speccntexp = re.compile(b'<\s*spectrumList\s*count="([^"]*)"')
+            chromexp = re.compile(b'<\\s*chromatogram[^>]*id="([^"]*)"')
+            chromcntexp = re.compile(b'<\\s*chromatogramList\\s*count="([^"]*)"')
+            specexp = re.compile(b'<\\s*spectrum[^>]*id="([^"]*)"')
+            speccntexp = re.compile(b'<\\s*spectrumList\\s*count="([^"]*)"')
             # go to start of file
             fh.seek(0)
             prev_chunk = ""
@@ -449,7 +450,7 @@ class StandardMzml(object):
         if indices is not None:
             tmp_dict = {}
 
-            item_list = sorted(list(indices.items()), key=lambda x: x[1])
+            item_list = sorted(indices.items(), key=lambda x: x[1])
             for i in range(len(item_list)):
                 key = item_list[i][0]
                 tmp_dict[key] = (item_list[i][1],)
@@ -732,7 +733,7 @@ class StandardMzml(object):
             # NOTE: This needs to go intp regex_patterns.py
 
             regex_string = re.compile(
-                '<\s*spectrum[^>]*index="[0-9]+"\sid="({0})"\sdefaultArrayLength="[0-9]+">'.format(
+                '<\\s*spectrum[^>]*index="[0-9]+"\\sid="({0})"\\sdefaultArrayLength="[0-9]+">'.format(
                     "".join([".*", search_string, ".*"])
                 ).encode()
             )
@@ -765,7 +766,7 @@ class StandardMzml(object):
                         seeker.seek(start)
                         chrom_string = seeker.read(end)
                         xml_string = XML(chrom_string)
-                        return spec.Chromatogram(xml_string)
+                        return chromatogram.Chromatogram(xml_string)
                 elif len(data) == 0:
                     raise Exception("cant find specified string")
 

@@ -46,6 +46,7 @@ from io import BytesIO
 from pathlib import Path
 
 from . import spec
+from . import chromatogram
 from . import obo
 from . import regex_patterns
 from .file_interface import FileInterface
@@ -84,7 +85,7 @@ class Reader(object):
         build_index_from_scratch=False,
         skip_chromatogram=True,
         index_regex=None,
-        **kwargs
+        **kwargs,
     ):
         """Initialize and set required attributes."""
         self.index_regex = index_regex
@@ -131,8 +132,8 @@ class Reader(object):
             # obo version not specified -> try to identify from mzML by self._init_iter
             self.info["obo_version"] = None
 
-        self.iter = self._init_iter()
         self.OT = self._init_obo_translator()
+        self.iter = self._init_iter()
 
     def __next__(self):
         """
@@ -166,7 +167,9 @@ class Reader(object):
                 if element.tag.endswith("}chromatogram"):
                     if self.skip_chromatogram:
                         continue
-                    spectrum = spec.Chromatogram(element, obo_version=self.OT.version)
+                    spectrum = chromatogram.Chromatogram(
+                        element, obo_version=self.OT.version
+                    )
                     # if has_ref_group:
                     #     spectrum._set_params_from_reference_group(
                     #         self.info['referenceable_param_group_list_element']
@@ -183,26 +186,29 @@ class Reader(object):
 
     def __getitem__(self, identifier):
         """
-        Access spectrum with native id 'identifier'.
+        Access spectrum or chromatogram with native id 'identifier'.
 
         Arguments:
             identifier (str or int): last number in the id tag of the spectrum
-                element
+                element or a chromatogram identifier like 'TIC'
 
         Returns:
             spectrum (Spectrum or Chromatogram): spectrum/chromatogram object
             with native id 'identifier'
         """
         try:
-            if int(identifier) > self.get_spectrum_count():
+            if isinstance(identifier, int) and identifier > self.get_spectrum_count():
                 raise Exception("Requested identifier is out of range")
         except:
             pass
-        spectrum = self.info["file_object"][identifier]
-        spectrum.obo_translator = self.OT
-        if isinstance(spectrum, spec.Spectrum):
-            spectrum.measured_precision = self.ms_precisions[spectrum.ms_level]
-        return spectrum
+
+        element = self.info["file_object"][identifier]
+        element.obo_translator = self.OT
+
+        if isinstance(element, spec.Spectrum):
+            element.measured_precision = self.ms_precisions[element.ms_level]
+
+        return element
 
     def __enter__(self):
         return self
@@ -295,6 +301,8 @@ class Reader(object):
             2017: "4.1.0",
             2018: "4.1.10",
             2019: "4.1.22",
+            2024: "4.1.79",
+            2025: "4.1.188",
         }
         version_fixed = None
         if obo_rgx.match(version):
@@ -343,7 +351,7 @@ class Reader(object):
         # parse obo, check MS tags and if they are ok in minimum.py (minimum
         # required) ...
         if self.info.get("obo_version", None) is None:
-            self.info["obo_version"] = "1.1.0"
+            self.info["obo_version"] = "4.1.79"
         obo_translator = obo.OboTranslator.from_cache(version=self.info["obo_version"])
 
         return obo_translator
@@ -403,6 +411,9 @@ class Reader(object):
             elif element.tag.endswith("}dataProcessingList"):
                 self.info["data_processing_list"] = True
                 self.info["data_processing_list_element"] = element
+            elif element.tag.endswith("}cvParam"):
+                if self.term_is_a_member(element.attrib.get("accession"), "MS:1000494"):
+                    self.info["instrument_name"] = element.attrib.get("name")
 
             elif element.tag.endswith("}spectrumList"):
                 spec_cnt = element.attrib.get("count")
@@ -450,8 +461,95 @@ class Reader(object):
         """
         return self.info["chromatogram_count"]
 
+    def get_spectrum(self, identifier):
+        """
+        Access spectrum with the given identifier.
+
+        Arguments:
+            identifier (str or int): Either a string identifier or an index (0-based)
+                to access spectra in order.
+
+        Returns:
+            spectrum (Spectrum): spectrum object with the given identifier
+
+        Note:
+            This method provides the same functionality as using the indexing syntax
+            (e.g., run[0]), but with a more explicit method name.
+        """
+        return self[identifier]
+
+    def get_chromatogram(self, identifier):
+        """
+        Access chromatogram with the given identifier.
+
+        Arguments:
+            identifier (str or int): Either a string identifier like 'TIC' or
+                an index (0-based) to access chromatograms in order.
+
+        Returns:
+            chromatogram (Chromatogram): chromatogram object with the given identifier
+
+        Note:
+            This method is only useful when skip_chromatogram is set to False
+            if you want to access chromatograms by index. If skip_chromatogram is True,
+            you can still access chromatograms by string identifiers (e.g., 'TIC').
+        """
+        if isinstance(identifier, str):
+            return self[identifier]
+
+        if isinstance(identifier, int):
+            if self.get_chromatogram_count() is None:
+                raise Exception("No chromatograms found in the file")
+
+            if identifier >= self.get_chromatogram_count():
+                raise Exception(
+                    f"Chromatogram index {identifier} is out of range (0-{self.get_chromatogram_count()-1})"
+                )
+
+            # Reset the file pointer and iterate to find the chromatogram
+            temp_skip_chromatogram = self.skip_chromatogram
+            self.skip_chromatogram = False
+
+            self.info["file_object"].close()
+            self.info["file_object"] = self._open_file(
+                self.path_or_file, build_index_from_scratch=False
+            )
+            self.iter = self._init_iter()
+
+            chrom_count = 0
+            try:
+                for element in self:
+                    if isinstance(element, chromatogram.Chromatogram):
+                        if chrom_count == identifier:
+                            return element
+                        chrom_count += 1
+            finally:
+                # Restore original skip_chromatogram setting
+                self.skip_chromatogram = temp_skip_chromatogram
+
+            raise Exception(f"Chromatogram with index {identifier} not found")
+
+        raise ValueError("Identifier must be a string or an integer")
+
     def close(self):
         self.info["file_object"].close()
+
+    def term_is_a_member(self, tested_term, member_of_term):
+        """
+        Use translated obo file to check if given term is_a member of the
+
+        Returns:
+            is_member (bool) whether given term is a member of member_of_term
+
+        """
+        is_member = False
+        try:
+            term_in = self.OT[tested_term]
+            if term_in:
+                is_member = self.OT.id[tested_term]["is_a"].startswith(member_of_term)
+        except KeyError:
+            print(f"term not found ({tested_term})")
+        return is_member
 
 
 if __name__ == "__main__":

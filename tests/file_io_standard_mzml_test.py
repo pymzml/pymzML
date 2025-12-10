@@ -6,7 +6,8 @@ Part of pymzml test cases
 import os
 from pymzml.file_classes.standardMzml import StandardMzml
 import unittest
-from pymzml.spec import Spectrum, Chromatogram
+from pymzml.spec import Spectrum
+from pymzml.chromatogram import Chromatogram
 import test_file_paths
 
 

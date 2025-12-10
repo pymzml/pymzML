@@ -30,7 +30,7 @@ class runTest(unittest.TestCase):
         self.reader_uncompressed_unindexed = run.Reader(file_uncompressed_unindexed)
         self.reader_bad_obo_version = run.Reader(file_bad_obo_version)
         self.reader_set_obo_version = run.Reader(
-            file_bad_obo_version, obo_version="3.25.0"
+            file_bad_obo_version, obo_version="4.1.79"
         )
         self.reader_set_year_obo_version = run.Reader(
             file_uncompressed_indexed, obo_version="23:06:2017"
@@ -76,7 +76,7 @@ class runTest(unittest.TestCase):
         run_id = self.reader_uncompressed_unindexed.info["run_id"]
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "3.25.0")
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -87,7 +87,7 @@ class runTest(unittest.TestCase):
         run_id = self.reader_uncompressed_unindexed.info["run_id"]
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "3.25.0")
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -98,7 +98,7 @@ class runTest(unittest.TestCase):
         run_id = self.reader_uncompressed_unindexed.info["run_id"]
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "3.25.0")
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -110,7 +110,7 @@ class runTest(unittest.TestCase):
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "3.25.0")
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -122,8 +122,8 @@ class runTest(unittest.TestCase):
         start_time = self.reader_bad_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        # run._obo_version_validator 2017 default obo = 4.1.0
-        self.assertEqual(obo_version, "4.1.0")
+        # run._obo_version_validator 2017 default obo = 4.1.79
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -135,7 +135,7 @@ class runTest(unittest.TestCase):
         start_time = self.reader_set_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "3.25.0")
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -147,7 +147,7 @@ class runTest(unittest.TestCase):
         start_time = self.reader_set_year_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        # run._obo_version_validator 2017 default obo = 4.1.0
+        # run._obo_version_validator 2017 default obo = 4.1.79
         self.assertEqual(obo_version, "4.1.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
@@ -174,7 +174,7 @@ class runTest(unittest.TestCase):
 
         self.assertEqual(mzml_version, "1.1.0")
         # run._obo_version_validator set invalid obo = 1.1.0
-        self.assertEqual(obo_version, "1.1.0")
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")

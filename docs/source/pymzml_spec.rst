@@ -30,8 +30,8 @@ Chromatogram
     :exclude-members: __repr__, __str__
 
 
-MS_Spectrum
+MsData
 -----------
 
-.. autoclass:: pymzml.spec.MS_Spectrum
+.. autoclass:: pymzml.msdata.MsData
     :members:

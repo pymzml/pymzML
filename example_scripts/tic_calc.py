@@ -5,11 +5,11 @@ import pymzml
 
 def main(mzml_file):
     """
-    Basic example script to demonstrate the usage of pymzML. Requires a mzML 
+    Basic example script to demonstrate the usage of pymzML. Requires a mzML
     file as first argument.
 
     usage:
-    
+
         ./simple_parser.py <path_to_mzml_file>
 
     Note:

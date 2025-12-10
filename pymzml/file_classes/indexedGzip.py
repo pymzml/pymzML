@@ -33,6 +33,7 @@ import gzip
 from xml.etree.ElementTree import XML
 
 from .. import spec
+from .. import chromatogram
 from ..utils.GSGR import GSGR
 
 
@@ -89,7 +90,7 @@ class IndexedGzip:
         data = self.Reader.read_block(identifier)
         element = XML(ns_prefix + data.decode("utf-8") + ns_suffix)
         if "chromatogram" in element[0].tag:
-            return spec.Chromatogram(list(element)[0], measured_precision=5e-6)
+            return chromatogram.Chromatogram(list(element)[0], measured_precision=5e-6)
         else:
             return spec.Spectrum(list(element)[0], measured_precision=5e-6)
 

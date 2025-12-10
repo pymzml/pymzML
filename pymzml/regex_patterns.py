@@ -1,4 +1,5 @@
 """Collection of regular expressions to catch spectrum XML-tags."""
+
 import re
 import regex
 

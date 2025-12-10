@@ -32,6 +32,7 @@ from xml.etree.ElementTree import iterparse
 
 from .. import regex_patterns
 from .. import spec
+from .. import chromatogram
 
 
 class StandardGzip(object):
@@ -100,7 +101,9 @@ class StandardGzip(object):
                 elif element.tag.endswith("}chromatogram"):
                     if element.get("id") == identifier:
                         self.file_handler.seek(old_pos, 0)
-                        return spec.Chromatogram(element, measured_precision=5e-6)
+                        return chromatogram.Chromatogram(
+                            element, measured_precision=5e-6
+                        )
 
 
 if __name__ == "__main__":

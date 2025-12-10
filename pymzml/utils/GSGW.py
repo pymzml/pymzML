@@ -256,7 +256,7 @@ class GSGW(object):
         Arguments:
             identifier (str or int): identifier to write into index
         """
-        id_format = "{0:\xAC>" + str(self.max_idx_len) + "}"
+        id_format = "{0:\xac>" + str(self.max_idx_len) + "}"
         identifier = str(identifier)
         identifier = id_format.format(identifier).encode("latin-1")
         self.file_out.write(identifier)
@@ -270,7 +270,7 @@ class GSGW(object):
             offset (int): offset which will be formatted and written
                 into file index
         """
-        offset_format = "{0:\xAC>" + str(self.max_offset_len) + "}"
+        offset_format = "{0:\xac>" + str(self.max_offset_len) + "}"
         offset = str(offset)
         offset = offset_format.format(offset).encode("latin-1")
         self.file_out.write(offset)
