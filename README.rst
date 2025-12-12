@@ -89,7 +89,7 @@ Get the latest version via github
     | https://github.com/pymzml/pymzML
 
 The complete Documentation can be found here
-    | https://pymzml.readthedocs.io/en/latest/
+    | https://pymzml.github.io/pymzML/
 
 
 ********
