@@ -2,20 +2,20 @@
 
 	#!/usr/bin/env python
 	# -*- coding: utf-8 -*-
-	
-	
+
+
 	import pymzml
 	import get_example_file
-	
-	
+
+
 	def main():
 	    """
 	    Accessing positive or negative polarity of scan using obo 1.1.0
-	
+
 	    usage:
-	
+
 	        ./polarity.py
-	
+
 	    """
 	    example_file = get_example_file.open_example("small.pwiz.1.1.mzML")
 	    run = pymzml.run.Reader(example_file, obo_version="1.1.0")
@@ -38,9 +38,9 @@
 	            )
 	        )
 	        exit(1)
-	
+
 	    return
-	
-	
+
+
 	if __name__ == "__main__":
 	    main()

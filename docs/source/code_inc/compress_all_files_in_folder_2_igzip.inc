@@ -1,22 +1,22 @@
 .. code-block:: python
 
 	#!/usr/bin/env python3
-	
+
 	import sys
 	import os
 	from pymzml.utils.utils import index_gzip
 	# from pymzml.run import Reader
 	import pymzml
 	import glob
-	
-	
+
+
 	def main(folder):
 	    """
 	    Create an indexed gzip mzML file from a plain mzML of all files in folder
-	
+
 	    Usage: python3 gzip_mzml.py <folder>
 	    """
-	
+
 	    for mzml_path in glob.glob(os.path.join(folder, '*.mzML')):
 	        if os.path.exists('{0}.gz'.format(mzml_path)):
 	            print('Skipping: {0}'.format(mzml_path))
@@ -34,6 +34,6 @@
 	            idx_len = len(str(max_offset_len))
 	        )
 	        print('Wrote file {0}'.format(out_path))
-	
+
 	if __name__ == '__main__':
 	    main(sys.argv[1])

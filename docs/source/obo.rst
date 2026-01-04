@@ -46,5 +46,3 @@ Differentiation of e.g. HCD and CID fractionation:
     ...             print('Spectrum {0} is a CID spectrum'.format(spectrum['id']))
     ...         elif 'high-energy collision-induced dissociation' in spectrum.keys():
     ...             print('Spectrum {0} is a HCD spectrum'.format(spectrum['id']))
-
-

@@ -46,4 +46,3 @@ iGzip
     :exclude-members: close, __weakref__, __del__
     :private-members:
     :special-members:
-
