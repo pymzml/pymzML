@@ -4,9 +4,9 @@ Introduction
 ############
 
 
-.. image:: https://readthedocs.org/projects/pymzml/badge/?version=latest
-    :target: http://pymzml.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+.. image:: https://github.com/pymzml/pymzML/actions/workflows/pages/pages-build-deployment/badge.svg
+   :target: https://github.com/pymzml/pymzML/actions/workflows/pages/pages-build-deployment
+   :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
    :target: https://pypi.org/project/pymzML/
