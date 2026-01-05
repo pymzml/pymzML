@@ -5,7 +5,7 @@ Introduction
 
 
 .. image:: https://github.com/pymzml/pymzML/actions/workflows/pages/pages-build-deployment/badge.svg
-   :target: https://github.com/pymzml/pymzML/actions/workflows/pages/pages-build-deployment
+   :target: :target: https://pymzml.github.io/pymzML/
    :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/pymzML.svg
