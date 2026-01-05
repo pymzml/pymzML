@@ -3,17 +3,17 @@
 	#!/usr/bin/env python
 	import sys
 	import pymzml
-	
-	
+
+
 	def main(mzml_file):
 	    """
 	    Basic example script to access basic run info of an mzML file. Requires a
 	    mzML file as first command line argument.
-	
+
 	    usage:
-	
+
 	        ./access_run_info.py <path_to_mzml_file>
-	
+
 	    >>> run.info =
 	            {
 	                'encoding': 'utf-8',
@@ -25,7 +25,7 @@
 	                 'spectrum_count': 1684,
 	                 'start_time': '2009-08-09T22:32:31'
 	             }
-	
+
 	    """
 	    run = pymzml.run.Reader(mzml_file)
 	    print(
@@ -38,8 +38,8 @@
 	            **run.info
 	        )
 	    )
-	
-	
+
+
 	if __name__ == "__main__":
 	    if len(sys.argv) < 2:
 	        print(main.__doc__)

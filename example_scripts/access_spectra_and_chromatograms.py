@@ -17,7 +17,7 @@ def main(mzml_file):
     print("Initializing Reader...")
     # Initialize with skip_chromatogram=False to include chromatograms during iteration
     run = pymzml.run.Reader(mzml_file, skip_chromatogram=False)
-    
+
     # Access the first spectrum using indexing (traditional way)
     print("\nAccessing first spectrum using indexing (run[0]):")
     try:
@@ -28,7 +28,7 @@ def main(mzml_file):
         print(f"Number of peaks: {len(spectrum.peaks('raw'))}")
     except Exception as e:
         print(f"Error accessing spectrum: {e}")
-    
+
     # Access the first spectrum using the new get_spectrum method
     print("\nAccessing first spectrum using get_spectrum(0):")
     try:
@@ -39,14 +39,14 @@ def main(mzml_file):
         print(f"Number of peaks: {len(spectrum.peaks('raw'))}")
     except Exception as e:
         print(f"Error accessing spectrum: {e}")
-    
+
     # Access the TIC chromatogram using string identifier
     print("\nAccessing TIC chromatogram using run['TIC']:")
     try:
         chromatogram = run["TIC"]
         print(f"Chromatogram ID: {chromatogram.ID}")
         print(f"Number of data points: {len(chromatogram.peaks())}")
-        
+
         # Print the first few data points
         print("\nFirst 5 data points (time, intensity):")
         for i, (time, intensity) in enumerate(chromatogram.peaks()):
@@ -55,14 +55,14 @@ def main(mzml_file):
             print(f"  {time:.4f}, {intensity:.2f}")
     except Exception as e:
         print(f"Error accessing chromatogram: {e}")
-    
+
     # Access the first chromatogram using the new get_chromatogram method
     print("\nAccessing first chromatogram using get_chromatogram(0):")
     try:
         chromatogram = run.get_chromatogram(0)
         print(f"Chromatogram ID: {chromatogram.ID}")
         print(f"Number of data points: {len(chromatogram.peaks())}")
-        
+
         # Print the first few data points
         print("\nFirst 5 data points (time, intensity):")
         for i, (time, intensity) in enumerate(chromatogram.peaks()):
@@ -71,7 +71,7 @@ def main(mzml_file):
             print(f"  {time:.4f}, {intensity:.2f}")
     except Exception as e:
         print(f"Error accessing chromatogram: {e}")
-    
+
     # Demonstrate iterating through all items (spectra and chromatograms)
     print("\nIterating through first few items (spectra and chromatograms):")
     count = 0
@@ -83,7 +83,7 @@ def main(mzml_file):
         elif hasattr(item, 'time') and hasattr(item, 'i'):
             print(f"  Chromatogram {item.ID}, {len(item.peaks())} data points")
         count += 1
-    
+
     print("\nDone!")
 
 

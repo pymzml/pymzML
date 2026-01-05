@@ -25,7 +25,7 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
     def setUp(self):
         """Set up test cases."""
         self.paths = test_file_paths.paths
-        
+
         # Use a file with chromatograms for testing
         # mini.chrom.mzML is at index 3
         for i, path in enumerate(self.paths):
@@ -35,13 +35,13 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         else:
             # Fallback to a known index if the file name is not found
             self.chrom_file = self.paths[3]  # mini.chrom.mzML
-        
+
         # Initialize readers with different settings
         self.reader_with_chromatograms = run.Reader(
             self.chrom_file, 
             skip_chromatogram=False
         )
-        
+
         self.reader_skip_chromatograms = run.Reader(
             self.chrom_file, 
             skip_chromatogram=True
@@ -53,16 +53,16 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         spec_count = self.reader_with_chromatograms.get_spectrum_count()
         if spec_count is None or spec_count == 0:
             self.skipTest("Test file does not contain spectra")
-            
+
         # Test that get_spectrum(0) returns the same as reader[0]
         try:
             spectrum_by_index = self.reader_with_chromatograms[0]
             spectrum_by_method = self.reader_with_chromatograms.get_spectrum(0)
-            
+
             self.assertIsInstance(spectrum_by_index, Spectrum)
             self.assertIsInstance(spectrum_by_method, Spectrum)
             self.assertEqual(spectrum_by_index.ID, spectrum_by_method.ID)
-            
+
             # Test accessing a spectrum by ID
             spectrum_id = spectrum_by_index.ID
             if isinstance(spectrum_id, str):
@@ -77,7 +77,7 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         chrom_count = self.reader_with_chromatograms.get_chromatogram_count()
         if chrom_count is None or chrom_count == 0:
             self.skipTest("Test file does not contain chromatograms")
-        
+
         # Test accessing chromatogram by index
         try:
             chrom_by_index = self.reader_with_chromatograms.get_chromatogram(0)
@@ -91,7 +91,7 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
                 self.assertEqual(chrom_by_id.ID, chrom_id)
         except Exception as e:
             self.skipTest(f"Could not access chromatogram at index 0: {e}")
-            
+
         # Test that the chromatogram count is correct
         self.assertIsNotNone(self.reader_with_chromatograms.get_chromatogram_count())
 
@@ -100,12 +100,12 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         # Check if the file has both spectra and chromatograms
         spec_count = self.reader_with_chromatograms.get_spectrum_count()
         chrom_count = self.reader_with_chromatograms.get_chromatogram_count()
-        
+
         if spec_count is None or spec_count == 0:
             self.skipTest("Test file does not contain spectra")
         if chrom_count is None or chrom_count == 0:
             self.skipTest("Test file does not contain chromatograms")
-        
+
         # With skip_chromatogram=False, we should see both spectra and chromatograms
         # Reset the reader to ensure we start from the beginning
         self.reader_with_chromatograms.close()
@@ -113,26 +113,26 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
             self.chrom_file, 
             skip_chromatogram=False
         )
-        
+
         # Collect items
         spectra_found = False
         chromatograms_found = False
         count = 0
         max_items = 20  # Increase the limit to ensure we see both types
-        
+
         for item in self.reader_with_chromatograms:
             if isinstance(item, Spectrum):
                 spectra_found = True
             elif hasattr(item, 'time') and hasattr(item, 'i'):
                 chromatograms_found = True
-                
+
             if spectra_found and chromatograms_found:
                 break
-                
+
             count += 1
             if count >= max_items:
                 break
-        
+
         # Check that we found both types
         self.assertTrue(spectra_found, "No spectra found when iterating with skip_chromatogram=False")
         self.assertTrue(chromatograms_found, "No chromatograms found when iterating with skip_chromatogram=False")
@@ -144,14 +144,14 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
             self.chrom_file, 
             skip_chromatogram=True
         )
-        
+
         # Collect items
         items_without_chromatograms = []
         for item in self.reader_skip_chromatograms:
             items_without_chromatograms.append(item)
             if len(items_without_chromatograms) >= 10:  # Limit to first 10 items
                 break
-        
+
         # Check that we only have spectra (if any items were found)
         if items_without_chromatograms:
             only_spectra = all(isinstance(item, Spectrum) for item in items_without_chromatograms)
@@ -163,7 +163,7 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         chrom_count = self.reader_with_chromatograms.get_chromatogram_count()
         if chrom_count is None or chrom_count == 0:
             self.skipTest("Test file does not contain chromatograms")
-            
+
         with self.assertRaises(Exception):
             self.reader_with_chromatograms.get_chromatogram(100)  # Assuming there are fewer than 100 chromatograms
 
@@ -173,7 +173,7 @@ class AccessSpectraAndChromatogramsTest(unittest.TestCase):
         chrom_count = self.reader_with_chromatograms.get_chromatogram_count()
         if chrom_count is None or chrom_count == 0:
             self.skipTest("Test file does not contain chromatograms")
-            
+
         with self.assertRaises(Exception):
             self.reader_with_chromatograms.get_chromatogram("NonExistentChromatogram")
 

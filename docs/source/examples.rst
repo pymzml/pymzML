@@ -7,5 +7,3 @@ Examples and Advanced Usage
     index_gzip
     custom_fileclass
     example_scripts
-
-
