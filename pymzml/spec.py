@@ -474,7 +474,7 @@ class Spectrum(MsData):
         self.noise_level_estimate = {}
 
         self.ns = ""
-        if self.element:
+        if self.element is not None:
             self.ns = (
                 re.match(r"\{.*\}", element.tag).group(0)
                 if re.match(r"\{.*\}", element.tag)
@@ -489,7 +489,7 @@ class Spectrum(MsData):
         """
         Clear self.element to limit RAM usage
         """
-        if self.element:
+        if self.element is not None:
             self.element.clear()
 
     def __add__(self, other_spec):
