@@ -14,7 +14,6 @@ authors = [
     { name = 'M. Hippler' },
     { name = 'C. Fufezan', email = 'christian@fufezan.net' }
 ]
-urls = { Homepage = 'https://pymzml.github.com' }
 requires-python = ">=3.7.0"
 readme = "README.rst"
 license = { text = 'The MIT license' }
@@ -40,6 +39,12 @@ dependencies = [
     'regex',
 ]
 dynamic = ["version"]
+
+[project.urls]
+Homepage = 'https://pymzml.github.io/pymzML'
+Issues = "https://github.com/pymzml/pymzML/issues"
+Repository = "https://github.com/pymzml/pymzML"
+
 
 [project.optional-dependencies]
 full = [
