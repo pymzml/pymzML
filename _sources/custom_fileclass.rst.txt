@@ -1,7 +1,7 @@
 Implementing an own file class
 ===============================
 
-In  order to make pymzML accept other kinds of mzML data (e.g databases), one can 
+In  order to make pymzML accept other kinds of mzML data (e.g databases), one can
 implement an own wrapper similiar to the ones discussed before.
 In the following, an example for building and accessing a SQL database containing single spectra will be shown.
 
@@ -12,7 +12,7 @@ Creating the wrapper
 At first, a database with a specific layout needs to be created. Here, we use a single mzML file and store each spectrum in a table with 2 columns, one for the identifier and one for the xml element of the spectrum in form of a string.
 
 Database creation::
-    
+
     import sqlite3
     import os
     from pymzml import spec
@@ -29,7 +29,7 @@ Database creation::
                 cursor.execute("INSERT INTO Spectra VALUES(?, ?)", params)
         return True
 
-After this, we need to implement a class, which needs to implement the __getitem__ function for random access, and 
+After this, we need to implement a class, which needs to implement the __getitem__ function for random access, and
 a read function used to sequentiallly read in data for iterating the database.
 In this simple approach, the read function always returns a whole spectra xml string.
 One obvious optimization would be, to read in smaller chunks of a spec string and jump to the next spectrum, as soon as the end of the current spectrum is reached (as exercise for the interested reader ;) ) .
@@ -63,7 +63,7 @@ Wrapper for accessing the database::
             """
             self.cursor.execute('SELECT * FROM spectra WHERE id=?', key)
             ID, element = self.cursor.fetchone()
-            
+
             element = et.XML(element)
             if 'spectrum' in element.tag:
                 spectrum = spec.Spectrum(element)
@@ -108,7 +108,7 @@ For this, edit the :py:func:`~pymzml.file_interface.FileInterface._open` method 
 
 
 Code::
- 
+
     def _open(self, path):
         """
         Open a file like object resp. a wrapper for a file like object.
@@ -117,10 +117,10 @@ Code::
             path (str): path to the mzml file
 
         Returns:
-            file_handler: instance of 
+            file_handler: instance of
             :py:class:`~pymzml.file_classes.standardGzip.StandardGzip`,
             :py:class:`~pymzml.file_classes.indexedGzip.IndexedGzip` or
-            :py:class:`~pymzml.file_classes.standardMzml.StandardMzml`, 
+            :py:class:`~pymzml.file_classes.standardMzml.StandardMzml`,
             based on the file ending of 'path'
         """
         if path.endswith('.gz'):
@@ -142,4 +142,3 @@ Code::
         else:
             self.file_handler     = standardMzml.StandardMzml(path, self.encoding)
         return self.file_handler
-

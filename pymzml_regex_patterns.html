@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.7. Regex patterns &mdash; pymzML 2.6.0 documentation</title>
+  <title>3.7. Regex patterns &mdash; pymzML 2.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=ae39cb24"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -109,61 +109,61 @@ maybe with examples and stuff …</p>
 <p id="module-pymzml.regex_patterns">Collection of regular expressions to catch spectrum XML-tags.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.CHROMATOGRAM_AND_SPECTRUM_PATTERN_WITH_ID">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_AND_SPECTRUM_PATTERN_WITH_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;\\s*(chromatogram|spectrum)\\s*(id=(\\&quot;.*?\\&quot;)|index=\\&quot;.*?\\&quot;)\\s(id=(\\&quot;.*?\\&quot;))*\\s*.*\\sdefaultArrayLength=\\&quot;[0-9]+\\&quot;&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_AND_SPECTRUM_PATTERN_WITH_ID" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_AND_SPECTRUM_PATTERN_WITH_ID</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;\\s*(chromatogram|spectrum)\\s*(id=(\\&quot;.*?\\&quot;)|index=\\&quot;.*?\\&quot;)\\s(id=(\\&quot;.*?\\&quot;))*\\s*.*\\sdefaultArrayLength=\\&quot;[0-9]+\\&quot;&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_AND_SPECTRUM_PATTERN_WITH_ID" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch combined chromatogram and spectrum patterns</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.CHROMATOGRAM_CLOSE_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_CLOSE_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'&lt;/chromatogram&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_CLOSE_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_CLOSE_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'&lt;/chromatogram&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_CLOSE_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch spectrum xml close tags</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.CHROMATOGRAM_ID_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_ID_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;chromatogram.*id=&quot;(.*?)&quot;.*?&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_ID_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_ID_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;chromatogram.*id=&quot;(.*?)&quot;.*?&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_ID_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch chromatogram id patterns</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.CHROMATOGRAM_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;chromatogram.*id=&quot;(.*?)&quot;.*?&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">CHROMATOGRAM_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;chromatogram.*id=&quot;(.*?)&quot;.*?&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.CHROMATOGRAM_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch chromatogram id pattern (again ?)</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.FILE_ENCODING_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">FILE_ENCODING_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'encoding=&quot;(?P&lt;encoding&gt;[A-Za-z0-9-]*)&quot;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.FILE_ENCODING_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">FILE_ENCODING_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'encoding=&quot;(?P&lt;encoding&gt;[A-Za-z0-9-]*)&quot;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.FILE_ENCODING_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch xml file encoding</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.MOBY_DICK_CHAPTER_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">MOBY_DICK_CHAPTER_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('CHAPTER</span> <span class="pre">([0-9]+).*')</span></em><a class="headerlink" href="#pymzml.regex_patterns.MOBY_DICK_CHAPTER_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">MOBY_DICK_CHAPTER_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('CHAPTER</span> <span class="pre">([0-9]+).*')</span></span><a class="headerlink" href="#pymzml.regex_patterns.MOBY_DICK_CHAPTER_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch moby dick chapter number used in the index gezip writer example.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.SIM_INDEX_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SIM_INDEX_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'(?P&lt;type&gt;idRef=&quot;)(?P&lt;nativeID&gt;.*)&quot;&gt;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.SIM_INDEX_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SIM_INDEX_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'(?P&lt;type&gt;idRef=&quot;)(?P&lt;nativeID&gt;.*)&quot;&gt;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.SIM_INDEX_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex pattern for SIM index</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.SPECTRUM_CLOSE_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_CLOSE_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'&lt;/spectrum&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_CLOSE_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_CLOSE_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'&lt;/spectrum&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_CLOSE_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch spectrum xml close tags</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.SPECTRUM_ID_PATTERN2">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_ID_PATTERN2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(scan|scanId)=(\\d+)')</span></em><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_ID_PATTERN2" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_ID_PATTERN2</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(scan|scanId)=(\\d+)')</span></span><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_ID_PATTERN2" title="Link to this definition"></a></dt>
 <dd><p>Simplified spectrum id regex. Greedly catches ints at the end of line</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.SPECTRUM_INDEX_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_INDEX_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'(?P&lt;type&gt;(scan=|nativeID=&quot;))(?P&lt;nativeID&gt;[0-9]*)&quot;&gt;&quot;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_INDEX_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_INDEX_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'(?P&lt;type&gt;(scan=|nativeID=&quot;))(?P&lt;nativeID&gt;[0-9]*)&quot;&gt;&quot;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_INDEX_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex pattern for spectrum index
 works for obo format 1.1.0 until &lt;last version checked&gt;</p>
 <dl class="simple">
@@ -177,13 +177,13 @@ works for obo format 1.1.0 until &lt;last version checked&gt;</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.SPECTRUM_OPEN_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_OPEN_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'&lt;*spectrum[^&gt;]*(index|id)=&quot;(.*?)&quot;.*(index|id)=&quot;(.*?)&quot;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_OPEN_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_OPEN_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile(b'&lt;*spectrum[^&gt;]*(index|id)=&quot;(.*?)&quot;.*(index|id)=&quot;(.*?)&quot;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_OPEN_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch specturm open xml tag with encoded array length</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="pymzml.regex_patterns.SPECTRUM_TAG_PATTERN">
-<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_TAG_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;spectrum.*?id=&quot;(?P&lt;index&gt;[^&quot;]+)&quot;.*?&gt;')</span></em><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_TAG_PATTERN" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pymzml.regex_patterns.</span></span><span class="sig-name descname"><span class="pre">SPECTRUM_TAG_PATTERN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('&lt;spectrum.*?id=&quot;(?P&lt;index&gt;[^&quot;]+)&quot;.*?&gt;')</span></span><a class="headerlink" href="#pymzml.regex_patterns.SPECTRUM_TAG_PATTERN" title="Link to this definition"></a></dt>
 <dd><p>Regex to catch spectrum tag pattern</p>
 </dd></dl>
 

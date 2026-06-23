@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.2. Spectrum and Chromatogram &mdash; pymzML 2.6.0 documentation</title>
+  <title>3.2. Spectrum and Chromatogram &mdash; pymzML 2.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=ae39cb24"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -117,7 +117,7 @@ with profile data (time, intensity) in an total ion chromatogram.</p>
 <h2><span class="section-number">3.2.1. </span>Spectrum<a class="headerlink" href="#spectrum" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.spec.</span></span><span class="sig-name descname"><span class="pre">Spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element=&lt;Element</span> <span class="pre">''&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measured_precision=5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obo_version=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/spec.html#Spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.spec.Spectrum" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymzml.spec.</span></span><span class="sig-name descname"><span class="pre">Spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;Element</span> <span class="pre">''&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measured_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obo_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/spec.html#Spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.spec.Spectrum" title="Link to this definition"></a></dt>
 <dd><p>Spectrum class which inherits from class <code class="xref py py-attr docutils literal notranslate"><span class="pre">pymzml.spec.MS_Spectrum</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -368,28 +368,28 @@ spectrum</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.ID">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.ID" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.ID" title="Link to this definition"></a></dt>
 <dd><p>Access the native id (last number in the id attribute) of the spectrum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>native ID of the spectrum</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>ID (str)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.ID" title="pymzml.spec.Spectrum.ID">ID</a> (str)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.TIC">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TIC</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.TIC" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">TIC</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.TIC" title="Link to this definition"></a></dt>
 <dd><p>Property to access the total ion current for this spectrum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Total Ion Current of the spectrum.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>TIC (float)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.TIC" title="pymzml.spec.Spectrum.TIC">TIC</a> (float)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -538,7 +538,7 @@ Every peak is a tuple of m/z and intensity.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.i">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">i</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.i" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">i</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.i" title="Link to this definition"></a></dt>
 <dd><p>Returns the list of the intensity values.
 If the intensity values are encoded, the function <code class="xref py py-func docutils literal notranslate"><span class="pre">_decode()</span></code>
 is used to decode the encoded data.</p>
@@ -553,28 +553,28 @@ tuples at same time.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.id_dict">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id_dict</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.id_dict" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">id_dict</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.id_dict" title="Link to this definition"></a></dt>
 <dd><p>Access to all entries stored the id attribute of a spectrum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>key value pairs for all entries in id attribute of a spectrum</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>id_dict (dict)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.id_dict" title="pymzml.spec.Spectrum.id_dict">id_dict</a> (dict)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.index">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.index" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.index" title="Link to this definition"></a></dt>
 <dd><p>Access the index of the spectrum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>index of the spectrum</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>index (int)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.index" title="pymzml.spec.Spectrum.index">index</a> (int)</p>
 </dd>
 </dl>
 <div class="admonition note">
@@ -585,7 +585,7 @@ tuples at same time.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.measured_precision">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measured_precision</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.measured_precision" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">measured_precision</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.measured_precision" title="Link to this definition"></a></dt>
 <dd><p>Sets the measured and internal precision</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -599,18 +599,18 @@ tuples at same time.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.ms_level">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ms_level</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.ms_level" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ms_level</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.ms_level" title="Link to this definition"></a></dt>
 <dd><p>Property to access the ms level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ms_level (int)</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pymzml.spec.Spectrum.ms_level" title="pymzml.spec.Spectrum.ms_level">ms_level</a> (int)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.mz">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mz</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.mz" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mz</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.mz" title="Link to this definition"></a></dt>
 <dd><p>Returns the list of m/z values. If the m/z values are encoded, the
 function <code class="xref py py-func docutils literal notranslate"><span class="pre">_decode()</span></code> is used to decode the encoded data.
 The mz property can also be set, e.g. for theoretical data.
@@ -621,7 +621,7 @@ intensity tuples at same time.</p>
 <dd class="field-odd"><p>list of m/z values of spectrum.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>mz (list)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.mz" title="pymzml.spec.Spectrum.mz">mz</a> (list)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -675,7 +675,7 @@ The argument <em>factor</em> should be bigger than 0</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.precursors">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">precursors</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.precursors" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">precursors</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.precursors" title="Link to this definition"></a></dt>
 <dd><p>List the precursor information of this spectrum, if available.
 :returns: list of precursor ids for this spectrum.
 :rtype: precursor(list)</p>
@@ -725,7 +725,7 @@ m/z-intensity pairs above the noise threshold</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.scan_time">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scan_time</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.scan_time" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scan_time</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.scan_time" title="Link to this definition"></a></dt>
 <dd><p>Property to access the retention time and retention time unit.
 Please note, that we do not assume the retention time unit,
 if it is not correctly defined in the mzML.
@@ -735,7 +735,7 @@ It is set to ‘unicorns’ in this case.</p>
 <dd class="field-odd"><p>scan_time_unit (str):</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>scan_time (float)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.scan_time" title="pymzml.spec.Spectrum.scan_time">scan_time</a> (float)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -749,20 +749,20 @@ the retention time is converted into minutes and returned
 without the unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>scan_time (float)</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pymzml.spec.Spectrum.scan_time" title="pymzml.spec.Spectrum.scan_time">scan_time</a> (float)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.selected_precursors">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected_precursors</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.selected_precursors" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">selected_precursors</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.selected_precursors" title="Link to this definition"></a></dt>
 <dd><p>Property to access the selected precursors of a MS2 spectrum. Returns
 a list of dicts containing the precursors mz and, if available intensity
 and charge for each precursor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>selected_precursors (list)</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pymzml.spec.Spectrum.selected_precursors" title="pymzml.spec.Spectrum.selected_precursors">selected_precursors</a> (list)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -817,7 +817,7 @@ to 1.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.t_mz_set">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t_mz_set</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.t_mz_set" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">t_mz_set</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.t_mz_set" title="Link to this definition"></a></dt>
 <dd><p>Creates a set of integers out of transformed m/z values
 (including all values in the defined imprecision).
 This is used to accelerate has_peak function and similar.</p>
@@ -826,7 +826,7 @@ This is used to accelerate has_peak function and similar.</p>
 <dd class="field-odd"><p>set of transformed m/z values</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>t_mz_set (set)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Spectrum.t_mz_set" title="pymzml.spec.Spectrum.t_mz_set">t_mz_set</a> (set)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -874,7 +874,7 @@ lists or sets, e.g. <a class="reference internal" href="#pymzml.spec.Spectrum.t_
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.transformed_mz_with_error">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transformed_mz_with_error</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.transformed_mz_with_error" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">transformed_mz_with_error</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.transformed_mz_with_error" title="Link to this definition"></a></dt>
 <dd><p>Returns transformed m/z value with error</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -894,7 +894,7 @@ lists or sets, e.g. <a class="reference internal" href="#pymzml.spec.Spectrum.t_
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Spectrum.transformed_peaks">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transformed_peaks</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.transformed_peaks" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">transformed_peaks</span></span><a class="headerlink" href="#pymzml.spec.Spectrum.transformed_peaks" title="Link to this definition"></a></dt>
 <dd><p>m/z value is multiplied by the internal precision.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -916,7 +916,7 @@ to integers.</p>
 <h2><span class="section-number">3.2.2. </span>Chromatogram<a class="headerlink" href="#chromatogram" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pymzml.spec.Chromatogram">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.spec.</span></span><span class="sig-name descname"><span class="pre">Chromatogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measured_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">obo_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/spec.html#Chromatogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.spec.Chromatogram" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymzml.spec.</span></span><span class="sig-name descname"><span class="pre">Chromatogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measured_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">obo_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pymzml/spec.html#Chromatogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.spec.Chromatogram" title="Link to this definition"></a></dt>
 <dd><p>Class for Chromatogram access and handling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
@@ -986,7 +986,7 @@ It requires a list of time/intensity tuples.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Chromatogram.profile">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">profile</span></span><a class="headerlink" href="#pymzml.spec.Chromatogram.profile" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">profile</span></span><a class="headerlink" href="#pymzml.spec.Chromatogram.profile" title="Link to this definition"></a></dt>
 <dd><p>Returns the list of peaks of the chromatogram as tuples (time, intensity).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1020,7 +1020,7 @@ It requires a list of time/intensity tuples.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.spec.Chromatogram.time">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#pymzml.spec.Chromatogram.time" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#pymzml.spec.Chromatogram.time" title="Link to this definition"></a></dt>
 <dd><p>Returns the list of time values. If the time values are encoded, the
 function _decode() is used to decode the encoded data.</p>
 <p>The time property can also be set, e.g. for theoretical data.
@@ -1031,7 +1031,7 @@ intensity tuples at same time.</p>
 <dd class="field-odd"><p>list of time values from the analyzed chromatogram</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>time (list)</p>
+<dd class="field-even"><p><a class="reference internal" href="#pymzml.spec.Chromatogram.time" title="pymzml.spec.Chromatogram.time">time</a> (list)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1043,7 +1043,7 @@ intensity tuples at same time.</p>
 <h2><span class="section-number">3.2.3. </span>MsData<a class="headerlink" href="#msdata" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pymzml.msdata.MsData">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymzml.msdata.</span></span><span class="sig-name descname"><span class="pre">MsData</span></span><a class="reference internal" href="_modules/pymzml/msdata.html#MsData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.msdata.MsData" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymzml.msdata.</span></span><span class="sig-name descname"><span class="pre">MsData</span></span><a class="reference internal" href="_modules/pymzml/msdata.html#MsData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymzml.msdata.MsData" title="Link to this definition"></a></dt>
 <dd><p>General base class for mass spectrometry data handling.
 Provides common functionality for both Spectrum and Chromatogram classes.</p>
 <dl class="field-list simple">
@@ -1108,7 +1108,7 @@ found in the path</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pymzml.msdata.MsData.measured_precision">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measured_precision</span></span><a class="headerlink" href="#pymzml.msdata.MsData.measured_precision" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">measured_precision</span></span><a class="headerlink" href="#pymzml.msdata.MsData.measured_precision" title="Link to this definition"></a></dt>
 <dd><p>Set the measured and internal precision.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.spec &mdash; pymzML 2.6.0 documentation</title>
+  <title>pymzml.spec &mdash; pymzML 2.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ae39cb24"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -128,6 +128,10 @@
 <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">unpack</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">DECON_DEP</span> <span class="o">=</span> <span class="kc">True</span>
@@ -399,13 +403,6 @@
                 <span class="n">dec_data</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">dec_data</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;ms-np-linear&quot;</span><span class="p">,</span> <span class="s2">&quot;ms-np-pic&quot;</span><span class="p">,</span> <span class="s2">&quot;ms-np-slof&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">comp</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_decodeNumpress</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
-            <span class="c1"># else:</span>
-            <span class="c1">#     print(</span>
-            <span class="c1">#         &#39;New data compression ({0}) detected, cant decompress&#39;.format(</span>
-            <span class="c1">#             comp</span>
-            <span class="c1">#         )</span>
-            <span class="c1">#     )</span>
-            <span class="c1">#     sys.exit(1)</span>
             <span class="k">if</span> <span class="n">float_type</span> <span class="o">==</span> <span class="s2">&quot;32-bit float&quot;</span><span class="p">:</span>
                 <span class="n">f_type</span> <span class="o">=</span> <span class="s2">&quot;f&quot;</span>
             <span class="k">elif</span> <span class="n">float_type</span> <span class="o">==</span> <span class="s2">&quot;64-bit float&quot;</span><span class="p">:</span>
@@ -510,8 +507,8 @@
             <span class="s2">&quot;_time&quot;</span><span class="p">,</span>
             <span class="s2">&quot;_transformed_mass_with_error&quot;</span><span class="p">,</span>
             <span class="s2">&quot;_transformed_mz_with_error&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;_transformed_peaks&quot;</span> <span class="s2">&quot;calling_instance&quot;</span> <span class="s2">&quot;element&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;internal_precision&quot;</span> <span class="s2">&quot;noise_level_estimate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_transformed_peakscalling_instanceelement&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;internal_precisionnoise_level_estimate&quot;</span><span class="p">,</span>
             <span class="s2">&quot;selected_precursors&quot;</span><span class="p">,</span>
         <span class="p">]</span>
 
@@ -550,7 +547,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">noise_level_estimate</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{.*\}&quot;</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{.*\}&quot;</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
@@ -565,7 +562,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear self.element to limit RAM usage</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Spectrum.__add__">
@@ -647,14 +644,20 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peak_dict</span><span class="p">[</span><span class="s2">&quot;raw&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_peaks</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
-                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="p">),</span>
                 <span class="s2">&quot;raw&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peak_dict</span><span class="p">[</span><span class="s2">&quot;centroided&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_peaks</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
-                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centroided_peaks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroided_peaks</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">centroided_peaks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">centroided_peaks</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="p">),</span>
                 <span class="s2">&quot;centroided&quot;</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1246,12 +1249,12 @@
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">array_names</span><span class="p">:</span>
             <span class="n">formatted_array_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">- </span><span class="si">{name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">not_found_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Requested array (</span><span class="si">{not_found_array}</span><span class="s2">) not found.</span><span class="se">\n</span><span class="s2">Available arrays are:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">not_found_array</span><span class="o">=</span><span class="n">not_found_array</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted_array_names</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted_array_names</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">array_names</span>
 
     <span class="k">def</span> <span class="nf">_deconvolute_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1268,7 +1271,7 @@
             <span class="k">return</span> <span class="n">dpeaks_mat</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms_deisotop_warning_printed</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;ms_deisotope is missing, please install using pip install ms_deisotope&quot;</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ms_deisotop_warning_printed</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1542,7 +1545,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">)))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;Do not understand noise level estimation method call with given mode: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">mode</span>
                     <span class="p">)</span>
@@ -1626,7 +1629,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">available_extreme_values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mz&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available_extreme_values</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Do not understand extreme request: &#39;</span><span class="si">{0}</span><span class="s2">&#39;; available values are: </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">key</span><span class="p">,</span> <span class="n">available_extreme_values</span>
                 <span class="p">)</span>
@@ -1962,7 +1965,9 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chromatogram has no property mz.</span><span class="se">\n</span><span class="s2">Return retention time instead&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Chromatogram has no property mz.</span><span class="se">\n</span><span class="s2">Return retention time instead&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
     <span class="nd">@property</span>
