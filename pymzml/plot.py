@@ -32,6 +32,9 @@ import sys
 import math
 import warnings
 
+from logger import getLogger
+
+logger = getLogger(__name__)
 
 # Fail gracefully if no plotly installed
 try:
@@ -301,14 +304,12 @@ class Factory(object):
                         offset = y_max + (y_max * 0.1)
 
                     elif pos == "medium":
-                        print(
+                        logger.error(
                             """'
                             {0}
                             is not working atm for
                             {1}
-                            """.format(
-                                pos, style
-                            )
+                            """.format(pos, style)
                         )
                         sys.exit(0)
                         y_pos = x[2] / 2
@@ -335,14 +336,12 @@ class Factory(object):
                         y_pos = y_max
                         offset = y_max + (y_max * 0.1)
                     elif pos == "medium":
-                        print(
+                        logger.error(
                             """'
                             {0}
                             is not working atm for
                             {1}
-                            """.format(
-                                pos, style
-                            )
+                            """.format(pos, style)
                         )
                         sys.exit(0)
                         y_pos = x[2] / 2
@@ -483,37 +482,35 @@ class Factory(object):
                 """
             )
 
-        trace = go.Scatter(
-            {
-                "x": x_values,
-                "y": y_values,
-                "text": txt,
-                "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
-                "textposition": "top center",
-                "visible": True,
-                "marker": {
-                    "size": 10,
-                    "color": "rgba({0},{1},{2},{3})".format(
-                        color[0], color[1], color[2], opacity
-                    ),
-                },
-                "mode": mode,
-                "name": name,
-                "line": {
-                    "color": "rgba({0},{1},{2},{3})".format(
-                        color[0], color[1], color[2], opacity
-                    ),
-                    "width": self.style_options["line.width"],
-                    "shape": shape,
-                    "dash": dash,
-                },
-                "fill": filling,
-                "fillcolor": "rgba({0},{1},{2},{3})".format(
+        trace = go.Scatter({
+            "x": x_values,
+            "y": y_values,
+            "text": txt,
+            "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
+            "textposition": "top center",
+            "visible": True,
+            "marker": {
+                "size": 10,
+                "color": "rgba({0},{1},{2},{3})".format(
                     color[0], color[1], color[2], opacity
                 ),
-                "opacity": opacity,
-            }
-        )
+            },
+            "mode": mode,
+            "name": name,
+            "line": {
+                "color": "rgba({0},{1},{2},{3})".format(
+                    color[0], color[1], color[2], opacity
+                ),
+                "width": self.style_options["line.width"],
+                "shape": shape,
+                "dash": dash,
+            },
+            "fill": filling,
+            "fillcolor": "rgba({0},{1},{2},{3})".format(
+                color[0], color[1], color[2], opacity
+            ),
+            "opacity": opacity,
+        })
 
         self.plots[plot_num].append(trace)
         return trace
@@ -526,9 +523,7 @@ class Factory(object):
         print(
             """
             Factory holds {0} unique plots
-            """.format(
-                len(self.plots)
-            )
+            """.format(len(self.plots))
         )
         for i, plot in enumerate(self.plots):
             print("\t\tPlot {0} holds {1} unique datasets".format(i, len(plot)))
@@ -586,7 +581,6 @@ class Factory(object):
             )
 
         for i, plot in enumerate(self.plots):
-            print(int(math.floor((i / 2) + 1)), (i % 2) + 1)
             for j, trace in enumerate(plot):
                 trace["y"] = [
                     self.function_mapper[x](i) if x in self.function_mapper else x

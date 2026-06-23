@@ -37,7 +37,6 @@ Note:
 #     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #     SOFTWARE.
 
-
 import re
 import os
 import xml.etree.ElementTree as ElementTree
@@ -51,6 +50,10 @@ from . import obo
 from . import regex_patterns
 from .file_interface import FileInterface
 from .file_classes.standardMzml import StandardMzml
+
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class Reader(object):
@@ -378,7 +381,7 @@ class Reader(object):
                     self.info["mzml_version"] = element.attrib["version"]
                 else:
                     s = element.attrib[
-                        "{http://www.w3.org/2001/XMLSchema-instance}" "schemaLocation"
+                        "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
                     ]
                     self.info["mzml_version"] = re.search(
                         r"[0-9]*\.[0-9]*\.[0-9]*", s
@@ -503,7 +506,7 @@ class Reader(object):
 
             if identifier >= self.get_chromatogram_count():
                 raise Exception(
-                    f"Chromatogram index {identifier} is out of range (0-{self.get_chromatogram_count()-1})"
+                    f"Chromatogram index {identifier} is out of range (0-{self.get_chromatogram_count() - 1})"
                 )
 
             # Reset the file pointer and iterate to find the chromatogram
@@ -548,7 +551,7 @@ class Reader(object):
             if term_in:
                 is_member = self.OT.id[tested_term]["is_a"].startswith(member_of_term)
         except KeyError:
-            print(f"term not found ({tested_term})")
+            logger.warning(f"term not found ({tested_term})")
         return is_member
 
 
