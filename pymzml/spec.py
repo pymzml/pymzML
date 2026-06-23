@@ -559,18 +559,22 @@ class Spectrum(MsData):
         assert isinstance(value, (int, float))
         if self._peak_dict["raw"] is not None:
             self.set_peaks(
-                np.column_stack((
-                    self.peaks("raw")[:, 0],
-                    self.peaks("raw")[:, 1] * value,
-                )),
+                np.column_stack(
+                    (
+                        self.peaks("raw")[:, 0],
+                        self.peaks("raw")[:, 1] * value,
+                    )
+                ),
                 "raw",
             )
         if self._peak_dict["centroided"] is not None:
             self.set_peaks(
-                np.column_stack((
-                    self.centroided_peaks[:, 0],
-                    self.centroided_peaks[:, 1] * value,
-                )),
+                np.column_stack(
+                    (
+                        self.centroided_peaks[:, 0],
+                        self.centroided_peaks[:, 1] * value,
+                    )
+                ),
                 "centroided",
             )
         if self._peak_dict["reprofiled"] is not None:
@@ -595,10 +599,12 @@ class Spectrum(MsData):
         if self._peak_dict["raw"] is not None:
             if len(self._peak_dict["raw"]) != 0:
                 self.set_peaks(
-                    np.column_stack((
-                        self.peaks("raw")[:, 0],
-                        self.peaks("raw")[:, 1] / float(value),
-                    )),
+                    np.column_stack(
+                        (
+                            self.peaks("raw")[:, 0],
+                            self.peaks("raw")[:, 1] / float(value),
+                        )
+                    ),
                     "raw",
                 )
         if self._peak_dict["centroided"] is not None:

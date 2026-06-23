@@ -309,7 +309,9 @@ class Factory(object):
                             {0}
                             is not working atm for
                             {1}
-                            """.format(pos, style)
+                            """.format(
+                                pos, style
+                            )
                         )
                         sys.exit(0)
                         y_pos = x[2] / 2
@@ -341,7 +343,9 @@ class Factory(object):
                             {0}
                             is not working atm for
                             {1}
-                            """.format(pos, style)
+                            """.format(
+                                pos, style
+                            )
                         )
                         sys.exit(0)
                         y_pos = x[2] / 2
@@ -482,35 +486,37 @@ class Factory(object):
                 """
             )
 
-        trace = go.Scatter({
-            "x": x_values,
-            "y": y_values,
-            "text": txt,
-            "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
-            "textposition": "top center",
-            "visible": True,
-            "marker": {
-                "size": 10,
-                "color": "rgba({0},{1},{2},{3})".format(
+        trace = go.Scatter(
+            {
+                "x": x_values,
+                "y": y_values,
+                "text": txt,
+                "textfont": {"family": "Helvetica", "size": 10, "color": "#000000"},
+                "textposition": "top center",
+                "visible": True,
+                "marker": {
+                    "size": 10,
+                    "color": "rgba({0},{1},{2},{3})".format(
+                        color[0], color[1], color[2], opacity
+                    ),
+                },
+                "mode": mode,
+                "name": name,
+                "line": {
+                    "color": "rgba({0},{1},{2},{3})".format(
+                        color[0], color[1], color[2], opacity
+                    ),
+                    "width": self.style_options["line.width"],
+                    "shape": shape,
+                    "dash": dash,
+                },
+                "fill": filling,
+                "fillcolor": "rgba({0},{1},{2},{3})".format(
                     color[0], color[1], color[2], opacity
                 ),
-            },
-            "mode": mode,
-            "name": name,
-            "line": {
-                "color": "rgba({0},{1},{2},{3})".format(
-                    color[0], color[1], color[2], opacity
-                ),
-                "width": self.style_options["line.width"],
-                "shape": shape,
-                "dash": dash,
-            },
-            "fill": filling,
-            "fillcolor": "rgba({0},{1},{2},{3})".format(
-                color[0], color[1], color[2], opacity
-            ),
-            "opacity": opacity,
-        })
+                "opacity": opacity,
+            }
+        )
 
         self.plots[plot_num].append(trace)
         return trace
@@ -523,7 +529,9 @@ class Factory(object):
         print(
             """
             Factory holds {0} unique plots
-            """.format(len(self.plots))
+            """.format(
+                len(self.plots)
+            )
         )
         for i, plot in enumerate(self.plots):
             print("\t\tPlot {0} holds {1} unique datasets".format(i, len(plot)))

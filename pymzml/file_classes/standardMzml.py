@@ -633,10 +633,12 @@ class StandardMzml(object):
                     except ValueError:
                         first_scan = 0
                     #
-                    seek_list.append((
-                        first_scan,
-                        seeker.tell() - chunk_size + match.start(),
-                    ))
+                    seek_list.append(
+                        (
+                            first_scan,
+                            seeker.tell() - chunk_size + match.start(),
+                        )
+                    )
                     break
             buffer = b""
             seeker.seek(0, os.SEEK_END)
@@ -657,10 +659,12 @@ class StandardMzml(object):
                         buffer[matches[-1].start() :]
                     )
                     last_scan = int(re.search(b"[0-9]*$", id_match.group("id")).group())
-                    seek_list.append((
-                        last_scan,
-                        seeker.tell() - chunk_size + matches[-1].start(),
-                    ))
+                    seek_list.append(
+                        (
+                            last_scan,
+                            seeker.tell() - chunk_size + matches[-1].start(),
+                        )
+                    )
                     break
         return seek_list
 

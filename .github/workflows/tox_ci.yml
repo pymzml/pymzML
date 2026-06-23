@@ -8,16 +8,16 @@ jobs:
       - name: Run black
         uses: actions/setup-python@v6
         with:
-          python-version: 3.14
+          python-version: 3.11
       - name: install black
-        run: pip install "black<23"
+        run: pip install "black"
       - name: run black
         run: black --check pymzml
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v6
       - name: Setup Python
