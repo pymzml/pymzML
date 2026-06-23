@@ -14,8 +14,7 @@ authors = [
     { name = 'M. Hippler' },
     { name = 'C. Fufezan', email = 'christian@fufezan.net' }
 ]
-urls = { Homepage = 'https://pymzml.github.com' }
-requires-python = ">=3.7.0"
+requires-python = ">=3.10.0"
 readme = "README.rst"
 license = { text = 'The MIT license' }
 classifiers = [
@@ -41,6 +40,12 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.urls]
+Homepage = 'https://pymzml.github.io/pymzML'
+Issues = "https://github.com/pymzml/pymzML/issues"
+Repository = "https://github.com/pymzml/pymzML"
+
+
 [project.optional-dependencies]
 full = [
     'plotly<5.0',
@@ -59,7 +64,7 @@ test = [
     'tox',
     'sphinx',
     'sphinx_rtd_theme',
-    'numpydoc==1.9.0',
+    'numpydoc==1.10.0',
 ]
 
 [tool.hatch.version]

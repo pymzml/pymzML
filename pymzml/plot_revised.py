@@ -193,7 +193,12 @@ class Factory(object):
         else:
             for mz, i in data:
                 x_values.extend(
-                    [mz - (mz * precision), mz, mz + (mz * precision), None]
+                    [
+                        mz - (mz * precision),
+                        mz,
+                        mz + (mz * precision),
+                        None,
+                    ]
                 )
                 y_values.extend([0.0, i, 0.0, None])
 
@@ -229,12 +234,8 @@ class Factory(object):
         Prints summary about the plotting factory, i.e.how many plots and how
         many datasets per plot.
         """
-        print(
-            """
-        Factory holds {0} unique plots""".format(
-                len(self.plots)
-            )
-        )
+        print("""
+        Factory holds {0} unique plots""".format(len(self.plots)))
         for i, plot in enumerate(self.plots):
             print("\t\tPlot {0} holds {1} unique datasets".format(i, len(plot)))
             for j, dataset in enumerate(plot):

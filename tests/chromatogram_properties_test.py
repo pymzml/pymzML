@@ -23,7 +23,7 @@ class ChromatogramPropertiesTest(unittest.TestCase):
     def setUp(self):
         """Set up test cases."""
         self.paths = test_file_paths.paths
-        
+
         # Use a file with chromatograms for testing
         # mini.chrom.mzML is at index 3
         for i, path in enumerate(self.paths):
@@ -33,7 +33,7 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         else:
             # Fallback to a known index if the file name is not found
             self.chrom_file = self.paths[3]  # mini.chrom.mzML
-        
+
         # Initialize reader with chromatograms
         self.reader = run.Reader(
             self.chrom_file, 
@@ -44,13 +44,13 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         """Test the chromatogram_type property."""
         # Get the first chromatogram
         chromatogram = self.reader.get_chromatogram(0)
-        
+
         # Test that chromatogram_type is accessible
         chromatogram_type = chromatogram.chromatogram_type
-        
+
         # The type might be None depending on the test file, but the property should be accessible
         self.assertIsNotNone(chromatogram, "Chromatogram should not be None")
-        
+
         # Print the chromatogram type for debugging
         print(f"Chromatogram type: {chromatogram_type}")
 
@@ -58,13 +58,13 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         """Test the polarity property."""
         # Get the first chromatogram
         chromatogram = self.reader.get_chromatogram(0)
-        
+
         # Test that polarity is accessible
         polarity = chromatogram.polarity
-        
+
         # The polarity might be None depending on the test file, but the property should be accessible
         self.assertIsNotNone(chromatogram, "Chromatogram should not be None")
-        
+
         # Print the polarity for debugging
         print(f"Polarity: {polarity}")
 
@@ -72,13 +72,13 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         """Test the precursor_mz property."""
         # Get the first chromatogram
         chromatogram = self.reader.get_chromatogram(0)
-        
+
         # Test that precursor_mz is accessible
         precursor_mz = chromatogram.precursor_mz
-        
+
         # The precursor_mz might be None depending on the test file, but the property should be accessible
         self.assertIsNotNone(chromatogram, "Chromatogram should not be None")
-        
+
         # Print the precursor_mz for debugging
         print(f"Precursor m/z: {precursor_mz}")
 
@@ -86,13 +86,13 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         """Test the product_mz property."""
         # Get the first chromatogram
         chromatogram = self.reader.get_chromatogram(0)
-        
+
         # Test that product_mz is accessible
         product_mz = chromatogram.product_mz
-        
+
         # The product_mz might be None depending on the test file, but the property should be accessible
         self.assertIsNotNone(chromatogram, "Chromatogram should not be None")
-        
+
         # Print the product_mz for debugging
         print(f"Product m/z: {product_mz}")
 
@@ -100,7 +100,7 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         """Test the get_chromatogram_properties method."""
         # Get the first chromatogram
         chromatogram = self.reader.get_chromatogram(0)
-        
+
         # Test that get_chromatogram_properties returns a dictionary
         properties = chromatogram.get_chromatogram_properties()
         
@@ -120,16 +120,16 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         """Test all chromatograms in the file."""
         # Get the number of chromatograms
         chrom_count = self.reader.get_chromatogram_count()
-        
+
         if chrom_count is None or chrom_count == 0:
             self.skipTest("Test file does not contain chromatograms")
-        
+
         print(f"\nTesting {chrom_count} chromatograms:")
-        
+
         # Test each chromatogram
         for i in range(chrom_count):
             chromatogram = self.reader.get_chromatogram(i)
-            
+
             # Print information about the chromatogram
             print(f"\nChromatogram {i}:")
             print(f"  ID: {chromatogram.ID}")
@@ -137,7 +137,7 @@ class ChromatogramPropertiesTest(unittest.TestCase):
             print(f"  Polarity: {chromatogram.polarity}")
             print(f"  Precursor m/z: {chromatogram.precursor_mz}")
             print(f"  Product m/z: {chromatogram.product_mz}")
-            
+
             # Verify that the chromatogram has time and intensity data
             self.assertIsNotNone(chromatogram.time, "Chromatogram should have time data")
             self.assertIsNotNone(chromatogram.i, "Chromatogram should have intensity data")
@@ -145,7 +145,7 @@ class ChromatogramPropertiesTest(unittest.TestCase):
             # Verify that the peaks method returns data
             peaks = chromatogram.peaks()
             self.assertIsNotNone(peaks, "Chromatogram peaks should not be None")
-            
+
             # Print the first few data points
             print("  First 3 data points (time, intensity):")
             for j, (time, intensity) in enumerate(peaks):

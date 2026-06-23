@@ -13,5 +13,3 @@ This file hosts a centralized point for all regex patterns used in pymzML
 
 .. automodule:: pymzml.regex_patterns
     :members:
-
-

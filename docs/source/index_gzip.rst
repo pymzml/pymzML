@@ -82,9 +82,9 @@ In order to access the chapter in the compressed file, one simply needs to initi
     from GSGR import GSGR
     import sys
     import time
-    
+
     my_Reader = GSGR('./Moby_Dick_indexed.gz')
-    
+
     if __name__ == '__main__':
         if len(sys.argv) != 2:
             print(__doc__)

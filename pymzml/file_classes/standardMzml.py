@@ -34,6 +34,10 @@ import re
 import os
 from xml.etree.ElementTree import XML, iterparse
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 from .. import spec
 from .. import chromatogram
 from .. import regex_patterns
@@ -89,7 +93,6 @@ class StandardMzml(object):
 
         spectrum = None
         if str(identifier).upper() == "TIC":
-            # print(str(identifier).upper())
             found = False
             mzmliter = iter(iterparse(self.file_handler, events=["end"]))
             while found is False:
@@ -105,7 +108,6 @@ class StandardMzml(object):
                     raise StopIteration
 
         elif identifier in self.offset_dict:
-
             start = self.offset_dict[identifier]
 
             seeker = self.get_binary_file_handler()
@@ -154,8 +156,7 @@ class StandardMzml(object):
                         or target_index > self.seek_list[-1][0]
                     ):
                         raise Exception(
-                            "Spectrum ID should be between"
-                            " {0} and {1}".format(
+                            "Spectrum ID should be between {0} and {1}".format(
                                 self.seek_list[0][0], self.seek_list[-1][0]
                             )
                         )
@@ -174,7 +175,6 @@ class StandardMzml(object):
                     )
                     # which side are we closer to ...
                     if spec_offset_m1 < spec_offset_p1:
-                        # print("Closer to m1 - jumping forward")
                         jump_direction = "forwards"
                         jump_history["backwards"] = 0
                         jump_history["forwards"] += 1
@@ -208,7 +208,6 @@ class StandardMzml(object):
                             spec_info = match.groups()
                             spec_info = dict(zip(spec_info[0::2], spec_info[1::2]))
                             scan = int(re.search(b"[0-9]*$", spec_info[b"id"]).group())
-                            # print(">>", _match_number, scan)
                             if jump_direction == "forwards":
                                 if scan > target_index:
                                     # we went to far ...
@@ -359,7 +358,7 @@ class StandardMzml(object):
             seeker.seek(0)
             self._build_index_from_scratch(seeker)
         else:
-            print("[Warning] Not index found and build_index_from_scratch is False")
+            logger.warning("No index found and build_index_from_scratch is False")
 
         seeker.close()
 
@@ -425,8 +424,8 @@ class StandardMzml(object):
                 positions.update(chrom_positions)
                 positions.update(spec_positions)
             else:
-                print(
-                    "[ Warning ] Found {spec_count} spectra "
+                logger.warning(
+                    "Found {spec_count} spectra "
                     "and {chrom_count} chromatograms\n"
                     "[ Warning ] However Spectrum index list shows {speccnt} and "
                     "Chromatogram index list shows {chromcnt} entries".format(
@@ -436,10 +435,10 @@ class StandardMzml(object):
                         chromcnt=chromcnt,
                     )
                 )
-                print(
-                    "[ Warning ] Updating offset dict with found offsets "
-                    "but some might be still missing\n"
-                    "[ Warning ] This may happen because your is file truncated"
+                logger.warning(
+                    "Updating offset dict with found offsets "
+                    "but some might be still missing. "
+                    "This may happen because your is file truncated"
                 )
                 positions = {}
                 positions.update(chrom_positions)
@@ -474,7 +473,6 @@ class StandardMzml(object):
             chunk_size (int)        : size of the chunk to read in one go in kb
 
         """
-        # print('target ', target_index)
         seeker = self.get_binary_file_handler()
         seeker.seek(0, 2)
         chunk_size = chunk_size * 512
@@ -531,7 +529,6 @@ class StandardMzml(object):
                     break
 
                 if int(current_index) == target_index:
-
                     seeker.seek(spec_start_offset)
                     start, end = self._read_to_spec_end(seeker)
                     seeker.seek(start)
@@ -637,7 +634,10 @@ class StandardMzml(object):
                         first_scan = 0
                     #
                     seek_list.append(
-                        (first_scan, seeker.tell() - chunk_size + match.start())
+                        (
+                            first_scan,
+                            seeker.tell() - chunk_size + match.start(),
+                        )
                     )
                     break
             buffer = b""
@@ -660,7 +660,10 @@ class StandardMzml(object):
                     )
                     last_scan = int(re.search(b"[0-9]*$", id_match.group("id")).group())
                     seek_list.append(
-                        (last_scan, seeker.tell() - chunk_size + matches[-1].start())
+                        (
+                            last_scan,
+                            seeker.tell() - chunk_size + matches[-1].start(),
+                        )
                     )
                     break
         return seek_list
@@ -675,7 +678,6 @@ class StandardMzml(object):
         spec_start = None
         spec_end = None
         i = 0
-        # print('target', index)
         while True:
             file_pointer = seeker.tell()
 
@@ -690,13 +692,11 @@ class StandardMzml(object):
                 spec_info = spec_start.groups()
                 spec_info = dict(zip(spec_info[0::2], spec_info[1::2]))
                 current_index = int(re.search(b"[0-9]*$", spec_info[b"id"]).group())
-                # print(current_index)
                 spec_end = self.spec_close.search(data[spec_start.start() :])
                 if spec_end:
                     spec_end_offset = file_pointer + spec_end.end() + spec_start.start()
                     seeker.seek(spec_end_offset)
                 while spec_end is None:
-
                     file_pointer = seeker.tell()
 
                     data = seeker.read(total_chunk_size)

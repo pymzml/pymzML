@@ -5,6 +5,7 @@ Interface for mzML files
 
 @author: Manuel Koesters
 """
+
 from io import BytesIO
 from pymzml.file_classes import indexedGzip, standardGzip, standardMzml, bytesMzml
 from pymzml.utils import GSGR

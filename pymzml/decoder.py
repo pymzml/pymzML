@@ -5,6 +5,7 @@ Classes to encode and decode :py:attr:`~pymzml.spec.Spectrum.mz` and
 
 @author M. Kösters, C. Fufezan
 """
+
 import warnings
 import zlib
 from base64 import b64decode as b64dec

@@ -139,7 +139,7 @@ class MsData(object):
         float_type_string = "./{ns}cvParam[@accession='{Acc}']"
 
         b_data_array = self.element.find(b_data_string)
-        if not b_data_array:
+        if b_data_array is None:
             # non-standard data array
             b_data_string = "./{ns}binaryDataArrayList/{ns}binaryDataArray/{ns}cvParam[@value='{value}']/..".format(
                 ns=self.ns, value=array_type
@@ -147,7 +147,7 @@ class MsData(object):
             b_data_array = self.element.find(b_data_string)
 
         comp = []
-        if b_data_array:
+        if b_data_array is not None:
             for cvParam in b_data_array.iterfind("./{ns}cvParam".format(ns=self.ns)):
                 if "compression" in cvParam.get("name"):
                     if "numpress" in cvParam.get("name").lower():
