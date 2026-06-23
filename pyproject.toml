@@ -14,7 +14,7 @@ authors = [
     { name = 'M. Hippler' },
     { name = 'C. Fufezan', email = 'christian@fufezan.net' }
 ]
-requires-python = ">=3.7.0"
+requires-python = ">=3.10.0"
 readme = "README.rst"
 license = { text = 'The MIT license' }
 classifiers = [

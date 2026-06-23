@@ -55,6 +55,10 @@ from struct import unpack
 
 import numpy as np
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 try:
     DECON_DEP = True
     from ms_deisotope.deconvolution import deconvolute_peaks
@@ -325,13 +329,6 @@ class MS_Spectrum(MsData):
                 dec_data = zlib.decompress(dec_data)
             if set(["ms-np-linear", "ms-np-pic", "ms-np-slof"]) & set(comp):
                 self._decodeNumpress(data, comp)
-            # else:
-            #     print(
-            #         'New data compression ({0}) detected, cant decompress'.format(
-            #             comp
-            #         )
-            #     )
-            #     sys.exit(1)
             if float_type == "32-bit float":
                 f_type = "f"
             elif float_type == "64-bit float":
@@ -434,8 +431,8 @@ class Spectrum(MsData):
             "_time",
             "_transformed_mass_with_error",
             "_transformed_mz_with_error",
-            "_transformed_peaks" "calling_instance" "element",
-            "internal_precision" "noise_level_estimate",
+            "_transformed_peakscalling_instanceelement",
+            "internal_precisionnoise_level_estimate",
             "selected_precursors",
         ]
 
@@ -563,14 +560,20 @@ class Spectrum(MsData):
         if self._peak_dict["raw"] is not None:
             self.set_peaks(
                 np.column_stack(
-                    (self.peaks("raw")[:, 0], self.peaks("raw")[:, 1] * value)
+                    (
+                        self.peaks("raw")[:, 0],
+                        self.peaks("raw")[:, 1] * value,
+                    )
                 ),
                 "raw",
             )
         if self._peak_dict["centroided"] is not None:
             self.set_peaks(
                 np.column_stack(
-                    (self.centroided_peaks[:, 0], self.centroided_peaks[:, 1] * value)
+                    (
+                        self.centroided_peaks[:, 0],
+                        self.centroided_peaks[:, 1] * value,
+                    )
                 ),
                 "centroided",
             )
@@ -1146,12 +1149,12 @@ class Spectrum(MsData):
         for name in array_names:
             formatted_array_names.append("\t- {name}".format(name=name))
         if not_found_array is not None:
-            print(
+            logger.warning(
                 "Requested array ({not_found_array}) not found.\nAvailable arrays are:".format(
                     not_found_array=not_found_array
                 )
             )
-            print("\n".join(formatted_array_names))
+            logger.debug("\n".join(formatted_array_names))
         return array_names
 
     def _deconvolute_peaks(self, *args, **kwargs):
@@ -1168,7 +1171,7 @@ class Spectrum(MsData):
             return dpeaks_mat
         else:
             if self._ms_deisotop_warning_printed is False:
-                print(
+                logger.warning(
                     "ms_deisotope is missing, please install using pip install ms_deisotope"
                 )
                 self._ms_deisotop_warning_printed = True
@@ -1431,7 +1434,7 @@ class Spectrum(MsData):
                     self.peaks("centroided")[:, 1]
                 ) / float(len(self.peaks("centroided")))
             else:
-                print(
+                logger.warning(
                     "Do not understand noise level estimation method call with given mode: {0}".format(
                         mode
                     )
@@ -1506,7 +1509,7 @@ class Spectrum(MsData):
         """
         available_extreme_values = ["mz", "i"]
         if key not in available_extreme_values:
-            print(
+            logger.warning(
                 "Do not understand extreme request: '{0}'; available values are: {1}".format(
                     key, available_extreme_values
                 )
@@ -1826,7 +1829,9 @@ class Chromatogram(MsData):
     @property
     def mz(self):
         """"""
-        print("Chromatogram has no property mz.\nReturn retention time instead")
+        logger.warning(
+            "Chromatogram has no property mz.\nReturn retention time instead"
+        )
         return self.time
 
     @property

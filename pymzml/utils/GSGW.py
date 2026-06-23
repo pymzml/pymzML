@@ -226,14 +226,10 @@ class GSGW(object):
         """
         if self.Lock is False:
             if len(self.index) + 1 > self.max_idx_num:
-                print(
-                    """
+                print("""
     WARNING: Reached maximum number of indexed data blocks
     '({0}), cannot add any more data!
-                    """.format(
-                        self.max_idx_num
-                    )
-                )
+                    """.format(self.max_idx_num))
                 return False
 
             if not self.first_header_set:

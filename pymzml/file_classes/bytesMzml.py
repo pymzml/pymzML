@@ -5,6 +5,7 @@ Interface for binary streams of uncompressed mzML.
 
 @author: Sylvain Le Bon
 """
+
 from io import TextIOWrapper
 
 from .. import regex_patterns

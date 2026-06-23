@@ -32,6 +32,9 @@ import sys
 import math
 import warnings
 
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 # Fail gracefully if no plotly installed
 try:
@@ -214,12 +217,10 @@ class Factory(object):
         if style[0] == "label":
             mode = "text+lines"
             if len(data[0]) < 3:
-                raise Exception(
-                    """
+                raise Exception("""
                     Must have at least (mz, i, annotation) in data
                     when using labels
-                    """
-                )
+                    """)
             if style[1] == "hoverinfo":
                 shape = "linear"
                 mode = None
@@ -301,15 +302,11 @@ class Factory(object):
                         offset = y_max + (y_max * 0.1)
 
                     elif pos == "medium":
-                        print(
-                            """'
+                        logger.error("""'
                             {0}
                             is not working atm for
                             {1}
-                            """.format(
-                                pos, style
-                            )
-                        )
+                            """.format(pos, style))
                         sys.exit(0)
                         y_pos = x[2] / 2
                         offset = "__splineOffset__"
@@ -335,15 +332,11 @@ class Factory(object):
                         y_pos = y_max
                         offset = y_max + (y_max * 0.1)
                     elif pos == "medium":
-                        print(
-                            """'
+                        logger.error("""'
                             {0}
                             is not working atm for
                             {1}
-                            """.format(
-                                pos, style
-                            )
-                        )
+                            """.format(pos, style))
                         sys.exit(0)
                         y_pos = x[2] / 2
                         offset = "+__splineOffset__"
@@ -365,16 +358,14 @@ class Factory(object):
             #             txt     += None, x[2], None, None
 
             else:
-                raise Exception(
-                    """
+                raise Exception("""
                     Unknown label type
                     Currently supported are:
                     -> linear
                     -> spline
                     -> sticks
                     -> triangle
-                    """
-                )
+                    """)
 
         elif style[0] in ["sticks", "triangle", "lines", "points"]:
             x_vals = [
@@ -472,16 +463,14 @@ class Factory(object):
                 y_values = y_vals
 
         else:
-            raise Exception(
-                """
+            raise Exception("""
                 Invalid plotting style
                 Currently supported are:
                 -> lines
                 -> points
                 -> sticks
                 -> triangle
-                """
-            )
+                """)
 
         trace = go.Scatter(
             {
@@ -523,13 +512,9 @@ class Factory(object):
         Prints summary about the plotting factory, i.e. how many plots and how
         many datasets per plot.
         """
-        print(
-            """
+        print("""
             Factory holds {0} unique plots
-            """.format(
-                len(self.plots)
-            )
-        )
+            """.format(len(self.plots)))
         for i, plot in enumerate(self.plots):
             print("\t\tPlot {0} holds {1} unique datasets".format(i, len(plot)))
             for j, dataset in enumerate(plot):
@@ -586,7 +571,6 @@ class Factory(object):
             )
 
         for i, plot in enumerate(self.plots):
-            print(int(math.floor((i / 2) + 1)), (i % 2) + 1)
             for j, trace in enumerate(plot):
                 trace["y"] = [
                     self.function_mapper[x](i) if x in self.function_mapper else x

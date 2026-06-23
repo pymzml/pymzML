@@ -24,6 +24,7 @@ Copyright (C) 2010-2019 M. Kösters, C. Fufezan
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
+
 __all__ = ["run", "spec", "chromatogram", "obo", "minimum", "plot", "file_classes"]
 
 import sys

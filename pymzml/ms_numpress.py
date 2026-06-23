@@ -9,6 +9,7 @@ Authors:
 Manuel Kösters
 Christian Fufezan
 """
+
 import sys
 import struct
 import math
