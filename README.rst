@@ -29,7 +29,7 @@ General information
 
 Module to parse mzML data in Python based on cElementTree
 
-Copyright 2010-2024 by:
+Copyright 2010-2026 by:
 
     | M. Kösters,
     | J. Leufken,
@@ -76,7 +76,7 @@ pymzML is an extension to Python that offers
 Implementation
 **************
 
-pymzML requires Python3.7+.
+pymzML requires Python3.10+.
 The module is freely available on pymzml.github.com or pypi,
 published under MIT license and only requires numpy and regex, however there are several optional dependencies for extended functionality like interactive plotting and deconvolution.
 
@@ -104,12 +104,12 @@ doi: https://doi.org/10.1093/bioinformatics/bty046
 Installation
 ************
 
-pymzML requires `Python`_ 3.7 or higher.
+pymzML requires `Python`_ 3.10 or higher.
 
 .. note::
 
     Consider to use a Python virtual environment for easy installation and use.
-    Further, usage of python3.7+ is recommended.
+    Further, usage of python3.13+ is recommended.
 
 
 Download pymzML using `GitHub`_ **or** the zip file:
