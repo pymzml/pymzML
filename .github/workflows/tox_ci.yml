@@ -10,7 +10,7 @@ jobs:
         with:
           python-version: 3.11
       - name: install black
-        run: pip install "black"
+        run: pip install "black==26.5.1"
       - name: run black
         run: black --check pymzml
   build:
