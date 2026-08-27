@@ -14,7 +14,7 @@ authors = [
     { name = 'M. Hippler' },
     { name = 'C. Fufezan', email = 'christian@fufezan.net' }
 ]
-requires-python = ">=3.10.0"
+requires-python = ">=3.13.0"
 readme = "README.rst"
 license = { text = 'The MIT license' }
 classifiers = [
@@ -29,7 +29,9 @@ classifiers = [
     'Operating System :: POSIX',
     'Operating System :: POSIX :: SunOS/Solaris',
     'Operating System :: Unix',
-    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
     'Topic :: Scientific/Engineering :: Chemistry',
     'Topic :: Scientific/Engineering :: Medical Science Apps.',

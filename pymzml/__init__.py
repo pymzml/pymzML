@@ -29,8 +29,8 @@ __all__ = ["run", "spec", "chromatogram", "obo", "minimum", "plot", "file_classe
 
 import sys
 
-if not hasattr(sys, "version_info") or sys.version_info < (3, 4):
-    raise RuntimeError("pymzML requires Python 3.4 or later.")
+if not hasattr(sys, "version_info") or sys.version_info < (3, 13):
+    raise RuntimeError("pymzML requires Python 3.13 or later.")
 
 # Set version
 from importlib.metadata import version
