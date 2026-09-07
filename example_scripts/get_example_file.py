@@ -148,10 +148,7 @@ def download(filename_with_path, url):
     Path with filename is returned.
     """
 
-    if sys.version_info[0] < 3:
-        from urllib2 import Request, urlopen, URLError, HTTPError
-    else:
-        from urllib.request import Request, urlopen, URLError, HTTPError
+    from urllib.request import Request, urlopen, URLError, HTTPError
 
     print("Downloading file ...", end="\r", file=sys.stderr)
     req = Request(url)

@@ -95,7 +95,7 @@
 
 
 	def save_versions(version_map, destination):
-	    for version, file_at_version in version_map.iteritems():
+	    for version, file_at_version in version_map.items():
 	        destination_path = os.path.join(destination, "psi-ms-{0}.obo".format(version))
 	        with open(destination_path, "w+") as destination_file:
 	            destination_file.write(file_at_version)
