@@ -55,7 +55,7 @@ full = [
     'pynumpress>=0.0.4',
     'ms_deisotope==0.0.14',
 ]
-plot = ['plotly<5.0', 'matplotlib',]
+plot = ['plotly<7.1', 'matplotlib',]
 pynumpress = ['pynumpress>=0.0.4',]
 deconvolution = ['ms_deisotope==0.0.14',]
 test = [
