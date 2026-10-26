@@ -76,7 +76,7 @@ class runTest(unittest.TestCase):
         run_id = self.reader_uncompressed_unindexed.info["run_id"]
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "4.1.79")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -87,7 +87,7 @@ class runTest(unittest.TestCase):
         run_id = self.reader_uncompressed_unindexed.info["run_id"]
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "4.1.79")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -98,7 +98,7 @@ class runTest(unittest.TestCase):
         run_id = self.reader_uncompressed_unindexed.info["run_id"]
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "4.1.79")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -110,7 +110,7 @@ class runTest(unittest.TestCase):
         start_time = self.reader_uncompressed_unindexed.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        self.assertEqual(obo_version, "4.1.79")
+        self.assertEqual(obo_version, "3.25.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -122,8 +122,8 @@ class runTest(unittest.TestCase):
         start_time = self.reader_bad_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        # run._obo_version_validator 2017 default obo = 4.1.79
-        self.assertEqual(obo_version, "4.1.79")
+        # cv version "23:06:2017" -> year 2017 -> 4.1.0
+        self.assertEqual(obo_version, "4.1.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -147,7 +147,7 @@ class runTest(unittest.TestCase):
         start_time = self.reader_set_year_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        # run._obo_version_validator 2017 default obo = 4.1.79
+        # run._obo_version_validator 2017 -> 4.1.0
         self.assertEqual(obo_version, "4.1.0")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
@@ -160,8 +160,8 @@ class runTest(unittest.TestCase):
         start_time = self.reader_set_bad_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        # run._obo_version_validator set invalid obo = 1.1.0
-        self.assertEqual(obo_version, "1.1.0")
+        # run._obo_version_validator invalid obo -> default 4.1.79
+        self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
@@ -173,11 +173,18 @@ class runTest(unittest.TestCase):
         start_time = self.reader_set_no_obo_version.info["start_time"]
 
         self.assertEqual(mzml_version, "1.1.0")
-        # run._obo_version_validator set invalid obo = 1.1.0
+        # no MS cv version in mzML -> default 4.1.79
         self.assertEqual(obo_version, "4.1.79")
         self.assertIsInstance(spec_count, int)
         self.assertEqual(run_id, "exp105-01-ds5562-Pos")
         self.assertEqual(start_time, "2013-09-10T10:31:08Z")
+
+    def test_obo_version_from_cv_list(self):
+        # issue #415
+        reader = run.Reader(self.paths[0])
+        self.assertEqual(reader.info["obo_version"], "3.25.0")
+        self.assertEqual(reader.OT.version, "3.25.0")
+        self.assertEqual(reader[2].obo_translator.version, "3.25.0")
 
     def test_next(self):
         """ """

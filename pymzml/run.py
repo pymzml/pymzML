@@ -55,6 +55,8 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
+DEFAULT_OBO_VERSION = "4.1.79"
+
 
 class Reader(object):
     """
@@ -131,11 +133,12 @@ class Reader(object):
         self.info["offset_dict"] = self.info["file_object"].offset_dict
         if obo_version:
             self.info["obo_version"] = self._obo_version_validator(obo_version)
+            self.OT = self._init_obo_translator()
         else:
-            # obo version not specified -> try to identify from mzML by self._init_iter
+            # obo version not specified -> identified from mzML by self._init_iter
             self.info["obo_version"] = None
+            self.OT = None
 
-        self.OT = self._init_obo_translator()
         self.iter = self._init_iter()
 
     def __next__(self):
@@ -333,12 +336,10 @@ class Reader(object):
                 "obo",
                 "psi-ms{0}.obo".format("-" + version_fixed if version_fixed else ""),
             )
-            if os.path.exists(obo_file) or os.path.exists(obo_file + ".gz"):
-                pass
-            else:
-                version_fixed = "1.1.0"
+            if not (os.path.exists(obo_file) or os.path.exists(obo_file + ".gz")):
+                version_fixed = DEFAULT_OBO_VERSION
         else:
-            version_fixed = "1.1.0"
+            version_fixed = DEFAULT_OBO_VERSION
 
         return version_fixed
 
@@ -354,7 +355,7 @@ class Reader(object):
         # parse obo, check MS tags and if they are ok in minimum.py (minimum
         # required) ...
         if self.info.get("obo_version", None) is None:
-            self.info["obo_version"] = "4.1.79"
+            self.info["obo_version"] = DEFAULT_OBO_VERSION
         obo_translator = obo.OboTranslator.from_cache(version=self.info["obo_version"])
 
         return obo_translator
@@ -391,8 +392,9 @@ class Reader(object):
                     not self.info["obo_version"]
                     and element.attrib.get("id", None) == "MS"
                 ):
-                    obo_in_mzml = element.attrib.get("version", "1.1.0")
+                    obo_in_mzml = element.attrib.get("version", DEFAULT_OBO_VERSION)
                     self.info["obo_version"] = self._obo_version_validator(obo_in_mzml)
+                    self.OT = self._init_obo_translator()
 
             elif element.tag.endswith("}fileDescription"):
                 self.info["file_description"] = True
@@ -435,6 +437,9 @@ class Reader(object):
                 self.info["start_time"] = start_time
             else:
                 pass
+        if self.OT is None:
+            # no MS cv in mzML -> default obo
+            self.OT = self._init_obo_translator()
         self.root.clear()
         return mzml_iter
 
@@ -546,6 +551,9 @@ class Reader(object):
 
         """
         is_member = False
+        if self.OT is None:
+            # cvParam before any MS cv -> default obo
+            self.OT = self._init_obo_translator()
         try:
             term_in = self.OT[tested_term]
             if term_in:
