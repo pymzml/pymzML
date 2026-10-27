@@ -40,6 +40,30 @@ from struct import unpack
 import numpy as np
 
 from .obo import OboTranslator
+from .ms_numpress import MSNumpress
+
+# Binary data compression terms that use MS-Numpress (PSI-MS CV children of
+# MS:1000572), mapped to (numpress method, zlib applied after numpress).
+_NUMPRESS_COMPRESSIONS = {
+    "MS-Numpress linear prediction compression": ("linear", False),  # MS:1002312
+    "MS-Numpress positive integer compression": ("pic", False),  # MS:1002313
+    "MS-Numpress short logged float compression": ("slof", False),  # MS:1002314
+    "MS-Numpress linear prediction compression followed by zlib compression": (
+        "linear",
+        True,
+    ),  # MS:1002746
+    "MS-Numpress positive integer compression followed by zlib compression": (
+        "pic",
+        True,
+    ),  # MS:1002747
+    "MS-Numpress short logged float compression followed by zlib compression": (
+        "slof",
+        True,
+    ),  # MS:1002748
+    "ms-np-linear": ("linear", False),
+    "ms-np-pic": ("pic", False),
+    "ms-np-slof": ("slof", False),
+}
 
 
 class MsData(object):
@@ -245,16 +269,19 @@ class MsData(object):
         """
         out_data = b64dec(data)
         if len(out_data) != 0:
-            if "zlib" in comp or "zlib compression" in comp:
-                out_data = zlib.decompress(out_data)
+            numpress = [
+                _NUMPRESS_COMPRESSIONS[c] for c in comp if c in _NUMPRESS_COMPRESSIONS
+            ]
             if (
-                "ms-np-linear" in comp
-                or "ms-np-pic" in comp
-                or "ms-np-slof" in comp
-                or "MS-Numpress linear prediction compression" in comp
-                or "MS-Numpress short logged float compression" in comp
+                "zlib" in comp
+                or "zlib compression" in comp
+                or any(zlib_after for _, zlib_after in numpress)
             ):
-                out_data = self._decodeNumpress_to_array(out_data, comp)
+                out_data = zlib.decompress(out_data)
+            if numpress:
+                # numpress output is already a float64 array, the binary data
+                # type cvParam does not apply to the encoded bytes
+                return self._decodeNumpress_to_array(out_data, numpress[0][0])
             if data_type == "32-bit float":
                 # one character code may be sufficient too (f)
                 f_type = np.float32
@@ -312,35 +339,28 @@ class MsData(object):
             ret_data = []
         return ret_data
 
-    def _decodeNumpress_to_array(self, data, compression):
+    def _decodeNumpress_to_array(self, data, method):
         """
         Decode golomb-rice encoded data (aka numpress encoded data).
 
         Arguments:
-            data (str)        : Encoded data string
-            compression (str) : Decompression algorithm to be used
-                (valid are 'ms-np-linear', 'ms-np-pic', 'ms-np-slof')
+            data (bytes)  : Encoded data, already zlib-decompressed if needed
+            method (str)  : Numpress method, one of 'linear', 'pic' or 'slof'
 
         Returns:
-            array (list): Returns the unpacked data as an array of floats.
+            array (np.ndarray): Returns the unpacked data as an array of floats.
 
         """
-        result = []
-        comp_ms_tags = [self.calling_instance.OT[comp]["id"] for comp in compression]
+        from .decoder import MSDecoder
+
+        if isinstance(MSDecoder, MSNumpress):
+            # pure Python fallback: stateful decoder, takes a bytearray
+            decoder = MSNumpress(bytearray(data))
+            return np.asarray(getattr(decoder, "decode_" + method)(), dtype=np.float64)
         data = np.frombuffer(data, dtype=np.uint8)
-        if "MS:1002312" in comp_ms_tags:
-            from .decoder import MSDecoder
-
-            result = MSDecoder.decode_linear(data)
-        elif "MS:1002313" in comp_ms_tags:
-            from .decoder import MSDecoder
-
-            result = MSDecoder.decode_pic(data)
-        elif "MS:1002314" in comp_ms_tags:
-            from .decoder import MSDecoder
-
-            result = MSDecoder.decode_slof(data)
-        return result
+        return np.asarray(
+            getattr(MSDecoder, "decode_" + method)(data), dtype=np.float64
+        )
 
     def _median(self, data):
         """
