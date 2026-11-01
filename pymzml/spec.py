@@ -77,6 +77,14 @@ ISOTOPE_AVERAGE_DIFFERENCE = 1.002
 # Import MsData from msdata.py
 from .msdata import MsData
 
+# Unit Ontology time units, for cvParams that give unitAccession without unitName
+_TIME_UNIT_ACCESSIONS = {
+    "UO:0000028": "millisecond",
+    "UO:0000010": "second",
+    "UO:0000031": "minute",
+    "UO:0000032": "hour",
+}
+
 
 class MS_Spectrum(MsData):
     """
@@ -914,7 +922,12 @@ class Spectrum(MsData):
             )
             if scan_time_ele is not None:
                 self._scan_time = float(scan_time_ele.attrib.get("value"))
-                self._scan_time_unit = scan_time_ele.get("unitName", "unicorns")
+                # unitName is optional in mzML, unitAccession identifies the unit
+                self._scan_time_unit = scan_time_ele.get(
+                    "unitName"
+                ) or _TIME_UNIT_ACCESSIONS.get(
+                    scan_time_ele.get("unitAccession"), "unicorns"
+                )
         return self._scan_time, self._scan_time_unit
 
     # @property
@@ -930,9 +943,11 @@ class Spectrum(MsData):
         """
         if self._scan_time_in_minutes is None:
             self._scan_time, time_unit = self.scan_time
+            if self._scan_time is None:
+                return None
             if self._scan_time_unit.lower() == "millisecond":
                 self._scan_time_in_minutes = self._scan_time / 1000.0 / 60.0
-            if self._scan_time_unit.lower() == "second":
+            elif self._scan_time_unit.lower() == "second":
                 self._scan_time_in_minutes = self._scan_time / 60.0
             elif self._scan_time_unit.lower() == "minute":
                 self._scan_time_in_minutes = self._scan_time
