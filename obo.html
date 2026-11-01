@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.6. OBO parser &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>3.6. OBO parser &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/documentation_options.js?v=7b940564"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -96,7 +96,7 @@ accessions can easily be queried.</p>
 <p>The obo translator is used internally to associate names with MS:xxxxxxx tags.</p>
 <p>The OboTranslator Class generates a dictionary and several lookup tables.
 e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymzml.obo</span> <span class="kn">import</span> <span class="n">OboTranslator</span> <span class="k">as</span> <span class="n">OT</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.obo</span><span class="w"> </span><span class="kn">import</span> <span class="n">OboTranslator</span> <span class="k">as</span> <span class="n">OT</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">translator</span> <span class="o">=</span> <span class="n">OT</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">translator</span><span class="p">[</span><span class="s1">&#39;MS:1000127&#39;</span><span class="p">]</span>
 <span class="go">&#39;centroid mass spectrum&#39;</span>
@@ -138,7 +138,7 @@ $
 are defined in the OBO file.</p>
 <p>First pymzML is imported and the run is defined.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">example_file</span> <span class="o">=</span> <span class="n">get_example_file</span><span class="o">.</span><span class="n">open_example</span><span class="p">(</span><span class="s1">&#39;dta_example.mzML&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">msrun</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
 </pre></div>
 </div>

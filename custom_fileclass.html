@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.6. Implementing an own file class &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>4.6. Implementing an own file class &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/documentation_options.js?v=7b940564"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -97,12 +97,12 @@ In the following, an example for building and accessing a SQL database containin
 <h2><span class="section-number">4.6.1. </span>Creating the wrapper<a class="headerlink" href="#creating-the-wrapper" title="Link to this heading"></a></h2>
 <p>At first, a database with a specific layout needs to be created. Here, we use a single mzML file and store each spectrum in a table with 2 columns, one for the identifier and one for the xml element of the spectrum in form of a string.</p>
 <p>Database creation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sqlite3</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pymzml</span> <span class="kn">import</span> <span class="n">spec</span>
-<span class="kn">from</span> <span class="nn">pymzml.run</span> <span class="kn">import</span> <span class="n">Reader</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml</span><span class="w"> </span><span class="kn">import</span> <span class="n">spec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.run</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reader</span>
 
-<span class="k">def</span> <span class="nf">create_database_from_file</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">mzml_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_database_from_file</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">mzml_path</span><span class="p">):</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_name</span><span class="o">+</span><span class="s1">&#39;.db&#39;</span><span class="p">)</span>
     <span class="n">Run</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">mzml_path</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
@@ -119,13 +119,13 @@ a read function used to sequentiallly read in data for iterating the database.
 In this simple approach, the read function always returns a whole spectra xml string.
 One obvious optimization would be, to read in smaller chunks of a spec string and jump to the next spectrum, as soon as the end of the current spectrum is reached (as exercise for the interested reader ;) ) .</p>
 <p>Wrapper for accessing the database:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sqlite3</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pymzml</span> <span class="kn">import</span> <span class="n">spec</span>
-<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">et</span>
-<span class="kn">from</span> <span class="nn">pymzml.run</span> <span class="kn">import</span> <span class="n">Reader</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml</span><span class="w"> </span><span class="kn">import</span> <span class="n">spec</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">et</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.run</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reader</span>
 
-<span class="k">class</span> <span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Example implementation of a database Connector,</span>
 <span class="sd">    which can be used to make run accept paths to</span>
@@ -134,14 +134,14 @@ One obvious optimization would be, to read in smaller chunks of a spec string an
 <span class="sd">    We initialize with a path to a database and implement</span>
 <span class="sd">    a custom __getitem__ function to retrieve the spectra</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curr_spec_id</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM spectra WHERE id=?&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -154,12 +154,12 @@ One obvious optimization would be, to read in smaller chunks of a spec string an
             <span class="n">spectrum</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">spectrum</span>
 
-    <span class="k">def</span> <span class="nf">get_spectrum_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_spectrum_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) from spectra&quot;</span><span class="p">)</span>
         <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">num</span>
 
-    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="c1"># implement read so it starts reading in first ID,</span>
         <span class="c1"># if end reached switches to next id and so on ...</span>
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_spectrum_id</span>
@@ -188,7 +188,7 @@ One obvious optimization would be, to read in smaller chunks of a spec string an
 The easiest way is, to add another elif statement which decides which handler to use based on the file path.
 For this, edit the <a class="reference internal" href="file_handlers.html#pymzml.file_interface.FileInterface._open" title="pymzml.file_interface.FileInterface._open"><code class="xref py py-func docutils literal notranslate"><span class="pre">_open()</span></code></a> method as shown in the following:</p>
 <p>Code:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Open a file like object resp. a wrapper for a file like object.</span>
 
@@ -216,7 +216,7 @@ For this, edit the <a class="reference internal" href="file_handlers.html#pymzml
             <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">standardGzip</span><span class="o">.</span><span class="n">StandardGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
     <span class="c1"># add your new elif statement here</span>
     <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">SQLiteConnector</span> <span class="kn">import</span> <span class="n">SQLiteDatabase</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">SQLiteConnector</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLiteDatabase</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">SQLiteDatabase</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span>     <span class="o">=</span> <span class="n">standardMzml</span><span class="o">.</span><span class="n">StandardMzml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>

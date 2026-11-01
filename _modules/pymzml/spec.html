@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.spec &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>pymzml.spec &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="../../_static/documentation_options.js?v=7b940564"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -115,50 +115,58 @@
 <span class="c1">#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
 <span class="c1">#     SOFTWARE.</span>
 
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ElementTree</span>
-<span class="kn">import</span> <span class="nn">zlib</span>
-<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64decode</span> <span class="k">as</span> <span class="n">b64dec</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
-<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span> <span class="k">as</span> <span class="n">itemgetter</span>
-<span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">unpack</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ElementTree</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">base64</span><span class="w"> </span><span class="kn">import</span> <span class="n">b64decode</span> <span class="k">as</span> <span class="n">b64dec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">itemgetter</span> <span class="k">as</span> <span class="n">itemgetter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">struct</span><span class="w"> </span><span class="kn">import</span> <span class="n">unpack</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">DECON_DEP</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="kn">from</span> <span class="nn">ms_deisotope.deconvolution</span> <span class="kn">import</span> <span class="n">deconvolute_peaks</span>
-    <span class="kn">from</span> <span class="nn">ms_peak_picker</span> <span class="kn">import</span> <span class="n">simple_peak</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ms_deisotope.deconvolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">deconvolute_peaks</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ms_peak_picker</span><span class="w"> </span><span class="kn">import</span> <span class="n">simple_peak</span>
 <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ModuleNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="n">DECON_DEP</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">pass</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">regex_patterns</span>
-<span class="kn">from</span> <span class="nn">.decoder</span> <span class="kn">import</span> <span class="n">MSDecoder</span>
-<span class="kn">from</span> <span class="nn">.obo</span> <span class="kn">import</span> <span class="n">OboTranslator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">regex_patterns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.decoder</span><span class="w"> </span><span class="kn">import</span> <span class="n">MSDecoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.obo</span><span class="w"> </span><span class="kn">import</span> <span class="n">OboTranslator</span>
 
 <span class="n">PROTON</span> <span class="o">=</span> <span class="mf">1.00727646677</span>
 <span class="n">ISOTOPE_AVERAGE_DIFFERENCE</span> <span class="o">=</span> <span class="mf">1.002</span>
 
 <span class="c1"># Import Chromatogram from chromatogram.py for backward compatibility</span>
 <span class="c1"># Import MsData from msdata.py</span>
-<span class="kn">from</span> <span class="nn">.msdata</span> <span class="kn">import</span> <span class="n">MsData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.msdata</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsData</span>
+
+<span class="c1"># Unit Ontology time units, for cvParams that give unitAccession without unitName</span>
+<span class="n">_TIME_UNIT_ACCESSIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;UO:0000028&quot;</span><span class="p">:</span> <span class="s2">&quot;millisecond&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UO:0000010&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UO:0000031&quot;</span><span class="p">:</span> <span class="s2">&quot;minute&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UO:0000032&quot;</span><span class="p">:</span> <span class="s2">&quot;hour&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 
 
-<span class="k">class</span> <span class="nc">MS_Spectrum</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MS_Spectrum</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    General spectrum class for data handling.</span>
 <span class="sd">    This class is kept for backward compatibility.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_read_accessions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_accessions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set all required variables for this spectrum.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">accessions</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">iter</span><span class="p">():</span>
@@ -169,7 +177,7 @@
         <span class="k">if</span> <span class="s2">&quot;profile spectrum&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accessions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_profile</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">get_element_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_element_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get element from the original tree by it&#39;s unit name.</span>
 
@@ -188,7 +196,7 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">return_ele</span>
 
-    <span class="k">def</span> <span class="nf">get_element_by_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_element_by_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find elements in spectrum by its path.</span>
 
@@ -217,7 +225,7 @@
 
         <span class="k">return</span> <span class="n">return_ele</span>
 
-    <span class="k">def</span> <span class="nf">_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decoded_tuple</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decoded_tuple</span><span class="p">):</span>
         <span class="n">d_type</span><span class="p">,</span> <span class="n">array</span> <span class="o">=</span> <span class="n">decoded_tuple</span>
         <span class="k">if</span> <span class="n">d_type</span> <span class="o">==</span> <span class="s2">&quot;mz&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mz</span> <span class="o">=</span> <span class="n">array</span>
@@ -228,7 +236,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unknown data Type (</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d_type</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_get_encoding_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_encoding_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_type</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the correct parameter for decoding and return them as tuple.</span>
 
@@ -327,7 +335,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">d_array_length</span><span class="p">,</span> <span class="n">d_type</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the measured and internal precision.</span>
 
@@ -337,12 +345,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measured_precision</span>
 
     <span class="nd">@measured_precision</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_measured_precision</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">internal_precision</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="mf">50000.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)))</span>
         <span class="k">return</span>
 
-    <span class="k">def</span> <span class="nf">_decode_to_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">d_array_length</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decode_to_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">d_array_length</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decode the b64 encoded and packed strings from data as numpy arrays.</span>
 
@@ -388,7 +396,7 @@
             <span class="n">out_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
         <span class="k">return</span> <span class="n">out_data</span>
 
-    <span class="k">def</span> <span class="nf">_decode_to_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">d_array_length</span><span class="p">,</span> <span class="n">float_type</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decode_to_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">d_array_length</span><span class="p">,</span> <span class="n">float_type</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decode b64 encoded and packed strings.</span>
 
@@ -415,7 +423,7 @@
             <span class="n">ret_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">ret_data</span>
 
-    <span class="k">def</span> <span class="nf">_decodeNumpress_to_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">compression</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decodeNumpress_to_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">compression</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decode golomb-rice encoded data (aka numpress encoded data).</span>
 
@@ -439,7 +447,7 @@
             <span class="n">result</span> <span class="o">=</span> <span class="n">MSDecoder</span><span class="o">.</span><span class="n">decode_slof</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">_median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute median.</span>
 
@@ -451,7 +459,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin-1&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin-1&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return string representation of the xml element the</span>
 <span class="sd">        spectrum was initialized with.</span>
@@ -470,7 +478,7 @@
 
 <div class="viewcode-block" id="Spectrum">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum">[docs]</a>
-<span class="k">class</span> <span class="nc">Spectrum</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Spectrum</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spectrum class which inherits from class :py:attr:`pymzml.spec.MS_Spectrum`</span>
 
@@ -482,7 +490,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">element</span><span class="o">=</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
         <span class="n">measured_precision</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span>
@@ -558,7 +566,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ms_deisotop_warning_printed</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear self.element to limit RAM usage</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -567,7 +575,7 @@
 
 <div class="viewcode-block" id="Spectrum.__add__">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.__add__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_spec</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_spec</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds two pymzml spectra</span>
 
@@ -604,7 +612,7 @@
 
 <div class="viewcode-block" id="Spectrum.__sub__">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.__sub__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_spec</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_spec</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subtracts two pymzml spectra.</span>
 
@@ -629,7 +637,7 @@
 
 <div class="viewcode-block" id="Spectrum.__mul__">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.__mul__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Multiplies each intensity with a float, i.e. scales the spectrum.</span>
 
@@ -669,7 +677,7 @@
 
 <div class="viewcode-block" id="Spectrum.__truediv__">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.__truediv__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Divides each intensity by a float, i.e. scales the spectrum.</span>
 
@@ -702,13 +710,13 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__div__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__div__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Integer division is the same as __truediv__ for this class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__truediv__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns representative string for a spectrum object class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -716,7 +724,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns representative string for a spectrum object class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -727,7 +735,7 @@
 <div class="viewcode-block" id="Spectrum.__getitem__">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.__getitem__">[docs]</a>
     <span class="nd">@lru_cache</span><span class="p">()</span>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accession</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accession</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access spectrum XML information by tag name</span>
 
@@ -769,7 +777,7 @@
 
 <div class="viewcode-block" id="Spectrum.get">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.get">[docs]</a>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Mimic dicts get function.</span>
 
 <span class="sd">        Args:</span>
@@ -782,7 +790,7 @@
         <span class="k">return</span> <span class="n">val</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if MS tag or name can be found in spectrum.</span>
 
 <span class="sd">        Args:</span>
@@ -797,7 +805,7 @@
         <span class="k">return</span> <span class="n">r</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the measured and internal precision</span>
 
@@ -807,13 +815,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measured_precision</span>
 
     <span class="nd">@measured_precision</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_measured_precision</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">internal_precision</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="mf">50000.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)))</span>
         <span class="k">return</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">t_mz_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">t_mz_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a set of integers out of transformed m/z values</span>
 <span class="sd">        (including all values in the defined imprecision).</span>
@@ -845,7 +853,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t_mz_set</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">transformed_mz_with_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transformed_mz_with_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns transformed m/z value with error</span>
 
@@ -877,7 +885,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformed_mz_with_error</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">transformed_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transformed_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        m/z value is multiplied by the internal precision.</span>
 
@@ -894,7 +902,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformed_peaks</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">TIC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">TIC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property to access the total ion current for this spectrum.</span>
 
@@ -910,7 +918,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TIC</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access the native id (last number in the id attribute) of the spectrum.</span>
 
@@ -932,7 +940,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ID</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">id_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access to all entries stored the id attribute of a spectrum.</span>
 
@@ -954,7 +962,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_dict</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access the index of the spectrum.</span>
 
@@ -973,7 +981,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ms_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ms_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property to access the ms level.</span>
 
@@ -991,7 +999,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms_level</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">scan_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scan_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property to access the retention time and retention time unit.</span>
 <span class="sd">        Please note, that we do not assume the retention time unit,</span>
@@ -1008,13 +1016,18 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">scan_time_ele</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scan_time_ele</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span> <span class="o">=</span> <span class="n">scan_time_ele</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unitName&quot;</span><span class="p">,</span> <span class="s2">&quot;unicorns&quot;</span><span class="p">)</span>
+                <span class="c1"># unitName is optional in mzML, unitAccession identifies the unit</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span> <span class="o">=</span> <span class="n">scan_time_ele</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;unitName&quot;</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="n">_TIME_UNIT_ACCESSIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">scan_time_ele</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unitAccession&quot;</span><span class="p">),</span> <span class="s2">&quot;unicorns&quot;</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span>
 
     <span class="c1"># @property</span>
 <div class="viewcode-block" id="Spectrum.scan_time_in_minutes">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.scan_time_in_minutes">[docs]</a>
-    <span class="k">def</span> <span class="nf">scan_time_in_minutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scan_time_in_minutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property to access the retention time in minutes.</span>
 <span class="sd">        If the retention time unit is defined within the mzML,</span>
@@ -1026,9 +1039,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_in_minutes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span><span class="p">,</span> <span class="n">time_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_time</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;millisecond&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_in_minutes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="o">/</span> <span class="mf">60.0</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_in_minutes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span> <span class="o">/</span> <span class="mf">60.0</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;minute&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time_in_minutes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_time</span>
@@ -1040,7 +1055,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">selected_precursors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">selected_precursors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property to access the selected precursors of a MS2 spectrum. Returns</span>
 <span class="sd">        a list of dicts containing the precursors mz and, if available intensity</span>
@@ -1103,7 +1118,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_precursors</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">precursors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">precursors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List the precursor information of this spectrum, if available.</span>
 <span class="sd">        Returns:</span>
@@ -1122,7 +1137,7 @@
                 <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_precursors</span>
 
-    <span class="k">def</span> <span class="nf">remove_precursor_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_precursor_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">precursor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_precursors</span><span class="p">:</span>
             <span class="n">mz</span> <span class="o">=</span> <span class="n">precursor</span><span class="p">[</span><span class="s2">&quot;mz&quot;</span><span class="p">]</span>
@@ -1135,7 +1150,7 @@
         <span class="k">return</span> <span class="n">peaks</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of m/z values. If the m/z values are encoded, the</span>
 <span class="sd">        function :func:`~spec.MS_Spectrum._decode` is used to decode the encoded data.</span>
@@ -1152,14 +1167,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mz</span>
 
     <span class="nd">@mz</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz_list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz_list</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
         <span class="n">mz_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mz_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="n">mz_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mz</span> <span class="o">=</span> <span class="n">mz_list</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of the intensity values.</span>
 <span class="sd">        If the intensity values are encoded, the function :func:`~spec.MS_Spectrum._decode`</span>
@@ -1177,12 +1192,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span>
 
     <span class="nd">@i</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity_list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity_list</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="n">intensity_list</span>
 
 <div class="viewcode-block" id="Spectrum.peaks">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.peaks">[docs]</a>
-    <span class="k">def</span> <span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peak_type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peak_type</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decode and return a list of mz/i tuples.</span>
 
@@ -1223,7 +1238,7 @@
 
 
     <span class="nd">@lru_cache</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr_name</span><span class="p">):</span>
         <span class="n">array_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_encoding_parameters</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)</span>
         <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span><span class="p">(</span><span class="o">*</span><span class="n">array_params</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1231,7 +1246,7 @@
             <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_arrays_in_spec</span><span class="p">(</span><span class="n">not_found_array</span><span class="o">=</span><span class="n">arr_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">array</span>
 
-    <span class="k">def</span> <span class="nf">get_tims_tof_ion_mobility</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tims_tof_ion_mobility</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">array_name</span><span class="o">=</span><span class="s2">&quot;mean inverse reduced ion mobility array&quot;</span>
     <span class="p">):</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_array</span><span class="p">(</span><span class="n">array_name</span><span class="p">)</span>
@@ -1239,7 +1254,7 @@
             <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_arrays_in_spec</span><span class="p">(</span><span class="n">not_found_array</span><span class="o">=</span><span class="n">array_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">arr</span>
 
-    <span class="k">def</span> <span class="nf">get_all_arrays_in_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">not_found_array</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_arrays_in_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">not_found_array</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">b_data_string</span> <span class="o">=</span> <span class="s2">&quot;./</span><span class="si">{ns}</span><span class="s2">binaryDataArrayList/</span><span class="si">{ns}</span><span class="s2">binaryDataArray/</span><span class="si">{ns}</span><span class="s2">cvParam[@unitCvRef=&#39;MS&#39;]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">ns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span>
         <span class="p">)</span>
@@ -1257,7 +1272,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted_array_names</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">array_names</span>
 
-    <span class="k">def</span> <span class="nf">_deconvolute_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deconvolute_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">DECON_DEP</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">)</span>
             <span class="c1"># pack peak matrix into expected structure</span>
@@ -1278,7 +1293,7 @@
 
 <div class="viewcode-block" id="Spectrum.set_peaks">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.set_peaks">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">peak_type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">peak_type</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign a custom peak array of type peak_type</span>
 
@@ -1332,7 +1347,7 @@
             <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_centroid_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_centroid_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a Gauss fit to centroid the peaks for the property</span>
 <span class="sd">        centroided_peaks.</span>
@@ -1398,7 +1413,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_reprofile_Peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reprofile_Peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs reprofiling for property reprofiled_peaks.</span>
 
@@ -1426,7 +1441,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_peaks</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;centroided&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tmp</span>
 
-    <span class="k">def</span> <span class="nf">_mz_2_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">,</span> <span class="n">charge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mz_2_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">,</span> <span class="n">charge</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the uncharged mass for a given mz value</span>
 
@@ -1439,7 +1454,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">PROTON</span><span class="p">)</span> <span class="o">*</span> <span class="n">charge</span>
 
-    <span class="k">def</span> <span class="nf">_set_params_from_reference_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_element</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_params_from_reference_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_element</span><span class="p">):</span>
         <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{ns}</span><span class="s2">referenceableParamGroupRef&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">)</span>
@@ -1453,7 +1468,7 @@
 
 <div class="viewcode-block" id="Spectrum.reduce">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.reduce">[docs]</a>
-    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peak_type</span><span class="o">=</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">mz_range</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peak_type</span><span class="o">=</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">mz_range</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all m/z values outside the given range.</span>
 
@@ -1473,7 +1488,7 @@
 
 <div class="viewcode-block" id="Spectrum.remove_noise">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.remove_noise">[docs]</a>
-    <span class="k">def</span> <span class="nf">remove_noise</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_noise</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="n">noise_level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signal_to_noise_threshold</span><span class="o">=</span><span class="mf">1.0</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1511,7 +1526,7 @@
 
 <div class="viewcode-block" id="Spectrum.estimated_noise_level">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.estimated_noise_level">[docs]</a>
-    <span class="k">def</span> <span class="nf">estimated_noise_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimated_noise_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates noise threshold for function remove_noise.</span>
 
@@ -1556,7 +1571,7 @@
 
 <div class="viewcode-block" id="Spectrum.highest_peaks">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.highest_peaks">[docs]</a>
-    <span class="k">def</span> <span class="nf">highest_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">highest_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to retrieve the n-highest centroided peaks of the spectrum.</span>
 
@@ -1591,7 +1606,7 @@
 
 <div class="viewcode-block" id="Spectrum.ppm2abs">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.ppm2abs">[docs]</a>
-    <span class="k">def</span> <span class="nf">ppm2abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ppm_value</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ppm2abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ppm_value</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the value plus (or minus, dependent on direction) the</span>
 <span class="sd">        error (measured precision ) for this value.</span>
@@ -1616,7 +1631,7 @@
 
 <div class="viewcode-block" id="Spectrum.extreme_values">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.extreme_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">extreme_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extreme_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find extreme values, minimal and maximum m/z and intensity</span>
 
@@ -1659,7 +1674,7 @@
 
 <div class="viewcode-block" id="Spectrum.has_peak">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.has_peak">[docs]</a>
-    <span class="k">def</span> <span class="nf">has_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz2find</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz2find</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a Spectrum has a certain peak.</span>
 <span class="sd">        Requires a m/z value as input and returns a list of peaks if the m/z</span>
@@ -1699,7 +1714,7 @@
 
 <div class="viewcode-block" id="Spectrum.has_overlapping_peak">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.has_overlapping_peak">[docs]</a>
-    <span class="k">def</span> <span class="nf">has_overlapping_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_overlapping_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a spectrum has more than one peak for a given m/z value</span>
 <span class="sd">        and within the measured precision</span>
@@ -1721,7 +1736,7 @@
 
 <div class="viewcode-block" id="Spectrum.similarity_to">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.similarity_to">[docs]</a>
-    <span class="k">def</span> <span class="nf">similarity_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec2</span><span class="p">,</span> <span class="n">round_precision</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">similarity_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec2</span><span class="p">,</span> <span class="n">round_precision</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compares two spectra and returns cosine</span>
 
@@ -1775,7 +1790,7 @@
 
 <div class="viewcode-block" id="Spectrum.transform_mz">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Spectrum.transform_mz">[docs]</a>
-    <span class="k">def</span> <span class="nf">transform_mz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_mz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        pymzml uses an internal precision for different tasks. This precision</span>
 <span class="sd">        depends on the measured precision and is calculated when</span>
@@ -1813,7 +1828,7 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_precision</span><span class="p">))</span></div>
 
 
-    <span class="k">def</span> <span class="nf">deprecation_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deprecation_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_name</span><span class="p">):</span>
         <span class="n">deprecation_lookup</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;similarityTo&quot;</span><span class="p">:</span> <span class="s2">&quot;similarity_to&quot;</span><span class="p">,</span>
             <span class="s2">&quot;hasPeak&quot;</span><span class="p">:</span> <span class="s2">&quot;has_peak&quot;</span><span class="p">,</span>
@@ -1836,40 +1851,40 @@
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">similarityTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec2</span><span class="p">,</span> <span class="n">round_precision</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">similarityTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec2</span><span class="p">,</span> <span class="n">round_precision</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_to</span><span class="p">(</span><span class="n">spec2</span><span class="p">,</span> <span class="n">round_precision</span><span class="o">=</span><span class="n">round_precision</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">hasPeak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hasPeak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_peak</span><span class="p">(</span><span class="n">mz</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">extremeValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extremeValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extreme_values</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">transformMZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transformMZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_mz</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">hasOverlappingPeak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hasOverlappingPeak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mz</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_overlapping_peak</span><span class="p">(</span><span class="n">mz</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">highestPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">highestPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">highest_peaks</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">estimatedNoiseLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimatedNoiseLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimated_noise_level</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">removeNoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="n">noiseLevel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeNoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="n">noiseLevel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_noise</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">noise_level</span><span class="o">=</span><span class="n">noiseLevel</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">centroidedPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">centroidedPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># self.deprecation_warning( sys._getframe().f_code.co_name )</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">(</span><span class="s2">&quot;centroided&quot;</span><span class="p">)</span></div>
 
@@ -1877,12 +1892,12 @@
 
 <div class="viewcode-block" id="Chromatogram">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Chromatogram">[docs]</a>
-<span class="k">class</span> <span class="nc">Chromatogram</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Chromatogram</span><span class="p">(</span><span class="n">MsData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for Chromatogram access and handling.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">measured_precision</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">obo_version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">measured_precision</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">obo_version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            element (xml.etree.ElementTree.Element): spectrum as xml Element</span>
@@ -1946,24 +1961,24 @@
         <span class="c1"># assign function to create numpy array to list???</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;__main__.Chromatogram object with native ID </span><span class="si">{0}</span><span class="s2"> at </span><span class="si">{1}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;__main__.Chromatogram object with native ID </span><span class="si">{0}</span><span class="s2"> at </span><span class="si">{1}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ID</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ID</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
             <span class="s2">&quot;Chromatogram has no property mz.</span><span class="se">\n</span><span class="s2">Return retention time instead&quot;</span>
@@ -1971,7 +1986,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of time values. If the time values are encoded, the</span>
 <span class="sd">        function _decode() is used to decode the encoded data.\n</span>
@@ -1989,14 +2004,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_encoding_parameters</span><span class="p">(</span><span class="s2">&quot;intensity array&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of peaks of the chromatogram as tuples (time, intensity).</span>
 
@@ -2038,7 +2053,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_profile</span><span class="p">)</span>
 
     <span class="nd">@profile</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tuple_list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tuple_list</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tuple_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># self._mz, self._i = map(list, zip(*tuple_list))</span>
@@ -2055,7 +2070,7 @@
 
 <div class="viewcode-block" id="Chromatogram.peaks">
 <a class="viewcode-back" href="../../pymzml_spec.html#pymzml.spec.Chromatogram.peaks">[docs]</a>
-    <span class="k">def</span> <span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the list of peaks of the spectrum as tuples (time, intensity).</span>
 

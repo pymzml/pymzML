@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.file_interface &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>pymzml.file_interface &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="../../_static/documentation_options.js?v=7b940564"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -80,19 +80,19 @@
 <span class="sd">@author: Manuel Koesters</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
-<span class="kn">from</span> <span class="nn">pymzml.file_classes</span> <span class="kn">import</span> <span class="n">indexedGzip</span><span class="p">,</span> <span class="n">standardGzip</span><span class="p">,</span> <span class="n">standardMzml</span><span class="p">,</span> <span class="n">bytesMzml</span>
-<span class="kn">from</span> <span class="nn">pymzml.utils</span> <span class="kn">import</span> <span class="n">GSGR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.file_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">indexedGzip</span><span class="p">,</span> <span class="n">standardGzip</span><span class="p">,</span> <span class="n">standardMzml</span><span class="p">,</span> <span class="n">bytesMzml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">GSGR</span>
 
 
 <div class="viewcode-block" id="FileInterface">
 <a class="viewcode-back" href="../../file_handlers.html#pymzml.file_interface.FileInterface">[docs]</a>
-<span class="k">class</span> <span class="nc">FileInterface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FileInterface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface to different mzML formats.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FileInterface.__init__">
 <a class="viewcode-back" href="../../file_handlers.html#pymzml.file_interface.FileInterface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">build_index_from_scratch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index_regex</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -110,13 +110,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">offset_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">offset_dict</span></div>
 
 
-    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the internal file handler.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FileInterface._open">
 <a class="viewcode-back" href="../../file_handlers.html#pymzml.file_interface.FileInterface._open">[docs]</a>
-    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_file</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_file</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Open a file like object resp. a wrapper for a file like object.</span>
 
@@ -149,7 +149,7 @@
 
 <div class="viewcode-block" id="FileInterface._indexed_gzip">
 <a class="viewcode-back" href="../../file_handlers.html#pymzml.file_interface.FileInterface._indexed_gzip">[docs]</a>
-    <span class="k">def</span> <span class="nf">_indexed_gzip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_indexed_gzip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the given file is an indexed gzip file or not.</span>
 
@@ -166,7 +166,7 @@
 
 <div class="viewcode-block" id="FileInterface.read">
 <a class="viewcode-back" href="../../file_handlers.html#pymzml.file_interface.FileInterface.read">[docs]</a>
-    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read binary data from file handler.</span>
 
@@ -182,7 +182,7 @@
 
 <div class="viewcode-block" id="FileInterface.__getitem__">
 <a class="viewcode-back" href="../../file_handlers.html#pymzml.file_interface.FileInterface.__getitem__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access the item with id &#39;identifier&#39; in the file.</span>
 

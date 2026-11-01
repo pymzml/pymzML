@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2. Quick Start &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>2. Quick Start &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/documentation_options.js?v=7b940564"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -102,11 +102,11 @@ the script simple_parser_v2.py where the MS level can be queried as a key
 </dd></dl>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic example script to demonstrate the usage of pymzML. Requires a mzML</span>
 <span class="sd">    file as first argument.</span>
@@ -153,7 +153,7 @@ by the magic get function in pymzMLs run class.</p>
 <p>Alternatively, pymzML can also rapidly seek into any uncompressed mzML file,
 no matter if an index was included into the file or not.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 <span class="n">run</span> <span class="o">=</span> <span class="n">pymzml</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span> <span class="s1">&#39;tests/data/BSA1.mzML.gz&#39;</span> <span class="p">)</span>
 <span class="n">spectrum_with_id_2540</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span> <span class="mi">2540</span> <span class="p">]</span>
@@ -169,8 +169,8 @@ you can set a custom regex to parse the index when initializing the reader.</p>
 </dd>
 </dl>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">pymzml</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
 <span class="n">index_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="sa">b</span><span class="s1">&#39;.*idRef=&quot;ManuelsCustomID=(?P&lt;ID&gt;.*) diesdas&quot;&gt;(?P&lt;offset&gt;[0-9]*)&lt;/offset&gt;&#39;</span>

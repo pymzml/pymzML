@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.3. Utils &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>3.3. Utils &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/documentation_options.js?v=7b940564"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -338,7 +338,7 @@ compression speed and os.</p>
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span>      <span class="k">class</span> <span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span>      <span class="k">class</span><span class="w"> </span><span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="o">..</span>              <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">..              Example implementation of a database Connector,</span>
 <span class="s2">..              which can be used to make run accept paths to</span>
@@ -346,7 +346,7 @@ compression speed and os.</p>
 </pre></div>
 </div>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span>      <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span>      <span class="k">def</span><span class="w"> </span><span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="o">..</span>              <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
 <span class="o">..</span>                      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indexed_gzip</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 <span class="o">..</span>                              <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">indexedGzip</span><span class="o">.</span><span class="n">IndexedGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>

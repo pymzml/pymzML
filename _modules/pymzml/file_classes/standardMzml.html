@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pymzml.file_classes.standardMzml &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+  <title>pymzml.file_classes.standardMzml &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="../../../_static/documentation_options.js?v=7b940564"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -102,29 +102,29 @@
 <span class="c1">#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
 <span class="c1">#     SOFTWARE.</span>
 
-<span class="kn">import</span> <span class="nn">bisect</span>
-<span class="kn">import</span> <span class="nn">codecs</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">XML</span><span class="p">,</span> <span class="n">iterparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bisect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">codecs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="kn">import</span> <span class="n">XML</span><span class="p">,</span> <span class="n">iterparse</span>
 
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">spec</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">chromatogram</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">regex_patterns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">spec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">chromatogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">regex_patterns</span>
 
 
 <div class="viewcode-block" id="StandardMzml">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml">[docs]</a>
-<span class="k">class</span> <span class="nc">StandardMzml</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StandardMzml</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="StandardMzml.__init__">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">build_index_from_scratch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index_regex</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -145,15 +145,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_index</span><span class="p">(</span><span class="n">from_scratch</span><span class="o">=</span><span class="n">build_index_from_scratch</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">get_binary_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_binary_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StandardMzml.__getitem__">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml.__getitem__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access the item with id &#39;identifier&#39;.</span>
 
@@ -211,7 +211,7 @@
 
 <div class="viewcode-block" id="StandardMzml._binary_search">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml._binary_search">[docs]</a>
-    <span class="k">def</span> <span class="nf">_binary_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_binary_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve spectrum for a given spectrum ID using binary jumps</span>
 
@@ -345,7 +345,7 @@
 
 <div class="viewcode-block" id="StandardMzml._build_index">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml._build_index">[docs]</a>
-    <span class="k">def</span> <span class="nf">_build_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_scratch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_scratch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build an index.</span>
 
@@ -452,10 +452,10 @@
 
 <div class="viewcode-block" id="StandardMzml._build_index_from_scratch">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml._build_index_from_scratch">[docs]</a>
-    <span class="k">def</span> <span class="nf">_build_index_from_scratch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_index_from_scratch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build an index of spectra/chromatogram data with offsets by parsing the file.&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">get_data_indices</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">8192</span><span class="p">,</span> <span class="n">lookback_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_data_indices</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">8192</span><span class="p">,</span> <span class="n">lookback_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Get a dictionary with binary file indices of spectra and</span>
 <span class="sd">            chromatograms in an mzML file.</span>
 
@@ -555,7 +555,7 @@
 
 <div class="viewcode-block" id="StandardMzml._interpol_search">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml._interpol_search">[docs]</a>
-    <span class="k">def</span> <span class="nf">_interpol_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">fallback_cutoff</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_interpol_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">fallback_cutoff</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use linear interpolation search to find spectra faster.</span>
 
@@ -666,7 +666,7 @@
         <span class="k">return</span> <span class="n">spectrum</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_read_to_spec_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">,</span> <span class="n">chunks_to_read</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_to_spec_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">,</span> <span class="n">chunks_to_read</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read from current seeker position to the end of the</span>
 <span class="sd">        next spectrum tag and return start and end postition</span>
@@ -698,7 +698,7 @@
 
 <div class="viewcode-block" id="StandardMzml._read_extremes">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml._read_extremes">[docs]</a>
-    <span class="k">def</span> <span class="nf">_read_extremes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_extremes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read min and max spectrum ids. Required for binary jumps.</span>
 
@@ -767,7 +767,7 @@
 
 <div class="viewcode-block" id="StandardMzml._search_linear">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml._search_linear">[docs]</a>
-    <span class="k">def</span> <span class="nf">_search_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_search_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fallback to linear search if interpolated search fails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -824,7 +824,7 @@
                     <span class="k">return</span> <span class="n">spec</span><span class="o">.</span><span class="n">Spectrum</span><span class="p">(</span><span class="n">xml_string</span><span class="p">,</span> <span class="n">measured_precision</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_search_string_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_string</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_search_string_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_string</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binary_file_handler</span><span class="p">()</span> <span class="k">as</span> <span class="n">seeker</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">total_chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span> <span class="o">*</span> <span class="mi">512</span>
@@ -870,7 +870,7 @@
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;cant find specified string&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_read_until_tag_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">,</span> <span class="n">max_search_len</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_until_tag_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeker</span><span class="p">,</span> <span class="n">max_search_len</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Help make sure no splitted text appear in chunked data, so regex always find</span>
 <span class="sd">        &lt;spectrum ...&gt;</span>
@@ -893,7 +893,7 @@
 
 <div class="viewcode-block" id="StandardMzml.read">
 <a class="viewcode-back" href="../../../file_handlers.html#pymzml.file_classes.standardMzml.StandardMzml.read">[docs]</a>
-    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read binary data from file handler.</span>
 
@@ -906,7 +906,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 

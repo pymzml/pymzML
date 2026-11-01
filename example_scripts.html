@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.7. Example Scripts &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>4.7. Example Scripts &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="_static/documentation_options.js?v=7b940564"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -180,11 +180,11 @@ the script simple_parser_v2.py where the MS level can be queried as a key
 </dd></dl>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic example script to demonstrate the usage of pymzML. Requires a mzML</span>
 <span class="sd">    file as first argument.</span>
@@ -242,12 +242,12 @@ simple_parser.py</p>
 </dd></dl>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pymzml</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic example script to demonstrate the usage of pymzML. Requires a mzML</span>
 <span class="sd">    file as first argument.</span>
@@ -318,16 +318,16 @@ MS:1000503 ! scan attribute
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">import</span> <span class="nn">pymzml.obo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml.obo</span>
 
 
 <span class="n">FIELDNAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;def&quot;</span><span class="p">,</span> <span class="s2">&quot;is_a&quot;</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use this script to interrogate the OBO database files.</span>
 
@@ -368,7 +368,7 @@ MS:1000503 ! scan attribute
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Is a:&quot;</span><span class="p">,</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;is_a&quot;</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">search_by_name</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">search_by_name</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">obo</span><span class="o">.</span><span class="n">lookups</span><span class="p">:</span>
@@ -385,7 +385,7 @@ MS:1000503 ! scan attribute
     <span class="k">return</span> <span class="n">matches</span>
 
 
-<span class="k">def</span> <span class="nf">search_by_id</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">search_by_id</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MS:</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
     <span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">obo</span><span class="o">.</span><span class="n">lookups</span><span class="p">:</span>
@@ -434,14 +434,14 @@ MS:1000503 ! scan attribute
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
-<span class="kn">from</span> <span class="nn">pymzml.plot</span> <span class="kn">import</span> <span class="n">Factory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plots a chromatogram for the given mzML file. File is saved as</span>
 <span class="sd">    &#39;chromatogram_&lt;mzml_file&gt;.html&#39;.</span>
@@ -488,12 +488,12 @@ plotted via this script or using the python console.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function shows how to plot a simple spectrum. It can be directly</span>
 <span class="sd">    plotted via this script or using the python console.</span>
@@ -547,13 +547,13 @@ of a plot.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This script shows how to plot multiple spectra in one plot and</span>
 <span class="sd">    how to use label for the annotation of spectra.</span>
@@ -774,12 +774,12 @@ intensities from each spectrum.</p>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Testscript to isolate the n-highest peaks from an example file.</span>
 
@@ -835,12 +835,12 @@ represents highest similarity.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare multiple spectra and return the cosine distance between them.</span>
 <span class="sd">    The returned value is between 0 and 1, a returned value of 1</span>
@@ -905,11 +905,11 @@ represents highest similarity.</p>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Testscript to demonstrate functionality of function :py:func:`pymzml.spec.Spectrum.has_peak`</span>
 
@@ -950,12 +950,12 @@ represents highest similarity.</p>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Demonstration of the extraction of a specific ion chromatogram, i.e. XIC or EIC</span>
 
@@ -1009,13 +1009,13 @@ represents highest similarity.</p>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">itemgetter</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract the 10 most often fragmented precursors from the BSA example file.</span>
 
@@ -1083,11 +1083,11 @@ represents highest similarity.</p>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
-<span class="kn">import</span> <span class="nn">get_example_file</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">get_example_file</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessing positive or negative polarity of scan using obo 1.1.0</span>
 
@@ -1144,12 +1144,12 @@ represents highest similarity.</p>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Testscript to highlight the function name changes in the Spectrum class.</span>
 
@@ -1197,13 +1197,13 @@ represents highest similarity.</p>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3.4</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pymzml.utils.utils</span> <span class="kn">import</span> <span class="n">index_gzip</span>
-<span class="kn">from</span> <span class="nn">pymzml.run</span> <span class="kn">import</span> <span class="n">Reader</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">index_gzip</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymzml.run</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reader</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_path</span><span class="p">,</span> <span class="n">out_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">mzml_path</span><span class="p">,</span> <span class="n">out_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create and indexed gzip mzML file from a plain mzML.</span>
 
@@ -1273,11 +1273,11 @@ mzML file as first command line argument.</p>
 </dd></dl>
 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pymzml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">mzml_file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic example script to access basic run info of an mzML file. Requires a</span>
 <span class="sd">    mzML file as first command line argument.</span>
@@ -1332,7 +1332,7 @@ implements a <cite>read</cite> and a <cite>__getitem__</cite> function.</p>
 <section id="implementation-of-the-api-class">
 <h3><span class="section-number">4.7.17.2. </span>Implementation of the API Class<a class="headerlink" href="#implementation-of-the-api-class" title="Link to this heading"></a></h3>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SQLiteDatabase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Example implementation of a database Conncetor,</span>
 <span class="sd">        which can be used to make run accept paths to</span>
@@ -1342,13 +1342,13 @@ implements a <cite>read</cite> and a <cite>__getitem__</cite> function.</p>
 <span class="sd">        a custom __getitem__ function to retrieve the spectra</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Execute a SQL request, process the data and return a spectrum object.</span>
 
@@ -1366,12 +1366,12 @@ implements a <cite>read</cite> and a <cite>__getitem__</cite> function.</p>
                         <span class="n">spectrum</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">Chromatogram</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">spectrum</span>
 
-        <span class="k">def</span> <span class="nf">get_spectrum_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_spectrum_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) from spectra&quot;</span><span class="p">)</span>
                 <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">return</span> <span class="n">num</span>
 
-        <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
                 <span class="c1"># implement read so it starts reading in first ID,</span>
                 <span class="c1"># if end reached switches to next id and so on ...</span>
 
@@ -1384,7 +1384,7 @@ implements a <cite>read</cite> and a <cite>__getitem__</cite> function.</p>
 <p>In order to make the run class accept the new file class, one need to edit
 the <code class="xref py py-func docutils literal notranslate"><span class="pre">_open()</span></code> function in file_interface.py</p>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indexed_gzip</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">indexedGzip</span><span class="o">.</span><span class="n">IndexedGzip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>

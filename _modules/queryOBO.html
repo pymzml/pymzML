@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>queryOBO &mdash; pymzML 2.6.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+  <title>queryOBO &mdash; pymzML 2.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=0a414f3d"></script>
+      <script src="../_static/documentation_options.js?v=7b940564"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -76,10 +76,10 @@
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">import</span> <span class="nn">pymzml.obo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymzml.obo</span>
 
 
 <span class="n">FIELDNAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;def&quot;</span><span class="p">,</span> <span class="s2">&quot;is_a&quot;</span><span class="p">]</span>
@@ -87,7 +87,7 @@
 
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../example_scripts.html#queryOBO.main">[docs]</a>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use this script to interrogate the OBO database files.</span>
 
@@ -129,7 +129,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">search_by_name</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">search_by_name</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">obo</span><span class="o">.</span><span class="n">lookups</span><span class="p">:</span>
@@ -146,7 +146,7 @@
     <span class="k">return</span> <span class="n">matches</span>
 
 
-<span class="k">def</span> <span class="nf">search_by_id</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">search_by_id</span><span class="p">(</span><span class="n">obo</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MS:</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
     <span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">obo</span><span class="o">.</span><span class="n">lookups</span><span class="p">:</span>
