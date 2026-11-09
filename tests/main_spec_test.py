@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 sys.path.append(os.path.abspath("."))
 import pymzml.run as run
@@ -48,6 +49,9 @@ class SpectrumTest(unittest.TestCase):
         self.assertEqual(self.spec.measured_precision, 5e-6)
         self.assertEqual(self.spec.ns, "{http://psi.hupo.org/ms/mzml}")
         self.assertIsNotNone(self.spec.element)
+
+    def test_default_elements_are_independent(self):
+        self.assertIsNot(Spectrum().element, Spectrum().element)
 
     def test_mz(self):
         """ """
@@ -201,6 +205,11 @@ class SpectrumTest(unittest.TestCase):
         peaks = self.spec.peaks("raw")
         self.spec.reduce(mz_range=(100, 400))
         self.assertPeaksIdentical(self.spec.peaks("raw"), [(102, 300), (400, 20)])
+
+    def test_reduce_without_bounds(self):
+        peaks = [(50, 100), (102, 300)]
+        self.spec.set_peaks(peaks, "raw")
+        self.assertPeaksIdentical(self.spec.reduce(), peaks)
 
     def test_highest_peaks(self):
         """ """
@@ -490,6 +499,17 @@ class SpectrumTest(unittest.TestCase):
 
     def test_get_all_arrays_in_spec(self):
         assert self.spec.get_all_arrays_in_spec() == ["m/z array", "intensity array"]
+
+    def test_as_dict(self):
+        data = self.spec.as_dict()
+        self.assertEqual(data["id"], self.spec.ID)
+        self.assertEqual(data["ms_level"], self.spec.ms_level)
+        self.assertNotIn("arrays", data)
+
+        data_with_arrays = self.spec.as_dict(include_arrays=True)
+        self.assertIn("m/z array", data_with_arrays["arrays"])
+        self.assertIsInstance(data_with_arrays["arrays"]["m/z array"], list)
+        json.dumps(data_with_arrays)
 
     def test_get_array(self):
         # import pdb;pdb.set_trace()

@@ -5,6 +5,7 @@ Test cases for the new properties in the Chromatogram class.
 """
 import os
 import sys
+import json
 
 # Add parent directory to Python path
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
@@ -115,6 +116,20 @@ class ChromatogramPropertiesTest(unittest.TestCase):
         print("Chromatogram properties:")
         for key, value in properties.items():
             print(f"  {key}: {value}")
+
+    def test_as_dict(self):
+        chromatogram = self.reader.get_chromatogram(0)
+        data = chromatogram.as_dict()
+        self.assertEqual(data["id"], chromatogram.ID)
+        self.assertNotIn("arrays", data)
+
+        data_with_arrays = chromatogram.as_dict(include_arrays=True)
+        self.assertEqual(
+            len(data_with_arrays["arrays"]["time"]),
+            len(data_with_arrays["arrays"]["intensity"]),
+        )
+        self.assertIsInstance(data_with_arrays["arrays"]["time"], list)
+        json.dumps(data_with_arrays)
 
     def test_all_chromatograms(self):
         """Test all chromatograms in the file."""
