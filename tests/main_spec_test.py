@@ -51,7 +51,9 @@ class SpectrumTest(unittest.TestCase):
         self.assertIsNotNone(self.spec.element)
 
     def test_default_elements_are_independent(self):
-        self.assertIsNot(Spectrum().element, Spectrum().element)
+        first_spectrum = Spectrum()
+        second_spectrum = Spectrum()
+        self.assertIsNot(first_spectrum.element, second_spectrum.element)
 
     def test_mz(self):
         """ """

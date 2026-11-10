@@ -260,7 +260,7 @@ class runTest(unittest.TestCase):
         self.assertEqual(self.reader_uncompressed_unindexed.get_spectrum_count(), 2918)
 
     def test_spectrum_index_out_of_range(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(KeyError):
             self.reader_compressed_indexed[10**9]
 
     def test_chrom_count_chrom_file(self):

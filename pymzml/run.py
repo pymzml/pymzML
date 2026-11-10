@@ -461,33 +461,57 @@ class Reader(object):
         Yields:
             Spectrum: Each matching spectrum.
         """
-        if polarity is not None:
-            if not isinstance(polarity, str):
-                raise ValueError("polarity must be 'positive' or 'negative'")
-            polarity = polarity.lower()
-            if polarity not in {"positive", "negative"}:
-                raise ValueError("polarity must be 'positive' or 'negative'")
-
-        if rt_range is not None and len(rt_range) != 2:
-            raise ValueError("rt_range must contain two boundaries")
+        polarity = self._normalize_polarity(polarity)
+        rt_range = self._normalize_rt_range(rt_range)
 
         for spectrum in self:
-            if not isinstance(spectrum, spec.Spectrum):
-                continue
-            if ms_level is not None and spectrum.ms_level != ms_level:
-                continue
-            if polarity is not None and spectrum[f"{polarity} scan"] is None:
-                continue
-            if rt_range is not None:
-                scan_time = spectrum.scan_time_in_minutes()
-                lower_bound, upper_bound = rt_range
-                if scan_time is None:
-                    continue
-                if lower_bound is not None and scan_time < lower_bound:
-                    continue
-                if upper_bound is not None and scan_time > upper_bound:
-                    continue
-            yield spectrum
+            if self._spectrum_matches_filters(
+                spectrum, ms_level, rt_range, polarity
+            ):
+                yield spectrum
+
+    @staticmethod
+    def _normalize_polarity(polarity):
+        """Return a validated, lower-case polarity filter."""
+        if polarity is None:
+            return None
+        if not isinstance(polarity, str):
+            raise ValueError("polarity must be 'positive' or 'negative'")
+
+        polarity = polarity.lower()
+        if polarity not in {"positive", "negative"}:
+            raise ValueError("polarity must be 'positive' or 'negative'")
+        return polarity
+
+    @staticmethod
+    def _normalize_rt_range(rt_range):
+        """Return a validated retention-time range."""
+        if rt_range is None:
+            return None
+        if len(rt_range) != 2:
+            raise ValueError("rt_range must contain two boundaries")
+        return rt_range
+
+    @staticmethod
+    def _spectrum_matches_filters(spectrum, ms_level, rt_range, polarity):
+        """Return whether a spectrum satisfies the requested filters."""
+        if not isinstance(spectrum, spec.Spectrum):
+            return False
+        if ms_level is not None and spectrum.ms_level != ms_level:
+            return False
+        if polarity is not None and spectrum[f"{polarity} scan"] is None:
+            return False
+        if rt_range is None:
+            return True
+
+        scan_time = spectrum.scan_time_in_minutes()
+        if scan_time is None:
+            return False
+        lower_bound, upper_bound = rt_range
+        return (
+            (lower_bound is None or scan_time >= lower_bound)
+            and (upper_bound is None or scan_time <= upper_bound)
+        )
 
     def extract_xic(
         self,
@@ -598,35 +622,14 @@ class Reader(object):
             ValueError: If ``time`` is not a finite number.
             LookupError: If the file has no spectra matching ``ms_level``.
         """
-        try:
-            requested_time = float(time)
-        except (TypeError, ValueError) as error:
-            raise ValueError("time must be a finite number of minutes") from error
-        if not math.isfinite(requested_time):
-            raise ValueError("time must be a finite number of minutes")
+        requested_time = self._normalize_requested_time(time)
 
         first_lookup = self._retention_time_index is None
-        closest_spectrum = None
-        if first_lookup:
-            self._retention_time_index = []
-            with self._new_lookup_reader() as lookup_reader:
-                for spectrum in lookup_reader:
-                    if not isinstance(spectrum, spec.Spectrum):
-                        continue
-                    retention_time = spectrum.scan_time_in_minutes()
-                    if retention_time is None:
-                        continue
-                    self._retention_time_index.append(
-                        (retention_time, spectrum.ID, spectrum.ms_level)
-                    )
-                    if ms_level is None or spectrum.ms_level == ms_level:
-                        if closest_spectrum is None or self._time_distance_key(
-                            retention_time, requested_time
-                        ) < self._time_distance_key(
-                            closest_spectrum.scan_time_in_minutes(), requested_time
-                        ):
-                            closest_spectrum = spectrum
-            self._retention_time_index.sort(key=lambda entry: entry[0])
+        closest_spectrum = (
+            self._build_retention_time_index(requested_time, ms_level)
+            if first_lookup
+            else None
+        )
 
         matches = [
             entry
@@ -646,6 +649,54 @@ class Reader(object):
 
         with self._new_lookup_reader() as lookup_reader:
             return lookup_reader[nearest[1]]
+
+    @staticmethod
+    def _normalize_requested_time(time):
+        """Return a finite retention time in minutes."""
+        try:
+            requested_time = float(time)
+        except (TypeError, ValueError) as error:
+            raise ValueError("time must be a finite number of minutes") from error
+        if not math.isfinite(requested_time):
+            raise ValueError("time must be a finite number of minutes")
+        return requested_time
+
+    def _build_retention_time_index(self, requested_time, ms_level):
+        """Build the time index and retain the closest spectrum from the scan."""
+        self._retention_time_index = []
+        closest_spectrum = None
+        with self._new_lookup_reader() as lookup_reader:
+            for spectrum in lookup_reader:
+                if not isinstance(spectrum, spec.Spectrum):
+                    continue
+                retention_time = spectrum.scan_time_in_minutes()
+                if retention_time is None:
+                    continue
+                self._retention_time_index.append(
+                    (retention_time, spectrum.ID, spectrum.ms_level)
+                )
+                if self._is_better_time_match(
+                    spectrum, closest_spectrum, requested_time, ms_level
+                ):
+                    closest_spectrum = spectrum
+
+        self._retention_time_index.sort(key=lambda entry: entry[0])
+        return closest_spectrum
+
+    @classmethod
+    def _is_better_time_match(
+        cls, spectrum, closest_spectrum, requested_time, ms_level
+    ):
+        """Return whether a spectrum is the best matching candidate so far."""
+        if ms_level is not None and spectrum.ms_level != ms_level:
+            return False
+        if closest_spectrum is None:
+            return True
+        return cls._time_distance_key(
+            spectrum.scan_time_in_minutes(), requested_time
+        ) < cls._time_distance_key(
+            closest_spectrum.scan_time_in_minutes(), requested_time
+        )
 
     @staticmethod
     def _time_distance_key(retention_time, requested_time):
