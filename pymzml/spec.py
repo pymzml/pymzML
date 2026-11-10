@@ -71,6 +71,7 @@ from .decoder import MSDecoder
 from .obo import OboTranslator
 
 PROTON = 1.00727646677
+_DEFAULT_ELEMENT = object()
 ISOTOPE_AVERAGE_DIFFERENCE = 1.002
 
 # Import Chromatogram from chromatogram.py for backward compatibility
@@ -416,11 +417,14 @@ class Spectrum(MsData):
 
     def __init__(
         self,
-        element=ElementTree.Element(""),
+        element=_DEFAULT_ELEMENT,
         measured_precision=5e-6,
         *,
         obo_version=None,
     ):
+        if element is _DEFAULT_ELEMENT:
+            element = ElementTree.Element("")
+
         __slots__ = [
             "_centroided_peaks",
             "_centroided_peaks_sorted_by_i",
@@ -1172,6 +1176,39 @@ class Spectrum(MsData):
             logger.debug("\n".join(formatted_array_names))
         return array_names
 
+    def as_dict(self, include_arrays=False):
+        """Return spectrum metadata as a JSON-friendly dictionary.
+
+        Binary arrays remain lazy unless ``include_arrays`` is true.
+
+        Args:
+            include_arrays (bool): Include decoded arrays as plain lists.
+        """
+        scan_time, scan_time_unit = self.scan_time
+        polarity = None
+        if self["positive scan"] is not None:
+            polarity = "positive"
+        elif self["negative scan"] is not None:
+            polarity = "negative"
+
+        data = {
+            "id": self.ID,
+            "index": self.index,
+            "ms_level": self.ms_level,
+            "scan_time": scan_time,
+            "scan_time_unit": scan_time_unit,
+            "polarity": polarity,
+            "total_ion_current": self.get("total ion current"),
+            "selected_precursors": self.selected_precursors,
+        }
+        if include_arrays:
+            arrays = {}
+            for name in self.get_all_arrays_in_spec():
+                array = self.get_array(name)
+                arrays[name] = None if array is None else array.tolist()
+            data["arrays"] = arrays
+        return data
+
     def _deconvolute_peaks(self, *args, **kwargs):
         if DECON_DEP is True:
             peaks = self.peaks("centroided")
@@ -1374,9 +1411,13 @@ class Spectrum(MsData):
             peaks (list): list of mz, i tuples in the given range.
         """
         arr = self.peaks(peak_type)
-        peaks = arr[
-            np.where(np.logical_and(arr[:, 0] >= mz_range[0], arr[:, 0] <= mz_range[1]))
-        ]
+        lower_bound, upper_bound = mz_range
+        mask = np.ones(len(arr), dtype=bool)
+        if lower_bound is not None:
+            mask &= arr[:, 0] >= lower_bound
+        if upper_bound is not None:
+            mask &= arr[:, 0] <= upper_bound
+        peaks = arr[mask]
         self.set_peaks(peaks, peak_type)
         return peaks
 

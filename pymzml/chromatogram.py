@@ -212,14 +212,14 @@ class Chromatogram(MsData):
         Args:
             tuple_list (list): list of tuples (time, intensity)
         """
-        if len(tuple_list) == 0:
-            return
         self._time = []
         self._i = []
+        self._profile = []
         for time, i in tuple_list:
             self._time.append(time)
             self._i.append(i)
-        self._peaks = tuple_list
+            self._profile.append([time, i])
+        self._peaks = self._profile
         self._reprofiledPeaks = None
         self._centroidedPeaks = None
         return self
@@ -370,3 +370,25 @@ class Chromatogram(MsData):
             "product_mz": self.product_mz,
         }
         return properties
+
+    def as_dict(self, include_arrays=False):
+        """Return chromatogram metadata as a JSON-friendly dictionary.
+
+        Time and intensity data remain lazy unless ``include_arrays`` is true.
+
+        Args:
+            include_arrays (bool): Include decoded arrays as plain lists.
+        """
+        data = self.get_chromatogram_properties()
+        if include_arrays:
+            time = self.time
+            intensity = self.i
+            data["arrays"] = {
+                "time": time.tolist() if hasattr(time, "tolist") else list(time),
+                "intensity": (
+                    intensity.tolist()
+                    if hasattr(intensity, "tolist")
+                    else list(intensity)
+                ),
+            }
+        return data

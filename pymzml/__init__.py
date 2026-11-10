@@ -33,9 +33,13 @@ if not hasattr(sys, "version_info") or sys.version_info < (3, 13):
     raise RuntimeError("pymzML requires Python 3.13 or later.")
 
 # Set version
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = version("pymzml").rstrip(".dev0")
+try:
+    __version__ = version("pymzml")
+except PackageNotFoundError:
+    __version__ = "0.0.0+unknown"
+__version__ = __version__.removesuffix(".dev0")
 
 # Imports of individual modules
 import pymzml.run

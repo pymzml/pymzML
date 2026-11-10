@@ -8,6 +8,7 @@ import re
 import pymzml.run as run
 import unittest
 from pymzml.spec import Spectrum, Chromatogram
+from pymzml.chromatogram import Chromatogram as ReaderChromatogram
 import test_file_paths
 
 
@@ -43,6 +44,61 @@ class runTest(unittest.TestCase):
     def test_with_context(self):
         with run.Reader(self.paths[0]) as reader:
             reader[2]
+
+    def test_iter_spectra_filters(self):
+        with run.Reader(self.paths[0]) as reader:
+            spectra = list(
+                reader.iter_spectra(
+                    ms_level=1,
+                    rt_range=(0.01, 0.02),
+                    polarity="positive",
+                )
+            )
+        self.assertEqual([spectrum.ID for spectrum in spectra], [3, 4, 5])
+
+    def test_extract_xic(self):
+        with run.Reader(self.paths[0]) as reader:
+            xic = reader.extract_xic(
+                70.06575775,
+                tolerance=10,
+                unit="ppm",
+                rt_range=(0.001, 0.006),
+            )
+        self.assertIsInstance(xic, ReaderChromatogram)
+        self.assertEqual(xic.ID, "XIC 70.06575775")
+        self.assertEqual(len(xic.time), 2)
+        self.assertTrue(all(intensity > 0 for intensity in xic.i))
+        self.assertEqual(len(xic.as_dict(include_arrays=True)["arrays"]["time"]), 2)
+
+    def test_get_spectrum_at_time_returns_nearest_spectrum(self):
+        with run.Reader(self.paths[0]) as reader:
+            spectrum = reader.get_spectrum_at_time(0.015)
+        self.assertEqual(spectrum.ID, 4)
+
+    def test_get_spectrum_at_time_can_filter_by_ms_level(self):
+        with run.Reader(self.paths[9]) as reader:
+            spectrum = reader.get_spectrum_at_time(25.05, ms_level=2)
+        self.assertEqual(spectrum.ID, 2442)
+
+    def test_get_spectrum_at_time_prefers_earlier_spectrum_on_a_tie(self):
+        with run.Reader(self.paths[0]) as reader:
+            spectrum_3 = reader[3]
+            spectrum_4 = reader[4]
+            midpoint = (
+                spectrum_3.scan_time_in_minutes()
+                + spectrum_4.scan_time_in_minutes()
+            ) / 2
+            spectrum = reader.get_spectrum_at_time(midpoint)
+        self.assertEqual(spectrum.ID, 3)
+
+    def test_get_spectrum_at_time_preserves_iteration_position(self):
+        with run.Reader(self.paths[0]) as reader:
+            first_spectrum = next(reader)
+            reader.get_spectrum_at_time(0.015)
+            reader.get_spectrum_at_time(0.02)
+            following_spectrum = next(reader)
+        self.assertEqual(first_spectrum.ID, 1)
+        self.assertEqual(following_spectrum.ID, 2)
 
     def test_setting_measured_precision(self):
         reader = run.Reader(self.paths[2], MS_precisions={1: 61})
@@ -202,6 +258,10 @@ class runTest(unittest.TestCase):
         self.assertEqual(self.reader_compressed_unindexed.get_spectrum_count(), 2918)
         self.assertEqual(self.reader_uncompressed_unindexed.get_spectrum_count(), 2918)
         self.assertEqual(self.reader_uncompressed_unindexed.get_spectrum_count(), 2918)
+
+    def test_spectrum_index_out_of_range(self):
+        with self.assertRaises(KeyError):
+            self.reader_compressed_indexed[10**9]
 
     def test_chrom_count_chrom_file(self):
         reader = run.Reader(self.paths[3])

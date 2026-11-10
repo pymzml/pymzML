@@ -39,6 +39,7 @@ Note:
 
 import re
 import os
+import math
 import xml.etree.ElementTree as ElementTree
 from collections import defaultdict as ddict
 from io import BytesIO
@@ -119,6 +120,7 @@ class Reader(object):
         # File info
         self.info = ddict()
         self.path_or_file = path_or_file
+        self._retention_time_index = None
         if isinstance(self.path_or_file, Path):
             self.path_or_file = str(self.path_or_file)
         if isinstance(self.path_or_file, str):
@@ -202,12 +204,6 @@ class Reader(object):
             spectrum (Spectrum or Chromatogram): spectrum/chromatogram object
             with native id 'identifier'
         """
-        try:
-            if isinstance(identifier, int) and identifier > self.get_spectrum_count():
-                raise Exception("Requested identifier is out of range")
-        except:
-            pass
-
         element = self.info["file_object"][identifier]
         element.obo_translator = self.OT
 
@@ -451,6 +447,128 @@ class Reader(object):
         """Function to return the next Spectrum element."""
         return self.__next__()
 
+    def iter_spectra(self, ms_level=None, rt_range=None, polarity=None):
+        """Iterate over spectra matching optional filters.
+
+        Filtering is lazy and starts at the Reader's current position.
+
+        Args:
+            ms_level (int, optional): MS level to include.
+            rt_range (tuple, optional): Inclusive retention-time range in minutes.
+                Either boundary may be ``None``.
+            polarity (str, optional): ``"positive"`` or ``"negative"``.
+
+        Yields:
+            Spectrum: Each matching spectrum.
+        """
+        polarity = self._normalize_polarity(polarity)
+        rt_range = self._normalize_rt_range(rt_range)
+
+        for spectrum in self:
+            if self._spectrum_matches_filters(
+                spectrum, ms_level, rt_range, polarity
+            ):
+                yield spectrum
+
+    @staticmethod
+    def _normalize_polarity(polarity):
+        """Return a validated, lower-case polarity filter."""
+        if polarity is None:
+            return None
+        if not isinstance(polarity, str):
+            raise ValueError("polarity must be 'positive' or 'negative'")
+
+        polarity = polarity.lower()
+        if polarity not in {"positive", "negative"}:
+            raise ValueError("polarity must be 'positive' or 'negative'")
+        return polarity
+
+    @staticmethod
+    def _normalize_rt_range(rt_range):
+        """Return a validated retention-time range."""
+        if rt_range is None:
+            return None
+        if len(rt_range) != 2:
+            raise ValueError("rt_range must contain two boundaries")
+        return rt_range
+
+    @staticmethod
+    def _spectrum_matches_filters(spectrum, ms_level, rt_range, polarity):
+        """Return whether a spectrum satisfies the requested filters."""
+        if not isinstance(spectrum, spec.Spectrum):
+            return False
+        if ms_level is not None and spectrum.ms_level != ms_level:
+            return False
+        if polarity is not None and spectrum[f"{polarity} scan"] is None:
+            return False
+        if rt_range is None:
+            return True
+
+        scan_time = spectrum.scan_time_in_minutes()
+        if scan_time is None:
+            return False
+        lower_bound, upper_bound = rt_range
+        return (
+            (lower_bound is None or scan_time >= lower_bound)
+            and (upper_bound is None or scan_time <= upper_bound)
+        )
+
+    def extract_xic(
+        self,
+        mz,
+        tolerance=10.0,
+        unit="ppm",
+        rt_range=None,
+        ms_level=1,
+    ):
+        """Extract an ion chromatogram for a target m/z.
+
+        Args:
+            mz (float): Target mass-to-charge value.
+            tolerance (float): Symmetric matching tolerance.
+            unit (str): ``"ppm"`` or ``"Da"``.
+            rt_range (tuple, optional): Inclusive retention-time range in minutes.
+            ms_level (int, optional): MS level to use. Defaults to MS1.
+
+        Returns:
+            Chromatogram: Extracted time and summed-intensity values.
+
+        A point is retained for every matching spectrum, including spectra with
+        no signal inside the requested m/z window.
+        """
+        mz = float(mz)
+        tolerance = float(tolerance)
+        if tolerance < 0:
+            raise ValueError("tolerance must not be negative")
+
+        unit = unit.lower()
+        if unit not in {"ppm", "da"}:
+            raise ValueError("unit must be 'ppm' or 'Da'")
+        mass_window = mz * tolerance * 1e-6 if unit == "ppm" else tolerance
+
+        profile = []
+        for spectrum in self.iter_spectra(ms_level=ms_level, rt_range=rt_range):
+            peaks = spectrum.peaks("raw")
+            matches = abs(peaks[:, 0] - mz) <= mass_window
+            intensity = float(peaks[matches, 1].sum())
+            profile.append((spectrum.scan_time_in_minutes(), intensity))
+
+        xic_id = f"XIC {mz}"
+        namespace = "{http://psi.hupo.org/ms/mzml}"
+        element = ElementTree.Element(f"{namespace}chromatogram", id=xic_id)
+        # Use the standard CV term so the result behaves like a chromatogram
+        # read from an mzML file, not a special in-memory variant.
+        ElementTree.SubElement(
+            element,
+            f"{namespace}cvParam",
+            cvRef="MS",
+            accession="MS:1000627",
+            name="selected ion current chromatogram",
+        )
+        xic = chromatogram.Chromatogram(element, obo_version=self.OT.version)
+        xic.profile = profile
+        return xic
+
     def get_spectrum_count(self):
         """
         Number of spectra in file.
@@ -485,6 +603,118 @@ class Reader(object):
             (e.g., run[0]), but with a more explicit method name.
         """
         return self[identifier]
+
+    def get_spectrum_at_time(self, time, ms_level=None):
+        """Return the spectrum nearest to a retention time in minutes.
+
+        The time index is built on first use and then reused. Looking up a
+        spectrum does not move this reader's current iteration position.
+
+        Args:
+            time (float): Retention time in minutes.
+            ms_level (int, optional): Only consider spectra at this MS level.
+
+        Returns:
+            Spectrum: The closest matching spectrum. If two spectra are equally
+            close, the earlier one is returned.
+
+        Raises:
+            ValueError: If ``time`` is not a finite number.
+            LookupError: If the file has no spectra matching ``ms_level``.
+        """
+        requested_time = self._normalize_requested_time(time)
+
+        first_lookup = self._retention_time_index is None
+        closest_spectrum = (
+            self._build_retention_time_index(requested_time, ms_level)
+            if first_lookup
+            else None
+        )
+
+        matches = [
+            entry
+            for entry in self._retention_time_index
+            if ms_level is None or entry[2] == ms_level
+        ]
+        if not matches:
+            detail = "" if ms_level is None else f" at MS level {ms_level}"
+            raise LookupError(f"No spectra with retention times were found{detail}")
+
+        nearest = min(
+            matches,
+            key=lambda entry: self._time_distance_key(entry[0], requested_time),
+        )
+        if first_lookup and closest_spectrum.ID == nearest[1]:
+            return closest_spectrum
+
+        with self._new_lookup_reader() as lookup_reader:
+            return lookup_reader[nearest[1]]
+
+    @staticmethod
+    def _normalize_requested_time(time):
+        """Return a finite retention time in minutes."""
+        try:
+            requested_time = float(time)
+        except (TypeError, ValueError) as error:
+            raise ValueError("time must be a finite number of minutes") from error
+        if not math.isfinite(requested_time):
+            raise ValueError("time must be a finite number of minutes")
+        return requested_time
+
+    def _build_retention_time_index(self, requested_time, ms_level):
+        """Build the time index and retain the closest spectrum from the scan."""
+        self._retention_time_index = []
+        closest_spectrum = None
+        with self._new_lookup_reader() as lookup_reader:
+            for spectrum in lookup_reader:
+                if not isinstance(spectrum, spec.Spectrum):
+                    continue
+                retention_time = spectrum.scan_time_in_minutes()
+                if retention_time is None:
+                    continue
+                self._retention_time_index.append(
+                    (retention_time, spectrum.ID, spectrum.ms_level)
+                )
+                if self._is_better_time_match(
+                    spectrum, closest_spectrum, requested_time, ms_level
+                ):
+                    closest_spectrum = spectrum
+
+        self._retention_time_index.sort(key=lambda entry: entry[0])
+        return closest_spectrum
+
+    @classmethod
+    def _is_better_time_match(
+        cls, spectrum, closest_spectrum, requested_time, ms_level
+    ):
+        """Return whether a spectrum is the best matching candidate so far."""
+        if ms_level is not None and spectrum.ms_level != ms_level:
+            return False
+        if closest_spectrum is None:
+            return True
+        return cls._time_distance_key(
+            spectrum.scan_time_in_minutes(), requested_time
+        ) < cls._time_distance_key(
+            closest_spectrum.scan_time_in_minutes(), requested_time
+        )
+
+    @staticmethod
+    def _time_distance_key(retention_time, requested_time):
+        """Sort by distance, then prefer the earlier spectrum."""
+        return (abs(retention_time - requested_time), retention_time)
+
+    def _new_lookup_reader(self):
+        """Open an independent reader so a lookup cannot disturb iteration."""
+        source = self.path_or_file
+        if isinstance(source, BytesIO):
+            source = BytesIO(source.getvalue())
+        return type(self)(
+            source,
+            MS_precisions=self.ms_precisions,
+            obo_version=self.info["obo_version"],
+            skip_chromatogram=True,
+            index_regex=self.index_regex,
+        )
 
     def get_chromatogram(self, identifier):
         """
@@ -541,6 +771,12 @@ class Reader(object):
 
     def close(self):
         self.info["file_object"].close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except (AttributeError, KeyError):
+            pass
 
     def term_is_a_member(self, tested_term, member_of_term):
         """
