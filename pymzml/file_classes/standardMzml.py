@@ -161,6 +161,11 @@ class StandardMzml(object):
                             )
                         )
 
+                    if target_index == self.seek_list[0][0]:
+                        # The first spectrum has no lower interpolation bound.
+                        seeker.seek(0)
+                        return self._search_linear(seeker, target_index)
+
                     element_before = self.seek_list[insert_position - 1]
                     spec_offset_m1 = target_index - element_before[0]
 
