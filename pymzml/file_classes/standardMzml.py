@@ -76,6 +76,19 @@ class StandardMzml(object):
         """
         Access the item with id 'identifier'.
 
+        The position of the shared file handler is restored afterwards, so a
+        running iteration over the same reader continues where it stopped.
+        """
+        position = self.file_handler.tell()
+        try:
+            return self._get_item(identifier)
+        finally:
+            self.file_handler.seek(position)
+
+    def _get_item(self, identifier):
+        """
+        Access the item with id 'identifier'.
+
         Either use linear, binary or interpolated search.
 
         Arguments:
